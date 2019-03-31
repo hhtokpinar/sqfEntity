@@ -31,7 +31,8 @@ There are 5 files in the project
     String tableName = "product";
     String primaryKeyName = "id";
     bool useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
+    // when useSoftDeleting is true, creates a field named "isDeleted" on the table,
+    // and set to "1" this field when item deleted (does not hard delete)
 
     // declare EntityFields List for EntityTable
     List<SqfEntityField> fields = new List<SqfEntityField>();
@@ -68,7 +69,8 @@ There are 5 files in the project
      ...
     Clipboard.setData(ClipboardData(text: modelString)).then((_) {
       print(
-          "SQFENTITIY: ${table.modelName} Model was successfully created. Create ${table.modelName}.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
+          "SQFENTITIY: ${table.modelName} Model was successfully created. 
+          Create ${table.modelName}.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
     });
     return modelString;
     }
