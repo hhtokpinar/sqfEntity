@@ -82,9 +82,40 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
        initializeDB(VoidCallback callBack(bool result)) {
           ...
        }
-    result=true that meaning database is ready
+    
+ If result true, the database is ready to use
 
 ## That's Great! now we can use our created new model named "Product"
+
+### See sample usage of sqf below
+
+      To run this statement "SELECT * FROM PRODUCTS"
+      Try below: 
+      
+      Product().Select().toList((productList){
+         for(product in productList)
+         {
+            print(product.toMap());
+         } 
+       });
+       
+      To run this statement "SELECT * FROM PRODUCTS WHERE id=5"
+      There are two way for this statement 
+    
+      The First is:
+      Product().getById(5, (product) {
+            print(product.toMap());
+       });
+      
+      Second one is:
+      Product().Select().id.equals(5).toSingle( (product) {
+            print(product.toMap());
+       });
+       
+       
+       
+       
+
 ### See the following examples in main.dart for sample model use
 
       // SELECT AND ORDER PRODUCTS BY FIELDS
