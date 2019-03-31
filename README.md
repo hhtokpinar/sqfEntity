@@ -22,7 +22,7 @@ There are 5 files in the project
     class SqfEntityDbModel {
   
     // declare your sqlite database name
-    static const String databaseName = "sampledatabase5.db";
+    static const String databaseName = "sample.db";
 
     // 1. define your tables as shown in the example Method below
     static SqfEntityTable get tableProduct {
