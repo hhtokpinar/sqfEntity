@@ -112,6 +112,65 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
       Product().Select().id.equals(5).toSingle( (product) {
             print(product.toMap());
        });
+    
+    
+ ## SELECT FIELDS, ORDER BY, GROUP BY, DISTINCT AND AGGREGATE FUNCTIONS EXAMPLES:
+    
+    EXAMPLE 1.2: ORDER BY FIELDS ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id 
+            -> Product().select().orderBy("name").orderByDesc("price").orderBy("id").toList()
+
+    EXAMPLE 1.3: SELECT SPECIFIC FIELDS ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC 
+            -> Product().select(columnsToSelect: ["name","price"]).orderByDesc("price").toList()
+
+    EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 
+    ->  Product().select().isActive.equals(true).toList()
+
+    EXAMPLE 1.5: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) 
+            -> Product().select().id.inValues([3,6,9]).toList()
+
+    EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') 
+            -> Product().select().price.greaterThan(10000).and.startBlock.description.contains("256").or.description.startsWith("512").endBlock.toSingle((product){ // TO DO })
+  
+    EXAMPLE 1.7: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') 
+            -> Product().select(columnsToSelect:["name","price"]).price.lessThanOrEquals(10000).and.startBlock.description.contains("128").or.description.endsWith("GB").endBlock.toList();
+  
+    EXAMPLE 1.8: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 
+            -> Product().select().id.not.equals(11).toList();
+ 
+    EXAMPLE 1.10: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 
+            -> Product().select().price.between(8000,14000).orderBy("price").toList();
+   
+    EXAMPLE 1.11: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 
+            -> Product().select().id.not.greaterThan(5).toList();
+    
+    EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 
+            -> Product().select().where("id IN (3,6,9) OR price>8000").toList()
+    
+    EXAMPLE 1.13: EXAMPLE 1.13: Select products with deleted items
+            -> Product().select(getIsDeleted: true).toList()
+    
+    EXAMPLE 1.14: Select products only deleted items 
+            -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()
+    
+    EXAMPLE LIMITATION SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
+            -> Product().select().orderByDesc("price").top(3).toList()
+  
+    EXAMPLE: PAGING: PRODUCTS in 3. page (5 items per page) 
+            -> Product().select().page(3,5).toList()
+    
+    EXAMPLE: DISTINCT: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
+            -> Product().distinct(columnsToSelect:["name").price.greaterThan(3000).toList();
+    
+    EXMAPLE: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS
+    SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum("sumPrice") FROM PRODUCTS GROUP BY name 
+    -> Product().select(
+        columnsToSelect: [ProductFields.name.toString(), 
+                          ProductFields.id.count("Count"),
+                          ProductFields.price.min("minPrice"), 
+                          ProductFields.price.max("maxPrice"), 
+                          ProductFields.price.avg("avgPrice"))
+                          .groupBy(ProductFields.name.toString())
+                          .toListObject()
        
        
 These were just a few samples. You can download and review dozens of examples written below      
