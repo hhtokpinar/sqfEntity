@@ -3,6 +3,7 @@ SqfEntity lets you build and execute SQL commands easily and quickly with the he
 
 Leave the job to SqfEntitiy for CRUD operations. Do easyly and faster adding tables, adding columns, defining multiple tables, etc. with the help of DbModel object
 
+Open downloaded folder named sqflite-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
 ## Getting Started
 
@@ -16,7 +17,7 @@ There are 5 files in the project
 6. LICENSE.txt                : see this file for License Terms
 
 
-main.dart includes a lot of samples that you need
+### main.dart includes a lot of samples that you need
 
   // To get the your class or model from the clipboard, run it separately for each model
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
@@ -25,13 +26,7 @@ main.dart includes a lot of samples that you need
 
 
 
-
-
-
-
-
-
-Running the main.dart should show the following result:
+## Running the main.dart should show the following result:
 flutter: SQFENTITIY: Product Model was successfully created. Create Product.dart file in your project and press Ctrl+V to paste the model from the Clipboard
 flutter: SQFENTITIY: Table named 'product' was initialized successfuly (created new table)
 flutter: SQFENTITIY: The database is ready for use
