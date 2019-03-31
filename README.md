@@ -17,6 +17,89 @@ There are 5 files in the project
 6. LICENSE.txt                : see this file for License Terms
 
 
+# to Create a new Database Model
+class SqfEntityDbModel {
+  
+  // declare your sqlite database name
+  static const String databaseName = "sampledatabase5.db";
+
+  // 1. define your tables as shown in the example Method below
+  static SqfEntityTable get tableProduct {
+    // declare properties of EntityTable
+
+    String tableName = "product";
+    String primaryKeyName = "id";
+    bool useSoftDeleting = true;
+    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
+
+    // declare EntityFields List for EntityTable
+    List<SqfEntityField> fields = new List<SqfEntityField>();
+
+    // Please add your table fields instead of following dummy fields..
+    fields.add(SqfEntityField("name", DbType.text));
+    fields.add(SqfEntityField("description", DbType.text));
+    fields.add(SqfEntityField("price", DbType.real, defaultValue: "0"));
+    fields.add(SqfEntityField("isActive", DbType.bool, defaultValue: "true"));
+
+    // declare EntityTable
+    SqfEntityTable table =
+        new SqfEntityTable(tableName, primaryKeyName, fields, useSoftDeleting);
+    return table;
+  }
+
+  // 2. Add the object you defined above to your list of database tables
+  static List<SqfEntityTable> get _databaseTables {
+    var _dbTables = new List<SqfEntityTable>();
+    _dbTables.add(tableProduct);
+    //_databaseTables.add(table2());
+    // ...
+    // ADD YOUR DECLARETED SqfEntityTable HERE
+    return _dbTables;
+  }
+
+  // ATTENTION
+  // Defining the table here provides automatic processing for database configuration only.
+  // Use the following function to create your model and use it in your project
+
+  // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
+  // to call this method use SqfEntityDbModel.createSqfEntityModel
+  static String createSqfEntityModel(SqfEntityTable table) {
+  ...
+    Clipboard.setData(ClipboardData(text: modelString)).then((_) {
+      print(
+          "SQFENTITIY: ${table.modelName} Model was successfully created. Create ${table.modelName}.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
+    });
+    return modelString;
+  }
+
+
+// Database initializer async method
+  initializeDB(VoidCallback callBack(bool result)) {
+  ...
+    }
+}
+
+## That's Great! now we can use our created new model named "Product"
+### See the following examples in main.dart for sample model use
+
+      // SELECT AND ORDER PRODUCTS BY FIELDS
+      samples1();
+
+      // FILTERS: SOME FILTERS ON PRODUCTS
+      samples2();
+
+      // LIMITATIONS: PAGING, TOP X ROW
+      samples3();
+
+      // DISTINCT, GROUP BY with SQL AGGREGATE FUNCTIONS,
+      samples4();
+
+      // UPDATE BATCH, UPDATE OBJECT
+      samples5();
+
+      // DELETE BATCH, DELETE OBJECT
+      samples6();
+
 ### main.dart includes a lot of samples that you need
 
   // To get the your class or model from the clipboard, run it separately for each model
