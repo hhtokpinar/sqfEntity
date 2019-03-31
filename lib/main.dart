@@ -233,10 +233,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE
+// EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
   Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
-        "EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
+        "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
