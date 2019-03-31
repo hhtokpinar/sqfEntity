@@ -83,21 +83,22 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
           ...
        }
     
- If result true, the database is ready to use
+ If result is **true**, the database is ready to use
 
 ## That's Great! now we can use our created new model named "Product"
 
 ### See sample usage of sqf below
 
-      To run this statement "SELECT * FROM PRODUCTS"
+
+      To run this statement **"SELECT * FROM PRODUCTS"**
       Try below: 
       
-      `Product().Select().toList((productList){
+      **Product().Select().toList((productList)**{
          for(product in productList)
          {
             print(product.toMap());
          } 
-       });`
+       });
        
       To run this statement "SELECT * FROM PRODUCTS WHERE id=5"
       There are two way for this statement 
