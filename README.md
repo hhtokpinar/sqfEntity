@@ -1,7 +1,7 @@
 # sqfEntity
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
-Leave the job to SqfEntitiy for CRUD operations. Do easyly and faster adding tables, adding columns, defining multiple tables, etc. with the help of DbModel object
+Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, etc. with the help of DbModel object
 
 Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
