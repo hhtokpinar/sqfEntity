@@ -90,10 +90,10 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
 ### See sample usage of sqf below
 
 
-      To run this statement **"SELECT * FROM PRODUCTS"**
+      To run this statement "SELECT * FROM PRODUCTS"
       Try below: 
       
-      **Product().Select().toList((productList)**{
+      Product().Select().toList((productList){
          for(product in productList)
          {
             print(product.toMap());
@@ -141,7 +141,7 @@ These were just a few samples. You can download and review dozens of examples wr
 
   // To get the your class or model from the clipboard, run it separately for each model
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  String sqfEntityModelString = SqfEntityDbModel.createSqfEntityModel(SqfEntityDbModel.tableProduct);
+  `String sqfEntityModelString = SqfEntityDbModel.createSqfEntityModel(SqfEntityDbModel.tableProduct);`
   // just press Ctrl+V to paste your model in your .dart file and reference it where to use
 
 
