@@ -114,13 +114,15 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
        });
     
     
- ## SELECT FIELDS, ORDER BY, GROUP BY, DISTINCT AND AGGREGATE FUNCTIONS EXAMPLES:
+ ## SELECT FIELDS, ORDER BY EXAMPLES
     
     EXAMPLE 1.2: ORDER BY FIELDS ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id 
             -> Product().select().orderBy("name").orderByDesc("price").orderBy("id").toList()
 
     EXAMPLE 1.3: SELECT SPECIFIC FIELDS ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC 
             -> Product().select(columnsToSelect: ["name","price"]).orderByDesc("price").toList()
+            
+  ## SELECT AND FILTER EXAMPLES:           
 
     EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 
     ->  Product().select().isActive.equals(true).toList()
@@ -143,24 +145,34 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
     EXAMPLE 1.11: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 
             -> Product().select().id.not.greaterThan(5).toList();
     
-    EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 
+ ## WRITE CUSTOM SQL FILTER   
+    
+    EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 
             -> Product().select().where("id IN (3,6,9) OR price>8000").toList()
+
+## SELECT WITH DELETED ITEMS (SOFT DELETE WHEN USED)
     
     EXAMPLE 1.13: EXAMPLE 1.13: Select products with deleted items
             -> Product().select(getIsDeleted: true).toList()
     
     EXAMPLE 1.14: Select products only deleted items 
             -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()
-    
+   
+## LIMITATION, PAGING
+
     EXAMPLE LIMITATION SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
             -> Product().select().orderByDesc("price").top(3).toList()
   
     EXAMPLE: PAGING: PRODUCTS in 3. page (5 items per page) 
             -> Product().select().page(3,5).toList()
     
+    
+ ## DISTINCT   
     EXAMPLE: DISTINCT: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
             -> Product().distinct(columnsToSelect:["name").price.greaterThan(3000).toList();
-    
+   
+## GROUP BY
+
     EXMAPLE: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS
     SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum("sumPrice") FROM PRODUCTS GROUP BY name 
     -> Product().select(
@@ -173,7 +185,7 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
                           .toListObject()
        
        
-These were just a few samples. You can download and review dozens of examples written below      
+**These were just a few samples. You can download and review dozens of examples written below**      
        
 
 ### See the following examples in main.dart for sample model use
