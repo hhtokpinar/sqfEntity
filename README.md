@@ -92,12 +92,12 @@ If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
       To run this statement "SELECT * FROM PRODUCTS"
       Try below: 
       
-      Product().Select().toList((productList){
+      `Product().Select().toList((productList){
          for(product in productList)
          {
             print(product.toMap());
          } 
-       });
+       });`
        
       To run this statement "SELECT * FROM PRODUCTS WHERE id=5"
       There are two way for this statement 
