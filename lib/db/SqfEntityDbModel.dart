@@ -990,11 +990,8 @@ class SqfEntityField {
   String fieldName;
   DbType dbType;
   String _dbType;
-  String _dartType;
   String defaultValue;
-  SqfEntityField(this.fieldName, this.dbType, {this.defaultValue}) {
-    _dartType = dartType[dbType.index];
-  }
+  SqfEntityField(this.fieldName, this.dbType, {this.defaultValue});
   String toSqLiteFieldString() {
     switch (dbType) {
       case DbType.bool:
