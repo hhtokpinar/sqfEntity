@@ -1,5 +1,5 @@
 # sqfEntity
-SqfEntity lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
+SqfEntity based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
 Leave the job to SqfEntitiy for CRUD operations. Do easyly and faster adding tables, adding columns, defining multiple tables, etc. with the help of DbModel object
 
