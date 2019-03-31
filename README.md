@@ -76,10 +76,13 @@ There are 5 files in the project
     }
 
 ### Database initializer async method
-    initializeDB(VoidCallback callBack(bool result)) {
-     ...
-      }
-    }
+When the software/app is started, you must check the database was it initialized.
+If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
+
+       initializeDB(VoidCallback callBack(bool result)) {
+          ...
+       }
+    result=true that meaning database is ready
 
 ## That's Great! now we can use our created new model named "Product"
 ### See the following examples in main.dart for sample model use
