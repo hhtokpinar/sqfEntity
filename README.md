@@ -64,7 +64,7 @@ There are 5 files in the project
     }
 
   ## ATTENTION
-   Defining the table here provides automatic processing for database configuration only.
+   Defining the tables here provides automatic processing for database configuration only.
    Use the following function to create your model and use it in your project
 
     // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
