@@ -52,13 +52,15 @@ There are 5 files in the project
 ### 2. Add the object you defined above to your list of database tables
 
     static List<SqfEntityTable> get _databaseTables {
+    
      var _dbTables = new List<SqfEntityTable>();
      _dbTables.add(tableProduct);
       //_databaseTables.add(tableCategories());
       //_databaseTables.add(tablePerson());
-      // ... etc
+      // ... 
       // YOU CAN ADD AS MANY TABLES (SqfEntityTable) HERE
       return _dbTables;
+      
     }
 
   ## ATTENTION
