@@ -260,18 +260,9 @@ void samples2() {
   descriptionContains = "SSD"; 
 
   Product()
-      .select()
-      .price
-      .between(minPrice, maxPrice)
-      .and
-      .name
-      .contains(nameContains)
-      .and
-      .description
-      .contains(descriptionContains)
-      .toList((productList) {
+      .select().price.between(minPrice, maxPrice).and.name.contains(nameContains).and.description.contains(descriptionContains).toList((productList) {
     print(
-        "EXAMPLE 1.13: Product().select()...Build filter and query from values from the form....toList()");
+        "EXAMPLE 1.13: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\"$nameContains\").and.description.contains(\"$descriptionContains\").toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
