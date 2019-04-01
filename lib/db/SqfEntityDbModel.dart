@@ -85,10 +85,10 @@ class SqfEntityDbModel {
     return modelString;
   }
 
-  initializeDB(VoidCallback callBack(bool result)) {
+  initializeDB(VoidCallback isReady(bool result)) {
     var dbTables = _databaseTables.where((i) => !i.initialized).toList();
     if (dbTables.length == 0)
-      callBack(true);
+      isReady(true);
     else {
       //List<String> updateQueryList = new List<String>();
       for (SqfEntityTable table in dbTables) {
@@ -118,14 +118,14 @@ class SqfEntityDbModel {
                 if (result) {
                   print(
                       "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly (Added new columns)");
-                  if (checkForIsReadyDatabase(dbTables)) callBack(true);
+                  if (checkForIsReadyDatabase(dbTables)) isReady(true);
                 }
               });
             } else {
               table.initialized = true;
               print(
                   "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly (No added new columns)");
-              if (checkForIsReadyDatabase(dbTables)) callBack(true);
+              if (checkForIsReadyDatabase(dbTables)) isReady(true);
             }
             //initializeDB(dbTables, (callBack) {});
           } else {
@@ -134,7 +134,7 @@ class SqfEntityDbModel {
             SqfEntityProvider().execSQL(table.createTableSQL).then((_) {
               print(
                   "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly with create new table'");
-              if (checkForIsReadyDatabase(dbTables)) callBack(true);
+              if (checkForIsReadyDatabase(dbTables)) isReady(true);
             });
           }
         });
