@@ -4,6 +4,8 @@ import 'package:sqfentity/models/Product.dart';
 import 'package:sqfentity/db/SqfEntityDbModel.dart';
 
 void main(List<String> args) {
+ 
+
   // 1- creates a simple  Model named product and sets the clipboard for paste into your product.dart file
   createSqfEntityModelString();
 
@@ -231,16 +233,18 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE
+// EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
   Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
-        "EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
+        "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
     print("---------------------------------------------------------------");
   });
+
+
 
   // EXAMPLE 1.13: Build filter and query from values from the form
   // assume that the values come from the form by defining several variables:
@@ -249,7 +253,7 @@ void samples2() {
   String nameContains;
   String descriptionContains;
 
-// setting values 
+  // setting values 
   minPrice = 8000; // if minPrice is null then -> The between method runs LessThanOrEquals Method
   maxPrice = 10000; // if maxPrice is null then -> The between method runs GreaterThanOrEquals Method
   nameContains = "13"; // if all of the values any method's is null then -> this method will be extracted
@@ -273,11 +277,13 @@ void samples2() {
       print(prod.toMap());
     }
   });
+  
+
 
   // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
   Product().select(getIsDeleted: true).toList((productList) {
     print(
-        "EXAMPLE 1.13: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
+        "EXAMPLE 1.14: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
     print("${productList.length} matches found:");
 
     for (var prod in productList) {
@@ -286,25 +292,23 @@ void samples2() {
   });
 
   // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
-  Product()
-      .select(getIsDeleted: true)
-      .isDeleted
-      .equals(true)
-      .toList((productList) {
-    print(
-        "EXAMPLE 1.14: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
+  Product().select(getIsDeleted: true).isDeleted.equals(true).toList((productList) {
+     print(
+        "EXAMPLE 1.15: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
     }
   });
+
+
 }
 
 void samples3() {
 // EXAMPLE 3.1: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC
   Product().select().orderByDesc("price").top(3).toList((productList) {
     print(
-        "LIMITATION ex: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC \n -> Product().select().orderByDesc(\"price\").top(3).toList()");
+        "EXAMPLE 3.1: LIMITATION ex: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC \n -> Product().select().orderByDesc(\"price\").top(3).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -315,7 +319,7 @@ void samples3() {
   // EXAMPLE 3.2: SAMPLE PAGING -> PRODUCTS in 3. page (5 items per page)
   Product().select().page(3, 5).toList((productList) {
     print(
-        "SAMPLE PAGING ex: PRODUCTS in 3. page (5 items per page) \n -> Product().select().page(3,5).toList()");
+        "EXAMPLE 3.2: SAMPLE PAGING ex: PRODUCTS in 3. page (5 items per page) \n -> Product().select().page(3,5).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -332,7 +336,7 @@ void samples4() {
       .greaterThan(3000)
       .toList((productList) {
         print(
-            "DISTINCT ex: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 \n -> Product().distinct(columnsToSelect:[\"name\").price.greaterThan(3000).toList();");
+            "EXAMPLE 4.1: DISTINCT ex: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 \n -> Product().distinct(columnsToSelect:[\"name\").price.greaterThan(3000).toList();");
         print("${productList.length} matches found:");
         for (int i = 0; i < productList.length; i++) {
           print(productList[i].toMap());
@@ -355,7 +359,7 @@ void samples4() {
           .toString() /*also you can use this .groupBy("name")*/)
       .toListObject((objectList) {
         print(
-            "GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS ex: SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum(\"sumPrice\") FROM PRODUCTS GROUP BY name \n-> Product().select(columnsToSelect: [ProductFields.name.toString(), ProductFields.id.count(\"Count\"), ProductFields.price.min(\"minPrice\"), ProductFields.price.max(\"maxPrice\"), ProductFields.price.avg(\"avgPrice\")).groupBy(ProductFields.name.toString()).toListObject()");
+            "EXAMPLE 4.2: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS ex: SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum(\"sumPrice\") FROM PRODUCTS GROUP BY name \n-> Product().select(columnsToSelect: [ProductFields.name.toString(), ProductFields.id.count(\"Count\"), ProductFields.price.min(\"minPrice\"), ProductFields.price.max(\"maxPrice\"), ProductFields.price.avg(\"avgPrice\")).groupBy(ProductFields.name.toString()).toListObject()");
         print("${objectList.length} matches found:");
         for (int i = 0; i < objectList.length; i++) {
           print(objectList[i].toString());
@@ -452,8 +456,7 @@ void addSomeProducts(VoidCallback isReady(bool ready)) {
       addProducts((ready) {
         if (ready) isReady(true);
       });
-    else
-      isReady(true);
+      else isReady(true);
   });
 }
 
