@@ -448,11 +448,15 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     flutter: ---------------------------------------------------------------
     flutter:
     flutter:
-    flutter: EXAMPLE 1.13: Product().select()...Build filter and query from values from the form....toList()
-    flutter: 0 matches found:
+    I/flutter (14509): EXAMPLE 1.13: Product().select().price.between(8000,10000).and.name.contains(13).and.description.contains(SSD)
+    .toList()
+    I/flutter (14509): 3 matches found:
+    I/flutter (14509): {id: 4, name: Notebook 13", description: 128 GB SSD, price: 8500.0, isActive: true, isDeleted: false}
+    I/flutter (14509): {id: 5, name: Notebook 13", description: 256 GB SSD, price: 9900.0, isActive: true, isDeleted: false}
+    I/flutter (14509): {id: 10, name: Ultrabook 13", description: 128 GB SSD i5, price: 9954.0, isActive: true, isDeleted: false}
     flutter:
     flutter:
-    flutter: EXAMPLE 1.13: EXAMPLE 1.13: Select products with deleted items
+    flutter: EXAMPLE 1.14: EXAMPLE 1.13: Select products with deleted items
             -> Product().select(getIsDeleted: true).toList()
     flutter: 20 matches found:
     flutter: {id: 1, name: Notebook 12", description: 128 GB SSD i7, price: 6899.0, isActive: true, isDeleted: false}
@@ -477,12 +481,12 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     flutter: {id: 20, name: Product 5, description: , price: 0.0, isActive: true, isDeleted: false}
     flutter:
     flutter:
-    flutter: EXAMPLE 1.14: Select products only deleted items 
+    flutter: EXAMPLE 1.15: Select products only deleted items 
             -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()
     flutter: 0 matches found:
     flutter:
     flutter:
-    flutter: LIMITATION ex: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
+    flutter: EXAMPLE 3.1: LIMITATION ex: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
             -> Product().select().orderByDesc("price").top(3).toList()
     flutter: 3 matches found:
     flutter: {id: 15, name: Ultrabook 15", description: 512 GB SSD i7, price: 14000.0, isActive: true, isDeleted: false}
@@ -491,7 +495,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     flutter: ---------------------------------------------------------------
     flutter:
     flutter:
-    flutter: SAMPLE PAGING ex: PRODUCTS in 3. page (5 items per page) 
+    flutter: EXAMPLE 3.2: SAMPLE PAGING ex: PRODUCTS in 3. page (5 items per page) 
             -> Product().select().page(3,5).toList()
     flutter: 5 matches found:
     flutter: {id: 11, name: Ultrabook 13", description: 256 GB SSD i5, price: 11154.0, isActive: true, isDeleted: false}
@@ -502,7 +506,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     flutter: ---------------------------------------------------------------
     flutter:
     flutter:
-    flutter: DISTINCT ex: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
+    flutter: EXAMPLE 4.1: DISTINCT ex: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
             -> Product().distinct(columnsToSelect:["name").price.greaterThan(3000).toList();
     flutter: 5 matches found:
     flutter: {name: Notebook 12"}
@@ -512,7 +516,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     flutter: {name: Ultrabook 15"}
     flutter:
     flutter:
-    flutter: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS ex: SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum("sumPrice") FROM PRODUCTS GROUP BY name 
+    flutter: EXAMPLE 4.2: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS ex: SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum("sumPrice") FROM PRODUCTS GROUP BY name 
             -> Product().select(columnsToSelect: [ProductFields.name.toString(), ProductFields.id.count("Count"), ProductFields.price.min("minPrice"), ProductFields.price.max("maxPrice"), ProductFields.price.avg("avgPrice")).groupBy(ProductFields.name.toString()).toListObject()
     flutter: 10 matches found:
     flutter: {name: Notebook 12", Count: 3, minPrice: 6899.0, maxPrice: 9214.0, avgPrice: 8119.0, sumPrice: 24357.0}
