@@ -83,7 +83,7 @@ There are 5 files in the project
 When the software/app is started, you must check the database was it initialized.
 If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
 
-       initializeDB(VoidCallback callBack(bool result)) {
+       initializeDB(VoidCallback isReady(bool result)) {
           ...
        }
     
