@@ -4,8 +4,6 @@ import 'package:sqfentity/models/Product.dart';
 import 'package:sqfentity/db/SqfEntityDbModel.dart';
 
 void main(List<String> args) {
- 
-
   // 1- creates a simple  Model named product and sets the clipboard for paste into your product.dart file
   createSqfEntityModelString();
 
@@ -233,10 +231,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
+// EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE
   Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
-        "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
+        "EXAMPLE 1.12: WRITING CUSTOM QUERY IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -244,20 +242,37 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-
-
   // EXAMPLE 1.13: Build filter and query from values from the form
+  // assume that the values come from the form by defining several variables:
+  int minPrice;
+  int maxPrice;
+  String nameContains;
+  String descriptionContains;
 
-  Product().select(getIsDeleted: true).isDeleted.equals(true).toList((productList) {
-     print(
+// setting values 
+  minPrice = 8000; // if minPrice is null then -> The between method runs LessThanOrEquals Method
+  maxPrice = 10000; // if maxPrice is null then -> The between method runs GreaterThanOrEquals Method
+  nameContains = "13"; // if all of the values any method's is null then -> this method will be extracted
+  descriptionContains = "SSD"; 
+
+  Product()
+      .select()
+      .price
+      .between(minPrice, maxPrice)
+      .and
+      .name
+      .contains(nameContains)
+      .and
+      .description
+      .contains(descriptionContains)
+      .toList((productList) {
+    print(
         "EXAMPLE 1.13: Product().select()...Build filter and query from values from the form....toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
     }
   });
-  
-
 
   // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
   Product().select(getIsDeleted: true).toList((productList) {
@@ -271,16 +286,18 @@ void samples2() {
   });
 
   // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
-  Product().select(getIsDeleted: true).isDeleted.equals(true).toList((productList) {
-     print(
+  Product()
+      .select(getIsDeleted: true)
+      .isDeleted
+      .equals(true)
+      .toList((productList) {
+    print(
         "EXAMPLE 1.14: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
     }
   });
-
-
 }
 
 void samples3() {
@@ -435,7 +452,8 @@ void addSomeProducts(VoidCallback isReady(bool ready)) {
       addProducts((ready) {
         if (ready) isReady(true);
       });
-      else isReady(true);
+    else
+      isReady(true);
   });
 }
 
