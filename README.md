@@ -228,10 +228,12 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
 
 ### main.dart includes a lot of samples that you need
 
-  // To get the your class or model from the clipboard, run it separately for each model
-  // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  `String sqfEntityModelString = SqfEntityDbContext.createModel(MyDbModel.databaseTables);`
-  // just press Ctrl+V to paste your model in your .dart file and reference it where to use
+  To get the your classes/models from the clipboard, just type 
+  
+    SqfEntityDbContext.createModel(MyDbModel.databaseTables); 
+    
+  This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
+  That's all.. Just press Ctrl+V to paste your model in your .dart file and reference it where you wish to use
 
 
 
