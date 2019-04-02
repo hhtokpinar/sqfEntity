@@ -10,13 +10,13 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 This project is a starting point for a Flutter application.
 There are 7 files in the project
 
-1. **main.dart**                 : Startup file contains sample methods for using sqfEntity
-2. **db/SqfEntityBase.dart**     : includes Database Provider, helper classes, enums.. etc 
-3. **db/ SqfEntityDbContext.dart**   : to declare your database model and get created model class from clipboard in runtime
-4. **db/ MyDbModel.dart**            : to declare your database model and get created model class from clipboard in runtime
-5. **models/Product.dart**           : Sample created model for examples
-6. **app.dart**                      : Sample App for display created model. (will be updated later.)
-7. **LICENSE.txt**                   : see this file for License Terms
+    1. main.dart                    : Startup file contains sample methods for using sqfEntity
+    2. db / SqfEntityBase.dart      : includes Database Provider, helper classes, enums.. etc 
+    3. db / SqfEntityDbContext.dart : to declare your database model and get created model class from clipboard in runtime
+    4. db / MyDbModel.dart          : to declare your database model and get created model class from clipboard in runtime
+    5. models/Product.dart          : Sample created model for examples
+    6. app.dart                     : Sample App for display created model. (will be updated later.)
+    7. LICENSE.txt                  : see this file for License Terms
 
 
 ### dependencies:
