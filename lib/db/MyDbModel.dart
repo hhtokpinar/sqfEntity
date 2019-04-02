@@ -4,7 +4,7 @@ import 'package:sqfentity/db/SqfEntityDbContext.dart';
 
 class MyDbModel {
 
-  // STEPS CREATE FOR YOUR DB CONTEXT
+  // STEPS FOR CREATE YOUR DB CONTEXT
 
   // 1. declare your sqlite database name
   static const String databaseName = "sample.db";
