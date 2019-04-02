@@ -1,7 +1,7 @@
 # sqfEntity ORM for Flutter & SQFLite
 SqfEntity is based on SQFlite plugin (https://github.com/tekartik/sqflite) and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
-Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, etc. with the help of DbModel object
+Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, etc. with the help of SqfEntityDbContext class
 
 Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
@@ -82,7 +82,7 @@ There are 7 files in the project
    Use the following function to create your model and use it in your project
 
     // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-    // to call this method use SqfEntityDbModel.createSqfEntityModel
+    // to call this method just type: SqfEntityDbContext.createModel(MyDbModel.databaseTables);
     static String createModel(List<SqfEntityTable> table) {
      ...
     Clipboard.setData(ClipboardData(text: modelString)).then((_) {
@@ -230,7 +230,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
 
   // To get the your class or model from the clipboard, run it separately for each model
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  `String sqfEntityModelString = SqfEntityDbModel.createSqfEntityModel(SqfEntityDbModel.tableProduct);`
+  `String sqfEntityModelString = SqfEntityDbContext.createModel(MyDbModel.databaseTables);`
   // just press Ctrl+V to paste your model in your .dart file and reference it where to use
 
 
