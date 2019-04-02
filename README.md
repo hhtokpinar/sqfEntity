@@ -139,56 +139,62 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
             
   ## SELECT AND FILTER EXAMPLES:           
 
-    EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 
+    EXAMPLE 2.1: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 
     ->  Product().select().isActive.equals(true).toList()
 
-    EXAMPLE 1.5: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) 
+    EXAMPLE 2.2: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) 
             -> Product().select().id.inValues([3,6,9]).toList()
 
-    EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') 
+    EXAMPLE 2.3: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') 
             -> Product().select().price.greaterThan(10000).and.startBlock.description.contains("256").or.description.startsWith("512").endBlock.toSingle((product){ // TO DO })
   
-    EXAMPLE 1.7: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') 
+    EXAMPLE 2.4: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') 
             -> Product().select(columnsToSelect:["name","price"]).price.lessThanOrEquals(10000).and.startBlock.description.contains("128").or.description.endsWith("GB").endBlock.toList();
   
-    EXAMPLE 1.8: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 
+    EXAMPLE 2.5: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 
             -> Product().select().id.not.equals(11).toList();
+            
+    EXAMPLE 2.6: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 
+            -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();        
  
-    EXAMPLE 1.10: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 
+    EXAMPLE 2.7: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 
             -> Product().select().price.between(8000,14000).orderBy("price").toList();
    
-    EXAMPLE 1.11: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 
+    EXAMPLE 2.8: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 
             -> Product().select().id.not.greaterThan(5).toList();
     
  ## WRITE CUSTOM SQL FILTER   
     
-    EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 
+    EXAMPLE 2.9: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 
             -> Product().select().where("id IN (3,6,9) OR price>8000").toList()
+    
+    EXAMPLE 2.10: Build filter and query from values from the form
+     -> Product().select().price.between(minPrice, maxPrice).and.name.contains(nameFilter).and.description.contains(descFilter).toList()
 
 ## SELECT WITH DELETED ITEMS (SOFT DELETE WHEN USED)
     
-    EXAMPLE 1.13: EXAMPLE 1.13: Select products with deleted items
+    EXAMPLE 2.11: EXAMPLE 1.13: Select products with deleted items
             -> Product().select(getIsDeleted: true).toList()
     
-    EXAMPLE 1.14: Select products only deleted items 
+    EXAMPLE 2.12: Select products only deleted items 
             -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()
    
 ## LIMITATION, PAGING
 
-    EXAMPLE LIMITATION SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
+    EXAMPLE 3.1: LIMITATION SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC 
             -> Product().select().orderByDesc("price").top(3).toList()
   
-    EXAMPLE: PAGING: PRODUCTS in 3. page (5 items per page) 
+    EXAMPLE 3.2: PAGING: PRODUCTS in 3. page (5 items per page) 
             -> Product().select().page(3,5).toList()
     
     
  ## DISTINCT   
-    EXAMPLE: DISTINCT: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
+    EXAMPLE 4.1: DISTINCT: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
             -> Product().distinct(columnsToSelect:["name").price.greaterThan(3000).toList();
    
 ## GROUP BY
 
-    EXMAPLE: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS
+    EXAMPLE 4.2: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS
     SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum("sumPrice") FROM PRODUCTS GROUP BY name 
     -> Product().select(
         columnsToSelect: [ProductFields.name.toString(), 
