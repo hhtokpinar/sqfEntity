@@ -81,18 +81,15 @@ There are 7 files in the project
    **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
    Use the following function to create your model and use it in your project
 
-    // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-    // to call this method just type: SqfEntityDbContext.createModel(MyDbModel.databaseTables);
-    static String createModel(List<SqfEntityTable> table) {
-     ...
-    Clipboard.setData(ClipboardData(text: modelString)).then((_) {
-      print(
-          "SQFENTITIY: ${table.modelName} Model was successfully created. 
-          Create ${table.modelName}.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
-    });
-    return modelString;
-    }
+  To get the your classes/models from the clipboard, just type 
+  
+    SqfEntityDbContext.createModel(MyDbModel.databaseTables); 
+    
+  This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
+  That's all.. Just press Ctrl+V to paste your model in your .dart file and reference it where you wish to use.
 
+
+  
 ### Database initializer async method
 When the software/app is started, you must check the database was it initialized.
 If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
@@ -228,16 +225,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
 
 ### main.dart includes a lot of samples that you need
 
-  To get the your classes/models from the clipboard, just type 
-  
-    SqfEntityDbContext.createModel(MyDbModel.databaseTables); 
-    
-  This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  That's all.. Just press Ctrl+V to paste your model in your .dart file and reference it where you wish to use
-
-
-
-## Running the main.dart should show the following result:
+### Running the main.dart should show the following result:
     
     flutter: SQFENTITIY: Product Model was successfully created. Create Product.dart file in your project and press Ctrl+V to paste the model from the Clipboard
     flutter: SQFENTITIY: Table named 'product' was initialized successfuly with create new table'
