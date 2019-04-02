@@ -53,7 +53,7 @@ void createSqfEntityModelString() {
   // To get the class from the clipboard, run it separately for each object
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
   String sqfEntityModelString =
-      SqfEntityDbModel.createSqfEntityModel(SqfEntityDbModel.tableProduct);
+      SqfEntityDbModel.createSqfEntityModel(SqfEntityDbModel.databaseTables);
 
   // also you can get Model String from TextField in App (on the Emulator only!)
   // Notice: Keyboard shortcuts are not working on the emulator.
