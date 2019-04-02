@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity/db/SqfEntityDbModel.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqfentity/db/MyDbModel.dart';
 
 class SqfEntityProvider {
   static final SqfEntityProvider _sqfEntityProvider =
@@ -28,7 +28,7 @@ class SqfEntityProvider {
 
   Future<Database> initializeDb() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + SqfEntityDbModel.databaseName;
+    String path = directory.path + MyDbModel.databaseName;
 
     var dbEtrade = await openDatabase(path, version: 1, onCreate: _createDb);
     return dbEtrade;
