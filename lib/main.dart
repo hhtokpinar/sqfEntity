@@ -105,10 +105,10 @@ void samples1() {
 }
 
 void samples2() {
-// EXAMPLE 1.4: SELECT * FROM PRODUCTS WHERE isActive=1
+// EXAMPLE 1.1: SELECT * FROM PRODUCTS WHERE isActive=1
   Product().select().isActive.equals(true).toList((productList) {
     print(
-        "EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 \n->  Product().select().isActive.equals(true).toList()");
+        "EXAMPLE 2.1: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 \n->  Product().select().isActive.equals(true).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -116,10 +116,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
+// EXAMPLE 2.2: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
   Product().select().id.inValues([3, 6, 9]).toList((productList) {
     print(
-        "EXAMPLE 1.5: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) \n -> Product().select().id.inValues([3,6,9]).toList()");
+        "EXAMPLE 2.2: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) \n -> Product().select().id.inValues([3,6,9]).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -128,7 +128,7 @@ void samples2() {
   });
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
-// EXAMPLE 1.6: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%')
+// EXAMPLE 2.3: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%')
   Product()
       .select()
       .price
@@ -143,13 +143,13 @@ void samples2() {
       .endBlock
       .toSingle((product) {
     print(
-        "EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
+        "EXAMPLE 2.3: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
     print("Toplam " + (product != null ? "1" : "0") + " sonuç listeleniyor:");
     if (product != null) print(product.toMap());
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
+// EXAMPLE 2.4: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
   Product()
       .select()
       .price
@@ -167,7 +167,7 @@ void samples2() {
       .endBlock
       .toList((productList) {
     print(
-        "EXAMPLE 1.7: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') \n -> Product().select(columnsToSelect:[\"name\",\"price\"]).price.lessThanOrEquals(10000).and.startBlock.description.contains(\"128\").or.description.endsWith(\"GB\").endBlock.toList();");
+        "EXAMPLE 2.4: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') \n -> Product().select(columnsToSelect:[\"name\",\"price\"]).price.lessThanOrEquals(10000).and.startBlock.description.contains(\"128\").or.description.endsWith(\"GB\").endBlock.toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -175,10 +175,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.8: NOT EQUALS
+// EXAMPLE 2.5: NOT EQUALS
   Product().select().id.not.equals(11).toList((productList) {
     print(
-        "EXAMPLE 1.8: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 \n -> Product().select().id.not.equals(11).toList();");
+        "EXAMPLE 2.5: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 \n -> Product().select().id.not.equals(11).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -186,7 +186,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
+// EXAMPLE 2.6: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
   Product()
       .select()
       .price
@@ -196,7 +196,7 @@ void samples2() {
       .lessThanOrEquals(13000)
       .toList((productList) {
     print(
-        "EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 \n -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();");
+        "EXAMPLE 2.6: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 \n -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -204,7 +204,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.10: BETWEEN KEYWORD
+// EXAMPLE 2.7: BETWEEN KEYWORD
   Product()
       .select()
       .price
@@ -212,7 +212,7 @@ void samples2() {
       .orderBy("price")
       .toList((productList) {
     print(
-        "EXAMPLE 1.10: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 \n -> Product().select().price.between(8000,14000).orderBy(\"price\").toList();");
+        "EXAMPLE 2.7: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 \n -> Product().select().price.between(8000,14000).orderBy(\"price\").toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -220,10 +220,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.11: 'NOT' KEYWORD
+// EXAMPLE 2.8: 'NOT' KEYWORD
   Product().select().id.not.greaterThan(5).toList((productList) {
     print(
-        "EXAMPLE 1.11: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 \n -> Product().select().id.not.greaterThan(5).toList();");
+        "EXAMPLE 2.8: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 \n -> Product().select().id.not.greaterThan(5).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -231,10 +231,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
+// EXAMPLE 2.9: WRITING CUSTOM FILTER IN WHERE CLAUSE
   Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
-        "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
+        "EXAMPLE 2.9: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -242,7 +242,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-  // EXAMPLE 1.13: Build filter and query from values from the form
+  // EXAMPLE 2.10: Build filter and query from values from the form
   // assume that the values come from the form by defining several variables:
   int minPrice;
   int maxPrice;
@@ -270,17 +270,17 @@ void samples2() {
       .contains(descriptionContains)
       .toList((productList) {
     print(
-        "EXAMPLE 1.13: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\"$nameContains\").and.description.contains(\"$descriptionContains\").toList()");
+        "EXAMPLE 2.10: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\"$nameContains\").and.description.contains(\"$descriptionContains\").toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
     }
   });
 
-  // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
+  // EXAMPLE 2.11: Select products with deleted items (only softdelete was activated on Model)
   Product().select(getIsDeleted: true).toList((productList) {
     print(
-        "EXAMPLE 1.14: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
+        "EXAMPLE 2.11: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
     print("${productList.length} matches found:");
 
     for (var prod in productList) {
@@ -288,14 +288,14 @@ void samples2() {
     }
   });
 
-  // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
+  // EXAMPLE 2.12: Select products only deleted items (only softdelete was activated on Model)
   Product()
       .select(getIsDeleted: true)
       .isDeleted
       .equals(true)
       .toList((productList) {
     print(
-        "EXAMPLE 1.15: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
+        "EXAMPLE 2.12: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
