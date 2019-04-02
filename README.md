@@ -14,7 +14,7 @@ There are 7 files in the project
     2. db / SqfEntityBase.dart      : includes Database Provider, helper classes, enums.. etc 
     3. db / SqfEntityDbContext.dart : to declare your database model and get created model class from clipboard in runtime
     4. db / MyDbModel.dart          : to declare your database model and get created model class from clipboard in runtime
-    5. models/Product.dart          : Sample created model for examples
+    5. models / Product.dart        : Sample created model for examples
     6. app.dart                     : Sample App for display created model. (will be updated later.)
     7. LICENSE.txt                  : see this file for License Terms
 
@@ -76,8 +76,9 @@ There are 7 files in the project
       
     }
 
-  ## ATTENTION
-   Defining the tables here provides automatic processing for database configuration only.
+### that's all.. one more step left for create models.dart file.
+  
+   **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
    Use the following function to create your model and use it in your project
 
     // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
