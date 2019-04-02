@@ -25,7 +25,8 @@ class SqfEntityDbModel {
   // declare your sqlite database name
   static const String databaseName = "sample.db";
 
-  // 1. define your tables as shown in the example Method below
+  // 1. define your tables as shown in the example Method below. 
+  /// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
   static SqfEntityTable get tableProduct {
     // declare properties of EntityTable
 
@@ -49,8 +50,10 @@ class SqfEntityDbModel {
     return table;
   }
 
+  
+
   // 2. Add the object you defined above to your list of database tables
-  static List<SqfEntityTable> get _databaseTables {
+  static List<SqfEntityTable> get databaseTables {
     var _dbTables = new List<SqfEntityTable>();
     _dbTables.add(tableProduct);
     //_databaseTables.add(table2());
@@ -65,28 +68,32 @@ class SqfEntityDbModel {
 
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
   // to call this method use SqfEntityDbModel.createSqfEntityModel
-  static String createSqfEntityModel(SqfEntityTable table) {
-    if (table.modelName == null)
-      table.modelName = table.tableName.substring(0, 1).toUpperCase() +
-          table.tableName.substring(1).toLowerCase();
+  static String createSqfEntityModel(List<SqfEntityTable> tables) {
+    
     String modelString =
         "import 'package:flutter/material.dart';\nimport 'package:sqfentity/db/sqfEntityBase.dart';";
 
+    for(var table in tables)
+{    
+    if (table.modelName == null)
+      table.modelName = table.tableName.substring(0, 1).toUpperCase() +
+          table.tableName.substring(1).toLowerCase();
     modelString += SqfEntityObjectBuilder(table).toString() + "\n";
     modelString += SqfEntityObjectField(table).toString() + "\n";
     modelString += SqfEntityObjectFilterBuilder(table).toString() + "\n";
     modelString += SqfEntityFieldBuilder(table).toString() + "\n";
     modelString += SqfEntityObjectManagerBuilder(table).toString() + "\n";
 
+}
     Clipboard.setData(ClipboardData(text: modelString)).then((_) {
       print(
-          "SQFENTITIY: ${table.modelName} Model was successfully created. Create ${table.modelName}.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
+          "SQFENTITIY: ${tables.toString()} Model was successfully created. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
     });
     return modelString;
   }
 
   initializeDB(VoidCallback isReady(bool result)) {
-    var dbTables = _databaseTables.where((i) => !i.initialized).toList();
+    var dbTables = databaseTables.where((i) => !i.initialized).toList();
     if (dbTables.length == 0)
       isReady(true);
     else {
