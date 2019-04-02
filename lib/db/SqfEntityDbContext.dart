@@ -42,7 +42,7 @@ class SqfEntityDbContext {
     }
     Clipboard.setData(ClipboardData(text: modelString)).then((_) {
       print(
-          "SQFENTITIY: ${tables.toString()} Model was successfully created. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
+          "SQFENTITIY: [databaseTables] Model was successfully created. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard");
     });
     return modelString;
   }
