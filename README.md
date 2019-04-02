@@ -8,18 +8,31 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 ## Getting Started
 
 This project is a starting point for a Flutter application.
-There are 5 files in the project
-1. main.dart                  : Startup file contains sample methods for using sqfEntity
-2. db/ SqfEntityBase.dart     : includes Database Provider, helper classes, enums.. etc 
-3. db/ SqfEntityDbModel.dart  : to declare your database model and get created model class from clipboard in runtime
-4. models/Product.dart        : Sample model for examples
-5. app.dart                   : Sample App for display created model. (will be updated later.)
-6. LICENSE.txt                : see this file for License Terms
+There are 7 files in the project
+
+1. **main.dart**                 : Startup file contains sample methods for using sqfEntity
+2. **db/SqfEntityBase.dart**     : includes Database Provider, helper classes, enums.. etc 
+3. **db/ SqfEntityDbContext.dart**   : to declare your database model and get created model class from clipboard in runtime
+4. **db/ MyDbModel.dart**            : to declare your database model and get created model class from clipboard in runtime
+5. **models/Product.dart**           : Sample created model for examples
+6. **app.dart**                      : Sample App for display created model. (will be updated later.)
+7. **LICENSE.txt**                   : see this file for License Terms
+
+
+### dependencies:
+
+    dependencies:
+      flutter:
+        sdk: flutter
+      sqflite: any
+      path_provider: any
+      intl: ^0.15.7
+      http: ^0.12.0+1  
 
 
 # to Create a new Database Model
 
-    class SqfEntityDbModel {
+    class MyDbModel {
   
     // declare your sqlite database name
     static const String databaseName = "sample.db";
@@ -69,7 +82,7 @@ There are 5 files in the project
 
     // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
     // to call this method use SqfEntityDbModel.createSqfEntityModel
-    static String createSqfEntityModel(SqfEntityTable table) {
+    static String createModel(List<SqfEntityTable> table) {
      ...
     Clipboard.setData(ClipboardData(text: modelString)).then((_) {
       print(
