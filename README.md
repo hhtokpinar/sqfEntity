@@ -9,7 +9,7 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a starting point for a SqfEntity ORM for SqfLite application.
 There are 8 files in the project
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
