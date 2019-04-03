@@ -15,7 +15,7 @@ There are 8 files in the project
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
     2. db / SqfEntityBase.dart      : includes Database Provider, helper classes, enums.. etc 
     3. db / SqfEntityDbContext.dart : Create model classes and set it to clipboard text in runtime
-    4. db / MyDbModel.dart          : to declare your database model
+    4. db / MyDbModel.dart          : Declare and modify your database model
     5. models / Product.dart        : Sample created model for examples
     6. assets / sample.db           : Sample db if you want to use an exiting db
     7. app.dart                     : Sample App for display created model. (will be updated later.)
