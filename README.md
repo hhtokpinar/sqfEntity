@@ -45,8 +45,8 @@ There are 8 files in the project
     
     // 1. define your tables as shown in the example Method below
     static SqfEntityTable get tableProduct {
+    
     // declare properties of EntityTable
-
     String tableName = "product";
     String primaryKeyName = "id";
     bool useSoftDeleting = true;
