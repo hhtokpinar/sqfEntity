@@ -1,9 +1,12 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqfentity/db/MyDbModel.dart';
+import 'package:synchronized/synchronized.dart';
 
 class SqfEntityProvider {
   static final SqfEntityProvider _sqfEntityProvider =
@@ -27,16 +30,41 @@ class SqfEntityProvider {
   }
 
   Future<Database> initializeDb() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + MyDbModel.databaseName;
+    var lock = Lock();
+    Database _db;
 
-    var dbEtrade = await openDatabase(path, version: 1, onCreate: _createDb);
-    return dbEtrade;
+    if (_db == null) {
+      await lock.synchronized(() async {
+        if (_db == null) {
+          var databasesPath = await getDatabasesPath();
+          var path = join(databasesPath, MyDbModel.databaseName);
+          var file = new File(path);
+
+          // check if file exists
+          if (!await file.exists()) {
+            // Copy from asset if MyDbModel.bundledDatabasePath is not empty
+            if (MyDbModel.bundledDatabasePath != "") {
+              ByteData data =
+                  await rootBundle.load(MyDbModel.bundledDatabasePath);
+              List<int> bytes = data.buffer
+                  .asUint8List(data.offsetInBytes, data.lengthInBytes);
+              await new File(path).writeAsBytes(bytes).then((_) {
+                print(
+                    "${MyDbModel.databaseName} successfully copied from asset");
+              });
+            }
+          }
+          _db = await openDatabase(path, version: 1, onCreate: _createDb);
+        }
+      });
+    }
+    return _db;
   }
 
   void _createDb(Database db, int version) async {
     await db.execute(
         "Create table sqfentitytables (id integer primary key, tablename text, version int, properties text)");
+    print("${MyDbModel.databaseName} successfully created");
   }
 
   Future<dynamic> getById(int id) async {
@@ -85,7 +113,7 @@ class SqfEntityProvider {
         distinct: params.distinct);
     print("\r\n");
     print("\r\n");
-    
+
     // You can uncomment following print command for print when called db query with parameters automatically
     /*
     print("********** SqfEntityProvider.toList(QueryParams=> columns:" +
@@ -136,14 +164,14 @@ class SqfEntityProvider {
 
   Future<int> update(T) async {
     Database db = await this.db;
-    var result = await db
-        .update(_tableName, T.toMap(forQuery:true), where: "$_colId = ?", whereArgs: [T.id]);
+    var result = await db.update(_tableName, T.toMap(forQuery: true),
+        where: "$_colId = ?", whereArgs: [T.id]);
     return result;
   }
 
   Future<int> insert(T) async {
     Database db = await this.db;
-    var result = await db.insert(_tableName, T.toMap(forQuery:true));
+    var result = await db.insert(_tableName, T.toMap(forQuery: true));
     return result;
   }
 }
@@ -431,7 +459,7 @@ enum DbType {
 
 DbType parseDbType(String val) {
   for (var o in DbType.values) {
-    if (sqLiteType[o.index]  == val) return o;
+    if (sqLiteType[o.index] == val) return o;
   }
   return null;
 }
