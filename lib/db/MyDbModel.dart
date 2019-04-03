@@ -7,8 +7,9 @@ class MyDbModel {
   // 1. declare your sqlite database name
   static const String databaseName = "sample.db";
 
-  // if bundledDatabasePath is empty then creats a new database when initializing database
+  // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
   static const String bundledDatabasePath = "assets/sample.db";
+  
   // 2. define your tables as shown in the example Method below.
   /// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
   static SqfEntityTable get tableProduct {
