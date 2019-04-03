@@ -1,14 +1,14 @@
 import 'package:sqfentity/db/SqfEntityBase.dart';
 import 'package:sqfentity/db/SqfEntityDbContext.dart';
 
-
 class MyDbModel {
-
   // STEPS FOR CREATE YOUR DB CONTEXT
 
   // 1. declare your sqlite database name
   static const String databaseName = "sample.db";
 
+  // if bundledDatabasePath is empty then creats a new database when initializing database
+  static const String bundledDatabasePath = "assets/sample.db";
   // 2. define your tables as shown in the example Method below.
   /// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
   static SqfEntityTable get tableProduct {
@@ -47,7 +47,5 @@ class MyDbModel {
   // that's all.. one more step left for create models.dart file.
   // ATTENTION: Defining the table here provides automatic processing for database configuration only.
   // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
-
-
 
 }
