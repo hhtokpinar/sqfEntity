@@ -1,52 +1,64 @@
 import 'package:sqfentity/db/SqfEntityBase.dart';
-import 'package:sqfentity/db/SqfEntityDbContext.dart';
 
-class MyDbModel {
-  // STEPS FOR CREATE YOUR DB CONTEXT
+// STEP 1: define your tables as shown in the example Method below.
+/// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
 
-  // 1. declare your sqlite database name
-  static const String databaseName = "sample.db";
+// declare sample table tableCategory
+SqfEntityTable tableCategory() {
+  // declare properties of EntityTable
 
-  // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
-  static const String bundledDatabasePath = "assets/sample.db";
-  
-  // 2. define your tables as shown in the example Method below.
-  /// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
-  static SqfEntityTable get tableProduct {
-    // declare properties of EntityTable
+  String tableName = "category";
+  String primaryKeyName = "id";
+  bool useSoftDeleting = true;
+  // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
-    String tableName = "product";
-    String primaryKeyName = "id";
-    bool useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
+  // declare EntityTable with table fields
+  SqfEntityTable table = new SqfEntityTable(
+      tableName,
+      primaryKeyName,
+      [
+        SqfEntityField("name", DbType.text),
+        SqfEntityField("isActive", DbType.bool, defaultValue: "true")
+      ],
+      useSoftDeleting);
+  return table;
+}
 
-    // declare EntityFields List for EntityTable
-    List<SqfEntityField> fields = new List<SqfEntityField>();
+// declare sample table tableProduct
+SqfEntityTable tableProduct() {
+  // declare properties of EntityTable
 
-    // Please add your table fields instead of following dummy fields..
-    fields.add(SqfEntityField("name", DbType.text));
-    fields.add(SqfEntityField("description", DbType.text));
-    fields.add(SqfEntityField("price", DbType.real, defaultValue: "0"));
-    fields.add(SqfEntityField("isActive", DbType.bool, defaultValue: "true"));
+  String tableName = "product";
+  String primaryKeyName = "id";
+  bool useSoftDeleting = true;
+  // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
-    // declare EntityTable
-    SqfEntityTable table =
-        new SqfEntityTable(tableName, primaryKeyName, fields, useSoftDeleting);
-    return table;
+  // declare EntityTable with table fields
+  SqfEntityTable table = new SqfEntityTable(
+      tableName,
+      primaryKeyName,
+      [
+        SqfEntityFieldRelationship(tableCategory(), defaultValue: "0"),
+        SqfEntityField("name", DbType.text),
+        SqfEntityField("description", DbType.text),
+        SqfEntityField("price", DbType.real, defaultValue: "0"),
+        SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
+      ],
+      useSoftDeleting);
+  return table;
+}
+
+// STEP 2: Create your Database Model to be implemented SqfEntityModel
+// Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
+class MyDbModel extends SqfEntityModel {
+  MyDbModel() {
+    databaseName = "sample.db";
+    databaseTables = [
+      tableProduct(),
+      tableCategory()
+    ]; // put defined tables into the list. ex: [tableProduct(),tableCategories(),tablePerson()]
+    bundledDatabasePath =
+       null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
-
-  // 3. Add the object you defined above to your list of database tables.
-  static List<SqfEntityTable> get databaseTables {
-    var _dbTables = new List<SqfEntityTable>();
-    _dbTables.add(tableProduct);
-    //_databaseTables.add(table2());
-    // ...
-    // ADD YOUR DECLARETED SqfEntityTable HERE
-    return _dbTables;
-  }
-
-  // that's all.. one more step left for create models.dart file.
-  // ATTENTION: Defining the table here provides automatic processing for database configuration only.
-  // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
-
+ 
 }

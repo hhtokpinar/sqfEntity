@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqfentity/app.dart';
 import 'package:sqfentity/db/MyDbModel.dart';
-import 'package:sqfentity/db/SqfEntityDbContext.dart';
 import 'package:sqfentity/models/Product.dart';
 
 void main(List<String> args) {
@@ -11,7 +10,8 @@ void main(List<String> args) {
   // 2- run Entity Model samples
   // ATTENTION! when the software/app is started, you must check the database was it initialized.
   // If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
-  SqfEntityDbContext().initializeDB((result) {
+
+  MyDbModel().initializeDB((result) {
     if (result == true)
     //The database is ready for use
     {
@@ -27,6 +27,9 @@ void runSamples() {
   // add some products
   addSomeProducts((isReady) {
     if (isReady) {
+      // Print all categories
+      printCategories();
+
       // SELECT AND ORDER PRODUCTS BY FIELDS
       samples1();
 
@@ -44,14 +47,29 @@ void runSamples() {
 
       // DELETE BATCH, DELETE OBJECT
       samples6();
+
+      // ORM (Object Relational Mapping) SAMPLE
+      samples7();
     }
+  });
+}
+
+void printCategories() {
+  Category().select().toList((categoryList) {
+    print("LISTING CATEGORIES -> Category().select().toList()");
+    print("${categoryList.length} matches found:");
+    for (int i = 0; i < categoryList.length; i++) {
+      print(categoryList[i].toMap());
+    }
+    print("---------------------------------------------------------------");
   });
 }
 
 void createSqfEntityModelString() {
   // To get the class from the clipboard, run it separately for each object
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  String sqfEntityModelString = SqfEntityDbContext.createModel(MyDbModel.databaseTables);
+  String sqfEntityModelString =
+      MyDbModel().createModel(); //SqfEntityDbContext.createModel(MyDbModel());
 
   // also you can get Model String from TextField in App (on the Emulator only!)
   // Notice: Keyboard shortcuts are not working on the emulator.
@@ -105,10 +123,10 @@ void samples1() {
 }
 
 void samples2() {
-// EXAMPLE 1.1: SELECT * FROM PRODUCTS WHERE isActive=1
+// EXAMPLE 1.4: SELECT * FROM PRODUCTS WHERE isActive=1
   Product().select().isActive.equals(true).toList((productList) {
     print(
-        "EXAMPLE 2.1: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 \n->  Product().select().isActive.equals(true).toList()");
+        "EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 \n->  Product().select().isActive.equals(true).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -116,10 +134,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.2: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
+// EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
   Product().select().id.inValues([3, 6, 9]).toList((productList) {
     print(
-        "EXAMPLE 2.2: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) \n -> Product().select().id.inValues([3,6,9]).toList()");
+        "EXAMPLE 1.5: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) \n -> Product().select().id.inValues([3,6,9]).toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -128,7 +146,7 @@ void samples2() {
   });
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
-// EXAMPLE 2.3: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%')
+// EXAMPLE 1.6: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%')
   Product()
       .select()
       .price
@@ -143,13 +161,13 @@ void samples2() {
       .endBlock
       .toSingle((product) {
     print(
-        "EXAMPLE 2.3: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
+        "EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
     print("Toplam " + (product != null ? "1" : "0") + " sonuç listeleniyor:");
     if (product != null) print(product.toMap());
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.4: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
+// EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
   Product()
       .select()
       .price
@@ -167,7 +185,7 @@ void samples2() {
       .endBlock
       .toList((productList) {
     print(
-        "EXAMPLE 2.4: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') \n -> Product().select(columnsToSelect:[\"name\",\"price\"]).price.lessThanOrEquals(10000).and.startBlock.description.contains(\"128\").or.description.endsWith(\"GB\").endBlock.toList();");
+        "EXAMPLE 1.7: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB') \n -> Product().select(columnsToSelect:[\"name\",\"price\"]).price.lessThanOrEquals(10000).and.startBlock.description.contains(\"128\").or.description.endsWith(\"GB\").endBlock.toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -175,10 +193,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.5: NOT EQUALS
+// EXAMPLE 1.8: NOT EQUALS
   Product().select().id.not.equals(11).toList((productList) {
     print(
-        "EXAMPLE 2.5: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 \n -> Product().select().id.not.equals(11).toList();");
+        "EXAMPLE 1.8: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 \n -> Product().select().id.not.equals(11).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -186,7 +204,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.6: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
+// EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
   Product()
       .select()
       .price
@@ -196,7 +214,7 @@ void samples2() {
       .lessThanOrEquals(13000)
       .toList((productList) {
     print(
-        "EXAMPLE 2.6: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 \n -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();");
+        "EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 \n -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -204,7 +222,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.7: BETWEEN KEYWORD
+// EXAMPLE 1.10: BETWEEN KEYWORD
   Product()
       .select()
       .price
@@ -212,7 +230,7 @@ void samples2() {
       .orderBy("price")
       .toList((productList) {
     print(
-        "EXAMPLE 2.7: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 \n -> Product().select().price.between(8000,14000).orderBy(\"price\").toList();");
+        "EXAMPLE 1.10: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 \n -> Product().select().price.between(8000,14000).orderBy(\"price\").toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -220,10 +238,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.8: 'NOT' KEYWORD
+// EXAMPLE 1.11: 'NOT' KEYWORD
   Product().select().id.not.greaterThan(5).toList((productList) {
     print(
-        "EXAMPLE 2.8: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 \n -> Product().select().id.not.greaterThan(5).toList();");
+        "EXAMPLE 1.11: 'NOT' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 \n -> Product().select().id.not.greaterThan(5).toList();");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -231,10 +249,10 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-// EXAMPLE 2.9: WRITING CUSTOM FILTER IN WHERE CLAUSE
+// EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
   Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
-        "EXAMPLE 2.9: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
+        "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
@@ -242,7 +260,7 @@ void samples2() {
     print("---------------------------------------------------------------");
   });
 
-  // EXAMPLE 2.10: Build filter and query from values from the form
+  // EXAMPLE 1.13: Build filter and query from values from the form
   // assume that the values come from the form by defining several variables:
   int minPrice;
   int maxPrice;
@@ -270,17 +288,17 @@ void samples2() {
       .contains(descriptionContains)
       .toList((productList) {
     print(
-        "EXAMPLE 2.10: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\"$nameContains\").and.description.contains(\"$descriptionContains\").toList()");
+        "EXAMPLE 1.13: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\"$nameContains\").and.description.contains(\"$descriptionContains\").toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
     }
   });
 
-  // EXAMPLE 2.11: Select products with deleted items (only softdelete was activated on Model)
+  // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
   Product().select(getIsDeleted: true).toList((productList) {
     print(
-        "EXAMPLE 2.11: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
+        "EXAMPLE 1.14: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()");
     print("${productList.length} matches found:");
 
     for (var prod in productList) {
@@ -288,14 +306,14 @@ void samples2() {
     }
   });
 
-  // EXAMPLE 2.12: Select products only deleted items (only softdelete was activated on Model)
+  // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
   Product()
       .select(getIsDeleted: true)
       .isDeleted
       .equals(true)
       .toList((productList) {
     print(
-        "EXAMPLE 2.12: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
+        "EXAMPLE 1.15: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()");
     print("${productList.length} matches found:");
     for (var prod in productList) {
       print(prod.toMap());
@@ -448,58 +466,116 @@ void samples6() {
   });
 }
 
+void samples7() {
+  // EXAMPLE 7.1: goto Category Object from Product \n-> product.category((_category) {});
+  Product().getById(3, (product) {
+    product.getCategory((category) {
+      print(
+          "EXAMPLE 7.1: goto Category Object from Product \n-> product.category((_category) {}); ");
+
+      print("The category of '${product.name}' is: " +
+          category.toMap().toString());
+    });
+  });
+
+  // EXAMPLE 7.2: list Products of Categories \n-> product.category((_category) {});
+  Category().select().toList((categoryList) {
+    for (var category in categoryList)
+      category.getProducts((productList) {
+        print(
+            "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> product.category((_category) {}); ");
+        print("${productList.length} matches found:");
+        for (int i = 0; i < productList.length; i++) {
+          print(productList[i].toMap());
+        }
+        print(
+            "---------------------------------------------------------------");
+      });
+  });
+}
+
 void addSomeProducts(VoidCallback isReady(bool ready)) {
   // add new products if not any product..
-  Product().select().toSingle((product) {
-    if (product == null)
-      addProducts((ready) {
-        if (ready) isReady(true);
+  Category().select().toSingle((category) {
+    if (category == null) {
+      addCategories((ready) {
+        addProducts((ready) {
+          if (ready) isReady(true);
+        });
       });
-    else
+    } else {
+      print("There is already rows in the database.. addProduct will not run");
       isReady(true);
+    }
+  });
+}
+
+void addCategories(VoidCallback isReady(bool ready)) {
+  Category(name: "Notebooks", isActive: true).save();
+  Category.withFields("Ultrabooks", true, false).save().then((_) {
+    isReady(true);
   });
 }
 
 void addProducts(VoidCallback isReady(bool ready)) {
-// some dummy rows for select (id:1- to 15)
-  Product.withFields("Notebook 12\"", "128 GB SSD i7", 6899, true, false)
-      .save();
-  Product.withFields("Notebook 12\"", "256 GB SSD i7", 8244, true, false)
-      .save();
-  Product.withFields("Notebook 12\"", "512 GB SSD i7", 9214, true, false)
-      .save();
+  Product().select().toSingle((product) {
+    if (product == null) {
+      // some dummy rows for select (id:1- to 15)
+      Product.withFields(1, "Notebook 12\"", "128 GB SSD i7", 6899, true, false)
+          .save();
+      Product.withFields(1, "Notebook 12\"", "256 GB SSD i7", 8244, true, false)
+          .save();
+      Product.withFields(1, "Notebook 12\"", "512 GB SSD i7", 9214, true, false)
+          .save();
 
-  Product.withFields("Notebook 13\"", "128 GB SSD", 8500, true, false).save();
-  Product.withFields("Notebook 13\"", "256 GB SSD", 9900, true, false).save();
-  Product.withFields("Notebook 13\"", "512 GB SSD", 11000, null, false).save();
+      Product.withFields(1, "Notebook 13\"", "128 GB SSD", 8500, true, false)
+          .save();
+      Product.withFields(1, "Notebook 13\"", "256 GB SSD", 9900, true, false)
+          .save();
+      Product.withFields(1, "Notebook 13\"", "512 GB SSD", 11000, null, false)
+          .save();
 
-  Product.withFields("Notebook 15\"", "128 GB SSD", 8999, null, false).save();
-  Product.withFields("Notebook 15\"", "256 GB SSD", 10499, null, false).save();
-  Product.withFields("Notebook 15\"", "512 GB SSD", 11999, true, false).save();
+      Product.withFields(1, "Notebook 15\"", "128 GB SSD", 8999, null, false)
+          .save();
+      Product.withFields(1, "Notebook 15\"", "256 GB SSD", 10499, null, false)
+          .save();
+      Product.withFields(1, "Notebook 15\"", "512 GB SSD", 11999, true, false)
+          .save();
 
-  Product.withFields("Ultrabook 13\"", "128 GB SSD i5", 9954, true, false)
-      .save();
-  Product.withFields("Ultrabook 13\"", "256 GB SSD i5", 11154, true, false)
-      .save();
-  Product.withFields("Ultrabook 13\"", "512 GB SSD i5", 13000, true, false)
-      .save();
+      Product.withFields(
+              2, "Ultrabook 13\"", "128 GB SSD i5", 9954, true, false)
+          .save();
+      Product.withFields(
+              2, "Ultrabook 13\"", "256 GB SSD i5", 11154, true, false)
+          .save();
+      Product.withFields(
+              2, "Ultrabook 13\"", "512 GB SSD i5", 13000, true, false)
+          .save();
 
-  Product.withFields("Ultrabook 15\"", "128 GB SSD i7", 11000, true, false)
-      .save();
-  Product.withFields("Ultrabook 15\"", "256 GB SSD i7", 12000, true, false)
-      .save();
-  Product.withFields("Ultrabook 15\"", "512 GB SSD i7", 14000, true, false)
-      .save()
-      .then((_) {
-    print("added 15 new products");
-    // add a few dummy products for delete (id:16 to 20)
-    Product.withFields("Product 1", "", 0, true, false).save();
-    Product.withFields("Product 2", "", 0, true, false).save();
-    Product.withFields("Product 3", "", 0, true, false).save();
-    Product.withFields("Product 4", "", 0, true, false).save();
-    Product.withFields("Product 5", "", 0, true, false).save().then((_) {
-      print("added 5 dummy products");
+      Product.withFields(
+              2, "Ultrabook 15\"", "128 GB SSD i7", 11000, true, false)
+          .save();
+      Product.withFields(
+              2, "Ultrabook 15\"", "256 GB SSD i7", 12000, true, false)
+          .save();
+      Product.withFields(
+              2, "Ultrabook 15\"", "512 GB SSD i7", 14000, true, false)
+          .save()
+          .then((_) {
+        print("added 15 new products");
+
+        // add a few dummy products for delete (id:16 to 20)
+        Product.withFields(0, "Product 1", "", 0, true, false).save();
+        Product.withFields(0, "Product 2", "", 0, true, false).save();
+        Product.withFields(0, "Product 3", "", 0, true, false).save();
+        Product.withFields(0, "Product 4", "", 0, true, false).save();
+        Product.withFields(0, "Product 5", "", 0, true, false).save().then((_) {
+          print("added 5 dummy products");
+          isReady(true);
+        });
+      });
+    } else {
       isReady(true);
-    });
+    }
   });
 }
