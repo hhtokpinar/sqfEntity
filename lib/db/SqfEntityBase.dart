@@ -1233,7 +1233,8 @@ class SqfEntityTable {
   String modelName;
   String dbModel;
   bool initialized;
-  init() {
+  
+  SqfEntityTable init() {
     if (modelName == null)
       modelName = tableName.substring(0, 1).toUpperCase() +
           tableName.substring(1).toLowerCase();
@@ -1243,7 +1244,8 @@ class SqfEntityTable {
         .replaceAll("'", "")
         .trim();
     initialized = false;
-    print("$tableName init çalıştı");
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> SqfEntityTable of '$tableName' initialized successfuly");
+    return this;
   }
 
   String get modelLowerCase => tableName.toLowerCase();
@@ -1259,6 +1261,7 @@ class SqfEntityTable {
     _createTableSQL += ")";
     return _createTableSQL;
   }
+  
 }
 
 String toCollectionName(String fieldName) => fieldName.endsWith("y")

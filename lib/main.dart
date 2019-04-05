@@ -48,7 +48,6 @@ void runSamples() {
       // UPDATE BATCH, UPDATE OBJECT
       samples5();
 
-
       // ORM (Object Relational Mapping) SAMPLE
       samples7();
     }
@@ -62,7 +61,8 @@ void printCategories() {
     for (int i = 0; i < categoryList.length; i++) {
       print(categoryList[i].toMap());
     }
-    print("---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 }
 
@@ -437,13 +437,14 @@ void samples6() {
 
 // EXAMPLE 6.2: get product with query id and delete
   Product().select().id.equals(16).delete().then((result) {
-    print("EXAMPLE 6.2: delete product by query filder \n -> Product().select().id.equals(16).delete();");
+    print(
+        "EXAMPLE 6.2: delete product by query filder \n -> Product().select().id.equals(16).delete();");
     if (result.success)
       print("${result.successMessage}");
     else
       print("${result.errorMessage}");
-              print(
-            "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 6.3: Get product by id and then delete
@@ -452,29 +453,32 @@ void samples6() {
 // delete product object if exist
     if (product != null) {
       product.delete().then((result) {
-        print("EXAMPLE 6.3: delete product if exist \n -> if (product != null) product.delete();");
+        print(
+            "EXAMPLE 6.3: delete product if exist \n -> if (product != null) product.delete();");
         if (result.success)
           print("${result.successMessage}");
         else
           print("${result.errorMessage}");
-            print(
+        print(
             "---------------------------------------------------------------\n\n");
       });
-    } else{
+    } else {
       print("id=15 => product not found");
-        print(
-            "---------------------------------------------------------------\n\n");}
+      print(
+          "---------------------------------------------------------------\n\n");
+    }
   });
 
 // EXAMPLE 6.4: Delete many products by filter
   Product().select().id.greaterThan(17).delete().then((result) {
-      print("EXAMPLE 6.4: Delete many products by filter \n -> Product().select().id.greaterThan(17).delete()");
-    if (result.success){
-      print("${result.successMessage}");}
-    else
+    print(
+        "EXAMPLE 6.4: Delete many products by filter \n -> Product().select().id.greaterThan(17).delete()");
+    if (result.success) {
+      print("${result.successMessage}");
+    } else
       print("${result.errorMessage}");
-        print(
-            "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 }
 

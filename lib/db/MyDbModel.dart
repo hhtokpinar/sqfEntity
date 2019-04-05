@@ -5,6 +5,13 @@ import 'package:sqfentity/db/SqfEntityBase.dart';
 
 // Define the "TableCategory" sample table as extended from "SqfEntityTable".
 class TableCategory extends SqfEntityTable {
+  
+  static SqfEntityTable _instance;
+
+  static SqfEntityTable get getInstance {
+    if (_instance == null) _instance = TableCategory();
+    return _instance;
+  }
   TableCategory() {
     // declare properties of EntityTable
     tableName = "category";
@@ -20,15 +27,21 @@ class TableCategory extends SqfEntityTable {
       SqfEntityField("isActive", DbType.bool, defaultValue: "true")
     ];
 
-    init();
+    super.init();
   }
-  
 }
 
 // Define the "TableProduct"  sample table as extended from "SqfEntityTable".
 class TableProduct extends SqfEntityTable {
+
+  static SqfEntityTable _instance;
+  static SqfEntityTable get getInstance {
+    if (_instance == null) _instance = TableProduct();
+    return _instance;
+  }
+
   TableProduct() {
-// declare properties of EntityTable
+    // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
     useSoftDeleting = true;
@@ -40,49 +53,23 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(MyRepository.tableCategory,
+      SqfEntityFieldRelationship(TableCategory.getInstance,
           defaultValue: "0"), // Relationship column for CategoryId of Product
     ];
-
-    init();
-  }
-
-  
-}
-
-// STEP 2: Create Repository to provide access to models with Singleton pattern
-
-class MyRepository {
-  static SqfEntityTable _tableProduct;
-  static SqfEntityTable _tableCategory;
-  static SqfEntityTable get tableProduct {
-    if (_tableProduct == null) {
-      _tableProduct = new TableProduct();
-    }
-    return _tableProduct;
-  }
-
-  static SqfEntityTable get tableCategory {
-    if (_tableCategory == null) {
-      _tableCategory = new TableCategory();
-    }
-    return _tableCategory;
+    super.init();
   }
 }
 
-
-
-// STEP 3: Create your Database Model to be implemented SqfEntityModel
+// STEP 2: Create your Database Model to be extended from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
     databaseName = "sampleORM.db";
     databaseTables = [
-      MyRepository.tableProduct,
-      MyRepository.tableCategory
+      TableProduct.getInstance,
+      TableCategory.getInstance
     ]; // put defined tables into the list. ex: [tableProduct(),tableCategories(),tablePerson()]
     bundledDatabasePath =
         null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
 }
-
