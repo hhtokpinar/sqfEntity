@@ -16,11 +16,11 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
   class Product extends SearchCriteria {
     // FIELDS
     int id;
-  int categoryId;
   String name;
   String description;
   double price;
   bool isActive;
+  int categoryId;
   bool isDeleted;
 // end FIELDS
     
@@ -42,21 +42,21 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
       return __mnProduct;
     }
   
-    Product({this.id, this.categoryId,this.name,this.description,this.price,this.isActive,this.isDeleted
+    Product({this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
 }) { setDefaultValues();}
-    Product.withFields(this.categoryId,this.name,this.description,this.price,this.isActive,this.isDeleted
+    Product.withFields(this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
 ){ setDefaultValues();}
-    Product.withId(this.id, this.categoryId,this.name,this.description,this.price,this.isActive,this.isDeleted
+    Product.withId(this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
 ){ setDefaultValues();}
   
     // methods
     Map<String, dynamic> toMap({bool forQuery=false}) {
       var map = Map<String, dynamic>();
-      if (id != null) map["id"] = id;    if (categoryId != null) map["categoryId"] = categoryId;
-    if (name != null) map["name"] = name;
+      if (id != null) map["id"] = id;    if (name != null) map["name"] = name;
     if (description != null) map["description"] = description;
     if (price != null) map["price"] = price;
     if (isActive != null) map["isActive"] = forQuery? (isActive ? 1 : 0) : isActive;
+    if (categoryId != null) map["categoryId"] = categoryId;
   if (isDeleted != null) map["isDeleted"] = forQuery? (isDeleted ? 1 : 0):isDeleted;
 
       return map;
@@ -64,21 +64,21 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
   
       Product.fromMap(Map<String, dynamic> o) {
       this.id = o["id"];
-    this.categoryId = o["categoryId"];
     this.name = o["name"];
     this.description = o["description"];
     this.price = o["price"];
     this.isActive = o["isActive"] != null ? o["isActive"] == 1 : null;
+    this.categoryId = o["categoryId"];
   this.isDeleted = o["isDeleted"] != null ? o["isDeleted"] == 1 : null;
       }
   
       Product.fromObjectExclude(dynamic o) {
       this.id = o["id"];
-    this.categoryId = o["categoryId"];
     this.name = o["name"];
     this.description = o["description"];
     this.price = o["price"];
     this.isActive = o["isActive"] != null ? o["isActive"] == 1 : null;
+    this.categoryId = o["categoryId"];
   this.isDeleted = o["isDeleted"] != null ? o["isDeleted"] == 1 : null;
       }
     
@@ -122,11 +122,11 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     Future<int> save() async {
       if (id == null || id == 0)
         id = await _mnProduct.insert(
-            Product.withFields(categoryId,name,description,price,isActive,isDeleted
+            Product.withFields(name,description,price,isActive,categoryId,isDeleted
 ));
       else
         _mnProduct.update(
-            Product.withId(id, categoryId,name,description,price,isActive,isDeleted
+            Product.withId(id, name,description,price,isActive,categoryId,isDeleted
 ));
       return id;
     }
@@ -137,7 +137,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     /// <returns>Returns a new Primary Key value of Product</returns>
     Future<int> get saveAs async {
       id = await _mnProduct.insert(
-          Product.withFields(categoryId,name,description,price,isActive,isDeleted
+          Product.withFields(name,description,price,isActive,categoryId,isDeleted
 ));
       return id;
     }
@@ -173,9 +173,9 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     }
   
     void setDefaultValues() {
-      if(categoryId==null) categoryId=0;
-if(price==null) price=0;
+      if(price==null) price=0;
 if(isActive==null) isActive=false;
+if(categoryId==null) categoryId=0;
    if(isDeleted==null) isDeleted=false;
     }
     //end methods
@@ -489,11 +489,6 @@ class ProductFilterBuilder extends SearchCriteria {
     _id = setField(_id, "id", DbType.integer);
     return _id;
   }
-          ProductField _categoryId;
-  ProductField get categoryId {
-    _categoryId = setField(_categoryId, "categoryId", DbType.integer);
-    return _categoryId;
-  }
           ProductField _name;
   ProductField get name {
     _name = setField(_name, "name", DbType.text);
@@ -513,6 +508,11 @@ class ProductFilterBuilder extends SearchCriteria {
   ProductField get isActive {
     _isActive = setField(_isActive, "isActive", DbType.bool);
     return _isActive;
+  }
+          ProductField _categoryId;
+  ProductField get categoryId {
+    _categoryId = setField(_categoryId, "categoryId", DbType.integer);
+    return _categoryId;
   }
           ProductField _isDeleted;
   ProductField get isDeleted {
@@ -654,11 +654,6 @@ class ProductFields {
     _fId = SqlSyntax.setField(_fId, "id", DbType.integer);
     return _fId;
   }
-  static TableField _fCategoryId;
-  static TableField get categoryId {
-    _fCategoryId = SqlSyntax.setField(_fCategoryId, "categoryId", DbType.integer);
-    return _fCategoryId;
-  }
   static TableField _fName;
   static TableField get name {
     _fName = SqlSyntax.setField(_fName, "name", DbType.text);
@@ -678,6 +673,11 @@ class ProductFields {
   static TableField get isActive {
     _fIsActive = SqlSyntax.setField(_fIsActive, "isActive", DbType.bool);
     return _fIsActive;
+  }
+  static TableField _fCategoryId;
+  static TableField get categoryId {
+    _fCategoryId = SqlSyntax.setField(_fCategoryId, "categoryId", DbType.integer);
+    return _fCategoryId;
   }
   static TableField _fIsDeleted;
   static TableField get isDeleted {

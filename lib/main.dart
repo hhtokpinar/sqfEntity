@@ -521,55 +521,55 @@ void addProducts(VoidCallback isReady(bool ready)) {
   Product().select().toSingle((product) {
     if (product == null) {
       // some dummy rows for select (id:1- to 15)
-      Product.withFields(1, "Notebook 12\"", "128 GB SSD i7", 6899, true, false)
+      Product.withFields("Notebook 12\"", "128 GB SSD i7", 6899, true, 1, false)
           .save();
-      Product.withFields(1, "Notebook 12\"", "256 GB SSD i7", 8244, true, false)
+      Product.withFields("Notebook 12\"", "256 GB SSD i7", 8244, true, 1, false)
           .save();
-      Product.withFields(1, "Notebook 12\"", "512 GB SSD i7", 9214, true, false)
-          .save();
-
-      Product.withFields(1, "Notebook 13\"", "128 GB SSD", 8500, true, false)
-          .save();
-      Product.withFields(1, "Notebook 13\"", "256 GB SSD", 9900, true, false)
-          .save();
-      Product.withFields(1, "Notebook 13\"", "512 GB SSD", 11000, null, false)
+      Product.withFields("Notebook 12\"", "512 GB SSD i7", 9214, true, 1, false)
           .save();
 
-      Product.withFields(1, "Notebook 15\"", "128 GB SSD", 8999, null, false)
+      Product.withFields("Notebook 13\"", "128 GB SSD", 8500, true, 1, false)
           .save();
-      Product.withFields(1, "Notebook 15\"", "256 GB SSD", 10499, null, false)
+      Product.withFields("Notebook 13\"", "256 GB SSD", 9900, true, 1, false)
           .save();
-      Product.withFields(1, "Notebook 15\"", "512 GB SSD", 11999, true, false)
+      Product.withFields("Notebook 13\"", "512 GB SSD", 11000, null, 1, false)
           .save();
 
-      Product.withFields(
-              2, "Ultrabook 13\"", "128 GB SSD i5", 9954, true, false)
+      Product.withFields("Notebook 15\"", "128 GB SSD", 8999, null, 1, false)
           .save();
-      Product.withFields(
-              2, "Ultrabook 13\"", "256 GB SSD i5", 11154, true, false)
+      Product.withFields("Notebook 15\"", "256 GB SSD", 10499, null, 1, false)
           .save();
-      Product.withFields(
-              2, "Ultrabook 13\"", "512 GB SSD i5", 13000, true, false)
+      Product.withFields("Notebook 15\"", "512 GB SSD", 11999, true, 1, false)
           .save();
 
       Product.withFields(
-              2, "Ultrabook 15\"", "128 GB SSD i7", 11000, true, false)
+              "Ultrabook 13\"", "128 GB SSD i5", 9954, true, 2, false)
           .save();
       Product.withFields(
-              2, "Ultrabook 15\"", "256 GB SSD i7", 12000, true, false)
+              "Ultrabook 13\"", "256 GB SSD i5", 11154, true, 2, false)
           .save();
       Product.withFields(
-              2, "Ultrabook 15\"", "512 GB SSD i7", 14000, true, false)
+              "Ultrabook 13\"", "512 GB SSD i5", 13000, true, 2, false)
+          .save();
+
+      Product.withFields(
+              "Ultrabook 15\"", "128 GB SSD i7", 11000, true, 2, false)
+          .save();
+      Product.withFields(
+              "Ultrabook 15\"", "256 GB SSD i7", 12000, true, 2, false)
+          .save();
+      Product.withFields(
+              "Ultrabook 15\"", "512 GB SSD i7", 14000, true, 2, false)
           .save()
           .then((_) {
         print("added 15 new products");
 
         // add a few dummy products for delete (id:16 to 20)
-        Product.withFields(0, "Product 1", "", 0, true, false).save();
-        Product.withFields(0, "Product 2", "", 0, true, false).save();
-        Product.withFields(0, "Product 3", "", 0, true, false).save();
-        Product.withFields(0, "Product 4", "", 0, true, false).save();
-        Product.withFields(0, "Product 5", "", 0, true, false).save().then((_) {
+        Product.withFields("Product 1", "", 0, true, 0, false).save();
+        Product.withFields("Product 2", "", 0, true, 0, false).save();
+        Product.withFields("Product 3", "", 0, true, 0, false).save();
+        Product.withFields("Product 4", "", 0, true, 0, false).save();
+        Product.withFields("Product 5", "", 0, true, 0, false).save().then((_) {
           print("added 5 dummy products");
           isReady(true);
         });

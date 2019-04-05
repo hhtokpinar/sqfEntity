@@ -200,7 +200,6 @@ class SqfEntityProvider {
 }
 // END DATABASE PROVIDER
 
-
 // BEGIN MODEL BUILDER
 class SqfEntityFieldBuilder {
   SqfEntityTable _table;
@@ -513,14 +512,13 @@ class SqfEntityObjectBuilder {
   __createObjectCollections() {
     String retVal = "";
     for (var tableCollecion in _table.collections) {
-        retVal += """
+      retVal += """
    get${toCollectionName(tableCollecion.childTable.modelName)}(VoidCallback ${tableCollecion.childTable.modelLowerCase}List(List<${tableCollecion.childTable.modelName}> o)) {
     ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).toList((objList) {
       ${tableCollecion.childTable.modelLowerCase}List(objList);
     });
   }
 """;
-      
     }
     if (retVal != "") retVal = "\n// COLLECTIONS\n$retVal// END COLLECTIONS\n";
     return retVal;
@@ -1039,12 +1037,11 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
 
 // END MODEL BUILDER
 
-
 // BEGIN ENUMS, CLASSES AND ABSTRACTS
-class TableCollection{
+class TableCollection {
   SqfEntityTable childTable;
   SqfEntityFieldType childTableField;
-  TableCollection(this.childTable,this.childTableField);
+  TableCollection(this.childTable, this.childTableField);
 }
 
 class TableField {
@@ -1232,13 +1229,11 @@ class SqfEntityTable {
   String primaryKeyName;
   List<SqfEntityFieldType> fields;
   List<TableCollection> collections;
-  bool useSoftDeleting;
+  bool useSoftDeleting = false;
   String modelName;
   String dbModel;
   bool initialized;
-  SqfEntityTable(
-      this.tableName, this.primaryKeyName, this.fields, this.useSoftDeleting,
-      {this.initialized = false, this.modelName, this.dbModel}) {
+  init() {
     if (modelName == null)
       modelName = tableName.substring(0, 1).toUpperCase() +
           tableName.substring(1).toLowerCase();
@@ -1247,7 +1242,10 @@ class SqfEntityTable {
         .replaceAll("Instance of", "")
         .replaceAll("'", "")
         .trim();
+    initialized = false;
+    print("$tableName init çalıştı");
   }
+
   String get modelLowerCase => tableName.toLowerCase();
 
   String get createTableSQL => _createTableSQL();
@@ -1273,7 +1271,8 @@ abstract class SqfEntityFieldType {
   String _dbType;
   String defaultValue;
   SqfEntityTable table;
-  SqfEntityFieldType(this.fieldName, this.dbType, {this.defaultValue, this.table});
+  SqfEntityFieldType(this.fieldName, this.dbType,
+      {this.defaultValue, this.table});
 
   String toSqLiteFieldString();
 
@@ -1292,7 +1291,7 @@ class SqfEntityField implements SqfEntityFieldType {
   String _dbType;
   String defaultValue;
   SqfEntityTable table;
-  SqfEntityField(this.fieldName, this.dbType, {this.defaultValue,this.table});
+  SqfEntityField(this.fieldName, this.dbType, {this.defaultValue, this.table});
 
   String toSqLiteFieldString() {
     switch (dbType) {
@@ -1421,7 +1420,7 @@ abstract class SqfEntityModel {
 
             if (alterTableQuery.length > 0) {
               print("SQFENTITIY: alterTableQuery => $alterTableQuery");
-              
+
               SqfEntityProvider(this).execSQLList(alterTableQuery, (result) {
                 if (result) {
                   table.initialized = true;
@@ -1436,7 +1435,6 @@ abstract class SqfEntityModel {
                   "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly (No added new columns)");
               if (checkForIsReadyDatabase(dbTables)) isReady(true);
             }
-           
           } else {
             // The table if not exist
             table.initialized = true;
@@ -1463,7 +1461,7 @@ abstract class SqfEntityModel {
           .replaceAll("Instance of", "")
           .replaceAll("'", "")
           .trim();
-          table.collections =getCollections(table);
+      table.collections = getCollections(table);
       modelString += SqfEntityObjectBuilder(table).toString() + "\n";
       modelString += SqfEntityObjectField(table).toString() + "\n";
       modelString += SqfEntityObjectFilterBuilder(table).toString() + "\n";
