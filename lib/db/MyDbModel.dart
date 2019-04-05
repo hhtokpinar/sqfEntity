@@ -1,17 +1,15 @@
 import 'package:sqfentity/db/SqfEntityBase.dart';
 
-// STEP 1: define your tables as shown in the example Method below.
-/// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
-
+// STEP 1: define your tables as shown in the example Classes below.
 // Define the "TableCategory" sample table as extended from "SqfEntityTable".
 class TableCategory extends SqfEntityTable {
   
   static SqfEntityTable _instance;
-
   static SqfEntityTable get getInstance {
     if (_instance == null) _instance = TableCategory();
     return _instance;
   }
+
   TableCategory() {
     // declare properties of EntityTable
     tableName = "category";
@@ -33,7 +31,6 @@ class TableCategory extends SqfEntityTable {
 
 // Define the "TableProduct"  sample table as extended from "SqfEntityTable".
 class TableProduct extends SqfEntityTable {
-
   static SqfEntityTable _instance;
   static SqfEntityTable get getInstance {
     if (_instance == null) _instance = TableProduct();
@@ -68,7 +65,7 @@ class MyDbModel extends SqfEntityModel {
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance
-    ]; // put defined tables into the list. ex: [tableProduct(),tableCategories(),tablePerson()]
+    ]; // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
     bundledDatabasePath =
         null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
