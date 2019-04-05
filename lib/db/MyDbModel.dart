@@ -4,8 +4,8 @@ import 'package:sqfentity/db/SqfEntityBase.dart';
 /// create getter methods for your own tables like tableCategory, tablePerson.. etc and add them to the databaseTables property similar to the example below
 
 // Define the "TableCategory" sample table as extended from "SqfEntityTable".
-class _TableCategory extends SqfEntityTable {
-  _TableCategory() {
+class TableCategory extends SqfEntityTable {
+  TableCategory() {
     // declare properties of EntityTable
     tableName = "category";
     modelName =
@@ -26,8 +26,8 @@ class _TableCategory extends SqfEntityTable {
 }
 
 // Define the "TableProduct"  sample table as extended from "SqfEntityTable".
-class _TableProduct extends SqfEntityTable {
-  _TableProduct() {
+class TableProduct extends SqfEntityTable {
+  TableProduct() {
 // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
@@ -40,7 +40,7 @@ class _TableProduct extends SqfEntityTable {
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(Repository.tableCategory,
+      SqfEntityFieldRelationship(MyRepository.tableCategory,
           defaultValue: "0"), // Relationship column for CategoryId of Product
     ];
 
@@ -50,34 +50,39 @@ class _TableProduct extends SqfEntityTable {
   
 }
 
-// STEP 2: Create your Database Model to be implemented SqfEntityModel
-// Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
-class MyDbModel extends SqfEntityModel {
-  MyDbModel() {
-    databaseName = "sampleORM2.db";
-    databaseTables = [
-      Repository.tableProduct,
-      Repository.tableCategory
-    ]; // put defined tables into the list. ex: [tableProduct(),tableCategories(),tablePerson()]
-    bundledDatabasePath =
-        null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
-  }
-}
+// STEP 2: Create Repository to provide access to models with Singleton pattern
 
-class Repository {
+class MyRepository {
   static SqfEntityTable _tableProduct;
   static SqfEntityTable _tableCategory;
   static SqfEntityTable get tableProduct {
     if (_tableProduct == null) {
-      _tableProduct = new _TableProduct();
+      _tableProduct = new TableProduct();
     }
     return _tableProduct;
   }
 
   static SqfEntityTable get tableCategory {
     if (_tableCategory == null) {
-      _tableCategory = new _TableCategory();
+      _tableCategory = new TableCategory();
     }
     return _tableCategory;
   }
 }
+
+
+
+// STEP 3: Create your Database Model to be implemented SqfEntityModel
+// Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
+class MyDbModel extends SqfEntityModel {
+  MyDbModel() {
+    databaseName = "sampleORM2.db";
+    databaseTables = [
+      MyRepository.tableProduct,
+      MyRepository.tableCategory
+    ]; // put defined tables into the list. ex: [tableProduct(),tableCategories(),tablePerson()]
+    bundledDatabasePath =
+        null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+  }
+}
+
