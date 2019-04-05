@@ -76,7 +76,7 @@ class MyRepository {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORM2.db";
+    databaseName = "sampleORM38.db";
     databaseTables = [
       MyRepository.tableProduct,
       MyRepository.tableCategory

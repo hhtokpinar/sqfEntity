@@ -1437,8 +1437,8 @@ abstract class SqfEntityModel {
             }
           } else {
             // The table if not exist
-            table.initialized = true;
             SqfEntityProvider(this).execSQL(table.createTableSQL).then((_) {
+              table.initialized = true;
               print(
                   "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly with create new table'");
               if (checkForIsReadyDatabase(dbTables)) isReady(true);
