@@ -9,7 +9,7 @@ class TableCategory extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "category";
     modelName =
-        null; // when the modelName (class name) is null then EntityBase uses TableName as modelName
+        null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
