@@ -52,7 +52,7 @@ SqfEntityTable tableProduct() {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sample.db";
+    databaseName = "sampleORM.db";
     databaseTables = [
       tableProduct(),
       tableCategory()
