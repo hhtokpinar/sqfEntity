@@ -1,6 +1,6 @@
 # sqfEntity ORM for Flutter & SQFLite
 
-![ORM Preview](/assets/img/SqfEntity_ORM.gif)
+![Sqf Entity ORM Preview](/assets/img/SqfEntity_ORM.gif)
 
 SqfEntity is based on SQFlite plugin (https://github.com/tekartik/sqflite) and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
@@ -35,63 +35,73 @@ There are 7 files in the project
       http: ^0.12.0+1  
 
 
-# to Create a new Database Model
+# Create a new Database Model
 
-    class MyDbModel {
+First, create your dbmodel.dart file to define your model and import SqfEntityBase.dart 
+
+    import 'package:sqfentity/db/SqfEntityBase.dart';
+
+**STEP 1:** define your tables as shown in the example Classes below.
+ For example, we have created the product table that extended from "SqfEntityTable" as follows:
+
+      class TableProduct extends SqfEntityTable {
+
+      static SqfEntityTable _instance;
+      static SqfEntityTable get getInstance {
+      if (_instance == null) _instance = TableProduct();
+      return _instance;
+      }
+
+      TableProduct() {
   
-    // declare your sqlite database name
-    static const String databaseName = "sample.db";
-    
-    // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
-    static const String bundledDatabasePath = "assets/sample.db";
-    
-    // 1. define your tables as shown in the example Method below
-    static SqfEntityTable get tableProduct {
-    
-    // declare properties of EntityTable
-    String tableName = "product";
-    String primaryKeyName = "id";
-    bool useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table,
-    // and set to "1" this field when item deleted (does not hard delete)
-
-    // declare EntityFields List for EntityTable
-    List<SqfEntityField> fields = new List<SqfEntityField>();
-
-    // Please add your table fields instead of following dummy fields..
-    fields.add(SqfEntityField("name", DbType.text));
-    fields.add(SqfEntityField("description", DbType.text));
-    fields.add(SqfEntityField("price", DbType.real, defaultValue: "0"));
-    fields.add(SqfEntityField("isActive", DbType.bool, defaultValue: "true"));
-
-    // declare EntityTable
-    SqfEntityTable table =
-        new SqfEntityTable(tableName, primaryKeyName, fields, useSoftDeleting);
-    return table;
-    }
-
-### 2. Add the object you defined above to your list of database tables
-
-    static List<SqfEntityTable> get _databaseTables {
-    
-     var _dbTables = new List<SqfEntityTable>();
-     _dbTables.add(tableProduct);
-      //_databaseTables.add(tableCategories());
-      //_databaseTables.add(tablePerson());
-      // ... 
-      // YOU CAN ADD AS MANY TABLES (SqfEntityTable) HERE
-      return _dbTables;
+      tableName = "product";
+      primaryKeyName = "id";
+      useSoftDeleting = true;
       
-    }
+      // declare fields
+      fields = [
+            SqfEntityField("name", DbType.text),
+            SqfEntityField("description", DbType.text),
+            SqfEntityField("price", DbType.real, defaultValue: "0"),
+            SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
+            SqfEntityFieldRelationship(TableCategory.getInstance,
+            defaultValue: "0"), // Relationship column for CategoryId of Product
+      ];
+      super.init();
+      }
+      }
 
-### that's all.. one more step left for create models.dart file.
+when **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
+When item was deleted then this field value is changed to "1"  (does not hard delete)
+
+### 2. Add your table objects you defined above to your dbModel
+
+**STEP 2**: Create your Database Model to be extended from SqfEntityModel
+*Note:* SqfEntity provides support for the use of **multiple databases**.
+So you can create many Database Models and use them in your application.
+
+      class MyDbModel extends SqfEntityModel {
+         MyDbModel() {
+         databaseName = "sampleORM.db";
+            
+         // put defined tables into the list.
+         databaseTables = [ TableProduct.getInstance, TableCategory.getInstance]; 
+            
+         // This value is optional. When bundledDatabasePath is empty then 
+         // EntityBase creats a new database when initializing the database
+            bundledDatabasePath = null; // ex: "assets/sample.db"; 
+         }
+      }
+
+
+### That's all.. one more step left for create models.dart file.
   
    **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
    Use the following function to create your model and use it in your project
 
-  To get the your classes/models from the clipboard, just type 
+  To get the your classes (models) from the clipboard, just type 
   
-    SqfEntityDbContext.createModel(MyDbModel.databaseTables); 
+    MyDbModel.createModel(); 
     
   This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
   That's all.. Just press Ctrl+V to paste your model in your .dart file and reference it where you wish to use.
@@ -102,9 +112,15 @@ There are 7 files in the project
 When the software/app is started, you must check the database was it initialized.
 If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
 
-       initializeDB(VoidCallback isReady(bool result)) {
-          ...
-       }
+       MyDbModel().initializeDB((result) {
+         if (result == true)  
+         {
+            runSamples();
+           // TO DO
+           // ex: runApp(MyApp());
+           //
+         }
+      });
     
  If result is **true**, the database is ready to use
 
