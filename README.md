@@ -81,20 +81,22 @@ When item was deleted then this field value is changed to "1"  (does not hard de
 So you can create many Database Models and use them in your application.
 
       class MyDbModel extends SqfEntityModel {
+      
          MyDbModel() {
+         
          databaseName = "sampleORM.db";
-            
+         bundledDatabasePath = null; // ex: "assets/sample.db"; 
+         
          // put defined tables into the list.
-         databaseTables = [ TableProduct.getInstance, TableCategory.getInstance]; 
-            
-         // This value is optional. When bundledDatabasePath is empty then 
-         // EntityBase creats a new database when initializing the database
-            bundledDatabasePath = null; // ex: "assets/sample.db"; 
+         databaseTables = [ TableProduct.getInstance, TableCategory.getInstance ];        
+      
          }
       }
 
 
 ### That's all.. one more step left for create models.dart file.
+  
+  *bundledDatabasePath* is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   
    **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
    Use the following function to create your model and use it in your project
