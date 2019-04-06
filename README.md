@@ -1,4 +1,4 @@
-# sqfEntity ORM for Flutter & SQFLite
+# sqfEntity ORM for Flutter
 
 ![Sqf Entity ORM Preview](/assets/img/SqfEntity_ORM.gif) 
 
