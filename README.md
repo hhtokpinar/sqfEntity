@@ -234,6 +234,37 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
        
 **These were just a few samples. You can download and review dozens of examples written below**      
        
+## save() Method for insert or update (for both)
+
+    Product({name:"test product"}).save(); // inserts a new record if id is null or equals to zero
+    Product({id:1, name:"test product"}).save(); // updates record
+    
+## saveAll() Method for insert or update List (for both)
+
+    var productList= List<Product>();
+    // TO DO.. add products to list
+    
+    // Save All products in the List
+    Product().saveAll(productList).then((results) {
+        for (var result in results) 
+        print(result.toString());  
+      });
+  
+
+## UPDATE multiple records with query
+EXAMPLE 5.1: UPDATE PRODUCT SET isActive=0 WHERE ID>=10 
+
+    Product().select().id.greaterThan(10).update({"isActive": 0}).then((result) {
+           print(result.toString());
+      });
+
+
+## DELETE multiple records with query
+EXAMPLE 6.4: DELETE PRODUCT WHERE ID>17 
+
+    Product().select().id.greaterThan(17).delete().then((result) {
+           print(result.toString());
+      });
 
 ### See the following examples in main.dart for sample model use
 
