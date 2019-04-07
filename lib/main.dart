@@ -88,7 +88,7 @@ void samples1() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.2: ORDER BY FIELDS -> ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id
@@ -104,7 +104,7 @@ void samples1() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.3: SELECT SPECIFIC FIELDS -> ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC
@@ -132,7 +132,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
@@ -143,7 +143,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
@@ -165,7 +165,7 @@ void samples2() {
         "EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
     print("Toplam " + (product != null ? "1" : "0") + " sonuç listeleniyor:");
     if (product != null) print(product.toMap());
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
@@ -191,7 +191,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.8: NOT EQUALS
@@ -202,7 +202,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
@@ -220,7 +220,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.10: BETWEEN KEYWORD
@@ -236,7 +236,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.11: 'NOT' KEYWORD
@@ -247,7 +247,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
@@ -258,7 +258,7 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 1.13: Build filter and query from values from the form
@@ -294,6 +294,8 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
+        print(
+        "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
@@ -305,6 +307,8 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
+        print(
+        "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
@@ -319,6 +323,8 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
+        print(
+        "---------------------------------------------------------------\n\n");
   });
 }
 
@@ -331,7 +337,7 @@ void samples3() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 3.2: SAMPLE PAGING -> PRODUCTS in 3. page (5 items per page)
@@ -342,7 +348,7 @@ void samples3() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-    print("---------------------------------------------------------------");
+        print(         "---------------------------------------------------------------\n\n");
   });
 }
 
@@ -359,6 +365,8 @@ void samples4() {
         for (int i = 0; i < productList.length; i++) {
           print(productList[i].toMap());
         }
+            print(
+        "---------------------------------------------------------------\n\n");
       });
 
   // EXAMPLE 4.2: GROUP BY with SCALAR OR AGGREGATE FUNCTIONS ex: SELECT COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice FROM PRODUCTS GROUP BY name
@@ -388,28 +396,26 @@ void samples4() {
 }
 
 void samples5() {
-// EXAMPLE 5.1: update some filtered products
+// EXAMPLE 5.1: Update multiple records with query
   Product().select().id.greaterThan(10).update({"isActive": 0}).then((result) {
     print(
-        "EXAMPLE 5.1: update some filtered products \n -> Product().select().id.greaterThan(10).update({\"isActive\": 0});");
-    if (result.success)
-      print("${result.successMessage}");
-    else
-      print("${result.errorMessage}");
+        "EXAMPLE 5.1: Update multiple records with query \n -> Product().select().id.greaterThan(10).update({\"isActive\": 0});");
+    print(result.toString());
+        print(
+        "---------------------------------------------------------------\n\n");
   });
 
-// EXAMPLE 5.2: update some filtered products
+// EXAMPLE 5.2: Update multiple records with query
   Product()
       .select()
       .id
       .lessThanOrEquals(10)
       .update({"isActive": 1}).then((result) {
     print(
-        "EXAMPLE 5.2: update some filtered products \n -> Product().select().id.lessThanOrEquals(10).update({\"isActive\": 1});");
-    if (result.success)
-      print("${result.successMessage}");
-    else
-      print("${result.errorMessage}");
+        "EXAMPLE 5.2: uUpdate multiple records with query \n -> Product().select().id.lessThanOrEquals(10).update({\"isActive\": 1});");
+    print(result.toString());
+        print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 5.3: select product by id and update
@@ -425,6 +431,8 @@ void samples5() {
       });
     } else
       print("EXAMPLE 5.3: id=15 => product not found");
+          print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 5.4: update some filtered products with saveAll method -> Product().saveAll(productList){});
@@ -441,6 +449,8 @@ void samples5() {
 
         print(" List<BoolResult> result of saveAll method is following:");
         for (var result in results) print(result.toString());
+         print(
+            "---------------------------------------------------------------");
         print(
             "EXAMPLE 5.4: listing saved products (set rownum=i) with saveAll method;");
         for (int i = 0; i < productList.length; i++) {
@@ -469,10 +479,7 @@ void samples6() {
   Product().select().id.equals(16).delete().then((result) {
     print(
         "EXAMPLE 6.2: delete product by query filder \n -> Product().select().id.equals(16).delete();");
-    if (result.success)
-      print("${result.successMessage}");
-    else
-      print("${result.errorMessage}");
+     print(result.toString());
     print(
         "---------------------------------------------------------------\n\n");
   });
