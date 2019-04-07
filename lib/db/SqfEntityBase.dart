@@ -205,15 +205,16 @@ class SqfEntityProvider {
     for (var t in T) {
       var result = BoolResult();
       try {
-        if (t[_colId] != null && t[_colId] != 0) {
+        var o = t.toMap(forQuery: true);
+        if (o[_colId] != null &&  o[_colId] != 0) {
          
-          var uresult = await db.update(_tableName, t.toMap(forQuery: true),
-              where: "$_colId = ?", whereArgs: [t[_colId]]);
+          var uresult = await db.update(_tableName,o ,
+              where: "$_colId = ?", whereArgs: [o[_colId]]);
           if (uresult > 0)
             result.successMessage =
-                "id=" + t[_colId].toString() + " inserted updated successfuly";
+                "id=" + o[_colId].toString() + " updated successfuly";
         } else {
-          var iresult = await db.insert(_tableName, t.toMap(forQuery: true));
+          var iresult = await db.insert(_tableName, o);
           if (iresult > 0)
             result.successMessage =
                 "id=" + iresult.toString() + " inserted  successfuly";
@@ -223,7 +224,7 @@ class SqfEntityProvider {
       } catch (e) {
         result.successMessage = null;
         result.errorMessage = e.toString();
-      }
+         }
      
     }
      return results;
@@ -394,7 +395,7 @@ class SqfEntityObjectBuilder {
     }
   
     /// <summary>
-    /// SaveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
+    /// saveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
     /// </summary>
     /// <returns>Returns a new Primary Key value of ${_table.modelName}</returns>
     Future<int> get saveAs async {
@@ -403,6 +404,15 @@ class SqfEntityObjectBuilder {
       return ${_table.primaryKeyName};
     }
   
+    /// <summary>
+    /// saveAll method saves the sent List<${_table.modelName}> as a batch in one transaction 
+    /// </summary>
+    /// <returns> Returns a <List<BoolResult>> </returns>
+    Future<List<BoolResult>> saveAll(List<${_table.modelName}> ${toPluralName(_table.modelLowerCase)}) async {
+      var results = _mn${_table.modelName}.saveAll(${toPluralName(_table.modelLowerCase)});
+      return results;
+    }
+
     /// <summary>
     /// Deletes ${_table.modelName}
     /// </summary>
@@ -517,7 +527,7 @@ class SqfEntityObjectBuilder {
       if (field is SqfEntityFieldRelationship) {
         retVal += """
  get${field.relationshipName}(VoidCallback ${field.relationshipName.toLowerCase()}(${field.table.modelName} o)) {
-    Category().getById(${field.fieldName}, (obj) {
+    ${field.relationshipName}().getById(${field.fieldName}, (obj) {
       ${field.relationshipName.toLowerCase()}(obj);
     });
   }
@@ -528,18 +538,7 @@ class SqfEntityObjectBuilder {
       retVal = "\n// RELATIONSHIPS\n$retVal// END RELATIONSHIPS\n";
     return retVal;
   }
-  //   getProducts(VoidCallback productList(List<Product> o)) {
-  //   Product().select().categoryId.equals(id).toList((objList) {
-  //     productList(objList);
-  //   });
-  // }
-
-  //    getCategories(VoidCallback categoryList(List<Category> o)) {
-  //   Category().select().categoryId.equals(id).toList((objList) {
-  //     productList(objList);
-  //   });
-  // }
-
+ 
   __createObjectCollections() {
     String retVal = "";
     for (var tableCollecion in _table.collections) {
@@ -1233,6 +1232,13 @@ class BoolResult {
   String successMessage;
   String errorMessage;
   bool success;
+  @override
+  String toString() {
+    if(success)
+    return successMessage != null && successMessage != "" ? successMessage: "Result: OK! Successful" ;
+    else
+    return errorMessage != null && errorMessage != "" ? errorMessage: "Result: ERROR!" ;
+  }
 }
 
 class DbParameter {
