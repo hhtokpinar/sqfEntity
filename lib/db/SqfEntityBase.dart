@@ -92,7 +92,7 @@ class SqfEntityProvider {
 
   Future<dynamic> getById(int id) async {
     Database db = await this.db;
-    var query = "Select * from $_tableName where id=$id";
+    var query = "Select * from $_tableName where $_colId=$id";
     var result = await db.rawQuery(query);
     return result;
   }
@@ -187,8 +187,9 @@ class SqfEntityProvider {
 
   Future<int> update(T) async {
     Database db = await this.db;
-    var result = await db.update(_tableName, T.toMap(forQuery: true),
-        where: "$_colId = ?", whereArgs: [T.id]);
+    var o = T.toMap(forQuery: true);
+    var result = await db.update(_tableName, o,
+        where: "$_colId = ?", whereArgs: [o[_colId]]);
     return result;
   }
 
@@ -196,6 +197,36 @@ class SqfEntityProvider {
     Database db = await this.db;
     var result = await db.insert(_tableName, T.toMap(forQuery: true));
     return result;
+  }
+
+  Future<List<BoolResult>> saveAll(List T) async {
+    var results = List<BoolResult>();
+    Database db = await this.db;
+    for (var t in T) {
+      var result = BoolResult();
+      try {
+        if (t[_colId] != null && t[_colId] != 0) {
+         
+          var uresult = await db.update(_tableName, t.toMap(forQuery: true),
+              where: "$_colId = ?", whereArgs: [t[_colId]]);
+          if (uresult > 0)
+            result.successMessage =
+                "id=" + t[_colId].toString() + " inserted updated successfuly";
+        } else {
+          var iresult = await db.insert(_tableName, t.toMap(forQuery: true));
+          if (iresult > 0)
+            result.successMessage =
+                "id=" + iresult.toString() + " inserted  successfuly";
+        }
+        result.success = true;
+        results.add(result);
+      } catch (e) {
+        result.successMessage = null;
+        result.errorMessage = e.toString();
+      }
+     
+    }
+     return results;
   }
 }
 // END DATABASE PROVIDER
@@ -225,10 +256,10 @@ $_createObjectField
 
   __createObjectField() {
     String retVal = """
-  static TableField _fId;
-  static TableField get id {
-    _fId = SqlSyntax.setField(_fId, "id", ${DbType.integer.toString()});
-    return _fId;
+  static TableField _f${toCamelCase(_table.primaryKeyName)};
+  static TableField get ${_table.primaryKeyName.toLowerCase()} {
+    _f${toCamelCase(_table.primaryKeyName)} = SqlSyntax.setField(_f${toCamelCase(_table.primaryKeyName)}, "${_table.primaryKeyName.toLowerCase()}", ${DbType.integer.toString()});
+    return _f${toCamelCase(_table.primaryKeyName)};
   }
 """;
 
@@ -245,7 +276,7 @@ $_createObjectField
       retVal += """
   static TableField _fIsDeleted;
   static TableField get isDeleted {
-    _fIsDeleted = SqlSyntax.setField(_fId, "isDeleted", ${DbType.integer.toString()});
+    _fIsDeleted = SqlSyntax.setField(_fIsDeleted, "isDeleted", ${DbType.integer.toString()});
     return _fIsDeleted;
   }
     """;
@@ -336,9 +367,9 @@ class SqfEntityObjectBuilder {
     /// returns ${_table.modelName} by ID if exist, otherwise returns null
     /// <param name="id">Primary Key Value</param>
     /// <returns>returns ${_table.modelName} if exist, otherwise returns null</returns>
-    getById(int id, VoidCallback ${_table.modelLowerCase}(${_table.modelName} o)) {
+    getById(int ${_table.primaryKeyName.toLowerCase()}, VoidCallback ${_table.modelLowerCase}(${_table.modelName} o)) {
       ${_table.modelName} ${_table.modelLowerCase}Obj;
-      var ${_table.modelLowerCase}Future = _mn${_table.modelName}.getById(id);
+      var ${_table.modelLowerCase}Future = _mn${_table.modelName}.getById(${_table.primaryKeyName.toLowerCase()});
       ${_table.modelLowerCase}Future.then((data) {
         if (data.length > 0)
           ${_table.modelLowerCase}Obj = ${_table.modelName}.fromMap(data[0]);
@@ -513,7 +544,7 @@ class SqfEntityObjectBuilder {
     String retVal = "";
     for (var tableCollecion in _table.collections) {
       retVal += """
-   get${toCollectionName(tableCollecion.childTable.modelName)}(VoidCallback ${tableCollecion.childTable.modelLowerCase}List(List<${tableCollecion.childTable.modelName}> o)) {
+   get${toPluralName(tableCollecion.childTable.modelName)}(VoidCallback ${tableCollecion.childTable.modelLowerCase}List(List<${tableCollecion.childTable.modelName}> o)) {
     ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).toList((objList) {
       ${tableCollecion.childTable.modelLowerCase}List(objList);
     });
@@ -1233,7 +1264,7 @@ class SqfEntityTable {
   String modelName;
   String dbModel;
   bool initialized;
-  
+
   SqfEntityTable init() {
     if (modelName == null)
       modelName = tableName.substring(0, 1).toUpperCase() +
@@ -1244,7 +1275,8 @@ class SqfEntityTable {
         .replaceAll("'", "")
         .trim();
     initialized = false;
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> SqfEntityTable of '$tableName' initialized successfuly");
+    print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>> SqfEntityTable of '$tableName' initialized successfuly");
     return this;
   }
 
@@ -1261,10 +1293,12 @@ class SqfEntityTable {
     _createTableSQL += ")";
     return _createTableSQL;
   }
-  
 }
 
-String toCollectionName(String fieldName) => fieldName.endsWith("y")
+String toCamelCase(String fieldName) =>  fieldName.length==1 ? fieldName.toUpperCase(): fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1).toLowerCase();
+   
+
+String toPluralName(String fieldName) => fieldName.endsWith("y")
     ? fieldName.substring(0, fieldName.length - 1) + "ies"
     : (fieldName.endsWith("s")) ? fieldName + "es" : fieldName + "s";
 
