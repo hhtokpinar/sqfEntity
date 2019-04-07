@@ -251,10 +251,7 @@ void samples2() {
   });
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
-  Product()
-      .select()
-      .where("id IN (3,6,9) OR price>8000")
-      .toList((productList) {
+  Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
     print(
         "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
@@ -430,7 +427,7 @@ void samples5() {
       print("EXAMPLE 5.3: id=15 => product not found");
   });
 
-// EXAMPLE 5.4: select product by id and update
+// EXAMPLE 5.4: update some filtered products with saveAll method -> Product().saveAll(productList){});
   Product().select().toList((productList) {
     int i = 0;
     for (var product in productList) {
@@ -441,6 +438,8 @@ void samples5() {
       Product().select().toList((productList) {
         print(
             "EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});");
+
+        print(" List<BoolResult> result of saveAll method is following:");
         for (var result in results) print(result.toString());
         print(
             "EXAMPLE 5.4: listing saved products (set rownum=i) with saveAll method;");
