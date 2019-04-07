@@ -4,7 +4,7 @@ import 'package:sqfentity/db/MyDbModel.dart';
 import 'package:sqfentity/models/Product.dart';
 
 void main(List<String> args) {
-  // 1- creates a simple  Model named product and sets the clipboard for paste into your product.dart file
+  // 1- creates a simple  Model named product and sets the clipboard for paste into your Product.dart file
   createSqfEntityModelString();
 
   // 2- run Entity Model samples
@@ -251,7 +251,10 @@ void samples2() {
   });
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
-  Product().select().where("id IN (3,6,9) OR price>8000").toList((productList) {
+  Product()
+      .select()
+      .where("id IN (3,6,9) OR price>8000")
+      .toList((productList) {
     print(
         "EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\"id IN (3,6,9) OR price>8000\").toList()");
     print("${productList.length} matches found:");
@@ -390,6 +393,8 @@ void samples4() {
 void samples5() {
 // EXAMPLE 5.1: update some filtered products
   Product().select().id.greaterThan(10).update({"isActive": 0}).then((result) {
+    print(
+        "EXAMPLE 5.1: update some filtered products \n -> Product().select().id.greaterThan(10).update({\"isActive\": 0});");
     if (result.success)
       print("${result.successMessage}");
     else
@@ -402,6 +407,8 @@ void samples5() {
       .id
       .lessThanOrEquals(10)
       .update({"isActive": 1}).then((result) {
+    print(
+        "EXAMPLE 5.2: update some filtered products \n -> Product().select().id.lessThanOrEquals(10).update({\"isActive\": 1});");
     if (result.success)
       print("${result.successMessage}");
     else
@@ -409,17 +416,41 @@ void samples5() {
   });
 
 // EXAMPLE 5.3: select product by id and update
-  Product().getById(15, (product) {
+  Product().getById(15, (product2) {
 // TO DO
 // update product object if exist
-    if (product != null) {
-      product.isActive = true;
-      product.description += " (updated)";
-      product.save().then((result) {
-        print("id=$result Product item updated: " + product.toMap().toString());
+    if (product2 != null) {
+      product2.isActive = true;
+      product2.description += " (updated)";
+      product2.save().then((result) {
+        print("EXAMPLE 5.3: id=$result Product item updated: " +
+            product2.toMap().toString());
       });
     } else
-      print("id=15 => product not found");
+      print("EXAMPLE 5.3: id=15 => product not found");
+  });
+
+// EXAMPLE 5.4: select product by id and update
+  Product().select().toList((productList) {
+    int i = 0;
+    for (var product in productList) {
+      i++;
+      product.rownum = i;
+    }
+    Product().saveAll(productList).then((results) {
+      Product().select().toList((productList) {
+        print(
+            "EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});");
+        for (var result in results) print(result.toString());
+        print(
+            "EXAMPLE 5.4: listing saved products (set rownum=i) with saveAll method;");
+        for (int i = 0; i < productList.length; i++) {
+          print(productList[i].toMap());
+        }
+        print(
+            "---------------------------------------------------------------");
+      });
+    });
   });
 }
 
@@ -454,7 +485,7 @@ void samples6() {
     if (product != null) {
       product.delete().then((result) {
         print(
-            "EXAMPLE 6.3: delete product if exist \n -> if (product != null) product.delete();");
+            "EXAMPLE 6.3: delete product if exist \n -> if (product != null) Product.delete();");
         if (result.success)
           print("${result.successMessage}");
         else
@@ -483,23 +514,23 @@ void samples6() {
 }
 
 void samples7() {
-  // EXAMPLE 7.1: goto Category Object from Product \n-> product.category((_category) {});
+  // EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {});
   Product().getById(3, (product) {
     product.getCategory((category) {
       print(
-          "EXAMPLE 7.1: goto Category Object from Product \n-> product.category((_category) {}); ");
+          "EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {}); ");
 
       print("The category of '${product.name}' is: " +
           category.toMap().toString());
     });
   });
 
-  // EXAMPLE 7.2: list Products of Categories \n-> product.category((_category) {});
+  // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   Category().select().toList((categoryList) {
     for (var category in categoryList)
       category.getProducts((productList) {
         print(
-            "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> product.category((_category) {}); ");
+            "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> Product.category((_category) {}); ");
         print("${productList.length} matches found:");
         for (int i = 0; i < productList.length; i++) {
           print(productList[i].toMap());
@@ -511,7 +542,7 @@ void samples7() {
 }
 
 void addSomeProducts(VoidCallback isReady(bool ready)) {
-  // add new products if not any product..
+  // add new products if not any Product..
   Category().select().toSingle((category) {
     if (category == null) {
       addCategories((ready) {
@@ -537,55 +568,63 @@ void addProducts(VoidCallback isReady(bool ready)) {
   Product().select().toSingle((product) {
     if (product == null) {
       // some dummy rows for select (id:1- to 15)
-      Product.withFields("Notebook 12\"", "128 GB SSD i7", 6899, true, 1, false)
-          .save();
-      Product.withFields("Notebook 12\"", "256 GB SSD i7", 8244, true, 1, false)
-          .save();
-      Product.withFields("Notebook 12\"", "512 GB SSD i7", 9214, true, 1, false)
-          .save();
-
-      Product.withFields("Notebook 13\"", "128 GB SSD", 8500, true, 1, false)
-          .save();
-      Product.withFields("Notebook 13\"", "256 GB SSD", 9900, true, 1, false)
-          .save();
-      Product.withFields("Notebook 13\"", "512 GB SSD", 11000, null, 1, false)
-          .save();
-
-      Product.withFields("Notebook 15\"", "128 GB SSD", 8999, null, 1, false)
-          .save();
-      Product.withFields("Notebook 15\"", "256 GB SSD", 10499, null, 1, false)
-          .save();
-      Product.withFields("Notebook 15\"", "512 GB SSD", 11999, true, 1, false)
-          .save();
-
       Product.withFields(
-              "Ultrabook 13\"", "128 GB SSD i5", 9954, true, 2, false)
+              "Notebook 12\"", "128 GB SSD i7", 6899, true, 1, 0, false)
           .save();
       Product.withFields(
-              "Ultrabook 13\"", "256 GB SSD i5", 11154, true, 2, false)
+              "Notebook 12\"", "256 GB SSD i7", 8244, true, 1, 0, false)
           .save();
       Product.withFields(
-              "Ultrabook 13\"", "512 GB SSD i5", 13000, true, 2, false)
+              "Notebook 12\"", "512 GB SSD i7", 9214, true, 1, 0, false)
+          .save();
+
+      Product.withFields("Notebook 13\"", "128 GB SSD", 8500, true, 1, 0, false)
+          .save();
+      Product.withFields("Notebook 13\"", "256 GB SSD", 9900, true, 1, 0, false)
+          .save();
+      Product.withFields(
+              "Notebook 13\"", "512 GB SSD", 11000, null, 1, 0, false)
+          .save();
+
+      Product.withFields("Notebook 15\"", "128 GB SSD", 8999, null, 1, 0, false)
+          .save();
+      Product.withFields(
+              "Notebook 15\"", "256 GB SSD", 10499, null, 1, 0, false)
+          .save();
+      Product.withFields(
+              "Notebook 15\"", "512 GB SSD", 11999, true, 1, 0, false)
           .save();
 
       Product.withFields(
-              "Ultrabook 15\"", "128 GB SSD i7", 11000, true, 2, false)
+              "Ultrabook 13\"", "128 GB SSD i5", 9954, true, 2, 0, false)
           .save();
       Product.withFields(
-              "Ultrabook 15\"", "256 GB SSD i7", 12000, true, 2, false)
+              "Ultrabook 13\"", "256 GB SSD i5", 11154, true, 2, 0, false)
           .save();
       Product.withFields(
-              "Ultrabook 15\"", "512 GB SSD i7", 14000, true, 2, false)
+              "Ultrabook 13\"", "512 GB SSD i5", 13000, true, 2, 0, false)
+          .save();
+
+      Product.withFields(
+              "Ultrabook 15\"", "128 GB SSD i7", 11000, true, 2, 0, false)
+          .save();
+      Product.withFields(
+              "Ultrabook 15\"", "256 GB SSD i7", 12000, true, 2, 0, false)
+          .save();
+      Product.withFields(
+              "Ultrabook 15\"", "512 GB SSD i7", 14000, true, 2, 0, false)
           .save()
           .then((_) {
         print("added 15 new products");
 
         // add a few dummy products for delete (id:16 to 20)
-        Product.withFields("Product 1", "", 0, true, 0, false).save();
-        Product.withFields("Product 2", "", 0, true, 0, false).save();
-        Product.withFields("Product 3", "", 0, true, 0, false).save();
-        Product.withFields("Product 4", "", 0, true, 0, false).save();
-        Product.withFields("Product 5", "", 0, true, 0, false).save().then((_) {
+        Product.withFields("Product 1", "", 0, true, 0, 0, false).save();
+        Product.withFields("Product 2", "", 0, true, 0, 0, false).save();
+        Product.withFields("Product 3", "", 0, true, 0, 0, false).save();
+        Product.withFields("Product 4", "", 0, true, 0, 0, false).save();
+        Product.withFields("Product 5", "", 0, true, 0, 0, false)
+            .save()
+            .then((_) {
           print("added 5 dummy products");
           isReady(true);
         });

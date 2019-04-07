@@ -21,6 +21,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
   double price;
   bool isActive;
   int categoryId;
+  int rownum;
   bool isDeleted;
 // end FIELDS
     
@@ -42,11 +43,11 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
       return __mnProduct;
     }
   
-    Product({this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
+    Product({this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.rownum,this.isDeleted
 }) { setDefaultValues();}
-    Product.withFields(this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
+    Product.withFields(this.name,this.description,this.price,this.isActive,this.categoryId,this.rownum,this.isDeleted
 ){ setDefaultValues();}
-    Product.withId(this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.isDeleted
+    Product.withId(this.id, this.name,this.description,this.price,this.isActive,this.categoryId,this.rownum,this.isDeleted
 ){ setDefaultValues();}
   
     // methods
@@ -57,6 +58,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     if (price != null) map["price"] = price;
     if (isActive != null) map["isActive"] = forQuery? (isActive ? 1 : 0) : isActive;
     if (categoryId != null) map["categoryId"] = categoryId;
+    if (rownum != null) map["rownum"] = rownum;
   if (isDeleted != null) map["isDeleted"] = forQuery? (isDeleted ? 1 : 0):isDeleted;
 
       return map;
@@ -69,6 +71,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     this.price = o["price"];
     this.isActive = o["isActive"] != null ? o["isActive"] == 1 : null;
     this.categoryId = o["categoryId"];
+    this.rownum = o["rownum"];
   this.isDeleted = o["isDeleted"] != null ? o["isDeleted"] == 1 : null;
       }
   
@@ -79,6 +82,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     this.price = o["price"];
     this.isActive = o["isActive"] != null ? o["isActive"] == 1 : null;
     this.categoryId = o["categoryId"];
+    this.rownum = o["rownum"];
   this.isDeleted = o["isDeleted"] != null ? o["isDeleted"] == 1 : null;
       }
     
@@ -122,26 +126,35 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
     Future<int> save() async {
       if (id == null || id == 0)
         id = await _mnProduct.insert(
-            Product.withFields(name,description,price,isActive,categoryId,isDeleted
+            Product.withFields(name,description,price,isActive,categoryId,rownum,isDeleted
 ));
       else
         _mnProduct.update(
-            Product.withId(id, name,description,price,isActive,categoryId,isDeleted
+            Product.withId(id, name,description,price,isActive,categoryId,rownum,isDeleted
 ));
       return id;
     }
   
     /// <summary>
-    /// SaveAs Product. Returns a new Primary Key value of Product
+    /// saveAs Product. Returns a new Primary Key value of Product
     /// </summary>
     /// <returns>Returns a new Primary Key value of Product</returns>
     Future<int> get saveAs async {
       id = await _mnProduct.insert(
-          Product.withFields(name,description,price,isActive,categoryId,isDeleted
+          Product.withFields(name,description,price,isActive,categoryId,rownum,isDeleted
 ));
       return id;
     }
   
+    /// <summary>
+    /// saveAll method saves the sent List<Product> as a batch in one transaction 
+    /// </summary>
+    /// <returns> Returns a <List<BoolResult>> </returns>
+    Future<List<BoolResult>> saveAll(List<Product> products) async {
+      var results = _mnProduct.saveAll(products);
+      return results;
+    }
+
     /// <summary>
     /// Deletes Product
     /// </summary>
@@ -176,6 +189,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
       if(price==null) price=0;
 if(isActive==null) isActive=false;
 if(categoryId==null) categoryId=0;
+if(rownum==null) rownum=0;
    if(isDeleted==null) isDeleted=false;
     }
     //end methods
@@ -514,6 +528,11 @@ class ProductFilterBuilder extends SearchCriteria {
     _categoryId = setField(_categoryId, "categoryId", DbType.integer);
     return _categoryId;
   }
+          ProductField _rownum;
+  ProductField get rownum {
+    _rownum = setField(_rownum, "rownum", DbType.integer);
+    return _rownum;
+  }
           ProductField _isDeleted;
   ProductField get isDeleted {
     _isDeleted = setField(_isDeleted, "isDeleted", DbType.bool);
@@ -679,9 +698,14 @@ class ProductFields {
     _fCategoryId = SqlSyntax.setField(_fCategoryId, "categoryId", DbType.integer);
     return _fCategoryId;
   }
+  static TableField _fRownum;
+  static TableField get rownum {
+    _fRownum = SqlSyntax.setField(_fRownum, "rownum", DbType.integer);
+    return _fRownum;
+  }
   static TableField _fIsDeleted;
   static TableField get isDeleted {
-    _fIsDeleted = SqlSyntax.setField(_fId, "isDeleted", DbType.integer);
+    _fIsDeleted = SqlSyntax.setField(_fIsDeleted, "isDeleted", DbType.integer);
     return _fIsDeleted;
   }
     
@@ -816,7 +840,7 @@ class ProductManager extends SqfEntityProvider {
     }
   
     /// <summary>
-    /// SaveAs Category. Returns a new Primary Key value of Category
+    /// saveAs Category. Returns a new Primary Key value of Category
     /// </summary>
     /// <returns>Returns a new Primary Key value of Category</returns>
     Future<int> get saveAs async {
@@ -826,6 +850,15 @@ class ProductManager extends SqfEntityProvider {
       return id;
     }
   
+    /// <summary>
+    /// saveAll method saves the sent List<Category> as a batch in one transaction 
+    /// </summary>
+    /// <returns> Returns a <List<BoolResult>> </returns>
+    Future<List<BoolResult>> saveAll(List<Category> categories) async {
+      var results = _mnCategory.saveAll(categories);
+      return results;
+    }
+
     /// <summary>
     /// Deletes Category
     /// </summary>
@@ -1333,7 +1366,7 @@ class CategoryFields {
   }
   static TableField _fIsDeleted;
   static TableField get isDeleted {
-    _fIsDeleted = SqlSyntax.setField(_fId, "isDeleted", DbType.integer);
+    _fIsDeleted = SqlSyntax.setField(_fIsDeleted, "isDeleted", DbType.integer);
     return _fIsDeleted;
   }
     

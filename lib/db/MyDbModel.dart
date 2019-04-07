@@ -3,7 +3,6 @@ import 'package:sqfentity/db/SqfEntityBase.dart';
 // STEP 1: define your tables as shown in the example Classes below.
 // Define the "TableCategory" sample table as extended from "SqfEntityTable".
 class TableCategory extends SqfEntityTable {
-  
   static SqfEntityTable _instance;
   static SqfEntityTable get getInstance {
     if (_instance == null) _instance = TableCategory();
@@ -49,9 +48,11 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("name", DbType.text),
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
+
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
       SqfEntityFieldRelationship(TableCategory.getInstance,
           defaultValue: "0"), // Relationship column for CategoryId of Product
+      SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
     ];
     super.init();
   }
