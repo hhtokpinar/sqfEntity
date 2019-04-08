@@ -188,8 +188,8 @@ class SqfEntityProvider {
   Future<int> update(T) async {
     Database db = await this.db;
     var o = T.toMap(forQuery: true);
-    var result = await db.update(_tableName, o,
-        where: "$_colId = ?", whereArgs: [o[_colId]]);
+    var result = await db
+        .update(_tableName, o, where: "$_colId = ?", whereArgs: [o[_colId]]);
     return result;
   }
 
@@ -206,9 +206,8 @@ class SqfEntityProvider {
       var result = BoolResult();
       try {
         var o = t.toMap(forQuery: true);
-        if (o[_colId] != null &&  o[_colId] != 0) {
-         
-          var uresult = await db.update(_tableName,o ,
+        if (o[_colId] != null && o[_colId] != 0) {
+          var uresult = await db.update(_tableName, o,
               where: "$_colId = ?", whereArgs: [o[_colId]]);
           if (uresult > 0)
             result.successMessage =
@@ -224,10 +223,9 @@ class SqfEntityProvider {
       } catch (e) {
         result.successMessage = null;
         result.errorMessage = e.toString();
-         }
-     
+      }
     }
-     return results;
+    return results;
   }
 }
 // END DATABASE PROVIDER
@@ -343,10 +341,6 @@ class SqfEntityObjectBuilder {
       $_toFromMapString
       }
   
-      ${_table.modelName}.fromObjectExclude(dynamic o) {
-      $_toFromMapString
-      }
-    
     Future<List<${_table.modelName}>> fromObjectList(Future<List<dynamic>> o) async {
       var ${_table.modelLowerCase}sList = new List<${_table.modelName}>();
       o.then((data) {
@@ -538,7 +532,7 @@ class SqfEntityObjectBuilder {
       retVal = "\n// RELATIONSHIPS\n$retVal// END RELATIONSHIPS\n";
     return retVal;
   }
- 
+
   __createObjectCollections() {
     String retVal = "";
     for (var tableCollecion in _table.collections) {
@@ -1234,10 +1228,14 @@ class BoolResult {
   bool success;
   @override
   String toString() {
-    if(success)
-    return successMessage != null && successMessage != "" ? successMessage: "Result: OK! Successful" ;
+    if (success)
+      return successMessage != null && successMessage != ""
+          ? successMessage
+          : "Result: OK! Successful";
     else
-    return errorMessage != null && errorMessage != "" ? errorMessage: "Result: ERROR!" ;
+      return errorMessage != null && errorMessage != ""
+          ? errorMessage
+          : "Result: ERROR!";
   }
 }
 
@@ -1272,9 +1270,11 @@ class SqfEntityTable {
   bool initialized;
 
   SqfEntityTable init() {
-    if (modelName == null)
-      modelName = tableName.substring(0, 1).toUpperCase() +
-          tableName.substring(1).toLowerCase();
+    if (modelName == null) {
+      modelName = toSingularName(tableName);
+      modelName = modelName.substring(0, 1).toUpperCase() +
+          modelName.substring(1).toLowerCase();
+    }
     dbModel = dbModel
         .toString()
         .replaceAll("Instance of", "")
@@ -1301,12 +1301,18 @@ class SqfEntityTable {
   }
 }
 
-String toCamelCase(String fieldName) =>  fieldName.length==1 ? fieldName.toUpperCase(): fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1).toLowerCase();
-   
+String toCamelCase(String fieldName) => fieldName.length == 1
+    ? fieldName.toUpperCase()
+    : fieldName.substring(0, 1).toUpperCase() +
+        fieldName.substring(1).toLowerCase();
 
-String toPluralName(String fieldName) => fieldName.endsWith("y")
-    ? fieldName.substring(0, fieldName.length - 1) + "ies"
-    : (fieldName.endsWith("s")) ? fieldName + "es" : fieldName + "s";
+String toPluralName(String s) => s.endsWith("y")
+    ? s.substring(0, s.length - 1) + "ies"
+    : (s.endsWith("s")) ? s + "es" : s + "s";
+
+String toSingularName(String s) => s.endsWith("ies")? s.substring(0,s.length-3) + "y": 
+      s.endsWith("ses")? s.substring(0,s.length-3) + "s": 
+      s.endsWith("s")? s.substring(0,s.length-1):s;
 
 abstract class SqfEntityFieldType {
   final String fieldName;
