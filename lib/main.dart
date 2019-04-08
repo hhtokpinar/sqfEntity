@@ -524,7 +524,7 @@ void samples7() {
   Product().getById(3, (product) {
     product.getCategory((category) {
       print(
-          "EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {}); ");
+          "EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory((_category) {}); ");
 
       print("The category of '${product.name}' is: " +
           category.toMap().toString());
@@ -536,7 +536,7 @@ void samples7() {
     for (var category in categoryList)
       category.getProducts((productList) {
         print(
-            "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> Product.category((_category) {}); ");
+            "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> category.getProducts((productList) {}); ");
         print("${productList.length} matches found:");
         for (int i = 0; i < productList.length; i++) {
           print(productList[i].toMap());
