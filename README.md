@@ -60,13 +60,13 @@ First, create your dbmodel.dart file to define your model and import SqfEntityBa
       
       // declare fields
       fields = [
-            SqfEntityField("name", DbType.text),
-            SqfEntityField("description", DbType.text),
-            SqfEntityField("price", DbType.real, defaultValue: "0"),
-            SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-            SqfEntityFieldRelationship(TableCategory.getInstance,
-            defaultValue: "0"), // Relationship column for CategoryId of Product
-      ];
+          SqfEntityField("name", DbType.text),
+          SqfEntityField("description", DbType.text),
+          SqfEntityField("price", DbType.real, defaultValue: "0"),
+          SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
+          SqfEntityFieldRelationship(TableCategory.getInstance, defaultValue: "0"), // Relationship column for CategoryId of Product
+          SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
+        ];
       super.init();
       }
       }
