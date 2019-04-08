@@ -232,6 +232,39 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
                           .toListObject()
        
        
+## RELATIONSHIPS
+
+    EXAMPLE 7.1: goto Category from Product 
+    
+    Product().getById(1, (product) {
+        product.category((_category) {
+        print(_category.toMap());
+        });
+    });
+    
+    
+    Results:
+    {id: 1, name: Notebooks, isActive: true, isDeleted: false}
+    
+    
+    EXAMPLE 7.2: Products of 'Notebooks Category' listing 
+    
+    Category().getById(1, (category) {
+    
+        category.getProducts((productList) {
+            for(var product in productList)
+                print(product.toMap());
+        });
+        
+    });
+    
+    Results: Products of 'Notebooks' listing 9 matches found:
+    {id: 1, name: Notebook 12", description: 128 GB SSD i7, price: 6899.0, isActive: true, categoryId: 1, rownum: 1, isDeleted: false}
+    {id: 2, name: Notebook 12", description: 256 GB SSD i7, price: 8244.0, isActive: true, categoryId: 1, rownum: 0, isDeleted: false}
+    ....
+    
+    
+
 **These were just a few samples. You can download and review dozens of examples written below**      
        
 ## save() Method for insert or update (for both)
@@ -614,8 +647,8 @@ EXAMPLE 6.4: DELETE PRODUCT WHERE ID>17
     flutter: The category of 'Notebook 12"' is: {id: 1, name: Notebooks, isActive: true, isDeleted: false}
     flutter:
     flutter:
-    flutter: EXAMPLE 7.2.1: Products of 'Notebooks' listing 
-    -> Product.category((_category) {});
+    flutter: EXAMPLE 7.2: Products of 'Notebooks' listing 
+    -> category.getProducts((productList) {});
     flutter: 9 matches found:
     flutter: {id: 1, name: Notebook 12", description: 128 GB SSD i7, price: 6899.0, isActive: true, categoryId: 1, rownum: 1, isDeleted: false}
     flutter: {id: 2, name: Notebook 12", description: 256 GB SSD i7, price: 8244.0, isActive: true, categoryId: 1, rownum: 0, isDeleted: false}
