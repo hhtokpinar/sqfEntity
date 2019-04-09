@@ -104,7 +104,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
       }
       }
 
-If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column in fields for Object Relational Mapping.
+If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
 
 
 *Table 3: Todo*
