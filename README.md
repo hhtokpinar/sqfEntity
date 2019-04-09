@@ -42,7 +42,40 @@ First, create your dbmodel.dart file to define your model and import SqfEntityBa
     import 'package:sqfentity/db/SqfEntityBase.dart';
 
 **STEP 1:** define your tables as shown in the example Classes below.
- For example, we have created the product table that extended from "SqfEntityTable" as follows:
+ For example, we have created 3 tables for category,product and todo that extended from "SqfEntityTable" as follows:
+
+
+*Table 1: Category*
+
+    class TableCategory extends SqfEntityTable {
+      static SqfEntityTable _instance;
+      static SqfEntityTable get getInstance {
+        if (_instance == null) _instance = TableCategory();
+        return _instance;
+      }
+
+      TableCategory() {
+
+        tableName = "category";
+        modelName = null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
+        primaryKeyName = "id";
+        primaryKeyisIdentity = true;
+        useSoftDeleting = true;
+
+        fields = [
+          SqfEntityField("name", DbType.text),
+          SqfEntityField("isActive", DbType.bool, defaultValue: "true")
+        ];
+
+        super.init();
+      }
+    }
+
+If **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
+When item was deleted then this field value is changed to "1"  (does not hard delete)
+If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
+
+*Table 2: Product*
 
       class TableProduct extends SqfEntityTable {
 
@@ -71,8 +104,39 @@ First, create your dbmodel.dart file to define your model and import SqfEntityBa
       }
       }
 
-when **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
-When item was deleted then this field value is changed to "1"  (does not hard delete)
+If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column in fields for Object Relational Mapping.
+
+
+*Table 3: Todo*
+
+    This table is for creating a synchronization with json data from the web url
+    class TableTodo extends SqfEntityTable {
+      static SqfEntityTable __instance;
+      static SqfEntityTable get getInstance {
+        if (__instance == null) __instance = TableTodo();
+        return __instance;
+      }
+
+      TableTodo() {
+        // declare properties of EntityTable
+        tableName = "todos";
+        modelName =
+            null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
+        primaryKeyName = "id";
+        useSoftDeleting = false;
+        primaryKeyisIdentity = false;
+        defaultJsonUrl = "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
+
+        fields = [
+          SqfEntityField("userId", DbType.integer),
+          SqfEntityField("title", DbType.text),
+          SqfEntityField("completed", DbType.bool, defaultValue: "false")
+        ];
+
+        super.init();
+      }
+    }
+
 
 ### 2. Add your table objects you defined above to your dbModel
 
@@ -88,7 +152,7 @@ So you can create many Database Models and use them in your application.
          bundledDatabasePath = null; // ex: "assets/sample.db"; 
          
          // put defined tables into the list.
-         databaseTables = [ TableProduct.getInstance, TableCategory.getInstance ];        
+         databaseTables = [ TableProduct.getInstance,  TableCategory.getInstance,  TableTodo.getInstance  ];        
       
          }
       }
