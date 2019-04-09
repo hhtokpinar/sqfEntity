@@ -202,14 +202,13 @@ class SqfEntityProvider {
   Future<int> rawInsert(String pSql, List<dynamic> params) async {
     Database db = await this.db;
     var result =
-        await db.rawInsert(pSql.replaceAll("[\$table]", _tableName), params);
+        await db.rawInsert(pSql, params);
     return result;
   }
 
   Future<List<BoolResult>> rawInsertAll(String pSql, List<dynamic> params) async {
     var results = List<BoolResult>();
     Database db = await this.db;
-    pSql = pSql.replaceAll("[\$table]", _tableName);
     for (var t in params) {
       var result = BoolResult();
       try {
@@ -228,7 +227,7 @@ class SqfEntityProvider {
     return results;
   }
 
-  Future<List<BoolResult>> saveAll(List T) async {
+  Future<List<BoolResult>> saveAll(String pSql, List T) async {
     var results = List<BoolResult>();
     Database db = await this.db;
     for (var t in T) {
@@ -236,11 +235,10 @@ class SqfEntityProvider {
       try {
         var o = t.toMap(forQuery: true);
         if (o[_colId] != null && o[_colId] != 0) {
-          var uresult = await db.update(_tableName, o,
-              where: "$_colId = ?", whereArgs: [o[_colId]]);
+          var uresult = await db.rawInsert(pSql, t.toArgs());
           if (uresult > 0)
             result.successMessage =
-                "id=" + o[_colId].toString() + " updated successfuly";
+                "id=" + o[_colId].toString() + " upserted successfuly";
         } else {
           var iresult = await db.insert(_tableName, o);
           if (iresult > 0)
@@ -345,7 +343,7 @@ class SqfEntityObjectBuilder {
     // region ${_table.modelName}
     class ${_table.modelName} extends SearchCriteria {
       // FIELDS
-      $_createProperties// end FIELDS
+      $_createProperties      // end FIELDS
       $_createObjectRelations
       $_createObjectCollections
       static const bool softDeleteActivated=${_table.useSoftDeleting.toString()};
@@ -432,8 +430,7 @@ class SqfEntityObjectBuilder {
           ${_table.primaryKeyName} = await _mn${_table.modelName}.insert(
               ${_table.modelName}.withFields(${_createConstructure.replaceAll("this.", "")}));
         else
-          _mn${_table.modelName}.update(
-              ${_table.modelName}.withId(${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")}));
+          ${_table.primaryKeyName}= await _upsert();
         return ${_table.primaryKeyName};
       }
   
@@ -442,7 +439,7 @@ class SqfEntityObjectBuilder {
       /// </summary>
       /// <returns> Returns a <List<BoolResult>> </returns>
       Future<List<BoolResult>> saveAll(List<${_table.modelName}> ${toPluralName(_table.modelLowerCase)}) async {
-        var results = _mn${_table.modelName}.saveAll(${toPluralName(_table.modelLowerCase)});
+        var results = _mn${_table.modelName}.saveAll("INSERT OR REPLACE INTO ${_table.tableName} (${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")})  VALUES (?,$_createConstructureArgs)",${toPluralName(_table.modelLowerCase)});
         return results;
       }
   
@@ -450,20 +447,21 @@ class SqfEntityObjectBuilder {
       /// Updates if the record exists, otherwise adds a new row
       /// </summary>
       /// <returns>Returns ${_table.primaryKeyName}</returns>
-      Future<int> upsert() async {
+      Future<int> _upsert() async {
         ${_table.primaryKeyName} = await _mn${_table.modelName}.rawInsert(
-            "INSERT OR REPLACE INTO [\\\$table] (${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")})  VALUES (?,$_createConstructureArgs)", [${_table.primaryKeyName},${_createConstructure.replaceAll("this.", "")}]);
+            "INSERT OR REPLACE INTO ${_table.tableName} (${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")})  VALUES (?,$_createConstructureArgs)", [${_table.primaryKeyName},${_createConstructure.replaceAll("this.", "")}]);
         return ${_table.primaryKeyName};
       }
   
       
       /// <summary>
-      /// upsertAll method inserts or replaces the sent List<Todo> as a batch in one transaction
+      /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+      /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
       /// </summary>
       /// <returns> Returns a <List<BoolResult>> </returns>
       Future<List<BoolResult>> upsertAll(List<${_table.modelName}> ${toPluralName(_table.modelLowerCase)}) async {
         var results = await _mn${_table.modelName}.rawInsertAll(
-            "INSERT OR REPLACE INTO [\\\$table] (${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")})  VALUES (?,$_createConstructureArgs)", ${toPluralName(_table.modelLowerCase)});
+            "INSERT OR REPLACE INTO ${_table.tableName} (${_table.primaryKeyName}, ${_createConstructure.replaceAll("this.", "")})  VALUES (?,$_createConstructureArgs)", ${toPluralName(_table.modelLowerCase)});
         return results;
       }
   
@@ -523,9 +521,9 @@ class SqfEntityObjectBuilder {
     String __createProperties() {
       String _retVal = "int ${_table.primaryKeyName};\n";
       for (SqfEntityFieldType field in _table.fields) {
-        _retVal += "  " + field.toPropertiesString() + ";\n";
+        _retVal += "      " + field.toPropertiesString() + ";\n";
       }
-      if (_table.useSoftDeleting) _retVal += "  bool isDeleted;\n";
+      if (_table.useSoftDeleting) _retVal += "      bool isDeleted;\n";
   
       return _retVal;
     }
@@ -1319,7 +1317,7 @@ class AddedBlocks {
 class BoolResult {
   String successMessage;
   String errorMessage;
-  bool success;
+  bool success=false;
   @override
   String toString() {
     if (success)
