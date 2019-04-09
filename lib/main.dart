@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sqfentity/app.dart';
 import 'package:sqfentity/db/MyDbModel.dart';
-import 'package:sqfentity/models/Product.dart';
+import 'package:sqfentity/models/models.dart';
+
+
 
 void main(List<String> args) {
-  // 1- creates a simple  Model named product and sets the clipboard for paste into your Product.dart file
+  // 1- creates a simple  Model named product and sets the clipboard for paste into your models.dart file
   createSqfEntityModelString();
 
   // 2- run Entity Model samples
@@ -15,6 +17,7 @@ void main(List<String> args) {
     if (result == true)
     //The database is ready for use
     {
+      
       runSamples();
       // TO DO
       // ex: runApp(MyApp());
@@ -50,6 +53,9 @@ void runSamples() {
 
       // ORM (Object Relational Mapping) SAMPLE
       samples7();
+
+      // fill List from the web (JSON)
+      samples8();
     }
   });
 }
@@ -88,7 +94,8 @@ void samples1() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.2: ORDER BY FIELDS -> ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id
@@ -104,7 +111,8 @@ void samples1() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.3: SELECT SPECIFIC FIELDS -> ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC
@@ -132,7 +140,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
@@ -143,7 +152,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
@@ -165,7 +175,8 @@ void samples2() {
         "EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\"256\").or.description.startsWith(\"512\").endBlock.toSingle((product){ // TO DO })");
     print("Toplam " + (product != null ? "1" : "0") + " sonuç listeleniyor:");
     if (product != null) print(product.toMap());
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
@@ -191,7 +202,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.8: NOT EQUALS
@@ -202,7 +214,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
@@ -220,7 +233,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.10: BETWEEN KEYWORD
@@ -236,7 +250,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.11: 'NOT' KEYWORD
@@ -247,7 +262,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
@@ -258,7 +274,8 @@ void samples2() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 1.13: Build filter and query from values from the form
@@ -294,7 +311,7 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
-        print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 
@@ -307,7 +324,7 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
-        print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 
@@ -323,7 +340,7 @@ void samples2() {
     for (var prod in productList) {
       print(prod.toMap());
     }
-        print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 }
@@ -337,7 +354,8 @@ void samples3() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 
   // EXAMPLE 3.2: SAMPLE PAGING -> PRODUCTS in 3. page (5 items per page)
@@ -348,7 +366,8 @@ void samples3() {
     for (int i = 0; i < productList.length; i++) {
       print(productList[i].toMap());
     }
-        print(         "---------------------------------------------------------------\n\n");
+    print(
+        "---------------------------------------------------------------\n\n");
   });
 }
 
@@ -365,8 +384,8 @@ void samples4() {
         for (int i = 0; i < productList.length; i++) {
           print(productList[i].toMap());
         }
-            print(
-        "---------------------------------------------------------------\n\n");
+        print(
+            "---------------------------------------------------------------\n\n");
       });
 
   // EXAMPLE 4.2: GROUP BY with SCALAR OR AGGREGATE FUNCTIONS ex: SELECT COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice FROM PRODUCTS GROUP BY name
@@ -401,7 +420,7 @@ void samples5() {
     print(
         "EXAMPLE 5.1: Update multiple records with query \n -> Product().select().id.greaterThan(10).update({\"isActive\": 0});");
     print(result.toString());
-        print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 
@@ -414,7 +433,7 @@ void samples5() {
     print(
         "EXAMPLE 5.2: uUpdate multiple records with query \n -> Product().select().id.lessThanOrEquals(10).update({\"isActive\": 1});");
     print(result.toString());
-        print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 
@@ -431,7 +450,7 @@ void samples5() {
       });
     } else
       print("EXAMPLE 5.3: id=15 => product not found");
-          print(
+    print(
         "---------------------------------------------------------------\n\n");
   });
 
@@ -449,7 +468,7 @@ void samples5() {
 
         print(" List<BoolResult> result of saveAll method is following:");
         for (var result in results) print(result.toString());
-         print(
+        print(
             "---------------------------------------------------------------");
         print(
             "EXAMPLE 5.4: listing saved products (set rownum=i) with saveAll method;");
@@ -479,7 +498,7 @@ void samples6() {
   Product().select().id.equals(16).delete().then((result) {
     print(
         "EXAMPLE 6.2: delete product by query filder \n -> Product().select().id.equals(16).delete();");
-     print(result.toString());
+    print(result.toString());
     print(
         "---------------------------------------------------------------\n\n");
   });
@@ -547,6 +566,40 @@ void samples7() {
   });
 }
 
+void samples8() {
+  Todo.fromWeb((todosList){
+    Todo().upsertAll(todosList).then((results) {
+      //for (var res in results) print(res.toString()); // print upsert Results
+      Todo().select().top(10).toList((todoList) {
+        print(
+            "EXAMPLE 8.1: Fill List from web (JSON data) and upsertAll \n -> Todo.fromWeb((todosList) {}");
+        print(todoList.length.toString() + " matches found\n");
+        for (var todo in todoList) {
+          print(todo.toMap());
+        }
+        print(
+            "---------------------------------------------------------------\n\n");
+      });
+    });
+  });
+
+  Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos",(todosList){
+    Todo().upsertAll(todosList).then((results) {
+      //for (var res in results) print(res.toString()); // print upsert Results
+      Todo().select().top(10).toList((todoList) {
+        print(
+            "EXAMPLE 8.2: Fill List from web with Url (JSON data) and upsertAll \n -> Todo.fromWebUrl(\"https://jsonplaceholder.typicode.com/todos\", (todosList) {}");
+        print(todoList.length.toString() + " matches found\n");
+        for (var todo in todoList) {
+          print(todo.toMap());
+        }
+        print(
+            "---------------------------------------------------------------\n\n");
+      });
+    });
+  });
+}
+
 void addSomeProducts(VoidCallback isReady(bool ready)) {
   // add new products if not any Product..
   Category().select().toSingle((category) {
@@ -571,8 +624,8 @@ void addCategories(VoidCallback isReady(bool ready)) {
 }
 
 void addProducts(VoidCallback isReady(bool ready)) {
-  Product().select().toSingle((product) {
-    if (product == null) {
+  Product().select().toList((productList) {
+    if (productList.length < 15) {
       // some dummy rows for select (id:1- to 15)
       Product.withFields(
               "Notebook 12\"", "128 GB SSD i7", 6899, true, 1, 0, false)

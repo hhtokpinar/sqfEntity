@@ -15,7 +15,9 @@ class TableCategory extends SqfEntityTable {
     modelName =
         null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
+    primaryKeyisIdentity = true;
     useSoftDeleting = true;
+
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
     // declare fields
@@ -40,6 +42,7 @@ class TableProduct extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
+    primaryKeyisIdentity = true;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -48,7 +51,6 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("name", DbType.text),
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
-
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
       SqfEntityFieldRelationship(TableCategory.getInstance,
           defaultValue: "0"), // Relationship column for CategoryId of Product
@@ -58,14 +60,44 @@ class TableProduct extends SqfEntityTable {
   }
 }
 
+class TableTodo extends SqfEntityTable {
+  static SqfEntityTable __instance;
+  static SqfEntityTable get getInstance {
+    if (__instance == null) __instance = TableTodo();
+    return __instance;
+  }
+
+  TableTodo() {
+    // declare properties of EntityTable
+    tableName = "todos";
+    modelName =
+        null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
+    primaryKeyName = "id";
+    useSoftDeleting =
+        false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
+    primaryKeyisIdentity = false;
+    defaultJsonUrl = "https://jsonplaceholder.typicode.com/todos";
+
+    // declare fields
+    fields = [
+      SqfEntityField("userId", DbType.integer),
+      SqfEntityField("title", DbType.text),
+      SqfEntityField("completed", DbType.bool, defaultValue: "false")
+    ];
+
+    super.init();
+  }
+}
+
 // STEP 2: Create your Database Model to be extended from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORM.db";
+    databaseName = "sampleORMv6.db";
     databaseTables = [
       TableProduct.getInstance,
-      TableCategory.getInstance
+      TableCategory.getInstance,
+      TableTodo.getInstance
     ]; // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
     bundledDatabasePath =
         null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
