@@ -362,6 +362,27 @@ EXAMPLE 6.4: DELETE PRODUCT WHERE ID>17
     Product().select().id.greaterThan(17).delete().then((result) {
            print(result.toString());
       });
+      
+## Syncronize data from the web
+EXAMPLE 8.2: Fill List from web with Url (JSON data) and saveAll
+
+    Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos",(todosList){
+        Todo().saveAll(todosList).then((results) {
+          //for (var res in results) print(res.toString()); // print upsert Results
+          Todo().select().top(10).toList((todoList) {
+            print(
+                "EXAMPLE 8.2: Fill List from web with Url (JSON data) and upsertAll \n -> Todo.fromWebUrl(\"https://jsonplaceholder.typicode.com/todos\", (todosList) {}");
+            print(todoList.length.toString() + " matches found\n");
+            for (var todo in todoList) {
+              print(todo.toMap());
+            }
+            print(
+                "---------------------------------------------------------------\n\n");
+          });
+        });
+      });
+    }
+
 
 ### See the following examples in main.dart for sample model use
 
