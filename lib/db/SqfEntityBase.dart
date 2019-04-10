@@ -346,7 +346,7 @@ class SqfEntityObjectBuilder {
       $_createProperties      // end FIELDS
       $_createObjectRelations
       $_createObjectCollections
-      static const bool softDeleteActivated=${_table.useSoftDeleting.toString()};
+      static const bool _softDeleteActivated=${_table.useSoftDeleting.toString()};
       ${_table.modelName}Manager __mn${_table.modelName};
       ${_table.modelName}FilterBuilder _select;
     
@@ -483,7 +483,7 @@ class SqfEntityObjectBuilder {
       /// <returns>true=Deleted, false=Can not deleted</returns>
       Future<BoolResult> delete() async {
         print("SQFENTITIY: delete ${_table.modelName} called (${_table.primaryKeyName}=\$${_table.primaryKeyName})");
-        if (!softDeleteActivated)
+        if (!_softDeleteActivated)
           return _mn${_table.modelName}.delete(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"));
         else
           return _mn${_table.modelName}
@@ -1029,7 +1029,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
       } else
         whereString += param.whereString;
     }
-    if (${_table.modelName}.softDeleteActivated) {
+    if (${_table.modelName}._softDeleteActivated) {
       if (whereString != "")
         whereString = (!_getIsDeleted ? "ifnull(isDeleted,0)=0 AND" : "") +
             " (\$whereString)";
@@ -1045,7 +1045,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
 
   Future<BoolResult> delete() {
     _buildParameters();
-      if(${_table.modelName}.softDeleteActivated)
+      if(${_table.modelName}._softDeleteActivated)
        return _obj._mn${_table.modelName}.updateBatch(qparams,{"isDeleted":1});
     else
        return _obj._mn${_table.modelName}.delete(qparams);
@@ -1273,7 +1273,7 @@ class QueryParams {
 }
 
 abstract class SearchCriteria {
-  //bool softDeleteActivated;
+  
   BoolResult result;
   List<String> groupByList = new List<String>();
   List<dynamic> whereArguments = new List<dynamic>();
