@@ -50,8 +50,8 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(TableCategory.getInstance,
-          defaultValue: "0", deleteRule: DeleteRule.CASCADE), // Relationship column for CategoryId of Product
+      SqfEntityFieldRelationship(TableCategory.getInstance, DeleteRule.CASCADE,
+          defaultValue: "0"), // Relationship column for CategoryId of Product
       SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
     ];
     super.init();

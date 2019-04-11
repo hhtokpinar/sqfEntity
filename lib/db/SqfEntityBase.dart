@@ -1666,8 +1666,8 @@ class SqfEntityFieldRelationship implements SqfEntityFieldType {
   String defaultValue;
   SqfEntityTable table;
   DeleteRule deleteRule = DeleteRule.NO_ACTION;
-  SqfEntityFieldRelationship(this.table,
-      {this.fieldName, this.defaultValue, this.deleteRule}) {
+  SqfEntityFieldRelationship(this.table, this.deleteRule,
+      {this.fieldName, this.defaultValue}) {
     if (fieldName == null)
       fieldName = table.tableName +
           table.primaryKeyName.substring(0, 1).toUpperCase() +
