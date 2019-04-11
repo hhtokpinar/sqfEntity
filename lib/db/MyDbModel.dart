@@ -13,12 +13,10 @@ class TableCategory extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "category";
     modelName =
-        null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
+        null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
     primaryKeyisIdentity = true;
     useSoftDeleting = true;
-
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
@@ -53,7 +51,7 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
       SqfEntityFieldRelationship(TableCategory.getInstance,
-          defaultValue: "0"), // Relationship column for CategoryId of Product
+          defaultValue: "0", deleteRule: DeleteRule.CASCADE), // Relationship column for CategoryId of Product
       SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
     ];
     super.init();
@@ -76,7 +74,8 @@ class TableTodo extends SqfEntityTable {
     useSoftDeleting =
         false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
     primaryKeyisIdentity = false;
-    defaultJsonUrl = "https://jsonplaceholder.typicode.com/todos";
+    defaultJsonUrl =
+        "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
 
     // declare fields
     fields = [
@@ -93,7 +92,7 @@ class TableTodo extends SqfEntityTable {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORM.db";
+    databaseName = "sampleORMv6.db";
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
