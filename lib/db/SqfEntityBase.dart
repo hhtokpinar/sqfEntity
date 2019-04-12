@@ -651,6 +651,14 @@ class SqfEntityObjectBuilder {
         else
          """;
           break;
+          case DeleteRule.NO_ACTION:
+          retVal += """
+    result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).delete();
+    if (!result.success) return result;
+        else
+         """;
+
+          break;
         case DeleteRule.CASCADE:
           retVal += """
     result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).delete();
@@ -1161,7 +1169,20 @@ class SqfEntityObjectFilterBuilder {
      }
      
    
-     
+      /// This method always returns int.
+      /// <returns>int</returns>
+      void toCount(VoidCallback ${_table.modelLowerCase}Count (int c)) async {
+   
+       _buildParameters();
+       qparams.selectColumns = ["COUNT(1) AS CNT"];   
+       var ${toPluralLowerName(_table.modelLowerCase)}Future = _obj._mn${_table.modelName}.toList(qparams);
+   
+       ${toPluralLowerName(_table.modelLowerCase)}Future.then((data) {
+         int count = data[0]["CNT"];
+         ${_table.modelLowerCase}Count (count);
+       });
+     }
+      
      /// This method always returns List<${_table.modelName}>. 
      /// <returns>List<${_table.modelName}></returns>
      void toList(VoidCallback ${_table.modelLowerCase}List (List<${_table.modelName}> o)) async {
