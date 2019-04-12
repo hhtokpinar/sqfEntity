@@ -105,7 +105,8 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
       }
 
 If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
-You can choose one of the following for DeleteRule: **CASCADE, NO ACTION, SET NULL, SET DEFAULT VALUE **
+You can choose one of the following for DeleteRule: **CASCADE, NO ACTION, SET NULL, SET DEFAULT VALUE**
+For more information about the rules Click to https://www.mssqltips.com/sqlservertip/2365/sql-server-foreign-key-update-and-delete-rules/
 
 *Table 3: Todo*
 
