@@ -303,7 +303,7 @@ class ProductField extends SearchCriteria {
         0,
         productFB.parameters,
         param,
-        SqlSyntax.IsNULL.replaceAll(SqlSyntax.IsNULL, _waitingNot),
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.NOT_KEYWORD, _waitingNot),
         productFB._addedBlocks);
     _waitingNot = "";
     productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
@@ -673,16 +673,18 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Deletes List<Product> batch by query
   /// </summary>
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-  Future<BoolResult> delete() {
+  Future<BoolResult> delete() async {
     _buildParameters();
-
+    var r = BoolResult();
     if (Product._softDeleteActivated)
-      return _obj._mnProduct.updateBatch(qparams, {"isDeleted": 1});
+      r = await _obj._mnProduct.updateBatch(qparams, {"isDeleted": 1});
     else
-      return _obj._mnProduct.delete(qparams);
+      r = await _obj._mnProduct.delete(qparams);
+    return r;
   }
 
   Future<BoolResult> recover() async {
+    _getIsDeleted = true;
     _buildParameters();
     print("SQFENTITIY: recover Product batch invoked");
     return _obj._mnProduct.updateBatch(qparams, {"isDeleted": 0});
@@ -707,6 +709,20 @@ class ProductFilterBuilder extends SearchCriteria {
     });
   }
 
+  /// This method always returns int.
+  /// <returns>int</returns>
+  Future<BoolResult> toCount(VoidCallback productCount(int c)) async {
+    _buildParameters();
+    qparams.selectColumns = ["COUNT(1) AS CNT"];
+    var productsFuture = await _obj._mnProduct.toList(qparams);
+    int count = productsFuture[0]["CNT"];
+    productCount(count);
+    return BoolResult(
+        success: count > 0,
+        successMessage: count > 0 ? "toCount(): $count items found" : "",
+        errorMessage: count > 0 ? "" : "toCount(): no items found");
+  }
+
   /// This method always returns List<Product>.
   /// <returns>List<Product></returns>
   void toList(VoidCallback productList(List<Product> o)) async {
@@ -727,21 +743,19 @@ class ProductFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  void toListPrimaryKey(VoidCallback idList(List<int> o),
+  Future<List<int>> toListPrimaryKey(VoidCallback idList(List<int> o),
       [bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    qparams.selectColumns = ["id"];
-    var idFuture = _obj._mnProduct.toList(qparams);
-
     List<int> idData = new List<int>();
-    idFuture.then((data) {
-      int count = data.length;
-      for (int i = 0; i < count; i++) {
-        idData.add(data[i]["id"]);
-      }
-      idList(idData);
-      idData = null;
-    });
+    qparams.selectColumns = ["id"];
+    var idFuture = await _obj._mnProduct.toList(qparams);
+
+    int count = idFuture.length;
+    for (int i = 0; i < count; i++) {
+      idData.add(idFuture[i]["id"]);
+    }
+    idList(idData);
+    return idData;
   }
 
   void toListObject(VoidCallback listObject(List<dynamic> o)) async {
@@ -1006,9 +1020,12 @@ class Category extends SearchCriteria {
   Future<BoolResult> delete() async {
     print("SQFENTITIY: delete Category invoked (id=$id)");
     var result = BoolResult();
-    result = await Product().select().categoryId.equals(id).delete();
-    if (!result.success)
-      return result;
+    result = await Product().select().categoryId.equals(id).toCount((_) {});
+    if (result.success)
+      return BoolResult(
+          success: false,
+          errorMessage:
+              "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP 'Product.categoryId'");
     else if (!_softDeleteActivated)
       return _mnCategory.delete(QueryParams(whereString: "id=$id"));
     else
@@ -1022,20 +1039,8 @@ class Category extends SearchCriteria {
   /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
   Future<BoolResult> recover() async {
     print("SQFENTITIY: recover Category invoked (id=$id)");
-    var result = BoolResult();
-    result = await Product()
-        .select(getIsDeleted: true)
-        .isDeleted
-        .equals(true)
-        .and
-        .categoryId
-        .equals(id)
-        .update({"isDeleted": 0});
-    if (!result.success)
-      return result;
-    else
-      return _mnCategory
-          .updateBatch(QueryParams(whereString: "id=$id"), {"isDeleted": 0});
+    return _mnCategory
+        .updateBatch(QueryParams(whereString: "id=$id"), {"isDeleted": 0});
   }
 
   //private CategoryFilterBuilder _Select;
@@ -1443,32 +1448,27 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Deletes List<Category> batch by query
   /// </summary>
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-  Future<BoolResult> delete() {
+  Future<BoolResult> delete() async {
     _buildParameters();
-    toListPrimaryKey((idList) {
-      Product().select().categoryId.inValues(idList).delete();
-    }, false);
-
-    if (Category._softDeleteActivated)
-      return _obj._mnCategory.updateBatch(qparams, {"isDeleted": 1});
+    var r = BoolResult();
+    var idList = await toListPrimaryKey((_) {}, false);
+    r = await Product().select().categoryId.inValues(idList).toCount((_) {});
+    if (r.success) {
+      return BoolResult(
+          success: false,
+          errorMessage:
+              "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP 'Product.categoryId'");
+    } else if (Category._softDeleteActivated)
+      r = await _obj._mnCategory.updateBatch(qparams, {"isDeleted": 1});
     else
-      return _obj._mnCategory.delete(qparams);
+      r = await _obj._mnCategory.delete(qparams);
+    return r;
   }
 
   Future<BoolResult> recover() async {
+    _getIsDeleted = true;
     _buildParameters();
     print("SQFENTITIY: recover Category batch invoked");
-    
-    toListPrimaryKey((idList) {
-      Product()
-          .select(getIsDeleted: true)
-          .isDeleted
-          .equals(true)
-          .and
-          .categoryId
-          .inValues(idList)
-          .update({"isDeleted": 0});
-    }, false);
     return _obj._mnCategory.updateBatch(qparams, {"isDeleted": 0});
   }
 
@@ -1491,6 +1491,20 @@ class CategoryFilterBuilder extends SearchCriteria {
     });
   }
 
+  /// This method always returns int.
+  /// <returns>int</returns>
+  Future<BoolResult> toCount(VoidCallback categoryCount(int c)) async {
+    _buildParameters();
+    qparams.selectColumns = ["COUNT(1) AS CNT"];
+    var categoriesFuture = await _obj._mnCategory.toList(qparams);
+    int count = categoriesFuture[0]["CNT"];
+    categoryCount(count);
+    return BoolResult(
+        success: count > 0,
+        successMessage: count > 0 ? "toCount(): $count items found" : "",
+        errorMessage: count > 0 ? "" : "toCount(): no items found");
+  }
+
   /// This method always returns List<Category>.
   /// <returns>List<Category></returns>
   void toList(VoidCallback categoryList(List<Category> o)) async {
@@ -1511,21 +1525,19 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  void toListPrimaryKey(VoidCallback idList(List<int> o),
+  Future<List<int>> toListPrimaryKey(VoidCallback idList(List<int> o),
       [bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    qparams.selectColumns = ["id"];
-    var idFuture = _obj._mnCategory.toList(qparams);
-
     List<int> idData = new List<int>();
-    idFuture.then((data) {
-      int count = data.length;
-      for (int i = 0; i < count; i++) {
-        idData.add(data[i]["id"]);
-      }
-      idList(idData);
-      idData = null;
-    });
+    qparams.selectColumns = ["id"];
+    var idFuture = await _obj._mnCategory.toList(qparams);
+
+    int count = idFuture.length;
+    for (int i = 0; i < count; i++) {
+      idData.add(idFuture[i]["id"]);
+    }
+    idList(idData);
+    return idData;
   }
 
   void toListObject(VoidCallback listObject(List<dynamic> o)) async {
@@ -2167,13 +2179,14 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Deletes List<Todo> batch by query
   /// </summary>
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-  Future<BoolResult> delete() {
+  Future<BoolResult> delete() async {
     _buildParameters();
-
+    var r = BoolResult();
     if (Todo._softDeleteActivated)
-      return _obj._mnTodo.updateBatch(qparams, {"isDeleted": 1});
+      r = await _obj._mnTodo.updateBatch(qparams, {"isDeleted": 1});
     else
-      return _obj._mnTodo.delete(qparams);
+      r = await _obj._mnTodo.delete(qparams);
+    return r;
   }
 
   Future<BoolResult> update(Map<String, dynamic> values) {
@@ -2193,6 +2206,20 @@ class TodoFilterBuilder extends SearchCriteria {
       else
         todo(null);
     });
+  }
+
+  /// This method always returns int.
+  /// <returns>int</returns>
+  Future<BoolResult> toCount(VoidCallback todoCount(int c)) async {
+    _buildParameters();
+    qparams.selectColumns = ["COUNT(1) AS CNT"];
+    var todosFuture = await _obj._mnTodo.toList(qparams);
+    int count = todosFuture[0]["CNT"];
+    todoCount(count);
+    return BoolResult(
+        success: count > 0,
+        successMessage: count > 0 ? "toCount(): $count items found" : "",
+        errorMessage: count > 0 ? "" : "toCount(): no items found");
   }
 
   /// This method always returns List<Todo>.
@@ -2215,21 +2242,19 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  void toListPrimaryKey(VoidCallback idList(List<int> o),
+  Future<List<int>> toListPrimaryKey(VoidCallback idList(List<int> o),
       [bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    qparams.selectColumns = ["id"];
-    var idFuture = _obj._mnTodo.toList(qparams);
-
     List<int> idData = new List<int>();
-    idFuture.then((data) {
-      int count = data.length;
-      for (int i = 0; i < count; i++) {
-        idData.add(data[i]["id"]);
-      }
-      idList(idData);
-      idData = null;
-    });
+    qparams.selectColumns = ["id"];
+    var idFuture = await _obj._mnTodo.toList(qparams);
+
+    int count = idFuture.length;
+    for (int i = 0; i < count; i++) {
+      idData.add(idFuture[i]["id"]);
+    }
+    idList(idData);
+    return idData;
   }
 
   void toListObject(VoidCallback listObject(List<dynamic> o)) async {

@@ -646,44 +646,39 @@ class SqfEntityObjectBuilder {
       switch (tableCollecion.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           retVal += """
-    result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"${tableCollecion.childTableField.fieldName}": null});
-    if (!result.success) return result;
-        else
-         """;
+  result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"${tableCollecion.childTableField.fieldName}": null});
+  if (!result.success) return result;
+  else""";
           break;
-          case DeleteRule.NO_ACTION:
+        case DeleteRule.NO_ACTION:
           retVal += """
-    result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).delete();
-    if (!result.success) return result;
-        else
-         """;
+  result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).toCount((_){});
+  if (result.success) return BoolResult(success: false,errorMessage: "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP '${tableCollecion.childTable.modelName}.${tableCollecion.childTableField.fieldName}'");
+  else""";
 
           break;
         case DeleteRule.CASCADE:
           retVal += """
-    result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).delete();
-    if (!result.success) return result;
+  result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).delete();
+  if (!result.success) return result;
         else
          """;
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
           retVal += """
-    result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"${tableCollecion.childTableField.fieldName}": ${tableCollecion.childTableField.defaultValue}});
-    if (!result.success) return result;
-        else
-         """;
+  result = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"${tableCollecion.childTableField.fieldName}": ${tableCollecion.childTableField.defaultValue}});
+  if (!result.success) return result;
+  else""";
           break;
         default:
       }
     }
     if (retVal != "") retVal = varResult + retVal;
     retVal += """
-       if (!_softDeleteActivated)
-          return _mn${_table.modelName}.delete(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"));
-        else
-          return _mn${_table.modelName}
-              .updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 1});
-    """;
+  if (!_softDeleteActivated)
+  return _mn${_table.modelName}.delete(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"));
+  else
+  return _mn${_table.modelName}.updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 1});""";
 
     return retVal;
   }
@@ -701,10 +696,9 @@ class SqfEntityObjectBuilder {
         case DeleteRule.CASCADE:
           if (tableCollecion.childTable.useSoftDeleting)
             retVal += """
-    result = await ${tableCollecion.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"isDeleted": 0});
-    if (!result.success) return result;
-        else
-         """;
+  result = await ${tableCollecion.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).update({"isDeleted": 0});
+  if (!result.success) return result;
+  else""";
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
           //IN THIS CASE YOU CAN NOT RECOVER CHILD ROWS
@@ -714,21 +708,18 @@ class SqfEntityObjectBuilder {
     }
     if (retVal != "") retVal = varResult + retVal;
     retVal += """
-          return _mn${_table.modelName}
-              .updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 0});
-    """;
+  return _mn${_table.modelName}.updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 0});""";
 
     return """
-          /// <summary>
-          /// Recover Product
-          /// </summary>
-          /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
-          Future<BoolResult> recover() async {
-          print("SQFENTITIY: recover ${_table.modelName} invoked (${_table.primaryKeyName}=\$${_table.primaryKeyName})");
-          """ +
+  /// <summary>
+  /// Recover Product
+  /// </summary>
+  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
+  Future<BoolResult> recover() async {
+  print("SQFENTITIY: recover ${_table.modelName} invoked (${_table.primaryKeyName}=\$${_table.primaryKeyName})");""" +
         retVal +
         """
-          }""";
+  }""";
   }
 }
 
@@ -1139,13 +1130,14 @@ class SqfEntityObjectFilterBuilder {
     /// Deletes List<${_table.modelName}> batch by query 
     /// </summary>
     /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-    Future<BoolResult> delete() {
+    Future<BoolResult> delete() async {
       _buildParameters();
       $_deleteMethodList
         if(${_table.modelName}._softDeleteActivated)
-          return _obj._mn${_table.modelName}.updateBatch(qparams,{"isDeleted":1});
+          r = await _obj._mn${_table.modelName}.updateBatch(qparams,{"isDeleted":1});
       else
-          return _obj._mn${_table.modelName}.delete(qparams);
+          r = await _obj._mn${_table.modelName}.delete(qparams);
+      return r;    
     }
      $_recoveryMethodList
     
@@ -1171,16 +1163,13 @@ class SqfEntityObjectFilterBuilder {
    
       /// This method always returns int.
       /// <returns>int</returns>
-      void toCount(VoidCallback ${_table.modelLowerCase}Count (int c)) async {
-   
+      Future<BoolResult> toCount(VoidCallback ${_table.modelLowerCase}Count (int c)) async {
        _buildParameters();
        qparams.selectColumns = ["COUNT(1) AS CNT"];   
-       var ${toPluralLowerName(_table.modelLowerCase)}Future = _obj._mn${_table.modelName}.toList(qparams);
-   
-       ${toPluralLowerName(_table.modelLowerCase)}Future.then((data) {
-         int count = data[0]["CNT"];
+       var ${toPluralLowerName(_table.modelLowerCase)}Future = await _obj._mn${_table.modelName}.toList(qparams);
+         int count = ${toPluralLowerName(_table.modelLowerCase)}Future[0]["CNT"];
          ${_table.modelLowerCase}Count (count);
-       });
+         return BoolResult(success:count>0, successMessage: count>0? "toCount(): \$count items found":"", errorMessage: count>0?"": "toCount(): no items found");
      }
       
      /// This method always returns List<${_table.modelName}>. 
@@ -1204,20 +1193,21 @@ class SqfEntityObjectFilterBuilder {
   
      /// This method always returns Primary Key List<int>. 
      /// <returns>List<int></returns>
-     void toListPrimaryKey(VoidCallback ${_table.primaryKeyName}List (List<int> o),[bool buildParameters=true]) async {
+     Future<List<int>> toListPrimaryKey(VoidCallback ${_table.primaryKeyName}List (List<int> o),
+           [bool buildParameters=true]) async {
        if(buildParameters) _buildParameters();
-       qparams.selectColumns= ["${_table.primaryKeyName}"];
-       var ${_table.primaryKeyName}Future = _obj._mn${_table.modelName}.toList(qparams);
-   
        List<int> ${_table.primaryKeyName}Data = new List<int>();
-       ${_table.primaryKeyName}Future.then((data) {
-         int count = data.length;
+       qparams.selectColumns= ["${_table.primaryKeyName}"];
+       var ${_table.primaryKeyName}Future = await _obj._mn${_table.modelName}.toList(qparams);
+   
+
+         int count = ${_table.primaryKeyName}Future.length;
          for (int i = 0; i < count; i++) {
-           ${_table.primaryKeyName}Data.add(data[i]["${_table.primaryKeyName}"]);
+           ${_table.primaryKeyName}Data.add(${_table.primaryKeyName}Future[i]["${_table.primaryKeyName}"]);
          }
          ${_table.primaryKeyName}List (${_table.primaryKeyName}Data);
-         ${_table.primaryKeyName}Data = null;
-       });
+         return ${_table.primaryKeyName}Data;
+
      }
   
      void toListObject(VoidCallback listObject(List<dynamic> o)) async {
@@ -1305,28 +1295,41 @@ class SqfEntityObjectFilterBuilder {
       """;
 
     return """
-            Future<BoolResult> recover() async {
-            _buildParameters();
-            print("SQFENTITIY: recover ${_table.modelName} batch invoked");
-            """ +
+  Future<BoolResult> recover() async {
+  _getIsDeleted = true;
+  _buildParameters();
+  print("SQFENTITIY: recover ${_table.modelName} batch invoked");""" +
         retVal +
         """
-            }""";
+  }""";
   }
 
   __deleteMethodList() {
-    String retVal = "";
-    
+    String retVal = "var r= BoolResult();";
+
     for (var tableCollecion in _table.collections) {
       switch (tableCollecion.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           // IN THIS CASE YOU CAN NOT RECOVER CHILD ROWS
           break;
+        case DeleteRule.NO_ACTION:
+          retVal += """
+    var idList = await toListPrimaryKey((_) {}, false);
+    r = await ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.inValues(idList).toCount((_) {});
+    if (r.success) {
+    return BoolResult(
+    success: false,
+    errorMessage: 
+          "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP '${tableCollecion.childTable.modelName}.${tableCollecion.childTableField.fieldName}'");
+    } else
+                      """;
+
+          break;
         case DeleteRule.CASCADE:
           if (tableCollecion.childTable.useSoftDeleting)
             retVal += """
-      toListPrimaryKey((idList){
-       ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.inValues(idList).delete();
+    toListPrimaryKey((idList){
+    ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.inValues(idList).delete();
     }, false);
            """;
           break;
@@ -1336,7 +1339,7 @@ class SqfEntityObjectFilterBuilder {
         default:
       }
     }
-    
+
     return retVal;
   }
 }
@@ -1507,6 +1510,7 @@ class BoolResult {
   String successMessage;
   String errorMessage;
   bool success = false;
+  BoolResult({this.success, this.successMessage, this.errorMessage});
   @override
   String toString() {
     if (success)
@@ -1580,6 +1584,7 @@ class SqfEntityTable {
     }
     if (useSoftDeleting) _createTableSQL += ", isDeleted numeric";
     _createTableSQL += ")";
+
     return _createTableSQL;
   }
 }
@@ -1765,13 +1770,14 @@ abstract class SqfEntityModel {
                   parseDbType(data[i]["type"].toString())));
             }
             // create SQL Command for new columns
-            List<String> alterTableQuery =
+            List<String> alterTableColsQuery =
                 checkTableColumns(table, exitingDBfields);
 
-            if (alterTableQuery.length > 0) {
-              print("SQFENTITIY: alterTableQuery => $alterTableQuery");
+            if (alterTableColsQuery.length > 0) {
+              print("SQFENTITIY: alterTableQuery => $alterTableColsQuery");
 
-              SqfEntityProvider(this).execSQLList(alterTableQuery, (result) {
+              SqfEntityProvider(this).execSQLList(alterTableColsQuery,
+                  (result) {
                 if (result) {
                   table.initialized = true;
                   print(
@@ -1788,10 +1794,17 @@ abstract class SqfEntityModel {
           } else {
             // The table if not exist
             SqfEntityProvider(this).execSQL(table.createTableSQL).then((_) {
+              List<String> alterTableIndexesQuery = checkTableIndexes(table);
               table.initialized = true;
               print(
-                  "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly with create new table'");
+                  "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly with create new table");
               if (checkForIsReadyDatabase(dbTables)) isReady(true);
+              if (alterTableIndexesQuery.length > 0) {
+                print(
+                    "SQFENTITIY: alterTableIndexesQuery => $alterTableIndexesQuery");
+                SqfEntityProvider(this)
+                    .execSQLList(alterTableIndexesQuery, (result) {});
+              }
             });
           }
         });
@@ -1847,6 +1860,17 @@ bool checkForIsReadyDatabase(List<SqfEntityTable> dbTables) {
     return false;
 }
 
+List<String> checkTableIndexes(SqfEntityTable table) {
+  var alterTableQuery = List<String>();
+  for (SqfEntityFieldType field in table.fields) {
+    if (field is SqfEntityFieldRelationship) {
+      alterTableQuery.add(
+          "CREATE INDEX IF NOT EXISTS IDX${field.relationshipName + field.fieldName} ON ${table.tableName} (${field.fieldName} ASC)");
+    }
+  }
+  return alterTableQuery;
+}
+
 List<String> checkTableColumns(
     SqfEntityTable table, List<TableField> exitingDBfields) {
   var alterTableQuery = List<String>();
@@ -1867,6 +1891,10 @@ List<String> checkTableColumns(
           newField.defaultValue = "'${newField.defaultValue}'";
         alterTableQuery.add(
             "UPDATE ${table.tableName} set ${newField.fieldName}=${newField.defaultValue}");
+      }
+      if (newField is SqfEntityFieldRelationship) {
+        alterTableQuery.add(
+            "CREATE INDEX [IF NOT EXISTS] IDX${newField.relationshipName + newField.fieldName} ON ${table.tableName} (${newField.fieldName} [ASC])");
       }
     }
   }
