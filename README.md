@@ -18,7 +18,7 @@ There are 7 files in the project
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
     2. db / SqfEntityBase.dart      : includes Database Provider, Create model engine, helper classes, enums.. etc 
     3. db / MyDbModel.dart          : Declare and modify your database model
-    4. models / Product.dart        : Sample created model for examples
+    4. models / models.dart        : Sample created model for examples
     5. assets / sample.db           : Sample db if you want to use an exiting db
     6. app.dart                     : Sample App for display created model. (will be updated later.)
     7. LICENSE.txt                  : see this file for License Terms
@@ -97,7 +97,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
           SqfEntityField("description", DbType.text),
           SqfEntityField("price", DbType.real, defaultValue: "0"),
           SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-          SqfEntityFieldRelationship(TableCategory.getInstance, defaultValue: "0"), // Relationship column for CategoryId of Product
+          SqfEntityFieldRelationship(TableCategory.getInstance, DeleteRule.CASCADE, defaultValue: "0"), // Relationship column for CategoryId of Product
           SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
         ];
       super.init();
@@ -105,7 +105,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
       }
 
 If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
-
+You can choose one of the following for DeleteRule: **CASCADE, NO ACTION, SET NULL, SET DEFAULT VALUE **
 
 *Table 3: Todo*
 
