@@ -482,7 +482,7 @@ class SqfEntityObjectBuilder {
         /// Deletes ${_table.modelName}
         /// </summary>
         /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-        Future<BoolResult> delete() async {
+        Future<BoolResult> delete(${_table.useSoftDeleting ? "{bool removeCompletely=false}":""}) async {
           print("SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyName}=\$${_table.primaryKeyName})");
           $_deleteMethodSingle
         }
@@ -675,7 +675,7 @@ class SqfEntityObjectBuilder {
     }
     if (retVal != "") retVal = varResult + retVal;
     retVal += """
-  if (!_softDeleteActivated)
+  if (!_softDeleteActivated${_table.useSoftDeleting ? " || removeCompletely":""})
   return _mn${_table.modelName}.delete(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"));
   else
   return _mn${_table.modelName}.updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 1});""";
@@ -1130,10 +1130,10 @@ class SqfEntityObjectFilterBuilder {
     /// Deletes List<${_table.modelName}> batch by query 
     /// </summary>
     /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-    Future<BoolResult> delete() async {
+    Future<BoolResult> delete(${_table.useSoftDeleting ? "{bool removeCompletely=false}":""}) async {
       _buildParameters();
       $_deleteMethodList
-        if(${_table.modelName}._softDeleteActivated)
+        if(${_table.modelName}._softDeleteActivated${_table.useSoftDeleting ? " && !removeCompletely":""})
           r = await _obj._mn${_table.modelName}.updateBatch(qparams,{"isDeleted":1});
       else
           r = await _obj._mn${_table.modelName}.delete(qparams);
