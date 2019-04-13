@@ -373,20 +373,20 @@ class SqfEntityObjectBuilder {
       
         List<dynamic> toArgs() {
           return[${_table.primaryKeyName},${_createConstructure.replaceAll("this.", "")}];   
-        }  
-    
+        }
         $_fromWebUrl  
-        static fromWebUrl(String url, VoidCallback  ${_table.modelLowerCase}List (List<${_table.modelName}> o)) async {
+        static Future<BoolResult> fromWebUrl(String url, VoidCallback  ${_table.modelLowerCase}List (List<${_table.modelName}> o)) async {
         var objList = List<${_table.modelName}>();
-        http.get(url).then((response) {
-          Iterable list = json.decode(response.body);
-          try {
-            objList = list.map((${_table.modelLowerCase}) => ${_table.modelName}.fromMap(${_table.modelLowerCase})).toList();
-            ${_table.modelLowerCase}List(objList);
-          } catch (e) {
+        try {  
+        var response = await http.get(url);
+        Iterable list = json.decode(response.body);
+        objList = list.map((${_table.modelLowerCase}) => ${_table.modelName}.fromMap(${_table.modelLowerCase})).toList();
+        ${_table.modelLowerCase}List(objList);
+        return BoolResult(success: true);
+        } catch (e) {
             print("SQFENTITY ERROR ${_table.modelName}.fromWeb: ErrorMessage:" + e.toString());
-          }
-        });
+            return BoolResult(success: false, errorMessage: e.toString());
+        }
        }
     
         static Future<List<${_table.modelName}>> fromObjectList(Future<List<dynamic>> o) async {
