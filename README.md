@@ -73,6 +73,7 @@ First, create your dbmodel.dart file to define your model and import SqfEntityBa
 
 If **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
 When item was deleted then this field value is changed to "1"  (does not hard delete)
+in this case it is possible to recover a deleted item using the recover() method.
 If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
 
 *Table 2: Product*
