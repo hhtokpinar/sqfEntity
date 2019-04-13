@@ -4,7 +4,7 @@
 
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
-Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, soft deleting, recovery, syncronize data from the web etc and more with the help of SqfEntityTable class.
+Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, soft deleting, recovery, syncronize data from the web and more with the help of SqfEntityTable class.
 
 If you have a bundled database, you can use it or EntityBase will create a new database automatically for you.
 
@@ -171,8 +171,7 @@ So you can create many Database Models and use them in your application.
     MyDbModel.createModel(); 
     
   This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  That's all.. Just press Ctrl+V to paste your model in your .dart file and reference it where you wish to use.
-
+  That's all.. You can paste your model in your .dart file by pressing Ctrl+V for PC or Command+V for Mac and reference it where you wish to use.
 
   
 ### Database initializer async method
