@@ -2,9 +2,9 @@
 
 ![Sqf Entity ORM Preview](/assets/img/SqfEntity_ORM.gif) 
 
-SqfEntity is based on SQFlite plugin (https://github.com/tekartik/sqflite) and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
+SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
-Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, etc. with the help of SqfEntityDbContext class.
+Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, soft deleting, recovery, syncronize data from the web etc and more with the help of SqfEntityTable class.
 
 If you have a bundled database, you can use it or EntityBase will create a new database automatically for you.
 
@@ -12,13 +12,13 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
 ## Getting Started
 
-This project is a starting point for a SqfEntity ORM for SqfLite application.
+This project is a starting point for a SqfEntity ORM for database application.
 There are 7 files in the project
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
     2. db / SqfEntityBase.dart      : includes Database Provider, Create model engine, helper classes, enums.. etc 
     3. db / MyDbModel.dart          : Declare and modify your database model
-    4. models / models.dart        : Sample created model for examples
+    4. models / models.dart         : Sample created model for examples
     5. assets / sample.db           : Sample db if you want to use an exiting db
     6. app.dart                     : Sample App for display created model. (will be updated later.)
     7. LICENSE.txt                  : see this file for License Terms
