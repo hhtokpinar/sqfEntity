@@ -342,7 +342,7 @@ class SqfEntityObjectBuilder {
         Enjoy.. Huseyin Tokpunar
       */
       // region ${_table.modelName}
-      class ${_table.modelName} extends SearchCriteria {
+      class ${_table.modelName} {
         // FIELDS
         $_createProperties      // end FIELDS
         $_createObjectRelations
@@ -373,20 +373,20 @@ class SqfEntityObjectBuilder {
       
         List<dynamic> toArgs() {
           return[${_table.primaryKeyName},${_createConstructure.replaceAll("this.", "")}];   
-        }
+        }  
+    
         $_fromWebUrl  
-        static Future<BoolResult> fromWebUrl(String url, VoidCallback  ${_table.modelLowerCase}List (List<${_table.modelName}> o)) async {
+        static fromWebUrl(String url, VoidCallback  ${_table.modelLowerCase}List (List<${_table.modelName}> o)) async {
         var objList = List<${_table.modelName}>();
-        try {  
-        var response = await http.get(url);
-        Iterable list = json.decode(response.body);
-        objList = list.map((${_table.modelLowerCase}) => ${_table.modelName}.fromMap(${_table.modelLowerCase})).toList();
-        ${_table.modelLowerCase}List(objList);
-        return BoolResult(success: true);
-        } catch (e) {
+        http.get(url).then((response) {
+          Iterable list = json.decode(response.body);
+          try {
+            objList = list.map((${_table.modelLowerCase}) => ${_table.modelName}.fromMap(${_table.modelLowerCase})).toList();
+            ${_table.modelLowerCase}List(objList);
+          } catch (e) {
             print("SQFENTITY ERROR ${_table.modelName}.fromWeb: ErrorMessage:" + e.toString());
-            return BoolResult(success: false, errorMessage: e.toString());
-        }
+          }
+        });
        }
     
         static Future<List<${_table.modelName}>> fromObjectList(Future<List<dynamic>> o) async {
@@ -482,7 +482,7 @@ class SqfEntityObjectBuilder {
         /// Deletes ${_table.modelName}
         /// </summary>
         /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-        Future<BoolResult> delete(${_table.useSoftDeleting ? "{bool removeCompletely=false}":""}) async {
+        Future<BoolResult> delete() async {
           print("SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyName}=\$${_table.primaryKeyName})");
           $_deleteMethodSingle
         }
@@ -675,7 +675,7 @@ class SqfEntityObjectBuilder {
     }
     if (retVal != "") retVal = varResult + retVal;
     retVal += """
-  if (!_softDeleteActivated${_table.useSoftDeleting ? " || removeCompletely":""})
+  if (!_softDeleteActivated)
   return _mn${_table.modelName}.delete(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"));
   else
   return _mn${_table.modelName}.updateBatch(QueryParams(whereString: "${_table.primaryKeyName}=\$${_table.primaryKeyName}"), {"isDeleted": 1});""";
@@ -1130,10 +1130,10 @@ class SqfEntityObjectFilterBuilder {
     /// Deletes List<${_table.modelName}> batch by query 
     /// </summary>
     /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
-    Future<BoolResult> delete(${_table.useSoftDeleting ? "{bool removeCompletely=false}":""}) async {
+    Future<BoolResult> delete() async {
       _buildParameters();
       $_deleteMethodList
-        if(${_table.modelName}._softDeleteActivated${_table.useSoftDeleting ? " && !removeCompletely":""})
+        if(${_table.modelName}._softDeleteActivated)
           r = await _obj._mn${_table.modelName}.updateBatch(qparams,{"isDeleted":1});
       else
           r = await _obj._mn${_table.modelName}.delete(qparams);
@@ -1473,7 +1473,7 @@ abstract class SearchCriteria {
 
   AddedBlocks setCriteria(dynamic pValue, List<DbParameter> parameters,
       DbParameter param, String sqlSyntax, AddedBlocks addedBlocks,
-      [dynamic pValue2]) {
+      [dynamic pValue2])  {
     bool sp = addedBlocks.needEndBlock[addedBlocks.needEndBlock.length - 1];
     if (pValue != null) {
       param.whereString += parameters.length > 0
