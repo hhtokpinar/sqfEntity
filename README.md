@@ -210,11 +210,13 @@ To run this statement "SELECT * FROM PRODUCTS WHERE id=5"
 There are two way for this statement 
     
 The First is:
-      Product().getById(5, (product) {
+
+       Product().getById(5, (product) {
             print(product.toMap());
        });
       
 Second one is:
+
       Product().Select().id.equals(5).toSingle( (product) {
             print(product.toMap());
        });
