@@ -92,13 +92,13 @@ class TableTodo extends SqfEntityTable {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORMv6.db";
+    databaseName = "sampleORM.db";
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
       TableTodo.getInstance
     ]; // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
-    bundledDatabasePath =
+    bundledDatabasePath = 
         null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
 }

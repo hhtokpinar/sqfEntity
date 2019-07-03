@@ -3,8 +3,6 @@ import 'package:sqfentity/app.dart';
 import 'package:sqfentity/db/MyDbModel.dart';
 import 'package:sqfentity/models/models.dart';
 
-
-
 void main(List<String> args) {
   // 1- creates a simple  Model named product and sets the clipboard for paste into your models.dart file
   createSqfEntityModelString();
@@ -17,8 +15,8 @@ void main(List<String> args) {
     if (result == true)
     //The database is ready for use
     {
-      
       runSamples();
+
       // TO DO
       // ex: runApp(MyApp());
       //
@@ -31,9 +29,9 @@ void runSamples() {
   addSomeProducts((isReady) {
     if (isReady) {
       // Print all categories
-      printCategories();
+      printCategories(false);
 
-      // DELETE BATCH, DELETE OBJECT
+      // DELETE BATCH, DELETE OBJECT, RECOVERY
       samples6();
 
       // SELECT AND ORDER PRODUCTS BY FIELDS
@@ -60,8 +58,8 @@ void runSamples() {
   });
 }
 
-void printCategories() {
-  Category().select().toList((categoryList) {
+void printCategories(bool getIsDeleted) {
+  Category().select(getIsDeleted: getIsDeleted).toList((categoryList) {
     print("LISTING CATEGORIES -> Category().select().toList()");
     print("${categoryList.length} matches found:");
     for (int i = 0; i < categoryList.length; i++) {
@@ -85,8 +83,7 @@ void createSqfEntityModelString() {
   runApp(MyApp(sqfEntityModelString));
 }
 
-void samples1() {
-// EXAMPLE 1.1: SELECT * FROM PRODUCTS
+void printProducts() {
   Product().select().toList((productList) {
     print(
         "EXAMPLE 1.1: SELECT ALL ROWS WITHOUT FILTER ex: SELECT * FROM PRODUCTS \n -> Product().select().toList()");
@@ -97,8 +94,13 @@ void samples1() {
     print(
         "---------------------------------------------------------------\n\n");
   });
+}
 
+void samples1() {
+// EXAMPLE 1.1: SELECT * FROM PRODUCTS
+  printProducts();
 // EXAMPLE 1.2: ORDER BY FIELDS -> ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id
+
   Product()
       .select()
       .orderBy("name")
@@ -536,6 +538,40 @@ void samples6() {
     print(
         "---------------------------------------------------------------\n\n");
   });
+
+// EXAMPLE 6.5: Get product by id and then recover
+  Product().getById(17, (product) {
+// TO DO
+// delete product object if exist
+    if (product != null) {
+      product.delete().then((result) {
+        print(
+            "EXAMPLE 6.5: recover product if exist \n -> if (product != null) Product.recover();");
+        if (result.success)
+          print("${result.successMessage}");
+        else
+          print("${result.errorMessage}");
+        print(
+            "---------------------------------------------------------------\n\n");
+      });
+    } else {
+      print("id=15 => product not found");
+      print(
+          "---------------------------------------------------------------\n\n");
+    }
+  });
+
+// EXAMPLE 6.6: Recover many products by filter
+  Product().select().id.greaterThan(17).recover().then((result) {
+    print(
+        "EXAMPLE 6.6: Recover many products by filter \n -> Product().select().id.greaterThan(17).recover()");
+    if (result.success) {
+      print("${result.successMessage}");
+    } else
+      print("${result.errorMessage}");
+    print(
+        "---------------------------------------------------------------\n\n");
+  });
 }
 
 void samples7() {
@@ -567,7 +603,7 @@ void samples7() {
 }
 
 void samples8() {
-  Todo.fromWeb((todosList){
+  Todo.fromWeb((todosList) {
     Todo().upsertAll(todosList).then((results) {
       //for (var res in results) print(res.toString()); // print upsert Results
       Todo().select().top(10).toList((todoList) {
@@ -583,7 +619,7 @@ void samples8() {
     });
   });
 
-  Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos",(todosList){
+  Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos", (todosList) {
     Todo().upsertAll(todosList).then((results) {
       //for (var res in results) print(res.toString()); // print upsert Results
       Todo().select().top(10).toList((todoList) {
