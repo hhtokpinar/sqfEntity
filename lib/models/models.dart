@@ -15,7 +15,7 @@ import 'package:sqfentity/db/sqfEntityBase.dart';
         Enjoy.. Huseyin Tokpunar
       */
 // region Product
-class Product extends SearchCriteria {
+class Product {
   // FIELDS
   int id;
   String name;
@@ -850,7 +850,7 @@ class ProductManager extends SqfEntityProvider {
         Enjoy.. Huseyin Tokpunar
       */
 // region Category
-class Category extends SearchCriteria {
+class Category {
   // FIELDS
   int id;
   String name;
@@ -1020,12 +1020,9 @@ class Category extends SearchCriteria {
   Future<BoolResult> delete() async {
     print("SQFENTITIY: delete Category invoked (id=$id)");
     var result = BoolResult();
-    result = await Product().select().categoryId.equals(id).toCount((_) {});
-    if (result.success)
-      return BoolResult(
-          success: false,
-          errorMessage:
-              "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP 'Product.categoryId'");
+    result = await Product().select().categoryId.equals(id).delete();
+    if (!result.success)
+      return result;
     else if (!_softDeleteActivated)
       return _mnCategory.delete(QueryParams(whereString: "id=$id"));
     else
@@ -1039,8 +1036,20 @@ class Category extends SearchCriteria {
   /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
   Future<BoolResult> recover() async {
     print("SQFENTITIY: recover Category invoked (id=$id)");
-    return _mnCategory
-        .updateBatch(QueryParams(whereString: "id=$id"), {"isDeleted": 0});
+    var result = BoolResult();
+    result = await Product()
+        .select(getIsDeleted: true)
+        .isDeleted
+        .equals(true)
+        .and
+        .categoryId
+        .equals(id)
+        .update({"isDeleted": 0});
+    if (!result.success)
+      return result;
+    else
+      return _mnCategory
+          .updateBatch(QueryParams(whereString: "id=$id"), {"isDeleted": 0});
   }
 
   //private CategoryFilterBuilder _Select;
@@ -1451,14 +1460,11 @@ class CategoryFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete() async {
     _buildParameters();
     var r = BoolResult();
-    var idList = await toListPrimaryKey((_) {}, false);
-    r = await Product().select().categoryId.inValues(idList).toCount((_) {});
-    if (r.success) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              "SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP 'Product.categoryId'");
-    } else if (Category._softDeleteActivated)
+    toListPrimaryKey((idList) {
+      Product().select().categoryId.inValues(idList).delete();
+    }, false);
+
+    if (Category._softDeleteActivated)
       r = await _obj._mnCategory.updateBatch(qparams, {"isDeleted": 1});
     else
       r = await _obj._mnCategory.delete(qparams);
@@ -1469,6 +1475,16 @@ class CategoryFilterBuilder extends SearchCriteria {
     _getIsDeleted = true;
     _buildParameters();
     print("SQFENTITIY: recover Category batch invoked");
+    toListPrimaryKey((idList) {
+      Product()
+          .select(getIsDeleted: true)
+          .isDeleted
+          .equals(true)
+          .and
+          .categoryId
+          .inValues(idList)
+          .update({"isDeleted": 0});
+    }, false);
     return _obj._mnCategory.updateBatch(qparams, {"isDeleted": 0});
   }
 
@@ -1606,7 +1622,7 @@ class CategoryManager extends SqfEntityProvider {
         Enjoy.. Huseyin Tokpunar
       */
 // region Todo
-class Todo extends SearchCriteria {
+class Todo {
   // FIELDS
   int id;
   int userId;
