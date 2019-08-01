@@ -113,6 +113,7 @@ class SqfEntityProvider {
           if (pSql.length == 0) callBack(true);
         });
       }
+      return null;
     });
     return result;
   }
@@ -279,7 +280,7 @@ $_createObjectField
     return toString;
   }
 
-  __createObjectField() {
+  String __createObjectField() {
     String retVal = """
   static TableField _f${toCamelCase(_table.primaryKeyName)};
   static TableField get ${_table.primaryKeyName.toLowerCase()} {
@@ -382,7 +383,7 @@ class SqfEntityObjectBuilder {
           Iterable list = json.decode(response.body);
           try {
             objList = list.map((${_table.modelLowerCase}) => ${_table.modelName}.fromMap(${_table.modelLowerCase})).toList();
-            ${_table.modelLowerCase}List(objList);
+            ${_table.modelLowerCase}List(objList); return;
           } catch (e) {
             print("SQFENTITY ERROR ${_table.modelName}.fromWeb: ErrorMessage:" + e.toString());
           }
@@ -568,7 +569,7 @@ class SqfEntityObjectBuilder {
     return _retVal;
   }
 
-  __createDefaultValues() {
+  String __createDefaultValues() {
     String _retVal = "";
     for (SqfEntityFieldType field in _table.fields) {
       if (field.defaultValue != null) {
@@ -591,7 +592,7 @@ class SqfEntityObjectBuilder {
     return _retVal;
   }
 
-  __createObjectRelations() {
+  String __createObjectRelations() {
     String retVal = "";
 
     for (SqfEntityFieldType field in _table.fields) {
@@ -599,7 +600,7 @@ class SqfEntityObjectBuilder {
         retVal += """
      get${field.relationshipName}(VoidCallback ${field.relationshipName.toLowerCase()}(${field.table.modelName} o)) {
         ${field.relationshipName}().getById(${field.fieldName}, (obj) {
-          ${field.relationshipName.toLowerCase()}(obj);
+          ${field.relationshipName.toLowerCase()}(obj); return;
         });
       }
     """;
@@ -610,13 +611,13 @@ class SqfEntityObjectBuilder {
     return retVal;
   }
 
-  __createObjectCollections() {
+  String __createObjectCollections() {
     String retVal = "";
     for (var tableCollecion in _table.collections) {
       retVal += """
        get${toPluralName(tableCollecion.childTable.modelName)}(VoidCallback ${tableCollecion.childTable.modelLowerCase}List(List<${tableCollecion.childTable.modelName}> o)) {
         ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.equals(${tableCollecion.childTableField.table.primaryKeyName}).toList((objList) {
-          ${tableCollecion.childTable.modelLowerCase}List(objList);
+          ${tableCollecion.childTable.modelLowerCase}List(objList); return;
         });
       }
     """;
@@ -630,7 +631,7 @@ class SqfEntityObjectBuilder {
       return """
      static fromWeb(VoidCallback ${_table.modelLowerCase}List(List<${_table.modelName}> o)) async {
          fromWebUrl("https://jsonplaceholder.typicode.com/todos", (objList){
-          ${_table.modelLowerCase}List (objList);
+          ${_table.modelLowerCase}List (objList); return;
          });
       }
           """;
@@ -1236,7 +1237,7 @@ class SqfEntityObjectFilterBuilder {
     return toString;
   }
 
-  __createObjectFieldProperty() {
+  String __createObjectFieldProperty() {
     String retVal = """
        ${_table.modelName}Field _${_table.primaryKeyName};
      ${_table.modelName}Field get ${_table.primaryKeyName} {
@@ -1279,7 +1280,7 @@ class SqfEntityObjectFilterBuilder {
           if (tableCollecion.childTable.useSoftDeleting)
             retVal += """
       toListPrimaryKey((idList){
-      ${tableCollecion.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollecion.childTableField.fieldName}.inValues(idList).update({"isDeleted": 0});
+      ${tableCollecion.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollecion.childTableField.fieldName}.inValues(idList).update({"isDeleted": 0}); return;
     }, false);
     """;
           break;
@@ -1329,7 +1330,7 @@ class SqfEntityObjectFilterBuilder {
           if (tableCollecion.childTable.useSoftDeleting)
             retVal += """
     toListPrimaryKey((idList){
-    ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.inValues(idList).delete();
+    ${tableCollecion.childTable.modelName}().select().${tableCollecion.childTableField.fieldName}.inValues(idList).delete(); return;
     }, false);
            """;
           break;
@@ -1527,8 +1528,8 @@ class BoolResult {
 class DbParameter {
   String columnName;
   DbType dbType;
-  var value;
-  var value2;
+  dynamic value;
+  dynamic value2;
   String whereString;
   bool wStartBlock;
   String wOperator;
@@ -1747,7 +1748,7 @@ abstract class SqfEntityModel {
   // ATTENTION: Defining the table here provides automatic processing for database configuration only.
   // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
 
-  initializeDB(VoidCallback isReady(bool result)) {
+  void initializeDB(VoidCallback isReady(bool result)) {
     var dbTables = databaseTables.where((i) => !i.initialized).toList();
     if (dbTables.length == 0)
       isReady(true);
@@ -1784,7 +1785,7 @@ abstract class SqfEntityModel {
                       "SQFENTITIY: Table named '${table.tableName}' was initialized successfuly (Added new columns)");
                   if (checkForIsReadyDatabase(dbTables)) isReady(true);
                 }
-              });
+              return;});
             } else {
               table.initialized = true;
               print(
@@ -1803,7 +1804,7 @@ abstract class SqfEntityModel {
                 print(
                     "SQFENTITIY: alterTableIndexesQuery => $alterTableIndexesQuery");
                 SqfEntityProvider(this)
-                    .execSQLList(alterTableIndexesQuery, (result) {});
+                    .execSQLList(alterTableIndexesQuery, (result) {return;});
               }
             });
           }
