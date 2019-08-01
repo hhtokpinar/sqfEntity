@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:sqfentity/app.dart';
 import 'package:sqfentity/db/MyDbModel.dart';
@@ -16,13 +17,15 @@ void main(List<String> args) {
     //The database is ready for use
     {
       runSamples();
-
+      
       // TO DO
       // ex: runApp(MyApp());
       //
     }
+  return;
   });
 }
+
 
 void runSamples() {
   // add some products
@@ -55,10 +58,12 @@ void runSamples() {
       // fill List from the web (JSON)
       samples8();
     }
-  });
+  return;});
 }
 
 void printCategories(bool getIsDeleted) {
+  
+
   Category().select(getIsDeleted: getIsDeleted).toList((categoryList) {
     print("LISTING CATEGORIES -> Category().select().toList()");
     print("${categoryList.length} matches found:");
@@ -67,6 +72,7 @@ void printCategories(bool getIsDeleted) {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 }
 
@@ -93,6 +99,7 @@ void printProducts() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 }
 
@@ -115,6 +122,7 @@ void samples1() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.3: SELECT SPECIFIC FIELDS -> ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC
@@ -130,6 +138,7 @@ void samples1() {
         }
         print(
             "---------------------------------------------------------------");
+            return;
       });
 }
 
@@ -144,6 +153,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
@@ -156,6 +166,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
@@ -179,6 +190,7 @@ void samples2() {
     if (product != null) print(product.toMap());
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
@@ -206,6 +218,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.8: NOT EQUALS
@@ -218,6 +231,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
@@ -237,6 +251,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.10: BETWEEN KEYWORD
@@ -254,6 +269,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.11: 'NOT' KEYWORD
@@ -266,6 +282,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
@@ -278,6 +295,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
   // EXAMPLE 1.13: Build filter and query from values from the form
@@ -315,6 +333,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
   // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
@@ -328,6 +347,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
   // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
@@ -344,6 +364,7 @@ void samples2() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 }
 
@@ -358,6 +379,7 @@ void samples3() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
   // EXAMPLE 3.2: SAMPLE PAGING -> PRODUCTS in 3. page (5 items per page)
@@ -370,6 +392,7 @@ void samples3() {
     }
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 }
 
@@ -388,6 +411,7 @@ void samples4() {
         }
         print(
             "---------------------------------------------------------------\n\n");
+            return;
       });
 
   // EXAMPLE 4.2: GROUP BY with SCALAR OR AGGREGATE FUNCTIONS ex: SELECT COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice FROM PRODUCTS GROUP BY name
@@ -413,6 +437,7 @@ void samples4() {
         }
         print(
             "---------------------------------------------------------------");
+            return;
       });
 }
 
@@ -454,6 +479,7 @@ void samples5() {
       print("EXAMPLE 5.3: id=15 => product not found");
     print(
         "---------------------------------------------------------------\n\n");
+        return;
   });
 
 // EXAMPLE 5.4: update some filtered products with saveAll method -> Product().saveAll(productList){});
@@ -479,8 +505,10 @@ void samples5() {
         }
         print(
             "---------------------------------------------------------------");
+            return;
       });
     });
+    return;
   });
 }
 
@@ -519,13 +547,14 @@ void samples6() {
           print("${result.errorMessage}");
         print(
             "---------------------------------------------------------------\n\n");
+            return;
       });
     } else {
       print("id=15 => product not found");
       print(
           "---------------------------------------------------------------\n\n");
     }
-  });
+return;  });
 
 // EXAMPLE 6.4: Delete many products by filter
   Product().select().id.greaterThan(17).delete().then((result) {
@@ -559,6 +588,7 @@ void samples6() {
       print(
           "---------------------------------------------------------------\n\n");
     }
+    return;
   });
 
 // EXAMPLE 6.6: Recover many products by filter
@@ -582,8 +612,8 @@ void samples7() {
           "EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory((_category) {}); ");
 
       print("The category of '${product.name}' is: " +
-          category.toMap().toString());
-    });
+          category.toMap().toString()); return;
+    }); return;
   });
 
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
@@ -598,7 +628,8 @@ void samples7() {
         }
         print(
             "---------------------------------------------------------------");
-      });
+            return;
+      }); return;
   });
 }
 
@@ -615,8 +646,9 @@ void samples8() {
         }
         print(
             "---------------------------------------------------------------\n\n");
+            return;
       });
-    });
+    }); return;
   });
 
   Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos", (todosList) {
@@ -631,8 +663,9 @@ void samples8() {
         }
         print(
             "---------------------------------------------------------------\n\n");
+            return;
       });
-    });
+    }); return;
   });
 }
 
@@ -642,13 +675,13 @@ void addSomeProducts(VoidCallback isReady(bool ready)) {
     if (category == null) {
       addCategories((ready) {
         addProducts((ready) {
-          if (ready) isReady(true);
-        });
+          if (ready) isReady(true); return;
+        }); return;
       });
     } else {
       print("There is already rows in the database.. addProduct will not run");
       isReady(true);
-    }
+    } return;
   });
 }
 
@@ -727,5 +760,6 @@ void addProducts(VoidCallback isReady(bool ready)) {
     } else {
       isReady(true);
     }
+     return;
   });
 }
