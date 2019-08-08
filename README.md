@@ -16,7 +16,7 @@ This project is a starting point for a SqfEntity ORM for database application.
 There are 7 files in the project
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
-    2. db / MyDbModel.dart          : Declare and modify your database model
+    2. models / MyDbModel.dart      : Declare and modify your database model
     3. models / models.dart         : Sample created model for examples
     4. assets / sample.db           : Sample db if you want to use an exiting db
     5. app.dart                     : Sample App for display created model. (will be updated later.)
