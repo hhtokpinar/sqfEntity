@@ -16,12 +16,11 @@ This project is a starting point for a SqfEntity ORM for database application.
 There are 7 files in the project
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
-    2. db / SqfEntityBase.dart      : includes Database Provider, Create model engine, helper classes, enums.. etc 
-    3. db / MyDbModel.dart          : Declare and modify your database model
-    4. models / models.dart         : Sample created model for examples
-    5. assets / sample.db           : Sample db if you want to use an exiting db
-    6. app.dart                     : Sample App for display created model. (will be updated later.)
-    7. LICENSE.txt                  : see this file for License Terms
+    2. db / MyDbModel.dart          : Declare and modify your database model
+    3. models / models.dart         : Sample created model for examples
+    4. assets / sample.db           : Sample db if you want to use an exiting db
+    5. app.dart                     : Sample App for display created model. (will be updated later.)
+    6. LICENSE.txt                  : see this file for License Terms
 
 
 ### dependencies:
@@ -33,6 +32,7 @@ There are 7 files in the project
       path_provider: any
       intl: ^0.15.7
       http: ^0.12.0+1  
+      sqfentity: ^0.0.5+1
 
 
 # Create a new Database Model

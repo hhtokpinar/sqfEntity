@@ -1,4 +1,4 @@
-name: sqfentity
+name: sqfentity_sample
 description: SQLFlite Entity Project
 
 # The following defines the version and build number for your application.
@@ -19,10 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite: any
+  sqfentity: ^0.0.5+1
   path_provider: any
   intl: ^0.15.7
-  http: ^0.12.0+1  
+  http: ^0.12.0+1 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 
 class Home extends StatelessWidget {
   final TextEditingController txtModel =
-      new TextEditingController(text: modelString);
+      TextEditingController(text: modelString);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +39,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  _buildHomePage(BuildContext context) {
+  Container _buildHomePage(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(8.0),
       // hack textfield height
