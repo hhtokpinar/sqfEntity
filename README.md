@@ -26,7 +26,7 @@ There are 7 files in the project
 ### dependencies:
 
     dependencies:
-      sqfentity: ^0.0.5+1
+      sqfentity: any
 
 
 # Create a new Database Model
