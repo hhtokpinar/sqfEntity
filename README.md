@@ -150,7 +150,7 @@ So you can create many Database Models and use them in your application.
 
     class MyDbModel extends SqfEntityModel {
     MyDbModel() {
-    databaseName = "sampleORMx01.db";
+    databaseName = "sampleORM.db";
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
@@ -195,7 +195,44 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
     
  If result is **true**, the database is ready to use
 
-## That's Great! now we can use our created new model named "Product"
+## That's Great! now we can use our created new models
+
+Let's add some record to the "Category" table
+*Note: save() method returns the primary id of the added record
+
+    final notebookCategoryId = await Category(name: "Notebooks", isActive: true).save();
+    
+    // or another way to define a category is Category.withField
+    final ultrabookCategoryId = await Category.withFields("Ultrabooks", true, false).save();
+
+Let's add some record to the "Product" table
+You can add record as follow:
+
+    final product = Product();
+    product.name = "Notebook 12\"";
+    product.description = "128 GB SSD i7";
+    product.price = 6899;
+    product.categoryId = notebookCategoryId;
+    await product.save();
+    
+You can also add records quickly as follows:
+
+    await Product.withFields( "Notebook 12\"", "128 GB SSD i7", 6899, true, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 12\"", "256 GB SSD i7", 8244, true, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 12\"", "512 GB SSD i7", 9214, true, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 13\"", "128 GB SSD", 8500, true, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 13\"", "256 GB SSD", 9900, true, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 13\"", "512 GB SSD", 11000, null, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 15\"", "128 GB SSD", 8999, null, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 15\"", "256 GB SSD", 10499, null, notebookCategoryId, 0, false).save();
+    await Product.withFields( "Notebook 15\"", "512 GB SSD", 11999, true, notebookCategoryId, 0, false).save();
+
+    await Product.withFields( "Ultrabook 13\"", "128 GB SSD i5", 9954, true, ultrabookCategoryId, 0, false).save();
+    await Product.withFields( "Ultrabook 13\"", "256 GB SSD i5", 11154, true, ultrabookCategoryId, 0, false).save();
+    await Product.withFields( "Ultrabook 13\"", "512 GB SSD i5", 13000, true, ultrabookCategoryId, 0, false).save();
+    await Product.withFields( "Ultrabook 15\"", "128 GB SSD i7", 11000, true, ultrabookCategoryId, 0, false).save();
+    await Product.withFields( "Ultrabook 15\"", "256 GB SSD i7", 12000, true, ultrabookCategoryId, 0, false).save();
+    await Product.withFields( "Ultrabook 15\"", "512 GB SSD i7", 14000, true, ultrabookCategoryId, 0, false).save();
 
 ### See sample usage of sqf below
 
