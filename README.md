@@ -216,14 +216,10 @@ There are two way for this statement
 The First is:
 
        var product = await Product().getById(5);
-       print(product.toMap());
-
       
 Second one is:
 
       var product = await Product().Select().id.equals(5).toSingle();
-      print(product.toMap());
-
     
     
  ## SELECT FIELDS, ORDER BY EXAMPLES
