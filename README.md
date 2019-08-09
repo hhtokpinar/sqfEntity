@@ -199,14 +199,15 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
 
 Let's add some record to the "Category" table
 
-*Note: save() method returns the primary id of the added record
+*Note: save() method returns the primary id of the added record*
 
     final notebookCategoryId = await Category(name: "Notebooks", isActive: true).save();
     
     // or another way to define a category is Category.withField
     final ultrabookCategoryId = await Category.withFields("Ultrabooks", true, false).save();
 
-##Let's add some record to the "Product" table
+
+## Let's add some record to the "Product" table
 
 You can add record as follow:
 
