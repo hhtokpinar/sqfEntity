@@ -198,6 +198,7 @@ If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN qu
 ## That's Great! now we can use our created new models
 
 Let's add some record to the "Category" table
+
 *Note: save() method returns the primary id of the added record
 
     final notebookCategoryId = await Category(name: "Notebooks", isActive: true).save();
@@ -205,7 +206,8 @@ Let's add some record to the "Category" table
     // or another way to define a category is Category.withField
     final ultrabookCategoryId = await Category.withFields("Ultrabooks", true, false).save();
 
-Let's add some record to the "Product" table
+##Let's add some record to the "Product" table
+
 You can add record as follow:
 
     final product = Product();
