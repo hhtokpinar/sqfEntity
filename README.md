@@ -259,7 +259,7 @@ The First is:
       
 Second one is:
 
-      var product = await Product().Select().id.equals(5).toSingle();
+     var product = await Product().select().id.equals(5).toSingle();
     
     
  ## SELECT FIELDS, ORDER BY EXAMPLES
@@ -334,7 +334,7 @@ Second one is:
     
  ## DISTINCT   
     EXAMPLE 4.1: DISTINCT: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 
-    -> await Product().distinct(columnsToSelect:["name").price.greaterThan(3000).toList();
+    -> await Product().distinct(columnsToSelect:["name"]).price.greaterThan(3000).toList();
    
 ## GROUP BY
 
@@ -386,8 +386,8 @@ Second one is:
        
 ## save() Method for insert or update (for both)
 
-    await Product({name:"test product"}).save(); // inserts a new record if id is null or equals to zero
-    await Product({id:1, name:"test product"}).save(); // updates record
+    await Product(name:"test product").save(); // inserts a new record if id is null or equals to zero
+    await Product(id:1, name:"test product").save(); // updates record
     
 ## saveAll() Method for insert or update List (for both)
 
