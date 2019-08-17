@@ -31,7 +31,7 @@ There are 7 files in the project
 
 # Create a new Database Model
 
-First, create your dbmodel.dart file to define your model and import SqfEntityBase.dart 
+First, create your dbmodel.dart file to define your model and import sqfentity.dart 
 
     import 'package:sqfentity/sqfentity.dart';
 
