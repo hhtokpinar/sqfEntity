@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqfentity: ^0.0.5+1
+  sqfentity: ^0.1.0+16
   path_provider: any
   intl: ^0.15.7
   http: ^0.12.0+1 
