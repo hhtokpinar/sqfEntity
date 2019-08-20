@@ -1,5 +1,9 @@
-name: sqfentity_sample
-description: SQFEntity Sample Project
+name: sqfentity
+description: SqfEntity ORM for Flutter/Dart lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework. 
+author: Hüseyin TOKPINAR <hhtokpinar@gmail.com>
+homepage: https://github.com/hhtokpinar/sqfEntity
+
+
 version: 1.0.0+1
 
 environment:
@@ -10,16 +14,18 @@ dependencies:
     sdk: flutter
   sqfentity: ^0.1.0+20
   path_provider: any
-  intl: ^0.15.7
-  http: ^0.12.0+1 
+  pedantic: ^1.8.0+1
+  
 
+dev_dependencies:
+#  build_runner: ^1.6.5
+
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+
 
 
 # For information on the generic Dart part of this file, see the
