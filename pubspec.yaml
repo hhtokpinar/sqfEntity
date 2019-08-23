@@ -12,8 +12,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqfentity: ^0.1.0+20
+  sqfentity: ^0.2.0
   path_provider: any
+  intl: ^0.15.7
+  http: ^0.12.0+1 
+  cached_network_image: ^1.1.1
+
   pedantic: ^1.8.0+1
   
 
