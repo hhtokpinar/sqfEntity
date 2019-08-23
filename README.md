@@ -161,8 +161,9 @@ So you can create many Database Models and use them in your application.
     }}
 
 
-### That's all.. one more step left for create models.dart file.
-  
+That's all.. one more step left for create models.dart file.
+
+### Attach existing SQLite database with bundledDatabasePath parameter
   *bundledDatabasePath* is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   
    **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
