@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_sample/models/MyDbModel.dart';
 import 'app.dart';
-import 'models/MyDbModel.dart';
+//import 'main_dismiss.dart';
+//import 'main_swap.dart';
 import 'models/models.dart';
-
 
 void main(List<String> args) async {
   // 1- creates a simple  Model named product and sets the clipboard for paste into your models.dart file
@@ -15,11 +16,13 @@ void main(List<String> args) async {
   if (isInitialized == true)
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
   {
-    runSamples();
+    await runSamples();
+    runApp(MyApp());
+    //runApp(Test());
   }
 }
 
-void runSamples() async {
+Future<bool> runSamples() async {
   // add some products
   await addSomeProducts();
 
@@ -49,6 +52,8 @@ void runSamples() async {
 
   // fill List from the web (JSON)
   await samples8();
+
+  return true;
 }
 
 void printCategories(bool getIsDeleted) {
@@ -68,14 +73,13 @@ void printCategories(bool getIsDeleted) {
 void createSqfEntityModelString() {
   // To get the class from the clipboard, run it separately for each object
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  final String sqfEntityModelString =
-      MyDbModel().createModel(); //SqfEntityDbContext.createModel(MyDbModel());
+
+  MyDbModel().createModel();
 
   // also you can get Model String from TextField in App (on the Emulator only!)
   // Notice: Keyboard shortcuts are not working on the emulator.
   // To copy for your model, click on the cursor in the TextField than open tooltip menu in the emulator.
   // When the menu opens, you can click "SELECT ALL" and then click "COPY".
-  runApp(MyApp(sqfEntityModelString));
 }
 
 void printProducts() async {
@@ -408,6 +412,16 @@ Future<void> samples5() async {
   print(result.toString());
   print("---------------------------------------------------------------\n\n");
 
+// UPDATE imageUrl field by CategoryId
+  await Product().select().categoryId.equals(1).update({
+    "imageUrl":
+        "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png"
+  });
+  await Product().select().categoryId.equals(2).update({
+    "imageUrl":
+        "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.png"
+  });
+
 // EXAMPLE 5.2: Update multiple records with query
   result =
       await Product().select().id.lessThanOrEquals(10).update({"isActive": 1});
@@ -421,8 +435,7 @@ Future<void> samples5() async {
 // TO DO
 // update product object if exist
   if (product2 != null) {
-    product2.isActive = true;
-    product2.description += " (updated)";
+    product2.description ="512GB SSD i7 (updated)";
     await product2.save();
     print("EXAMPLE 5.3: id=15 Product item updated: " +
         product2.toMap().toString());
@@ -546,16 +559,17 @@ Future<void> samples6() async {
 Future<void> samples7() async {
   // EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {});
   final product = await Product().getById(3);
+  if(product != null){
   final category = await product.getCategory();
   print(
       "EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ");
 
   print("The category of '${product.name}' is: " + category.toMap().toString());
-
+  }
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
   for (var category in categoryList) {
-    final productList = await category.getProducts();
+    final productList = await category.getProducts().toList();
     print(
         "EXAMPLE 7.2.${category.id}: Products of '${category.name}' listing \n-> category.getProducts((productList) {}); ");
     // PRINT RESULTS TO DEBUG CONSOLE
@@ -571,29 +585,32 @@ Future<void> samples7() async {
 
 Future<void> samples8() async {
   List<Todo> todosList = await Todo.fromWeb();
-  await Todo().upsertAll(todosList);
+  if (todosList != null) {
+    await Todo().upsertAll(todosList);
 
-  todosList = await Todo().select().top(10).toList();
-  print(
-      "EXAMPLE 8.1: Fill List from web (JSON data) and upsertAll \n -> Todo.fromWeb((todosList) {}");
-  print(todosList.length.toString() + " matches found\n");
-  for (var todo in todosList) {
-    print(todo.toMap());
+    todosList = await Todo().select().top(10).toList();
+    print(
+        "EXAMPLE 8.1: Fill List from web (JSON data) and upsertAll \n -> Todo.fromWeb((todosList) {}");
+    print(todosList.length.toString() + " matches found\n");
+    for (var todo in todosList) {
+      print(todo.toMap());
+    }
+    print(
+        "---------------------------------------------------------------\n\n");
   }
-  print("---------------------------------------------------------------\n\n");
-
   todosList =
       await Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos");
-  final results = await Todo().upsertAll(todosList);
-  print(
-      "EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);");
+  if (todosList != null) {
+    final results = await Todo().upsertAll(todosList);
+    print(
+        "EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);");
 
-  // print upsert Results
-  for (var res in results) {
-    res = res; // dummy line for analysis_options (unused_local_variable)
-    //print(res.toString()); // uncomment this line for print save results
+    // print upsert Results
+    for (var res in results) {
+      res = res; // dummy line for analysis_options (unused_local_variable)
+      //print(res.toString()); // uncomment this line for print save results
+    }
   }
-
   todosList = await Todo().select().top(10).toList();
   print(
       "EXAMPLE 8.2: Fill List from web with Url (JSON data) and upsertAll \n -> Todo.fromWebUrl(\"https://jsonplaceholder.typicode.com/todos\", (todosList) {}");
@@ -631,66 +648,171 @@ Future<void> addCategories() async {
 }
 
 Future<bool> addProducts() async {
-  final productList = await Product().select().toList();
+  final productList = await Product().select(getIsDeleted: true).toList();
   if (productList.length < 15) {
     // some dummy rows for select (id:1- to 15)
     await Product.withFields(
-            "Notebook 12\"", "128 GB SSD i7", 6899, true, 1, 0, false)
+            "Notebook 12\"",
+            "128 GB SSD i7",
+            6899,
+            true,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
         .save();
     await Product.withFields(
-            "Notebook 12\"", "256 GB SSD i7", 8244, true, 1, 0, false)
+            "Notebook 12\"",
+            "256 GB SSD i7",
+            8244,
+            true,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
         .save();
     await Product.withFields(
-            "Notebook 12\"", "512 GB SSD i7", 9214, true, 1, 0, false)
-        .save();
-
-    await Product.withFields(
-            "Notebook 13\"", "128 GB SSD", 8500, true, 1, 0, false)
-        .save();
-    await Product.withFields(
-            "Notebook 13\"", "256 GB SSD", 9900, true, 1, 0, false)
-        .save();
-    await Product.withFields(
-            "Notebook 13\"", "512 GB SSD", 11000, null, 1, 0, false)
-        .save();
-
-    await Product.withFields(
-            "Notebook 15\"", "128 GB SSD", 8999, null, 1, 0, false)
-        .save();
-    await Product.withFields(
-            "Notebook 15\"", "256 GB SSD", 10499, null, 1, 0, false)
-        .save();
-    await Product.withFields(
-            "Notebook 15\"", "512 GB SSD", 11999, true, 1, 0, false)
-        .save();
-
-    await Product.withFields(
-            "Ultrabook 13\"", "128 GB SSD i5", 9954, true, 2, 0, false)
-        .save();
-    await Product.withFields(
-            "Ultrabook 13\"", "256 GB SSD i5", 11154, true, 2, 0, false)
-        .save();
-    await Product.withFields(
-            "Ultrabook 13\"", "512 GB SSD i5", 13000, true, 2, 0, false)
+            "Notebook 12\"",
+            "512 GB SSD i7",
+            9214,
+            false,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
         .save();
 
     await Product.withFields(
-            "Ultrabook 15\"", "128 GB SSD i7", 11000, true, 2, 0, false)
+            "Notebook 13\"",
+            "128 GB SSD",
+            8500,
+            true,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
         .save();
     await Product.withFields(
-            "Ultrabook 15\"", "256 GB SSD i7", 12000, true, 2, 0, false)
+            "Notebook 13\"",
+            "256 GB SSD",
+            9900,
+            true,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
         .save();
     await Product.withFields(
-            "Ultrabook 15\"", "512 GB SSD i7", 14000, true, 2, 0, false)
+            "Notebook 13\"",
+            "512 GB SSD",
+            11000,
+            null,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
+        .save();
+
+    await Product.withFields(
+            "Notebook 15\"",
+            "128 GB SSD",
+            8999,
+            null,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Notebook 15\"",
+            "256 GB SSD",
+            10499,
+            null,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Notebook 15\"",
+            "512 GB SSD",
+            11999,
+            true,
+            1,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.jpg",
+            false)
+        .save();
+
+    await Product.withFields(
+            "Ultrabook 13\"",
+            "128 GB SSD i5",
+            9954,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Ultrabook 13\"",
+            "256 GB SSD i5",
+            11154,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Ultrabook 13\"",
+            "512 GB SSD i5",
+            13000,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
+        .save();
+
+    await Product.withFields(
+            "Ultrabook 15\"",
+            "128 GB SSD i7",
+            11000,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Ultrabook 15\"",
+            "256 GB SSD i7",
+            12000,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
+        .save();
+    await Product.withFields(
+            "Ultrabook 15\"",
+            "512 GB SSD i7",
+            14000,
+            true,
+            2,
+            0,
+            "https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.jpg",
+            false)
         .save();
     print("added 15 new products");
 
-    // add a few dummy products for delete (id:16 to 20)
-    await Product.withFields("Product 1", "", 0, true, 0, 0, false).save();
-    await Product.withFields("Product 2", "", 0, true, 0, 0, false).save();
-    await Product.withFields("Product 3", "", 0, true, 0, 0, false).save();
-    await Product.withFields("Product 4", "", 0, true, 0, 0, false).save();
-    await Product.withFields("Product 5", "", 0, true, 0, 0, false).save();
+    // add a few dummy products for delete (id:from 16 to 20)
+    await Product.withFields("Product 1", "", 0, true, 2, 0, "", false).save();
+    await Product.withFields("Product 2", "", 0, true, 2, 0, "", false).save();
+    await Product.withFields("Product 3", "", 0, true, 2, 0, "", false).save();
+    await Product.withFields("Product 4", "", 0, true, 2, 0, "", false).save();
+    await Product.withFields("Product 5", "", 0, true, 2, 0, "", false).save();
     print("added 5 dummy products");
   }
   return true;

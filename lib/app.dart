@@ -1,52 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_sample/models/MyDbModel.dart';
+import 'package:sqfentity_sample/screens/categoryList.dart';
+import 'package:sqfentity_sample/tools/popup.dart';
 
-String _modelString;
-
-String get modelString => _modelString;
-
-set modelString(String modelStrings) {
-  _modelString = modelStrings;
-}
+import './tools/helper.dart';
 
 class MyApp extends StatelessWidget {
-  MyApp(String setmodelString) {
-    modelString = setmodelString;
-  }
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SqfEntity Model Creator',
+      title: CONSTANTS.APP_TITLE,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primaryColor: Color.fromRGBO(95, 66, 119, 1.0),
+          fontFamily: 'LexendDeca'),
       home: Home(),
     );
   }
 }
 
-class Home extends StatelessWidget {
-  final TextEditingController txtModel =
-      TextEditingController(text: modelString);
+class Home extends StatefulWidget {
+  Home({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  HomeState createState() => HomeState();
+}
+
+class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("SqfEntity Model Creator"),
-        leading: Icon(Icons.assignment),
+        elevation: 0.1,
+        backgroundColor: Color.fromRGBO(95, 66, 119, 1.0),
+        title: Text(CONSTANTS.APP_TITLE),
+        actions: <Widget>[
+          PopupMenuButton<int>(
+            onSelected: select,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right),
+                    Text("About SqfEntity"),
+                  ],
+                ),
+                value: 0,
+              ),
+              PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right),
+                    Text("Generate model.dart"),
+                  ],
+                ),
+                value: 1,
+              ),
+            ],
+          )
+        ],
       ),
-      body: _buildHomePage(context),
+      body: CategoryList(),
     );
   }
 
-  Container _buildHomePage(BuildContext context) {
+  void select(int value) {
+    switch (value) {
+      case 0:
+        showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
+        break;
+      case 1:
+         MyDbModel().createModel();
+        UITools(context).alertDialog(
+            'Model was created successfully. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard');
+        break;
+      default:
+    }
+  }
+
+  Widget _aboutSqfEntity() {
     return Container(
-      margin: EdgeInsets.all(8.0),
-      // hack textfield height
-      padding: EdgeInsets.only(bottom: 40.0),
-      child: TextField(
-        controller: txtModel,
-        maxLines: 99,
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Flexible(
+                    child: Text(
+                        'SqfEntity ORM for Flutter/Dart lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework.')),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: <Widget>[
+                Flexible(child: Text(
+                    //'Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, multiple databases etc. with the help of DbModel object'
+                    'This sample project includes a sample application on how you can use sqfentity')),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
