@@ -38,7 +38,7 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(TableCategory(), DeleteRule.NO_ACTION,
+      SqfEntityFieldRelationship(TableCategory(), DeleteRule.CASCADE,
           defaultValue: "0"), // Relationship column for CategoryId of Product
       SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
       SqfEntityField("imageUrl",DbType.text)
@@ -77,7 +77,7 @@ class TableTodo extends SqfEntityTable {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORMa5.db";
+    databaseName = "sampleORM.db";
     databaseTables = [
       TableProduct(),
       TableCategory(),
