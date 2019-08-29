@@ -470,7 +470,30 @@ and then Todo().saveAll(todosList) method saves all data in your local database
       // DELETE BATCH, DELETE OBJECT
       samples6();
 
-### main.dart includes a lot of samples that you need
+## SAMPLE APPLICATION
+
+main.dart includes many examples of what you need, in addition to what we see.
+Also This sample project includes a sample application on how you can use sqfentity
+
+![SqfEntity Sample Mobile Application for Flutter](/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
+
+### in this sample application:
+- List Category (Home Screen)
+- Add, Delete, Recover Categories
+- Category Statistics (Count, minPrice, maxPrice, avgPrice, sumPrice.. etc)
+### after clicking the category
+- List Products, order by name or price
+- Add, Delete, Recover Products
+- Product Detail Page
+### helper tools
+- Popup Window
+- SlideMenu
+- Global Setting
+- Generate Model.dart and set to Clipboard
+
+You can also see samples for soft delete, CASCADE delete, recover and CASCADE recover in this application
+
+Enjoy..
 
 ### Running the main.dart should show the following result at DEBUG CONSOLE:
 
