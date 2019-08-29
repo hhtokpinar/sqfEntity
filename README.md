@@ -13,13 +13,13 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 ## Getting Started
 
 This project is a starting point for a SqfEntity ORM for database application.
-There are 7 files in the project
+Some files in the project:
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
     2. models / MyDbModel.dart      : Declare and modify your database model
     3. models / models.dart         : Sample created model for examples
     4. assets / sample.db           : Sample db if you want to use an exiting db
-    5. app.dart                     : Sample App for display created model. (will be updated later.)
+    5. app.dart                     : Sample App for display created model. (Updating frequently. Please click 'Watch' to follow updates)
     6. LICENSE.txt                  : see this file for License Terms
 
 
@@ -449,6 +449,40 @@ and then Todo().saveAll(todosList) method saves all data in your local database
         print(todo.toMap());
       }
 
+## Run sql raw query on database, or get datatable
+
+ ### EXAMPLE 9.1: Execute custom SQL command on database
+  
+    final sql = "UPDATE product set isActive=1 where isActive=1";
+    MyDbModel().execSQL(sql)
+
+result:
+
+    flutter: sql command executed successfully
+
+
+### EXAMPLE 9.2: Execute custom SQL command List on database
+ 
+    final sqlList=List<String>();
+    MyDbModel().execSQLList(sqlList);
+
+result:
+
+    sql command list executed successfuly
+
+### EXAMPLE 9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
+
+    MyDbModel().execDataTable('SELECT name, price FROM product order by price desc LIMIT 5');
+
+result:
+
+        flutter: {name: Ultrabook 15", price: 14000.0}
+        flutter: {name: Ultrabook 13", price: 13000.0}
+        flutter: {name: Ultrabook 15", price: 12000.0}
+        flutter: {name: Notebook 15", price: 11999.0}
+        flutter: {name: Ultrabook 13", price: 11154.0}
+
+
 
 ### See the following examples in main.dart for sample model use
 
@@ -483,6 +517,7 @@ Also This sample project includes a sample application on how you can use sqfent
 - Category Statistics (Count, minPrice, maxPrice, avgPrice, sumPrice.. etc)
 ### after clicking the category
 - List Products, order by name or price
+- Search Form with SqfEntity search
 - Add, Delete, Recover Products
 - Product Detail Page
 ### helper tools
@@ -976,4 +1011,20 @@ Enjoy..
     flutter {id: 9, userId: 1, title: molestiae perspiciatis ipsa, completed: false}
     flutter {id: 10, userId: 1, title: illo est ratione doloremque quia maiores aut, completed: false}
     flutter ---------------------------------------------------------------
-    flutter
+    flutter: EX.9.1 Execute custom SQL command on database
+    flutter:  -> final sql='UPDATE product set isActive=1 where isActive=1';
+    flutter:  -> MyDbModel().execSQL(sql)
+    flutter:  -> print result = sql command executed successfully
+    flutter: EX.9.2 Execute custom SQL command List on database
+    flutter:  -> final sqlList=List<String>();
+    flutter:  -> MyDbModel().execSQLList(sqlList);
+    flutter:  -> print result = sql command list executed successfuly
+    flutter: EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
+    flutter:  -> MyDbModel().execDataTable('SELECT name, price FROM product order by price desc LIMIT 5');
+    flutter:  -> print result:
+    flutter: {name: Ultrabook 15", price: 14000.0}
+    flutter: {name: Ultrabook 13", price: 13000.0}
+    flutter: {name: Ultrabook 15", price: 12000.0}
+    flutter: {name: Notebook 15", price: 11999.0}
+    flutter: {name: Ultrabook 13", price: 11154.0}
+
