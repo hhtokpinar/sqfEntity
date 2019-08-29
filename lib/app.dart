@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_sample/main.dart';
 import 'package:sqfentity_sample/models/MyDbModel.dart';
 import 'package:sqfentity_sample/screens/categoryList.dart';
 import 'package:sqfentity_sample/tools/popup.dart';
@@ -58,6 +59,15 @@ class HomeState extends State<Home> {
                   ],
                 ),
                 value: 1,
+              ), PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right),
+                    Text("run runSamples()"),
+                  ],
+                ),
+                value: 2,
               ),
             ],
           )
@@ -77,6 +87,12 @@ class HomeState extends State<Home> {
         UITools(context).alertDialog(
             'Model was created successfully. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard');
         break;
+        case 2:
+        runSamples();
+        UITools(context).alertDialog(
+            'runSamples() was run. Go DEBUG CONSOLE for see results');
+        break;
+        
       default:
     }
   }

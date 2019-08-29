@@ -53,8 +53,13 @@ Future<bool> runSamples() async {
   // fill List from the web (JSON)
   await samples8();
 
+  // run custom sql query on database
+  await samples9();
+
   return true;
 }
+
+
 
 void printCategories(bool getIsDeleted) {
   Category().select(getIsDeleted: getIsDeleted).toList((categoryList) {
@@ -435,7 +440,7 @@ Future<void> samples5() async {
 // TO DO
 // update product object if exist
   if (product2 != null) {
-    product2.description ="512GB SSD i7 (updated)";
+    product2.description = "512GB SSD i7 (updated)";
     await product2.save();
     print("EXAMPLE 5.3: id=15 Product item updated: " +
         product2.toMap().toString());
@@ -559,12 +564,13 @@ Future<void> samples6() async {
 Future<void> samples7() async {
   // EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {});
   final product = await Product().getById(3);
-  if(product != null){
-  final category = await product.getCategory();
-  print(
-      "EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ");
+  if (product != null) {
+    final category = await product.getCategory();
+    print(
+        "EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ");
 
-  print("The category of '${product.name}' is: " + category.toMap().toString());
+    print(
+        "The category of '${product.name}' is: " + category.toMap().toString());
   }
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
@@ -621,6 +627,30 @@ Future<void> samples8() async {
   print("---------------------------------------------------------------\n\n");
 }
 
+Future<void> samples9() async {
+  
+  // EX.9.1 Execute custom SQL command on database
+  final sql_91 = "UPDATE product set isActive=1 where isActive=1";
+  final result_91 = await  MyDbModel().execSQL(sql_91);
+  print("EX.9.1 Execute custom SQL command on database\n -> final sql='$sql_91';\n -> MyDbModel().execSQL(sql)  \n -> print result = " + result_91.toString());
+
+  // EX.9.2 Execute custom SQL command List on database
+  final sqlList=List<String>();
+  sqlList.add("UPDATE product set isActive=1 where isActive=1");
+  sqlList.add("UPDATE product set isActive=0 where isActive=0");
+
+  final result_92 = await  MyDbModel().execSQLList(sqlList);
+  print("EX.9.2 Execute custom SQL command List on database\n -> final sqlList=List<String>();\n -> MyDbModel().execSQLList(sqlList);  \n -> print result = " + result_92.toString());
+
+// EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> 
+  final sql_93 = 'SELECT name, price FROM product order by price desc LIMIT 5';
+  final result_93 = await  MyDbModel().execDataTable(sql_93);
+  print("EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable('$sql_93');\n -> print result:");
+  for(var item in result_93)
+  {
+    print(item.toString());
+  }
+}
 Future<void> addSomeProducts() async {
   // add new categories if not any Category..
   final category = await Category().select().toSingle();

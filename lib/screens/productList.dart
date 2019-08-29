@@ -467,7 +467,7 @@ class ProductListState extends State {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(52, 20, 86, 1),
         onPressed: () {
-          goToProductAdd(Product());
+          goToProductAdd(Product(categoryId: category.id));
         },
         tooltip: "add new product",
         child: Icon(Icons.add),
