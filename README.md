@@ -1,6 +1,7 @@
 # sqfEntity ORM for Flutter
 
-![Sqf Entity ORM Preview](/assets/img/SqfEntity_ORM.gif) 
+![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_ORM.gif) 
+
 
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
@@ -176,6 +177,8 @@ That's all.. one more step left for create models.dart file.
   This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
   That's all.. You can paste your model in your .dart file by pressing Ctrl+V for PC or Command+V for Mac and reference it where you wish to use.
 
+  Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
+![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/generate_model.jpg)
   
 ### Database initializer async method
 When the software/app is started, you must check the database was it initialized.
@@ -504,12 +507,21 @@ result:
       // DELETE BATCH, DELETE OBJECT
       samples6();
 
+      // ORM (Object Relational Mapping) SAMPLE
+      samples7();
+
+      // Fill List from the web (JSON)
+      samples8();
+
+      // Run custom raw sql query on database
+      samples9();
+
 ## SAMPLE APPLICATION
 
 main.dart includes many examples of what you need, in addition to what we see.
 Also This sample project includes a sample application on how you can use sqfentity
 
-![SqfEntity Sample Mobile Application for Flutter](/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
+![SqfEntity Sample Mobile Application for Flutter](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
 
 ### in this sample application:
 - List Category (Home Screen)
