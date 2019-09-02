@@ -48,7 +48,7 @@ First, create your dbmodel.dart file to define your model and import sqfentity.d
     tableName = "category";
     modelName = null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
 
     // declare fields
@@ -80,7 +80,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -121,7 +121,7 @@ This table is for creating a synchronization with json data from the web url
     primaryKeyName = "id";
     useSoftDeleting =
         false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
-    primaryKeyisIdentity = false;
+    primaryKeyType = PrimaryKeyType.integer_unique;
     defaultJsonUrl =
         "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
 
