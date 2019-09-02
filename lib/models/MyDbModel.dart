@@ -9,7 +9,7 @@ class TableCategory extends SqfEntityTable {
     modelName =
         null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
 
     // declare fields
@@ -35,7 +35,7 @@ class TableProduct extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -70,7 +70,7 @@ class TableTodo extends SqfEntityTable {
     primaryKeyName = "id";
     useSoftDeleting =
         false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
-    primaryKeyisIdentity = false;
+    primaryKeyType = PrimaryKeyType.integer_unique;
     defaultJsonUrl =
         "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
 
