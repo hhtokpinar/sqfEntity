@@ -7,6 +7,9 @@ import 'package:intl/intl.dart';
 class CONSTANTS {
   static const String APP_TITLE = "SqfEntity Sample App";
 }
+
+
+
 enum Choice { Delete, Update, Recover }
 enum OrderBy { NameAsc, NameDesc,  PriceAsc,PriceDesc, None }
 final priceFormat = NumberFormat("#,##0.#", "en_US");
@@ -14,6 +17,7 @@ class UITools {
   UITools(BuildContext context) {
     _context = context;
   }
+  static AnimationController lastController;
   double get windowWidth => MediaQuery.of(_context).size.width;
   double get windowHeight => MediaQuery.of(_context).size.height;
 

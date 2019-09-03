@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_sample/tools/helper.dart';
 
 class SlideMenu extends StatefulWidget {
   SlideMenu({this.child, this.menuItems});
@@ -21,6 +22,7 @@ class _SlideMenuState extends State<SlideMenu>
 
   @override
   void dispose() {
+    _controller.animateTo(.0);
     _controller.dispose();
     super.dispose();
   }
@@ -45,9 +47,15 @@ class _SlideMenuState extends State<SlideMenu>
         else if (_controller.value >= .5 ||
             data.primaryVelocity <
                 -2500) // fully open if dragged a lot to left or on fast swipe to left
+        {
           _controller.animateTo(1.0);
-        else // close if none of above
+          if (UITools.lastController != null) {UITools.lastController.animateTo(1.0);}
+          UITools.lastController = _controller;
+        } else // close if none of above
+        {
           _controller.animateTo(.0);
+          UITools.lastController = null;
+        }
       },
       child: Stack(
         children: <Widget>[

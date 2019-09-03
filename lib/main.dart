@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:sqfentity_sample/models/MyDbModel.dart';
 import 'app.dart';
 //import 'main_dismiss.dart';
@@ -6,6 +7,8 @@ import 'app.dart';
 import 'models/models.dart';
 
 void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // 1- creates a simple  Model named product and sets the clipboard for paste into your models.dart file
   createSqfEntityModelString();
 
@@ -18,11 +21,12 @@ void main(List<String> args) async {
   {
     await runSamples();
     runApp(MyApp());
-    //runApp(Test());
+
   }
 }
 
 Future<bool> runSamples() async {
+
   // add some products
   await addSomeProducts();
 
@@ -56,10 +60,11 @@ Future<bool> runSamples() async {
   // run custom sql query on database
   await samples9();
 
+  // SEQUENCE samples
+  await samples10();
+
   return true;
 }
-
-
 
 void printCategories(bool getIsDeleted) {
   Category().select(getIsDeleted: getIsDeleted).toList((categoryList) {
@@ -628,31 +633,68 @@ Future<void> samples8() async {
 }
 
 Future<void> samples9() async {
-  
   // EX.9.1 Execute custom SQL command on database
   final sql_91 = "UPDATE product set isActive=1 where isActive=1";
-  final result_91 = await  MyDbModel().execSQL(sql_91);
-  print("EX.9.1 Execute custom SQL command on database\n -> final sql='$sql_91';\n -> MyDbModel().execSQL(sql)  \n -> print result = " + result_91.toString());
+  final result_91 = await MyDbModel().execSQL(sql_91);
+  print(
+      "EX.9.1 Execute custom SQL command on database\n -> final sql='$sql_91';\n -> MyDbModel().execSQL(sql)  \n -> print result = " +
+          result_91.toString());
 
   // EX.9.2 Execute custom SQL command List on database
-  final sqlList=List<String>();
+  final sqlList = List<String>();
   sqlList.add("UPDATE product set isActive=1 where isActive=1");
   sqlList.add("UPDATE product set isActive=0 where isActive=0");
 
-  final result_92 = await  MyDbModel().execSQLList(sqlList);
-  print("EX.9.2 Execute custom SQL command List on database\n -> final sqlList=List<String>();\n -> MyDbModel().execSQLList(sqlList);  \n -> print result = " + result_92.toString());
+  final result_92 = await MyDbModel().execSQLList(sqlList);
+  print(
+      "EX.9.2 Execute custom SQL command List on database\n -> final sqlList=List<String>();\n -> MyDbModel().execSQLList(sqlList);  \n -> print result = " +
+          result_92.toString());
 
-// EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> 
+// EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
   final sql_93 = 'SELECT name, price FROM product order by price desc LIMIT 5';
-  final result_93 = await  MyDbModel().execDataTable(sql_93);
-  print("EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable('$sql_93');\n -> print result:");
-  for(var item in result_93)
-  {
+  final result_93 = await MyDbModel().execDataTable(sql_93);
+  print(
+      "EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable('$sql_93');\n -> print result:");
+  for (var item in result_93) {
     print(item.toString());
   }
+
+  /// EX.9.4 Execute custom SQL Query and get first col of first row
+  final sql_94 = 'SELECT name FROM product order by price desc';
+  final result_94 = await MyDbModel().execScalar(sql_94);
+  print(
+      "EX.9.4 Execute custom SQL Query and get first col of first row -> returns dynamic \n -> MyDbModel().execScalar('$sql_94');\n -> print result:");
+  print(result_94.toString());
 }
+
+Future<void> samples10() async {
+  
+  print("EXAMPLE 10 SqfEntity Sequence SAMPLES-----------");
+  
+  final int currentVal = await IdentitySequence().currentVal();
+  final int nextVal = await IdentitySequence().nextVal();
+  final int nextVal2 = await IdentitySequence().nextVal();
+  final int currentVal2 = await IdentitySequence().currentVal();
+  final int currentVal3 = await IdentitySequence().reset();
+
+  print("Sample Code:\n");
+  print("""
+  final currentVal= await IdentitySequence().currentVal();
+  result: currentVal = $currentVal
+  final nextVal = await IdentitySequence().nextVal();
+  result: nextVal = $nextVal
+  final int nextVal2 = await IdentitySequence().nextVal();
+  result: nextVal2 = $nextVal2
+  final int currentVal2 = await IdentitySequence().currentVal();
+  result: currentVal2 = $currentVal2
+  final int currentVal3 = await IdentitySequence().reset();
+  result: currentVal3 = $currentVal3
+  """);
+  
+}
+
+/// add new categories if not any Category
 Future<void> addSomeProducts() async {
-  // add new categories if not any Category..
   final category = await Category().select().toSingle();
   if (category == null) {
     await addCategories();

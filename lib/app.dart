@@ -29,6 +29,8 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  TextEditingController txtModel = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +61,8 @@ class HomeState extends State<Home> {
                   ],
                 ),
                 value: 1,
-              ), PopupMenuItem<int>(
+              ),
+              PopupMenuItem<int>(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -77,22 +80,28 @@ class HomeState extends State<Home> {
     );
   }
 
-  void select(int value) {
+  void select(int value) async {
     switch (value) {
       case 0:
         showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
         break;
       case 1:
-         MyDbModel().createModel();
-        UITools(context).alertDialog(
-            'Model was created successfully. Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard');
+        txtModel.text = MyDbModel().createModel();
+        showPopup(context, _generetedModelWindow(),
+            'Model was created\nsuccessfully');
+
         break;
-        case 2:
-        runSamples();
+      case 2:
+        final bool isInitialized = await MyDbModel().initializeDB();
+        if (isInitialized == true) {
+          runSamples();
+        } else {
+          print("Something went wrong. Please check DEBUG CONSOLE for errors");
+        }
         UITools(context).alertDialog(
             'runSamples() was run. Go DEBUG CONSOLE for see results');
         break;
-        
+
       default:
     }
   }
@@ -119,6 +128,39 @@ class HomeState extends State<Home> {
                     //'Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, multiple databases etc. with the help of DbModel object'
                     'This sample project includes a sample application on how you can use sqfentity')),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _generetedModelWindow() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Flexible(
+                    child: Text(
+                  "Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
+                  style: TextStyle(color: Colors.blueGrey),
+                )),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              reverse: true,
+              child: TextField(
+                controller: txtModel,
+
+                maxLines: 9, //grow automatically
+              ),
             ),
           ],
         ),

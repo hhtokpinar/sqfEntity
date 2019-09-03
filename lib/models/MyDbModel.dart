@@ -9,7 +9,7 @@ class TableCategory extends SqfEntityTable {
     modelName =
         null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    //primaryKeyisIdentity = true;
     useSoftDeleting = true;
 
     // declare fields
@@ -35,7 +35,7 @@ class TableProduct extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    //primaryKeyisIdentity = true;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -48,11 +48,11 @@ class TableProduct extends SqfEntityTable {
       SqfEntityFieldRelationship(TableCategory(), DeleteRule.CASCADE,
           defaultValue: "0"), // Relationship column for CategoryId of Product
       SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
-      SqfEntityField("imageUrl",DbType.text)
+      SqfEntityField("imageUrl", DbType.text)
     ];
     super.init();
   }
-static SqfEntityTable _instance;
+  static SqfEntityTable _instance;
   static SqfEntityTable get getInstance {
     if (_instance == null) {
       _instance = TableProduct();
@@ -83,7 +83,7 @@ class TableTodo extends SqfEntityTable {
 
     super.init();
   }
- static SqfEntityTable _instance;
+  static SqfEntityTable _instance;
   static SqfEntityTable get getInstance {
     if (_instance == null) {
       _instance = TableTodo();
@@ -92,16 +92,33 @@ class TableTodo extends SqfEntityTable {
   }
 }
 
+class SequenceIdentity extends SqfEntitySequence {
+  SequenceIdentity() {
+    sequenceName = "identity";
+    minValue = 0;
+    maxValue = 10000;
+    incrementBy = 1;
+    startWith = 5;
+    super.init();
+  }
+}
+
 // STEP 2: Create your Database Model to be extended from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
     databaseName = "sampleORM.db";
+    // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
       TableTodo.getInstance,
-    ]; // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
-    bundledDatabasePath =null; //"assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    ];
+    // put defined sequence into the sequences list.
+    sequences = [SequenceIdentity()];
+   
+    bundledDatabasePath =
+        null; //"assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    customImports = "import 'MyDbModel.dart';";
   }
 }
