@@ -48,7 +48,7 @@ First, create your dbmodel.dart file to define your model and import sqfentity.d
     tableName = "category";
     modelName = null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    primaryKeyisIdentity = true;
     useSoftDeleting = true;
 
     // declare fields
@@ -80,7 +80,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    primaryKeyisIdentity = true;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -121,7 +121,7 @@ This table is for creating a synchronization with json data from the web url
     primaryKeyName = "id";
     useSoftDeleting =
         false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyisIdentity = false;
     defaultJsonUrl =
         "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
 
@@ -143,6 +143,20 @@ This table is for creating a synchronization with json data from the web url
     }}
 
 
+*And add a Sequence for samples*
+
+
+    class SequenceIdentity extends SqfEntitySequence {
+      SequenceIdentity() {
+        sequenceName = "identity";
+        minValue = 0;
+        maxValue = 10000;
+        incrementBy = 1;
+        startWith = 5;
+        super.init();
+      }
+    }
+
 ### 2. Add your table objects you defined above to your dbModel
 
 **STEP 2**: Create your Database Model to be extended from SqfEntityModel
@@ -152,13 +166,20 @@ So you can create many Database Models and use them in your application.
     class MyDbModel extends SqfEntityModel {
     MyDbModel() {
     databaseName = "sampleORM.db";
+    // put defined instance of tables  into the list.
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
       TableTodo.getInstance,
-    ]; // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
-    bundledDatabasePath =
-        null; // "assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    ];
+    // put defined sequences into the sequences list.
+    sequences = [SequenceIdentity()];
+
+    // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    bundledDatabasePath = null; // ex: "assets/sample.db"; 
+
+    // set this property to your DBModel.dart path for ex: "import 'MyDbModel.dart';"
+    customImports = "import 'MyDbModel.dart';";     
     }}
 
 
@@ -475,15 +496,41 @@ result:
 
 ### EXAMPLE 9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
 
-    MyDbModel().execDataTable('SELECT name, price FROM product order by price desc LIMIT 5');
+    await MyDbModel().execDataTable('SELECT name, price FROM product order by price desc LIMIT 5');
 
-result:
+result: (5 row)
 
         flutter: {name: Ultrabook 15", price: 14000.0}
         flutter: {name: Ultrabook 13", price: 13000.0}
         flutter: {name: Ultrabook 15", price: 12000.0}
         flutter: {name: Notebook 15", price: 11999.0}
         flutter: {name: Ultrabook 13", price: 11154.0}
+
+### EXAMPLE 9.4 Execute custom SQL Query and get first col of first row (execute scalar)
+    
+    await MyDbModel().execScalar('SELECT name FROM product order by price desc');
+  
+ result: (1 row)
+
+     flutter: Ultrabook 15"
+
+### EXAMPLE 10 SqfEntity Sequence Samples
+
+    final int currentVal = await IdentitySequence().currentVal();
+    final int nextVal = await IdentitySequence().nextVal();
+    final int nextVal2 = await IdentitySequence().nextVal();
+    final int currentVal2 = await IdentitySequence().currentVal();
+
+    // You can reset sequence anytime
+    final int currentVal3 = await IdentitySequence().reset();
+
+    print("""
+    IdentitySequence().currentVal = $currentVal
+    IdentitySequence().nextVal = $nextVal
+    IdentitySequence().nextVal = $nextVal2
+    IdentitySequence().currentVal = $currentVal2
+    IdentitySequence().reset = $currentVal3 // returns start value
+    """);
 
 
 
