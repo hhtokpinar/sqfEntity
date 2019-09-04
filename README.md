@@ -48,7 +48,7 @@ First, create your dbmodel.dart file to define your model and import sqfentity.d
     tableName = "category";
     modelName = null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
 
     // declare fields
@@ -80,9 +80,10 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
+    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, 
+    // and set to "1" this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
@@ -92,7 +93,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
       SqfEntityFieldRelationship(TableCategory.getInstance, DeleteRule.CASCADE,
           defaultValue: "0"), // Relationship column for CategoryId of Product
-      SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
+      SqfEntityField("rownum", DbType.integer, defaultValue: "0", sequencedBy: SequenceIdentity() /* Example of linking a column to a sequence */),
     ];
     super.init();
     }
@@ -119,9 +120,9 @@ This table is for creating a synchronization with json data from the web url
     modelName =
         null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
+    primaryKeyType = PrimaryKeyType.integer_unique;
     useSoftDeleting =
         false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
-    primaryKeyisIdentity = false;
     defaultJsonUrl =
         "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
 
@@ -149,11 +150,19 @@ This table is for creating a synchronization with json data from the web url
     class SequenceIdentity extends SqfEntitySequence {
       SequenceIdentity() {
         sequenceName = "identity";
-        minValue = 0;
-        maxValue = 10000;
-        incrementBy = 1;
-        startWith = 5;
+        maxValue = 10;     /* optional. default is max int (9.223.372.036.854.775.807) */
+        cycle = true;      /* optional. default is false; */
+        //minValue = 0;    /* optional. default is 0 */
+        //incrementBy = 1; /* optional. default is 1 */
+        // startWith = 0;  /* optional. default is 0 */
         super.init();
+      }
+      static SequenceIdentity _instance;
+      static SequenceIdentity get getInstance {
+        if (_instance == null) {
+          _instance = SequenceIdentity();
+        }
+        return _instance;
       }
     }
 
@@ -173,7 +182,7 @@ So you can create many Database Models and use them in your application.
       TableTodo.getInstance,
     ];
     // put defined sequences into the sequences list.
-    sequences = [SequenceIdentity()];
+    sequences = [SequenceIdentity.getInstance];
 
     // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
     bundledDatabasePath = null; // ex: "assets/sample.db"; 
@@ -1070,14 +1079,17 @@ Enjoy..
     flutter {id: 9, userId: 1, title: molestiae perspiciatis ipsa, completed: false}
     flutter {id: 10, userId: 1, title: illo est ratione doloremque quia maiores aut, completed: false}
     flutter ---------------------------------------------------------------
+    
     flutter: EX.9.1 Execute custom SQL command on database
     flutter:  -> final sql='UPDATE product set isActive=1 where isActive=1';
     flutter:  -> MyDbModel().execSQL(sql)
     flutter:  -> print result = sql command executed successfully
+
     flutter: EX.9.2 Execute custom SQL command List on database
     flutter:  -> final sqlList=List<String>();
     flutter:  -> MyDbModel().execSQLList(sqlList);
     flutter:  -> print result = sql command list executed successfuly
+
     flutter: EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
     flutter:  -> MyDbModel().execDataTable('SELECT name, price FROM product order by price desc LIMIT 5');
     flutter:  -> print result:
@@ -1086,4 +1098,22 @@ Enjoy..
     flutter: {name: Ultrabook 15", price: 12000.0}
     flutter: {name: Notebook 15", price: 11999.0}
     flutter: {name: Ultrabook 13", price: 11154.0}
+
+    flutter: EX.9.4 Execute custom SQL Query and get first col of first row -> returns dynamic
+    flutter:  -> MyDbModel().execScalar('SELECT name FROM product order by price desc');
+    flutter:  -> print result:
+    flutter: Ultrabook 15"
+
+    flutter: EXAMPLE 10 SqfEntity Sequence SAMPLES-----------
+    flutter: Sample Code:
+    flutter:   final currentVal= await IdentitySequence().currentVal();
+    flutter:   result: currentVal = 9
+    flutter:   final nextVal = await IdentitySequence().nextVal();
+    flutter:   result: nextVal = 10
+    flutter:   final int nextVal2 = await IdentitySequence().nextVal();
+    flutter:   result: nextVal2 = 0
+    flutter:   final int currentVal2 = await IdentitySequence().currentVal();
+    flutter:   result: currentVal2 = 0
+    flutter:   final int currentVal3 = await IdentitySequence().reset();
+    flutter:   result: currentVal3 = 0
 
