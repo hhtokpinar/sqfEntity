@@ -19,6 +19,7 @@ void main(List<String> args) async {
   if (isInitialized == true)
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
   {
+    
     await runSamples();
     runApp(MyApp());
 
@@ -26,6 +27,7 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
+
 
   // add some products
   await addSomeProducts();
@@ -455,11 +457,11 @@ Future<void> samples5() async {
   print("---------------------------------------------------------------\n\n");
 
 // EXAMPLE 5.4: update some filtered products with saveAll method -> Product().saveAll(productList){});
-  var productList = await Product().select().toList();
-  int i = 0;
+  var productList = await Product().select().price.lessThan(1000).toList();
+  double i = 0;
   for (var product in productList) {
-    i++;
-    product.rownum = i;
+    i=i+10;
+    product.price = i;
   }
   final results = await Product().saveAll(productList);
   productList = await Product().select().toList();
@@ -473,7 +475,7 @@ Future<void> samples5() async {
   print("---------------------------------------------------------------");
 
   print(
-      "EXAMPLE 5.4: listing saved products (set rownum=i) with saveAll method;");
+      "EXAMPLE 5.4: listing saved products (set price=i) with saveAll method;");
   for (int i = 0; i < productList.length; i++) {
     print(productList[i].toMap());
   }
@@ -675,7 +677,7 @@ Future<void> samples10() async {
   final int nextVal = await IdentitySequence().nextVal();
   final int nextVal2 = await IdentitySequence().nextVal();
   final int currentVal2 = await IdentitySequence().currentVal();
-  final int currentVal3 = await IdentitySequence().reset();
+  
 
   print("Sample Code:\n");
   print("""
@@ -687,8 +689,6 @@ Future<void> samples10() async {
   result: nextVal2 = $nextVal2
   final int currentVal2 = await IdentitySequence().currentVal();
   result: currentVal2 = $currentVal2
-  final int currentVal3 = await IdentitySequence().reset();
-  result: currentVal3 = $currentVal3
   """);
   
 }

@@ -9,7 +9,7 @@ class TableCategory extends SqfEntityTable {
     modelName =
         null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
     primaryKeyName = "id";
-    //primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
 
     // declare fields
@@ -35,7 +35,7 @@ class TableProduct extends SqfEntityTable {
     // declare properties of EntityTable
     tableName = "product";
     primaryKeyName = "id";
-    //primaryKeyisIdentity = true;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
 
@@ -45,9 +45,9 @@ class TableProduct extends SqfEntityTable {
       SqfEntityField("description", DbType.text),
       SqfEntityField("price", DbType.real, defaultValue: "0"),
       SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(TableCategory(), DeleteRule.CASCADE,
+      SqfEntityFieldRelationship(TableCategory.getInstance, DeleteRule.CASCADE,
           defaultValue: "0"), // Relationship column for CategoryId of Product
-      SqfEntityField("rownum", DbType.integer, defaultValue: "0"),
+      SqfEntityField("rownum", DbType.integer, sequencedBy: SequenceIdentity() /* Example of linking a column to a sequence */),
       SqfEntityField("imageUrl", DbType.text)
     ];
     super.init();
@@ -95,11 +95,19 @@ class TableTodo extends SqfEntityTable {
 class SequenceIdentity extends SqfEntitySequence {
   SequenceIdentity() {
     sequenceName = "identity";
-    minValue = 0;
-    maxValue = 10000;
-    incrementBy = 1;
-    startWith = 5;
+    maxValue = 10;     /* optional. default is max int (9.223.372.036.854.775.807) */
+    cycle = true;      /* optional. default is false; */
+    //minValue = 0;    /* optional. default is 0 */
+    //incrementBy = 1; /* optional. default is 1 */
+    // startWith = 0;  /* optional. default is 0 */
     super.init();
+  }
+  static SequenceIdentity _instance;
+  static SequenceIdentity get getInstance {
+    if (_instance == null) {
+      _instance = SequenceIdentity();
+    }
+    return _instance;
   }
 }
 
@@ -107,7 +115,7 @@ class SequenceIdentity extends SqfEntitySequence {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORM.db";
+    databaseName = "sampleORMhht6.db";
     // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
     databaseTables = [
       TableProduct.getInstance,
@@ -115,8 +123,8 @@ class MyDbModel extends SqfEntityModel {
       TableTodo.getInstance,
     ];
     // put defined sequence into the sequences list.
-    sequences = [SequenceIdentity()];
-   
+    sequences = [SequenceIdentity.getInstance];
+
     bundledDatabasePath =
         null; //"assets/sample.db"; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
     customImports = "import 'MyDbModel.dart';";
