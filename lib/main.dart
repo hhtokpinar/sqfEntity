@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:sqfentity_sample/models/MyDbModel.dart';
 import 'app.dart';
-//import 'main_dismiss.dart';
-//import 'main_swap.dart';
 import 'models/models.dart';
 
 void main(List<String> args) async {
@@ -25,11 +23,6 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
-  final cat = await Category().getById(1);
-  final pList = await cat.getProducts().toList();
-  for (var prod in pList) {
-    print(prod.toMap());
-  }
 
   // add some products
   await addSomeProducts();
