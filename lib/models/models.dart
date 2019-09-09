@@ -121,7 +121,7 @@ class Product {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds({bool forQuery = false}) async {
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
@@ -155,8 +155,13 @@ class Product {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    return json.encode(await toMap(forQuery: !includeChilds));
+  String toJson() {
+    return json.encode(toMap());
+  }
+
+  /// This method always returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds());
   }
 
   List<dynamic> toArgs() {
@@ -839,15 +844,21 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    var list = List<dynamic>();
-    if (includeChilds) {
-      final data = await toList();
-      for (var o in data) {
-        list.add(await o.toMap());
-      }
-    } else {
-      list = await toMapList();
+  Future<String> toJson() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds());
     }
     return json.encode(list);
   }
@@ -1111,7 +1122,7 @@ class Category {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds({bool forQuery = false}) async {
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
@@ -1136,8 +1147,13 @@ class Category {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    return json.encode(await toMap(forQuery: !includeChilds));
+  String toJson() {
+    return json.encode(toMap());
+  }
+
+  /// This method always returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds());
   }
 
   List<dynamic> toArgs() {
@@ -1805,15 +1821,21 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    var list = List<dynamic>();
-    if (includeChilds) {
-      final data = await toList();
-      for (var o in data) {
-        list.add(await o.toMap());
-      }
-    } else {
-      list = await toMapList();
+  Future<String> toJson() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds());
     }
     return json.encode(list);
   }
@@ -2039,7 +2061,7 @@ class Todo {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds({bool forQuery = false}) async {
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
@@ -2058,8 +2080,13 @@ class Todo {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    return json.encode(await toMap(forQuery: !includeChilds));
+  String toJson() {
+    return json.encode(toMap());
+  }
+
+  /// This method always returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds());
   }
 
   List<dynamic> toArgs() {
@@ -2678,15 +2705,21 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Json String
-  Future<String> toJson([bool includeChilds = true]) async {
-    var list = List<dynamic>();
-    if (includeChilds) {
-      final data = await toList();
-      for (var o in data) {
-        list.add(await o.toMap());
-      }
-    } else {
-      list = await toMapList();
+  Future<String> toJson() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds());
     }
     return json.encode(list);
   }
