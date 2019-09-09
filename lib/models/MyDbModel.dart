@@ -115,7 +115,7 @@ class SequenceIdentity extends SqfEntitySequence {
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 class MyDbModel extends SqfEntityModel {
   MyDbModel() {
-    databaseName = "sampleORMhht6.db";
+    databaseName = "sampleORM.db";
     // put defined tables into the list. ex: [TableProduct.getInstance, TableCategory.getInstance]
     databaseTables = [
       TableProduct.getInstance,
