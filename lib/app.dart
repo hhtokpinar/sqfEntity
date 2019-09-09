@@ -94,7 +94,7 @@ class HomeState extends State<Home> {
       case 2:
         final bool isInitialized = await MyDbModel().initializeDB();
         if (isInitialized == true) {
-          runSamples();
+           runSamples();
         } else {
           print("Something went wrong. Please check DEBUG CONSOLE for errors");
         }

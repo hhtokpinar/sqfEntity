@@ -19,15 +19,17 @@ void main(List<String> args) async {
   if (isInitialized == true)
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
   {
-    
     await runSamples();
     runApp(MyApp());
-
   }
 }
 
 Future<bool> runSamples() async {
-
+  final cat = await Category().getById(1);
+  final pList = await cat.getProducts().toList();
+  for (var prod in pList) {
+    print(prod.toMap());
+  }
 
   // add some products
   await addSomeProducts();
@@ -65,6 +67,9 @@ Future<bool> runSamples() async {
   // SEQUENCE samples
   await samples10();
 
+// toJson samples
+  await samples11();
+  
   return true;
 }
 
@@ -460,7 +465,7 @@ Future<void> samples5() async {
   var productList = await Product().select().price.lessThan(1000).toList();
   double i = 0;
   for (var product in productList) {
-    i=i+10;
+    i = i + 10;
     product.price = i;
   }
   final results = await Product().saveAll(productList);
@@ -670,14 +675,12 @@ Future<void> samples9() async {
 }
 
 Future<void> samples10() async {
-  
   print("EXAMPLE 10 SqfEntity Sequence SAMPLES-----------");
-  
+
   final int currentVal = await IdentitySequence().currentVal();
   final int nextVal = await IdentitySequence().nextVal();
   final int nextVal2 = await IdentitySequence().nextVal();
   final int currentVal2 = await IdentitySequence().currentVal();
-  
 
   print("Sample Code:\n");
   print("""
@@ -690,6 +693,20 @@ Future<void> samples10() async {
   final int currentVal2 = await IdentitySequence().currentVal();
   result: currentVal2 = $currentVal2
   """);
+}
+
+/// toJson samples
+Future<void> samples11() async {
+
+  // EXAMPLE 11.1 single object to Json
+  final product = await Product().select().toSingle();
+  final jsonString = await product.toJson();
+ 
+  print("EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString");
+
+  //EXAMPLE 11.2 object list with nested objects to Json
+  final jsonStringWithChilds =  await Category().select().toJson(); // all categories selected
+  print("EXAMPLE 11.2 object list with nested objects to Json\n categories jsonString is: $jsonStringWithChilds");
   
 }
 

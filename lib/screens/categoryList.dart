@@ -347,7 +347,7 @@ class CategoryListState extends State {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Minimum Price'),
-                Flexible(child: Text('\$ ${priceFormat.format(statMinPrice)}')),
+                statMinPrice == null ? Text("0"): Flexible(child: Text('\$ ${priceFormat.format(statMinPrice)}')),
               ],
             ),
              SizedBox(
@@ -356,7 +356,7 @@ class CategoryListState extends State {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Maximum Price'),
-                Flexible(child: Text('\$ ${priceFormat.format(statMaxPrice)}')),
+                statMaxPrice == null ? Text("0"): Flexible(child: Text('\$ ${priceFormat.format(statMaxPrice)}')),
               ],
             ),
              SizedBox(
@@ -365,7 +365,7 @@ class CategoryListState extends State {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Average Price'),
-                Flexible(child: Text('\$ ${priceFormat.format(statAvgPrice)}')),
+                statAvgPrice == null ? Text("0"): Flexible(child: Text('\$ ${priceFormat.format(statAvgPrice)}')),
               ],
             ),
              SizedBox(
@@ -374,7 +374,7 @@ class CategoryListState extends State {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Sum Price'),
-                Flexible(child: Text('\$ ${priceFormat.format(statSumPrice)}')),
+                statSumPrice == null ? Text("0"): Flexible(child: Text('\$ ${priceFormat.format(statSumPrice)}')),
               ],
             ),
             

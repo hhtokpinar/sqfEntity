@@ -118,7 +118,7 @@ class UITools {
                 child: Text("Close"),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  callBack();
+                  if(callBack!=null) callBack();
                 },
               ),
             ],
