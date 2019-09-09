@@ -61,7 +61,7 @@ Future<bool> runSamples() async {
   await samples10();
 
 // toJson samples
- // await samples11();
+  await samples11();
   
   return true;
 }
@@ -691,13 +691,13 @@ Future<void> samples11() async {
 
   // EXAMPLE 11.1 single object to Json
   final product = await Product().select().toSingle();
-  final jsonString = await product.toJson();
+  final jsonString = product.toJson();
  
   print('EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString');
 
   //EXAMPLE 11.2 object list with nested objects to Json
-  final jsonStringWithChilds =  await Category().select().toJson(); // all categories selected
-  print('EXAMPLE 11.2 object list with nested objects to Json\n categories jsonString is: $jsonStringWithChilds');
+  final jsonStringWithChilds =  await Category().select().toJsonWithChilds(); // all categories selected
+  print('EXAMPLE 11.2 object list with nested objects to Json\n categories jsonStringWithChilds is: $jsonStringWithChilds');
   
 }
 
