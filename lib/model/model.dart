@@ -77,7 +77,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORMtest01.db',
+    databaseName: 'sampleORM.db',
     // put defined tables into the tables list.
     databaseTables: [tableCategory, tableProduct, tableTodo],
     // put defined sequences into the sequences list.
