@@ -38,7 +38,7 @@ Some files in the project:
   
 # Create a new Database Model
 
-First, create your model.dart file in lib/model/ folder to define your model and import sqfentity and other necessary packages
+First, create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
     import 'dart:convert';
     import 'package:http/http.dart' as http;
@@ -146,7 +146,7 @@ So you can create many Database Models and use them in your application.
 
     @SqfEntityBuilder(myDbModel)
     const myDbModel = SqfEntityModel(
-        modelName: 'MyDbModel',
+        modelName: 'MyDbModel', // optional
         databaseName: 'sampleORMtest01.db',
         // put defined tables into the tables list.
         databaseTables: [tableCategory, tableProduct, tableTodo],
