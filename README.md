@@ -17,56 +17,59 @@ This project is a starting point for a SqfEntity ORM for database application.
 Some files in the project:
 
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
-    2. models / MyDbModel.dart      : Declare and modify your database model
-    3. models / models.dart         : Sample created model for examples
+    2. model / model.dart           : Declare and modify your database model
+    3. model / model.g.dart         : Sample created model for examples
     4. assets / sample.db           : Sample db if you want to use an exiting db
-    5. app.dart                     : Sample App for display created model. (Updating frequently. Please click 'Watch' to follow updates)
+    5. app.dart                     : Sample App for display created model. 
+                                      (Updating frequently. Please click 'Watch' to follow updates)
     6. LICENSE.txt                  : see this file for License Terms
 
 
 ### dependencies:
 
     dependencies:
-      sqfentity: any
+      sqfentity: ^1.1.0
+      sqfentity_base: ^1.0.0
 
-
+    dev_dependencies:
+      build_runner: ^1.6.5
+      build_verify: ^1.1.0
+      sqfentity_gen: ^1.0.0
+  
 # Create a new Database Model
 
-First, create your dbmodel.dart file to define your model and import sqfentity.dart 
+First, create your model.dart file in lib/model/ folder to define your model and import sqfentity and other necessary packages
 
+    import 'dart:convert';
+    import 'package:http/http.dart' as http;
+    import 'package:flutter/material.dart';
     import 'package:sqfentity/sqfentity.dart';
+    import 'package:sqfentity_base/sqfentity_base.dart';
 
-**STEP 1:** define your tables as shown in the example Classes below.
- For example, we have created 3 tables for category,product and todo that extended from "SqfEntityTable" as follows:
+
+Write the following statement for the file to be created 
+
+    part 'model.g.dart';
+    
+
+**STEP 1:** Our model file is ready to use. Define your tables as shown in the example Classes below.
+ For example, we have created 3 tables constant for category, product and todo that instanced from "SqfEntityTable" as follows:
 
 
 *Table 1: Category*
 
-    class TableCategory extends SqfEntityTable {
-    TableCategory() {
-    // declare properties of EntityTable
-    tableName = "category";
-    modelName = null; // If the modelName (class name) is null then EntityBase uses TableName instead of modelName
-    primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-    useSoftDeleting = true;
+    const tableCategory = SqfEntityTable(
+      tableName: 'category',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      useSoftDeleting: true,
+      modelName: null,
+      fields: [
+        SqfEntityField('name', DbType.text),
+        SqfEntityField('isActive', DbType.bool, defaultValue: true),
+      ]
+    );
 
-    // declare fields
-    fields = [
-      SqfEntityField("name", DbType.text),
-      SqfEntityField("isActive", DbType.bool, defaultValue: "true")
-    ];
-
-    super.init();
-    }
-    static SqfEntityTable _instance;
-      static SqfEntityTable get getInstance {
-        if (_instance == null) {
-          _instance = TableCategory();
-        }
-        return _instance;
-      }
-    }
 
 If **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
 When item was deleted then this field value is changed to "1"  (does not hard delete)
@@ -75,35 +78,26 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
 
 *Table 2: Product*
 
-    class TableProduct extends SqfEntityTable {
-    TableProduct() {
-    // declare properties of EntityTable
-    tableName = "product";
-    primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-    useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named "isDeleted" on the table, 
-    // and set to "1" this field when item deleted (does not hard delete)
+    const tableProduct = SqfEntityTable(
+      tableName: 'product',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      useSoftDeleting: true,
+      fields: [
+        SqfEntityField('name', DbType.text),
+        SqfEntityField('description', DbType.text),
+        SqfEntityField('price', DbType.real, defaultValue: 0),
+        SqfEntityField('isActive', DbType.bool, defaultValue: true),
+        SqfEntityFieldRelationship(
+            parentTable: tableCategory,
+            deleteRule: DeleteRule.CASCADE,
+            defaultValue: '0'), // Relationship column for CategoryId of Product
+        SqfEntityField('rownum', DbType.integer,
+            sequencedBy:
+                seqIdentity /*Example of linking a column to a sequence */),
+        SqfEntityField('imageUrl', DbType.text)
+    ]);
 
-    // declare fields
-    fields = [
-      SqfEntityField("name", DbType.text),
-      SqfEntityField("description", DbType.text),
-      SqfEntityField("price", DbType.real, defaultValue: "0"),
-      SqfEntityField("isActive", DbType.bool, defaultValue: "true"),
-      SqfEntityFieldRelationship(TableCategory.getInstance, DeleteRule.CASCADE,
-          defaultValue: "0"), // Relationship column for CategoryId of Product
-      SqfEntityField("rownum", DbType.integer, defaultValue: "0", sequencedBy: SequenceIdentity() /* Example of linking a column to a sequence */),
-    ];
-    super.init();
-    }
-    static SqfEntityTable _instance;
-    static SqfEntityTable get getInstance {
-    if (_instance == null) {
-      _instance = TableProduct();
-    }
-    return _instance;
-    }}
 
 If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
 You can choose one of the following for DeleteRule: **CASCADE, NO ACTION, SET NULL, SET DEFAULT VALUE**
@@ -113,99 +107,67 @@ For more information about the rules [Click here](https://www.mssqltips.com/sqls
 
 This table is for creating a synchronization with json data from the web url
 
-    class TableTodo extends SqfEntityTable {
-    TableTodo() {
-    // declare properties of EntityTable
-    tableName = "todos";
-    modelName =
-        null; // when the modelName (class name) is null then EntityBase uses TableName instead of modelName
-    primaryKeyName = "id";
-    primaryKeyType = PrimaryKeyType.integer_unique;
-    useSoftDeleting =
-        false; // when useSoftDeleting is true, creates a field named "isDeleted" on the table, and set to "1" this field when item deleted (does not hard delete)
-    defaultJsonUrl =
-        "https://jsonplaceholder.typicode.com/todos"; // optional: to synchronize your table with json data from webUrl
+    const tableTodo = SqfEntityTable(
+      tableName: 'todos',
+      primaryKeyName: 'id',
+      useSoftDeleting: false,
+      primaryKeyType: PrimaryKeyType.integer_unique,
+      defaultJsonUrl:
+          'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
 
-    // declare fields
-    fields = [
-      SqfEntityField("userId", DbType.integer),
-      SqfEntityField("title", DbType.text),
-      SqfEntityField("completed", DbType.bool, defaultValue: "false")
-    ];
+      // declare fields
+      fields: [
+        SqfEntityField('userId', DbType.integer),
+        SqfEntityField('title', DbType.text),
+        SqfEntityField('completed', DbType.bool, defaultValue: false)
+    ]);
 
-    super.init();
-    }
-    static SqfEntityTable __instance;
-    static SqfEntityTable get getInstance {
-    if (__instance == null) {
-      __instance = TableTodo();
-    }
-    return __instance;
-    }}
 
 
 *And add a Sequence for samples*
 
 
-    class SequenceIdentity extends SqfEntitySequence {
-      SequenceIdentity() {
-        sequenceName = "identity";
-        maxValue = 10;     /* optional. default is max int (9.223.372.036.854.775.807) */
-        cycle = true;      /* optional. default is false; */
-        //minValue = 0;    /* optional. default is 0 */
-        //incrementBy = 1; /* optional. default is 1 */
-        // startWith = 0;  /* optional. default is 0 */
-        super.init();
-      }
-      static SequenceIdentity _instance;
-      static SequenceIdentity get getInstance {
-        if (_instance == null) {
-          _instance = SequenceIdentity();
-        }
-        return _instance;
-      }
-    }
+    const seqIdentity = SqfEntitySequence(
+      sequenceName: 'identity',
+      maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+      // modelName: 'SQEidentity', 
+                          /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
+      // cycle : false,   /* optional. default is false; */
+      // minValue = 0;    /* optional. default is 0 */
+      // incrementBy = 1; /* optional. default is 1 */
+      // startWith = 0;   /* optional. default is 0 */
+    );
 
 ### 2. Add your table objects you defined above to your dbModel
 
-**STEP 2**: Create your Database Model to be extended from SqfEntityModel
+**STEP 2**: Create your Database Model to be instanced from SqfEntityModel
 *Note:* SqfEntity provides support for the use of **multiple databases**.
 So you can create many Database Models and use them in your application.
 
-    class MyDbModel extends SqfEntityModel {
-    MyDbModel() {
-    databaseName = "sampleORM.db";
-    // put defined instance of tables  into the list.
-    databaseTables = [
-      TableProduct.getInstance,
-      TableCategory.getInstance,
-      TableTodo.getInstance,
-    ];
-    // put defined sequences into the sequences list.
-    sequences = [SequenceIdentity.getInstance];
-
-    // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
-    bundledDatabasePath = null; // ex: "assets/sample.db"; 
-
-    // set this property to your DBModel.dart path for ex: "import 'MyDbModel.dart';"
-    customImports = "import 'MyDbModel.dart';";     
-    }}
+    @SqfEntityBuilder(myDbModel)
+    const myDbModel = SqfEntityModel(
+        modelName: 'MyDbModel',
+        databaseName: 'sampleORMtest01.db',
+        // put defined tables into the tables list.
+        databaseTables: [tableCategory, tableProduct, tableTodo],
+        // put defined sequences into the sequences list.
+        sequences: [seqIdentity],
+        bundledDatabasePath:
+            null // 'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    );
 
 
 That's all.. one more step left for create models.dart file.
+Go Terminal Window and run command below
+
+    flutter pub run build_runner build --delete-conflicting-outputs
+
+  Note: After running the command Please check lib/model/model.g.dart 
+
 
 ### Attach existing SQLite database with bundledDatabasePath parameter
   *bundledDatabasePath* is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   
-   **ATTENTION:** Defining the tables here provides automatic processing for database configuration only.
-   Use the following function to create your model and use it in your project
-
-  To get the your classes (models) from the clipboard, just type 
-  
-    MyDbModel.createModel(); 
-    
-  This function sets the Clipboard text that includes your classes (After debugging, press Ctrl+V to paste the model from the Clipboard)
-  That's all.. You can paste your model in your .dart file by pressing Ctrl+V for PC or Command+V for Mac and reference it where you wish to use.
 
   Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
 ![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/generate_model.jpg)
@@ -541,6 +503,33 @@ result: (5 row)
     IdentitySequence().reset = $currentVal3 // returns start value
     """);
 
+
+### CONVERTING ANY OBJECT OR LIST TO Json METHOD (WITH NESTED/RELATIONED OBJECTS)
+
+
+EXAMPLE 11.1 single object to Json
+
+    final product = Product().select().toSingle();
+    final jsonString = product.toJson();
+    print(jsonString);
+
+result is:
+
+    flutter: {"id":1,"name":"Notebook 12\"","description":"128 GB SSD i7","price":6899.0,"isActive":true,"categoryId":1,"rownum":1,"imageUrl":"https://raw..","isDeleted":false}
+
+
+EXAMPLE 11.2 object list with nested objects to Json
+
+    final jsonStringWithChilds =  await Category().select().toJson(); // all categories selected
+    print(jsonStringWithChilds);
+
+result is:
+
+    flutter: [{"id":1,"name":"Notebooks","isActive":true,"isDeleted":false,"products":[{"id":1,"name":"Notebook 12\"","description":"128 GB SSD i7","price":6899.0,"isActive":1,"categoryId":1,"rownum":1,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0},{"id":2,"name":"Notebook 12\"","description":"256 GB SSD i7","price":8244.0,"isActive":1,"categoryId":1,"rownum":2,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0},{"id":3,"name":"Notebook 12\"","description":"512 GB SSD i7","price":9214.0,"isActive":1,"categoryId":1,"rownum":3,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0}....
+    .........................
+    
+  
+}
 
 
 ### See the following examples in main.dart for sample model use

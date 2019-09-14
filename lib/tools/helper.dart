@@ -5,14 +5,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 
 class CONSTANTS {
-  static const String APP_TITLE = "SqfEntity Sample App";
+  static const String APP_TITLE = 'SqfEntity Sample App';
 }
 
 
 
 enum Choice { Delete, Update, Recover }
 enum OrderBy { NameAsc, NameDesc,  PriceAsc,PriceDesc, None }
-final priceFormat = NumberFormat("#,##0.#", "en_US");
+final priceFormat = NumberFormat('#,##0.#', 'en_US');
 class UITools {
   UITools(BuildContext context) {
     _context = context;
@@ -72,7 +72,7 @@ class UITools {
       return Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-        image: AssetImage("no-picture.png"),
+        image: AssetImage('no-picture.png'),
         fit: BoxFit.cover,
       )));
     } else {
@@ -91,7 +91,7 @@ class UITools {
       return Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-        image: AssetImage("no-picture.png"),
+        image: AssetImage('no-picture.png'),
         fit: BoxFit.cover,
       )));
     } else {
@@ -115,7 +115,7 @@ class UITools {
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               FlatButton(
-                child: Text("Close"),
+                child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   if(callBack!=null) callBack();
@@ -127,7 +127,7 @@ class UITools {
   }
 
   Future<bool> confirmDialog(String message,
-      [String title = "SqfEntity Sample"]) async {
+      [String title = 'SqfEntity Sample']) async {
     return showDialog<bool>(
       context: _context,
       barrierDismissible: false, // user must tap button for close dialog!

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity_sample/main.dart';
-import 'package:sqfentity_sample/models/MyDbModel.dart';
-import 'package:sqfentity_sample/screens/categoryList.dart';
+import 'package:sqfentity_sample/model/model.dart';
+import 'package:sqfentity_sample/view/categoryList.dart';
 import 'package:sqfentity_sample/tools/popup.dart';
 
 import './tools/helper.dart';
+import 'main.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -47,7 +47,7 @@ class HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Icon(Icons.arrow_right),
-                    Text("About SqfEntity"),
+                    Text('About SqfEntity'),
                   ],
                 ),
                 value: 0,
@@ -57,7 +57,7 @@ class HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Icon(Icons.arrow_right),
-                    Text("Generate model.dart"),
+                    Text('Generate model.dart'),
                   ],
                 ),
                 value: 1,
@@ -67,7 +67,7 @@ class HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Icon(Icons.arrow_right),
-                    Text("run runSamples()"),
+                    Text('run runSamples()'),
                   ],
                 ),
                 value: 2,
@@ -86,7 +86,7 @@ class HomeState extends State<Home> {
         showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
         break;
       case 1:
-        txtModel.text = MyDbModel().createModel();
+        txtModel.text = createSqfEntityModelString();
         showPopup(context, _generetedModelWindow(),
             'Model was created\nsuccessfully');
 
@@ -96,7 +96,7 @@ class HomeState extends State<Home> {
         if (isInitialized == true) {
            runSamples();
         } else {
-          print("Something went wrong. Please check DEBUG CONSOLE for errors");
+          print('Something went wrong. Please check DEBUG CONSOLE for errors');
         }
         UITools(context).alertDialog(
             'runSamples() was run. Go DEBUG CONSOLE for see results');

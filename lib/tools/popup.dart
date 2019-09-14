@@ -52,10 +52,10 @@ class PopupLayout extends ModalRoute {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    if (top == null) top = 10;
-    if (bottom == null) bottom = 20;
-    if (left == null) left = 20;
-    if (right == null) right = 20;
+    top = top ?? 10;
+    bottom = bottom ?? 20;
+    left = left ?? 20;
+    right = right ?? 20;
 
     return GestureDetector(
       onTap: () {

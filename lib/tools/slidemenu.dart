@@ -22,8 +22,9 @@ class _SlideMenuState extends State<SlideMenu>
 
   @override
   void dispose() {
-    _controller.animateTo(.0);
-    _controller.dispose();
+    _controller
+    ..animateTo(.0)
+    ..dispose();
     super.dispose();
   }
 

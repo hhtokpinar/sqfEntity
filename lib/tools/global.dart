@@ -17,10 +17,7 @@ String txtNameText;
   }
   static SearchFilter __instance;
   static SearchFilter get getValues {
-    if (__instance == null) {
-      __instance = SearchFilter();
-      __instance.nameRadioValue=1;
-    }
-    return __instance;
+    return  __instance = __instance ?? SearchFilter()
+      ..nameRadioValue=1;
   }
 }

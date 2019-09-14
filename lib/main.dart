@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:sqfentity_sample/models/MyDbModel.dart';
+import 'package:sqfentity_base/sqfentity_base.dart';
 import 'app.dart';
-import 'models/models.dart';
+import 'model/model.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +22,8 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
+//sampleModelConvert();
+//    return true;
 
   // add some products
   await addSomeProducts();
@@ -62,7 +63,7 @@ Future<bool> runSamples() async {
 
 // toJson samples
   await samples11();
-  
+
   return true;
 }
 
@@ -80,13 +81,28 @@ void printCategories(bool getIsDeleted) {
   });
 }
 
-void createSqfEntityModelString() {
+String createSqfEntityModelString() {
   // To get the class from the clipboard, run it separately for each object
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
 
-  MyDbModel().createModel();
+  final model = SqfEntityModelConverter(myDbModel).toModelBase();
+  final strModel = StringBuffer()
+    ..writeln('''import 'dart:convert';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_base/sqfentity_base.dart';''')
+    ..writeln(model.createModelDatabase())
+    ..writeln(model.createEntites());
+  return strModel.toString();
 
   // also you can get Model String from TextField in App (on the Emulator only!)
+  /* also you can generate model.g.dart as following:
+  --> Go Terminal Window and run command below
+    flutter pub run build_runner build --delete-conflicting-outputs
+  Note: After running the command Please check lib/model/model.g.dart 
+  */
   // Notice: Keyboard shortcuts are not working on the emulator.
   // To copy for your model, click on the cursor in the TextField than open tooltip menu in the emulator.
   // When the menu opens, you can click 'SELECT ALL' and then click 'COPY'.
@@ -182,8 +198,7 @@ Future<void> samples2() async {
       .toSingle();
   print(
       'EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE \'%256%\' OR description LIKE \'512%\') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\'256\').or.description.startsWith(\'512").endBlock.toSingle((product){ // TO DO })');
-  print(
-      'Toplam ${(singleProduct != null ? '1' : '0')} sonuç listeleniyor:');
+  print('Toplam ${(singleProduct != null ? '1' : '0')} sonuç listeleniyor:');
   if (singleProduct != null) {
     print(singleProduct.toMap());
   }
@@ -447,7 +462,8 @@ Future<void> samples5() async {
   if (product2 != null) {
     product2.description = '512GB SSD i7 (updated)';
     await product2.save();
-    print('EXAMPLE 5.3: id=15 Product item updated: ${product2.toMap().toString()}');
+    print(
+        'EXAMPLE 5.3: id=15 Product item updated: ${product2.toMap().toString()}');
   } else {
     print('EXAMPLE 5.3: id=15 => product not found');
   }
@@ -573,8 +589,7 @@ Future<void> samples7() async {
     print(
         'EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ');
 
-    print(
-        'The category of \'${product.name}\' is: ${category.toMap()}');
+    print('The category of \'${product.name}\' is: ${category.toMap()}');
   }
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
@@ -639,14 +654,13 @@ Future<void> samples9() async {
       'EX.9.1 Execute custom SQL command on database\n -> final sql=\'$sql_91\';\n -> MyDbModel().execSQL(sql)  \n -> print result = ${result_91.toString()}');
 
   // EX.9.2 Execute custom SQL command List on database
-  final sqlList = List<String>();
-  sqlList.add('UPDATE product set isActive=1 where isActive=1');
-  sqlList.add('UPDATE product set isActive=0 where isActive=0');
+  final sqlList = List<String>()
+    ..add('UPDATE product set isActive=1 where isActive=1')
+    ..add('UPDATE product set isActive=0 where isActive=0');
 
   final result_92 = await MyDbModel().execSQLList(sqlList);
   print(
       'EX.9.2 Execute custom SQL command List on database\n -> final sqlList=List<String>();\n -> MyDbModel().execSQLList(sqlList);  \n -> print result = ${result_92.toString()}');
-
 
 // EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
   final sql_93 = 'SELECT name, price FROM product order by price desc LIMIT 5';
@@ -688,17 +702,18 @@ Future<void> samples10() async {
 
 /// toJson samples
 Future<void> samples11() async {
-
   // EXAMPLE 11.1 single object to Json
   final product = await Product().select().toSingle();
   final jsonString = product.toJson();
- 
-  print('EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString');
+
+  print(
+      'EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString');
 
   //EXAMPLE 11.2 object list with nested objects to Json
-  final jsonStringWithChilds =  await Category().select().toJsonWithChilds(); // all categories selected
-  print('EXAMPLE 11.2 object list with nested objects to Json\n categories jsonStringWithChilds is: $jsonStringWithChilds');
-  
+  final jsonStringWithChilds =
+      await Category().select().toJsonWithChilds(); // all categories selected
+  print(
+      'EXAMPLE 11.2 object list with nested objects to Json\n categories jsonStringWithChilds is: $jsonStringWithChilds');
 }
 
 /// add new categories if not any Category
@@ -732,158 +747,53 @@ Future<bool> addProducts() async {
   if (productList.length < 15) {
     // some dummy rows for select (id:1- to 15)
     await Product.withFields(
-            'Notebook 12"',
-            '128 GB SSD i7',
-            6899,
-            true,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 12"', '128 GB SSD i7', 6899, true, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 12"',
-            '256 GB SSD i7',
-            8244,
-            true,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 12"', '256 GB SSD i7', 8244, true, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 12"',
-            '512 GB SSD i7',
-            9214,
-            false,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 12"', '512 GB SSD i7', 9214, false, 1, 0, '', false)
         .save();
 
     await Product.withFields(
-            'Notebook 13"',
-            '128 GB SSD',
-            8500,
-            true,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 13"', '128 GB SSD', 8500, true, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 13"',
-            '256 GB SSD',
-            9900,
-            true,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 13"', '256 GB SSD', 9900, true, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 13"',
-            '512 GB SSD',
-            11000,
-            null,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 13"', '512 GB SSD', 11000, null, 1, 0, '', false)
         .save();
 
     await Product.withFields(
-            'Notebook 15"',
-            '128 GB SSD',
-            8999,
-            null,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 15"', '128 GB SSD', 8999, null, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 15"',
-            '256 GB SSD',
-            10499,
-            null,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 15"', '256 GB SSD', 10499, null, 1, 0, '', false)
         .save();
     await Product.withFields(
-            'Notebook 15"',
-            '512 GB SSD',
-            11999,
-            true,
-            1,
-            0,
-            '',
-            false)
+            'Notebook 15"', '512 GB SSD', 11999, true, 1, 0, '', false)
         .save();
 
     await Product.withFields(
-            'Ultrabook 13"',
-            '128 GB SSD i5',
-            9954,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 13"', '128 GB SSD i5', 9954, true, 2, 0, '', false)
         .save();
     await Product.withFields(
-            'Ultrabook 13"',
-            '256 GB SSD i5',
-            11154,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 13"', '256 GB SSD i5', 11154, true, 2, 0, '', false)
         .save();
     await Product.withFields(
-            'Ultrabook 13"',
-            '512 GB SSD i5',
-            13000,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 13"', '512 GB SSD i5', 13000, true, 2, 0, '', false)
         .save();
 
     await Product.withFields(
-            'Ultrabook 15"',
-            '128 GB SSD i7',
-            11000,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 15"', '128 GB SSD i7', 11000, true, 2, 0, '', false)
         .save();
     await Product.withFields(
-            'Ultrabook 15"',
-            '256 GB SSD i7',
-            12000,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 15"', '256 GB SSD i7', 12000, true, 2, 0, '', false)
         .save();
     await Product.withFields(
-            'Ultrabook 15"',
-            '512 GB SSD i7',
-            14000,
-            true,
-            2,
-            0,
-            '',
-            false)
+            'Ultrabook 15"', '512 GB SSD i7', 14000, true, 2, 0, '', false)
         .save();
     print('added 15 new products');
 
@@ -897,3 +807,33 @@ Future<bool> addProducts() async {
   }
   return true;
 }
+
+void sampleModelConvert() {
+  final seq = SqfEntitySequenceBase()
+    ..sequenceName = 'sample'
+    ..init();
+
+  final model = MyDb()
+    ..databaseName = 'sampleORM.db'
+    ..sequences = [seq]
+    ..databaseTables = [
+      SqfEntityTableBase()
+        ..dbModel = 'myyymodelll'
+        ..defaultJsonUrl = 'none'
+        ..fields = [
+          SqfEntityFieldBase('name', DbType.text)..defaultValue = 'test',
+          SqfEntityFieldBase('identity', DbType.text, sequencedBy: seq)
+            ..defaultValue = 'test'
+        ]
+        ..primaryKeyName = 'id'
+        ..primaryKeyType = PrimaryKeyType.integer_auto_incremental
+        ..tableName = 'category'
+        ..useSoftDeleting = true
+        ..init()
+    ];
+
+  final modelStr = model.createEntites();
+  print(modelStr);
+}
+
+class MyDb extends SqfEntityModelBase {}
