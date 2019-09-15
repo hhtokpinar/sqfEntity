@@ -147,7 +147,7 @@ So you can create many Database Models and use them in your application.
     @SqfEntityBuilder(myDbModel)
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
-        databaseName: 'sampleORMtest01.db',
+        databaseName: 'sampleORM.db',
         // put defined tables into the tables list.
         databaseTables: [tableCategory, tableProduct, tableTodo],
         // put defined sequences into the sequences list.
