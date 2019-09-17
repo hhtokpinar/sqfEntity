@@ -32,7 +32,7 @@ class TableCategory extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('name', DbType.text, defaultValue: null),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: null),
+      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
     ];
     super.init();
   }
@@ -56,8 +56,8 @@ class TableProduct extends SqfEntityTableBase {
     fields = [
       SqfEntityFieldBase('name', DbType.text, defaultValue: null),
       SqfEntityFieldBase('description', DbType.text, defaultValue: null),
-      SqfEntityFieldBase('price', DbType.real, defaultValue: null),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: null),
+      SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
+      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationshipBase(
           TableCategory.getInstance, DeleteRule.CASCADE,
           defaultValue: '0'),
@@ -86,7 +86,7 @@ class TableTodo extends SqfEntityTableBase {
     fields = [
       SqfEntityFieldBase('userId', DbType.integer, defaultValue: null),
       SqfEntityFieldBase('title', DbType.text, defaultValue: null),
-      SqfEntityFieldBase('completed', DbType.bool, defaultValue: null),
+      SqfEntityFieldBase('completed', DbType.bool, defaultValue: false),
     ];
     super.init();
   }
@@ -122,7 +122,7 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 // BEGIN DATABASE MODEL
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
-    databaseName = 'sampleORMtest01.db';
+    databaseName = 'sampleORM.db';
     databaseTables = [
       TableCategory.getInstance,
       TableProduct.getInstance,
@@ -419,6 +419,7 @@ class Category {
   }
 
   void setDefaultValues() {
+    isActive = isActive ?? false;
     isDeleted = isDeleted ?? false;
   }
   //end methods
@@ -1431,6 +1432,8 @@ class Product {
   }
 
   void setDefaultValues() {
+    price = price ?? 0;
+    isActive = isActive ?? false;
     categoryId = categoryId ?? 0;
     isDeleted = isDeleted ?? false;
   }
@@ -2374,7 +2377,9 @@ class Todo {
       ..qparams.distinct = true;
   }
 
-  void setDefaultValues() {}
+  void setDefaultValues() {
+    completed = completed ?? false;
+  }
   //end methods
 }
 // endregion todo
