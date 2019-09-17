@@ -22,8 +22,6 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
-//sampleModelConvert();
-//    return true;
 
   // add some products
   await addSomeProducts();
