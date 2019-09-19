@@ -1,4 +1,4 @@
-# sqfEntity ORM for Flutter
+# sqfEntity ORM for Flutter SQLite
 
 ![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_ORM.gif) 
 
