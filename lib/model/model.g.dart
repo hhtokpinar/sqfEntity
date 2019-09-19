@@ -31,7 +31,8 @@ class TableCategory extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text, defaultValue: null),
+      SqfEntityFieldBase('name', DbType.text),
+      SqfEntityFieldBase('test', DbType.integer, defaultValue: 2),
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
     ];
     super.init();
@@ -54,15 +55,15 @@ class TableProduct extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text, defaultValue: null),
-      SqfEntityFieldBase('description', DbType.text, defaultValue: null),
+      SqfEntityFieldBase('name', DbType.text),
+      SqfEntityFieldBase('description', DbType.blob),
       SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationshipBase(
-          TableCategory.getInstance, DeleteRule.CASCADE,
-          defaultValue: '0'),
-      SqfEntityFieldBase('rownum', DbType.integer, defaultValue: null),
-      SqfEntityFieldBase('imageUrl', DbType.text, defaultValue: null),
+          TableCategory.getInstance, DeleteRule.SET_DEFAULT_VALUE,
+          defaultValue: 0),
+      SqfEntityFieldBase('rownum', DbType.integer),
+      SqfEntityFieldBase('imageUrl', DbType.text),
     ];
     super.init();
   }
@@ -84,8 +85,8 @@ class TableTodo extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('userId', DbType.integer, defaultValue: null),
-      SqfEntityFieldBase('title', DbType.text, defaultValue: null),
+      SqfEntityFieldBase('userId', DbType.integer),
+      SqfEntityFieldBase('title', DbType.text),
       SqfEntityFieldBase('completed', DbType.bool, defaultValue: false),
     ];
     super.init();
@@ -95,7 +96,6 @@ class TableTodo extends SqfEntityTableBase {
     return _instance = _instance ?? TableTodo();
   }
 }
-
 // END TABLES
 
 // BEGIN SEQUENCES
@@ -116,22 +116,22 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
     return _instance = _instance ?? SequenceIdentitySequence();
   }
 }
-
 // END SEQUENCES
 
 // BEGIN DATABASE MODEL
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
-    databaseName = 'sampleORM.db';
+    databaseName = 'sampleORMa8.db';
     databaseTables = [
       TableCategory.getInstance,
       TableProduct.getInstance,
       TableTodo.getInstance,
     ];
-    // put defined sequence into the sequences list.
+
     sequences = [
       SequenceIdentitySequence.getInstance,
     ];
+
     bundledDatabasePath =
         null; //'assets/sample.db'; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
@@ -141,18 +141,21 @@ class MyDbModel extends SqfEntityModelProvider {
 // BEGIN ENTITIES
 // region Category
 class Category {
-  Category({this.id, this.name, this.isActive, this.isDeleted}) {
+  Category({this.id, this.name, this.test, this.isActive, this.isDeleted}) {
     setDefaultValues();
   }
-  Category.withFields(this.name, this.isActive, this.isDeleted) {
+  Category.withFields(this.name, this.test, this.isActive, this.isDeleted) {
     setDefaultValues();
   }
-  Category.withId(this.id, this.name, this.isActive, this.isDeleted) {
+  Category.withId(
+      this.id, this.name, this.test, this.isActive, this.isDeleted) {
     setDefaultValues();
   }
   Category.fromMap(Map<String, dynamic> o) {
     id = o['id'] as int;
     name = o['name'] as String;
+
+    test = o['test'] as int;
 
     isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
 
@@ -161,6 +164,7 @@ class Category {
   // FIELDS
   int id;
   String name;
+  int test;
   bool isActive;
   bool isDeleted;
   // end FIELDS
@@ -193,6 +197,10 @@ class Category {
       map['name'] = name;
     }
 
+    if (test != null) {
+      map['test'] = test;
+    }
+
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
     }
@@ -205,14 +213,17 @@ class Category {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds() async {
-    final forQuery = false;
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
     }
     if (name != null) {
       map['name'] = name;
+    }
+
+    if (test != null) {
+      map['test'] = test;
     }
 
     if (isActive != null) {
@@ -243,7 +254,7 @@ class Category {
   }
 
   List<dynamic> toArgs() {
-    return [id, name, isActive, isDeleted];
+    return [id, name, test, isActive, isDeleted];
   }
 
   static Future<List<Category>> fromWebUrl(String url) async {
@@ -329,7 +340,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> saveAll(List<Category> categories) async {
     final results = _mnCategory.saveAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
         categories);
     return results;
   }
@@ -340,8 +351,8 @@ class Category {
   /// <returns>Returns id</returns>
   Future<int> _upsert() async {
     return id = await _mnCategory.rawInsert(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
-        [id, name, isActive, isDeleted]);
+        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
+        [id, name, test, isActive, isDeleted]);
   }
 
   /// <summary>
@@ -351,7 +362,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
         categories);
     return results;
   }
@@ -364,8 +375,11 @@ class Category {
     print('SQFENTITIY: delete Category invoked (id=$id)');
     var result = BoolResult();
     {
-      result =
-          await Product().select().categoryId.equals(id).delete(hardDelete);
+      result = await Product()
+          .select()
+          .categoryId
+          .equals(id)
+          .update({'categoryId': 0});
     }
     if (!result.success) {
       return result;
@@ -383,20 +397,7 @@ class Category {
   /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
   Future<BoolResult> recover([bool recoverChilds = true]) async {
     print('SQFENTITIY: recover Category invoked (id=$id)');
-    var result = BoolResult();
-    if (recoverChilds) {
-      result = await Product()
-          .select(getIsDeleted: true)
-          .isDeleted
-          .equals(true)
-          .and
-          .categoryId
-          .equals(id)
-          .update({'isDeleted': 0});
-    }
-    if (!result.success && recoverChilds) {
-      return result;
-    } else {
+    {
       return _mnCategory
           .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 0});
     }
@@ -419,6 +420,7 @@ class Category {
   }
 
   void setDefaultValues() {
+    test = test ?? 2;
     isActive = isActive ?? false;
     isDeleted = isDeleted ?? false;
   }
@@ -748,6 +750,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return _name = setField(_name, 'name', DbType.text);
   }
 
+  CategoryField _test;
+  CategoryField get test {
+    return _test = setField(_test, 'test', DbType.integer);
+  }
+
   CategoryField _isActive;
   CategoryField get isActive {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
@@ -824,13 +831,6 @@ class CategoryFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
-    final productidList = await toListPrimaryKey(null, false);
-    await Product()
-        .select()
-        .categoryId
-        .inValues(productidList)
-        .delete(hardDelete);
-
     if (Category._softDeleteActivated && !hardDelete) {
       r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -843,15 +843,6 @@ class CategoryFilterBuilder extends SearchCriteria {
     _getIsDeleted = true;
     _buildParameters();
     print('SQFENTITIY: recover Category batch invoked');
-    final productidList = await toListPrimaryKey(null, false);
-    await Product()
-        .select(getIsDeleted: true)
-        .isDeleted
-        .equals(true)
-        .and
-        .categoryId
-        .inValues(productidList)
-        .update({'isDeleted': 0});
     return _obj._mnCategory.updateBatch(qparams, {'isDeleted': 0});
   }
 
@@ -992,8 +983,7 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  Future<List<int>> toListPrimaryKey(
-      [VoidCallback idList(List<int> o), bool buildParameters = true]) async {
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
@@ -1002,9 +992,6 @@ class CategoryFilterBuilder extends SearchCriteria {
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
       idData.add(idFuture[i]['id'] as int);
-    }
-    if (idList != null) {
-      idList(idData);
     }
     return idData;
   }
@@ -1061,6 +1048,12 @@ class CategoryFields {
   static TableField _fName;
   static TableField get name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
+  }
+
+  static TableField _fTest;
+  static TableField get test {
+    return _fTest =
+        _fTest ?? SqlSyntax.setField(_fTest, 'test', DbType.integer);
   }
 
   static TableField _fIsActive;
@@ -1204,8 +1197,7 @@ class Product {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds() async {
-    final forQuery = false;
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
@@ -1765,7 +1757,7 @@ class ProductFilterBuilder extends SearchCriteria {
 
   ProductField _description;
   ProductField get description {
-    return _description = setField(_description, 'description', DbType.text);
+    return _description = setField(_description, 'description', DbType.blob);
   }
 
   ProductField _price;
@@ -2016,8 +2008,7 @@ class ProductFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  Future<List<int>> toListPrimaryKey(
-      [VoidCallback idList(List<int> o), bool buildParameters = true]) async {
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
@@ -2026,9 +2017,6 @@ class ProductFilterBuilder extends SearchCriteria {
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
       idData.add(idFuture[i]['id'] as int);
-    }
-    if (idList != null) {
-      idList(idData);
     }
     return idData;
   }
@@ -2090,7 +2078,7 @@ class ProductFields {
   static TableField _fDescription;
   static TableField get description {
     return _fDescription = _fDescription ??
-        SqlSyntax.setField(_fDescription, 'description', DbType.text);
+        SqlSyntax.setField(_fDescription, 'description', DbType.blob);
   }
 
   static TableField _fPrice;
@@ -2194,8 +2182,7 @@ class Todo {
   }
 
   // methods
-  Future<Map<String, dynamic>> toMapWithChilds() async {
-    final forQuery = false;
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
     final map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
@@ -2925,8 +2912,7 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int></returns>
-  Future<List<int>> toListPrimaryKey(
-      [VoidCallback idList(List<int> o), bool buildParameters = true]) async {
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
@@ -2935,9 +2921,6 @@ class TodoFilterBuilder extends SearchCriteria {
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
       idData.add(idFuture[i]['id'] as int);
-    }
-    if (idList != null) {
-      idList(idData);
     }
     return idData;
   }

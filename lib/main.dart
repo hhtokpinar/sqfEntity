@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity_base/sqfentity_base.dart';
+import 'package:flutter/services.dart';
+import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1- creates a simple  Model named product and sets the clipboard for paste into your models.dart file
-  createSqfEntityModelString();
-
-  // 2- run Entity Model samples
+  
+  // Run Entity Model samples
   // ATTENTION! when the software/app is started, you must check the database was it initialized.
   // If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
   final bool isInitialized = await MyDbModel().initializeDB();
@@ -21,8 +21,10 @@ void main(List<String> args) async {
   }
 }
 
-Future<bool> runSamples() async {
+class BundledModelBase extends SqfEntityModelProvider {}
 
+Future<bool> runSamples() async {
+  
   // add some products
   await addSomeProducts();
 
@@ -59,27 +61,100 @@ Future<bool> runSamples() async {
   // SEQUENCE samples
   await samples10();
 
-// toJson samples
+  // toJson samples
   await samples11();
+
+  // create model from existing database sample
+  await createModelFromDatabaseSample();
 
   return true;
 }
 
-void printCategories(bool getIsDeleted) {
-  Category().select(getIsDeleted: getIsDeleted).toList((categoryList) {
-    print('LISTING CATEGORIES -> Category().select().toList()');
-    // PRINT RESULTS TO DEBUG CONSOLE
-    print('${categoryList.length} matches found:');
-    for (int i = 0; i < categoryList.length; i++) {
-      print(categoryList[i].toMap());
-    }
-    print(
-        '---------------------------------------------------------------\n\n');
-    return;
-  });
+Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
+  final list = await model.execDataTable(pSql);
+  printList(list);
 }
 
+void printList(List<dynamic> list) {
+  for (final o in list) {
+    print(o.toString());
+  }
+}
+
+Future<String> createModelFromDatabaseSample() async {
+  
+/* STEP 1
+
+  // Copy your database in /assets folder (in this sample we copied chinook.sqlite database)
+  // and define your asset database in pubspec.yaml as below
+
+flutter:
+  assets:
+    - assets/chinook.sqlite
+
+*/
+
+
+// STEP 2 
+// Run this script with this parameters. 
+// databaseName: Specify a name for your database to use for the database connection
+// bundledDatabasePath: File path of your copied database
+  final bundledDbModel = await convertDatabaseToModelBase(
+      databaseName: 'chinook.db',  
+      bundledDatabasePath: 'assets/chinook.sqlite');
+
+// STEP 3
+// Run this function to convert the model to annotation
+  final String modelConstString =
+      SqfEntityConverter(bundledDbModel).createConstDatabase();
+  
+// That's all. Set clipboard to paste codes
+  await Clipboard.setData(ClipboardData(text: modelConstString));
+
+  /*
+      Model were created succesfuly and set to the Clipboard. 
+
+      STEP 1:
+      Open model.dart file in lib/model folder and paste models after following line
+      part 'model.g.dart';
+
+      STEP 2:
+      Go Terminal Window and run command below
+      flutter pub run build_runner build --delete-conflicting-outputs
+      Your Entity models will be created in lib/model/model.g.dart
+
+ */
+  print(
+      '''Your ${bundledDbModel.databaseName} 
+      were created succesfuly and set to the Clipboard. 
+
+      STEP 1:
+      Open model.dart file in lib/model folder and paste models after following line
+      part 'model.g.dart';
+
+      STEP 2:
+      Go Terminal Window and run command below
+      flutter pub run build_runner build --delete-conflicting-outputs
+      Your Entity models will be created in lib/model/model.g.dart''');
+
+return modelConstString;
+
+}
+
+Future<void> printCategories(bool getIsDeleted) async {
+  final categoryList = await Category().select().toList();
+  print('LISTING CATEGORIES -> Category().select().toList()');
+  // PRINT RESULTS TO DEBUG CONSOLE
+  print('${categoryList.length} matches found:');
+  for (int i = 0; i < categoryList.length; i++) {
+    print(categoryList[i].toMap());
+  }
+  print('---------------------------------------------------------------\n\n');
+}
+
+
 String createSqfEntityModelString() {
+  
   // To get the class from the clipboard, run it separately for each object
   // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
 
@@ -91,8 +166,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_base/sqfentity_base.dart';''')
-    ..writeln(model.createModelDatabase())
-    ..writeln(model.createEntites());
+    ..writeln(SqfEntityConverter(model).createModelDatabase())
+    ..writeln(SqfEntityConverter(model).createEntites());
   return strModel.toString();
 
   // also you can get Model String from TextField in App (on the Emulator only!)
@@ -105,6 +180,7 @@ import 'package:sqfentity_base/sqfentity_base.dart';''')
   // To copy for your model, click on the cursor in the TextField than open tooltip menu in the emulator.
   // When the menu opens, you can click 'SELECT ALL' and then click 'COPY'.
 }
+
 
 Future<void> printProducts() async {
   final productList = await Product().select().toList();
@@ -587,7 +663,8 @@ Future<void> samples7() async {
     print(
         'EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ');
 
-    print('The category of \'${product.name}\' is: ${category.toMap()}');
+    print(
+        'The category of \'${product.name}\' is: ${category == null ? 'null' : category.toMap()}');
   }
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
@@ -737,7 +814,7 @@ Future<void> addSomeProducts() async {
 
 Future<void> addCategories() async {
   await Category(name: 'Notebooks', isActive: true).save();
-  await Category.withFields('Ultrabooks', true, false).save();
+  await Category.withFields('Ultrabooks', 0, true, false).save();
 }
 
 Future<bool> addProducts() async {
@@ -830,7 +907,7 @@ void sampleModelConvert() {
         ..init()
     ];
 
-  final modelStr = model.createEntites();
+  final modelStr = SqfEntityConverter(model).createEntites();
   print(modelStr);
 }
 

@@ -46,7 +46,7 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right),
+                    Icon(Icons.arrow_right,color: Colors.black),
                     Text('About SqfEntity'),
                   ],
                 ),
@@ -56,8 +56,8 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right),
-                    Text('Generate model.dart'),
+                    Icon(Icons.arrow_right,color: Colors.black,),
+                    Text('Create entities from \nthe model in Model.dart'),
                   ],
                 ),
                 value: 1,
@@ -66,7 +66,20 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right),
+                    Icon(Icons.arrow_right ,color: Colors.black),
+                    Text('Generate model\nfrom existing database\n_'),
+                  ],
+                ),
+                value: 3,
+              ),
+
+
+
+              PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right ,color: Colors.black),
                     Text('run runSamples()'),
                   ],
                 ),
@@ -101,7 +114,21 @@ class HomeState extends State<Home> {
         UITools(context).alertDialog(
             'runSamples() was run. Go DEBUG CONSOLE for see results');
         break;
+case 3: 
+   txtModel.text = '''import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
 
+part 'model.g.dart';
+
+   ''';
+      txtModel.text += await createModelFromDatabaseSample();
+        showPopup(context, _createdModelWindow(),
+            'Model was generated\nsuccessfully');
+
+        break;
       default:
     }
   }
@@ -145,7 +172,7 @@ class HomeState extends State<Home> {
               children: <Widget>[
                 Flexible(
                     child: Text(
-                  "Create models.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
+                  "Create models.g.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
                   style: TextStyle(color: Colors.blueGrey),
                 )),
               ],
@@ -167,4 +194,40 @@ class HomeState extends State<Home> {
       ),
     );
   }
+
+  Widget _createdModelWindow() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Flexible(
+                    child: Text(
+                  "Create lib/model/model.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
+                  style: TextStyle(color: Colors.blueGrey),
+                )),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              reverse: true,
+              child: TextField(
+                controller: txtModel,
+
+                maxLines: 9, //grow automatically
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
+
+

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sqfentity/sqfentity.dart';
-import 'package:sqfentity_base/sqfentity_base.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
 
 part 'model.g.dart';
 
@@ -35,8 +35,8 @@ const tableProduct = SqfEntityTable(
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationship(
           parentTable: tableCategory,
-          deleteRule: DeleteRule.CASCADE,
-          defaultValue: '0'), // Relationship column for CategoryId of Product
+          deleteRule: DeleteRule.SET_DEFAULT_VALUE,
+          defaultValue: 0), // Relationship column for CategoryId of Product
       SqfEntityField('rownum', DbType.integer,
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
@@ -63,7 +63,7 @@ const tableTodo = SqfEntityTable(
 // Define the 'identity' constant as SqfEntitySequence.
 const seqIdentity = SqfEntitySequence(
   sequenceName: 'identity',
-  maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+  //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
   //modelName: 'SQEidentity', 
                       /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
   //cycle : false,    /* optional. default is false; */
@@ -73,7 +73,8 @@ const seqIdentity = SqfEntitySequence(
 );
 
 // STEP 2: Create your Database Model constant instanced from SqfEntityModel
-// Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
+// Note: SqfEntity provides support for the use of multiple databases. 
+// So you can create many Database Models and use them in the application.
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
@@ -83,7 +84,7 @@ const myDbModel = SqfEntityModel(
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath:
-        null // 'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+        null //'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
 );
 
 /* STEP 3: That's All.. 

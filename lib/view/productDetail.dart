@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/material.dart';
-import 'package:sqfentity_base/sqfentity_base.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'package:sqfentity_sample/model/model.dart';
 import 'package:sqfentity_sample/view/productAdd.dart';
 
