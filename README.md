@@ -45,7 +45,7 @@ First, create your **model.dart** file in **lib/model/** folder to define your m
     import 'package:http/http.dart' as http;
     import 'package:flutter/material.dart';
     import 'package:sqfentity/sqfentity.dart';
-    import 'package:sqfentity_base/sqfentity_base.dart';
+    import 'package:sqfentity_gen/sqfentity_gen.dart';
 
 
 Write the following statement for the file to be created 
