@@ -29,7 +29,7 @@ class CategoryListState extends State {
       final categoriesData = await Category()
           .select(getIsDeleted: SearchFilter.showIsDeleted)
           .orderByDesc(['isdeleted']).toList();
-      categoriesData.add(Category.withId(0, 'List All',0, true, false));
+      categoriesData.add(Category.withId(0, 'List All', true, false));
       setState(() {
         categories = categoriesData;
         //count = categoriesData.length;
