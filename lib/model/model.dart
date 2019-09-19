@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sqfentity/sqfentity.dart';
@@ -40,7 +41,8 @@ const tableProduct = SqfEntityTable(
       SqfEntityField('rownum', DbType.integer,
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
-      SqfEntityField('imageUrl', DbType.text)
+      SqfEntityField('imageUrl', DbType.text),
+      
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
@@ -84,7 +86,9 @@ const myDbModel = SqfEntityModel(
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath:
-        null //'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+        null //         'assets/sample.db'   
+        // This value is optional. When bundledDatabasePath is empty then 
+        // EntityBase creats a new database when initializing the database
 );
 
 /* STEP 3: That's All.. 

@@ -46,7 +46,7 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right,color: Colors.black),
+                    Icon(Icons.arrow_right, color: Colors.black),
                     Text('About SqfEntity'),
                   ],
                 ),
@@ -56,7 +56,10 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right,color: Colors.black,),
+                    Icon(
+                      Icons.arrow_right,
+                      color: Colors.black,
+                    ),
                     Text('Create entities from \nthe model in Model.dart'),
                   ],
                 ),
@@ -66,20 +69,17 @@ class HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right ,color: Colors.black),
+                    Icon(Icons.arrow_right, color: Colors.black),
                     Text('Generate model\nfrom existing database\n_'),
                   ],
                 ),
                 value: 3,
               ),
-
-
-
               PopupMenuItem<int>(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.arrow_right ,color: Colors.black),
+                    Icon(Icons.arrow_right, color: Colors.black),
                     Text('run runSamples()'),
                   ],
                 ),
@@ -99,23 +99,23 @@ class HomeState extends State<Home> {
         showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
         break;
       case 1:
-        txtModel.text = createSqfEntityModelString();
+        txtModel.text = await createSqfEntityModelString();
         showPopup(context, _generetedModelWindow(),
-            'Model was created\nsuccessfully');
+            'Model Entities was created\nsuccessfully');
 
         break;
       case 2:
         final bool isInitialized = await MyDbModel().initializeDB();
         if (isInitialized == true) {
-           runSamples();
+          runSamples();
         } else {
           print('Something went wrong. Please check DEBUG CONSOLE for errors');
         }
         UITools(context).alertDialog(
             'runSamples() was run. Go DEBUG CONSOLE for see results');
         break;
-case 3: 
-   txtModel.text = '''import 'dart:convert';
+      case 3:
+        txtModel.text = '''import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sqfentity/sqfentity.dart';
@@ -124,9 +124,9 @@ import 'package:sqfentity_gen/sqfentity_gen.dart';
 part 'model.g.dart';
 
    ''';
-      txtModel.text += await createModelFromDatabaseSample();
+        txtModel.text += await createModelFromDatabaseSample();
         showPopup(context, _createdModelWindow(),
-            'Model was generated\nsuccessfully');
+            'Model was generated\nfrom database successfully');
 
         break;
       default:
@@ -173,7 +173,7 @@ part 'model.g.dart';
                 Flexible(
                     child: Text(
                   "Create models.g.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
-                  style: TextStyle(color: Colors.blueGrey),
+                  style: TextStyle(color: Colors.deepPurple),
                 )),
               ],
             ),
@@ -186,7 +186,7 @@ part 'model.g.dart';
               child: TextField(
                 controller: txtModel,
 
-                maxLines: 9, //grow automatically
+                maxLines: 29, //grow automatically
               ),
             ),
           ],
@@ -205,29 +205,45 @@ part 'model.g.dart';
               children: <Widget>[
                 Flexible(
                     child: Text(
-                  "Create lib/model/model.dart file in your project and press Ctrl+V to paste the model from the Clipboard. If the clipboard didn't work, you can copy the text below",
-                  style: TextStyle(color: Colors.blueGrey),
+                  'STEP1: Create lib/model/model.dart file in your project and press Ctrl+V to paste the model from the Clipboard.',
+                  style: TextStyle(color: Colors.deepPurple),
                 )),
+              
+              
+              
               ],
             ),
             SizedBox(
               height: 20,
             ),
+            Text('Your database model is here:'),
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
               reverse: true,
               child: TextField(
                 controller: txtModel,
 
-                maxLines: 9, //grow automatically
+                maxLines: 19, //grow automatically
               ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Flexible(
+
+              child: Text(
+                  'STEP 2: To create ORM entities, go to the Terminal Window and run the following command:',
+                  style: TextStyle(color: Colors.deepPurple, ), textAlign: TextAlign.left,),
+            ),
+            TextField(
+              maxLines: 2,
+              controller: TextEditingController(
+                  text:
+                      'flutter pub run build_runner build --delete-conflicting-outputs'),
             ),
           ],
         ),
       ),
     );
   }
-
 }
-
-

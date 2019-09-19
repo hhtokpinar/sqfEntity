@@ -8,7 +8,6 @@ import 'model/model.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  
   // Run Entity Model samples
   // ATTENTION! when the software/app is started, you must check the database was it initialized.
   // If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
@@ -24,7 +23,6 @@ void main(List<String> args) async {
 class BundledModelBase extends SqfEntityModelProvider {}
 
 Future<bool> runSamples() async {
-  
   // add some products
   await addSomeProducts();
 
@@ -81,8 +79,18 @@ void printList(List<dynamic> list) {
   }
 }
 
+Future<void> printCategories(bool getIsDeleted) async {
+  final categoryList = await Category().select().toList();
+  print('LISTING CATEGORIES -> Category().select().toList()');
+  // PRINT RESULTS TO DEBUG CONSOLE
+  print('${categoryList.length} matches found:');
+  for (int i = 0; i < categoryList.length; i++) {
+    print(categoryList[i].toMap());
+  }
+  print('---------------------------------------------------------------\n\n');
+}
+
 Future<String> createModelFromDatabaseSample() async {
-  
 /* STEP 1
 
   // Copy your database in /assets folder (in this sample we copied chinook.sqlite database)
@@ -94,20 +102,18 @@ flutter:
 
 */
 
-
-// STEP 2 
-// Run this script with this parameters. 
+// STEP 2
+// Run this script with this parameters.
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
   final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'chinook.db',  
-      bundledDatabasePath: 'assets/chinook.sqlite');
+      databaseName: 'chinook.db', bundledDatabasePath: 'assets/chinook.sqlite');
 
 // STEP 3
 // Run this function to convert the model to annotation
   final String modelConstString =
       SqfEntityConverter(bundledDbModel).createConstDatabase();
-  
+
 // That's all. Set clipboard to paste codes
   await Clipboard.setData(ClipboardData(text: modelConstString));
 
@@ -124,8 +130,7 @@ flutter:
       Your Entity models will be created in lib/model/model.g.dart
 
  */
-  print(
-      '''Your ${bundledDbModel.databaseName} 
+  print('''Your ${bundledDbModel.databaseName} 
       were created succesfuly and set to the Clipboard. 
 
       STEP 1:
@@ -137,26 +142,14 @@ flutter:
       flutter pub run build_runner build --delete-conflicting-outputs
       Your Entity models will be created in lib/model/model.g.dart''');
 
-return modelConstString;
-
+  return modelConstString;
 }
 
-Future<void> printCategories(bool getIsDeleted) async {
-  final categoryList = await Category().select().toList();
-  print('LISTING CATEGORIES -> Category().select().toList()');
-  // PRINT RESULTS TO DEBUG CONSOLE
-  print('${categoryList.length} matches found:');
-  for (int i = 0; i < categoryList.length; i++) {
-    print(categoryList[i].toMap());
-  }
-  print('---------------------------------------------------------------\n\n');
-}
-
-
-String createSqfEntityModelString() {
+Future<String> createSqfEntityModelString() async {
   
   // To get the class from the clipboard, run it separately for each object
-  // create Model String and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
+  // Create Entity Model String of model from file at '/lib/model/model.dart'
+  // and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
 
   final model = SqfEntityModelConverter(myDbModel).toModelBase();
   final strModel = StringBuffer()
@@ -168,6 +161,9 @@ import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_base/sqfentity_base.dart';''')
     ..writeln(SqfEntityConverter(model).createModelDatabase())
     ..writeln(SqfEntityConverter(model).createEntites());
+
+  await Clipboard.setData(ClipboardData(text: strModel.toString()));
+
   return strModel.toString();
 
   // also you can get Model String from TextField in App (on the Emulator only!)
@@ -180,7 +176,6 @@ import 'package:sqfentity_base/sqfentity_base.dart';''')
   // To copy for your model, click on the cursor in the TextField than open tooltip menu in the emulator.
   // When the menu opens, you can click 'SELECT ALL' and then click 'COPY'.
 }
-
 
 Future<void> printProducts() async {
   final productList = await Product().select().toList();

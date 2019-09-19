@@ -136,7 +136,7 @@ class _PopupContentState extends State<PopupContent> {
         child: PopupContent(
           content: Scaffold(
             appBar: AppBar(
-              title: Text(title,style: TextStyle(fontSize: UITools(context).scaleWidth(16)),),
+              title: Text(title,style: TextStyle(fontSize: UITools(context).scaleWidth(10)),),
               leading: Builder(builder: (context) {
                 return IconButton(
                   icon: Icon(Icons.arrow_back),
