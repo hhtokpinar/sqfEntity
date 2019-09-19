@@ -814,7 +814,7 @@ Future<void> addSomeProducts() async {
 
 Future<void> addCategories() async {
   await Category(name: 'Notebooks', isActive: true).save();
-  await Category.withFields('Ultrabooks', 0, true, false).save();
+  await Category.withFields('Ultrabooks', true, false).save();
 }
 
 Future<bool> addProducts() async {
