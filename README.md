@@ -52,7 +52,7 @@ Write the following statement for the file to be created
     part 'model.g.dart';
     
 
-**STEP 1:** Our model file is ready to use. Define your tables as shown in the example Classes below.
+**STEP 1:** Our model file is ready to use. Define your tables as shown in the example below.
  For example, we have created 3 tables constant for category, product and todo that instanced from "SqfEntityTable" as follows:
 
 
@@ -129,7 +129,7 @@ This table is for creating a synchronization with json data from the web url
 
     const seqIdentity = SqfEntitySequence(
       sequenceName: 'identity',
-      maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+      // maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
       // modelName: 'SQEidentity', 
                           /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
       // cycle : false,   /* optional. default is false; */
@@ -168,6 +168,56 @@ Go Terminal Window and run command below
 ### Attach existing SQLite database with bundledDatabasePath parameter
   *bundledDatabasePath* is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   
+### How to import existing database and generate model automatically?
+
+
+*STEP 1*
+
+Copy your existing database in /assets folder (in this sample we copied chinook.sqlite database) and define your asset database in pubspec.yaml as below
+
+    flutter:
+      assets:
+        - assets/chinook.sqlite
+
+
+*STEP 2*
+
+Run this script with this parameters. 
+**databaseName:** Specify a name for your database to use for the database connection
+**bundledDatabasePath:** File path of your copied database
+
+    final bundledDbModel = await convertDatabaseToModelBase(
+        databaseName: 'chinook.db',  
+        bundledDatabasePath: 'assets/chinook.sqlite');
+
+*STEP 3*
+
+Run this function to convert the model to annotation
+
+    final String modelConstString =
+        SqfEntityConverter(bundledDbModel).createConstDatabase();
+  
+That's all. Set clipboard to paste codes
+
+      await Clipboard.setData(ClipboardData(text: modelConstString));
+
+
+Model were created succesfuly and set to the Clipboard. 
+
+
+Open model.dart file in lib/model folder and paste models after following line
+
+    part 'model.g.dart';
+
+
+Go Terminal Window and run command below
+
+    flutter pub run build_runner build --delete-conflicting-outputs
+
+Your Entity models will be created in lib/model/model.g.dart
+
+Note: You can see this sample import in the createModelFromDatabaseSample() function in main.dart
+
 
   Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
 ![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/generate_model.jpg)
