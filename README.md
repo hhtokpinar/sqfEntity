@@ -1,4 +1,4 @@
-# sqfEntity ORM for Flutter SQLite
+# sqfEntity ORM for Flutter SQLite (sqflite)
 
 ![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_ORM.gif) 
 
@@ -28,19 +28,20 @@ Some files in the project:
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.1.0
-      sqfentity_base: ^1.0.0
+      sqfentity: ^1.1.1
+      sqfentity_gen: ^1.0.2+2
 
     dev_dependencies:
       build_runner: ^1.6.5
       build_verify: ^1.1.0
-      sqfentity_gen: ^1.0.0
+
   
 # Create a new Database Model
 
 First, create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
     import 'dart:convert';
+    import 'dart:typed_data';
     import 'package:http/http.dart' as http;
     import 'package:flutter/material.dart';
     import 'package:sqfentity/sqfentity.dart';
