@@ -32,7 +32,6 @@ class TableCategory extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('test', DbType.integer, defaultValue: 2),
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
     ];
     super.init();
@@ -56,7 +55,7 @@ class TableProduct extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('description', DbType.blob),
+      SqfEntityFieldBase('description', DbType.text),
       SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationshipBase(
@@ -121,7 +120,7 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 // BEGIN DATABASE MODEL
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
-    databaseName = 'sampleORMa8.db';
+    databaseName = 'sampleORM.db';
     databaseTables = [
       TableCategory.getInstance,
       TableProduct.getInstance,
@@ -141,21 +140,18 @@ class MyDbModel extends SqfEntityModelProvider {
 // BEGIN ENTITIES
 // region Category
 class Category {
-  Category({this.id, this.name, this.test, this.isActive, this.isDeleted}) {
+  Category({this.id, this.name, this.isActive, this.isDeleted}) {
     setDefaultValues();
   }
-  Category.withFields(this.name, this.test, this.isActive, this.isDeleted) {
+  Category.withFields(this.name, this.isActive, this.isDeleted) {
     setDefaultValues();
   }
-  Category.withId(
-      this.id, this.name, this.test, this.isActive, this.isDeleted) {
+  Category.withId(this.id, this.name, this.isActive, this.isDeleted) {
     setDefaultValues();
   }
   Category.fromMap(Map<String, dynamic> o) {
     id = o['id'] as int;
     name = o['name'] as String;
-
-    test = o['test'] as int;
 
     isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
 
@@ -164,7 +160,6 @@ class Category {
   // FIELDS
   int id;
   String name;
-  int test;
   bool isActive;
   bool isDeleted;
   // end FIELDS
@@ -197,10 +192,6 @@ class Category {
       map['name'] = name;
     }
 
-    if (test != null) {
-      map['test'] = test;
-    }
-
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
     }
@@ -220,10 +211,6 @@ class Category {
     }
     if (name != null) {
       map['name'] = name;
-    }
-
-    if (test != null) {
-      map['test'] = test;
     }
 
     if (isActive != null) {
@@ -254,7 +241,7 @@ class Category {
   }
 
   List<dynamic> toArgs() {
-    return [id, name, test, isActive, isDeleted];
+    return [id, name, isActive, isDeleted];
   }
 
   static Future<List<Category>> fromWebUrl(String url) async {
@@ -340,7 +327,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> saveAll(List<Category> categories) async {
     final results = _mnCategory.saveAll(
-        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
         categories);
     return results;
   }
@@ -351,8 +338,8 @@ class Category {
   /// <returns>Returns id</returns>
   Future<int> _upsert() async {
     return id = await _mnCategory.rawInsert(
-        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
-        [id, name, test, isActive, isDeleted]);
+        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        [id, name, isActive, isDeleted]);
   }
 
   /// <summary>
@@ -362,7 +349,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (id,  name, test, isActive,isDeleted)  VALUES (?,?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
         categories);
     return results;
   }
@@ -420,7 +407,6 @@ class Category {
   }
 
   void setDefaultValues() {
-    test = test ?? 2;
     isActive = isActive ?? false;
     isDeleted = isDeleted ?? false;
   }
@@ -750,11 +736,6 @@ class CategoryFilterBuilder extends SearchCriteria {
     return _name = setField(_name, 'name', DbType.text);
   }
 
-  CategoryField _test;
-  CategoryField get test {
-    return _test = setField(_test, 'test', DbType.integer);
-  }
-
   CategoryField _isActive;
   CategoryField get isActive {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
@@ -1048,12 +1029,6 @@ class CategoryFields {
   static TableField _fName;
   static TableField get name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
-  }
-
-  static TableField _fTest;
-  static TableField get test {
-    return _fTest =
-        _fTest ?? SqlSyntax.setField(_fTest, 'test', DbType.integer);
   }
 
   static TableField _fIsActive;
@@ -1757,7 +1732,7 @@ class ProductFilterBuilder extends SearchCriteria {
 
   ProductField _description;
   ProductField get description {
-    return _description = setField(_description, 'description', DbType.blob);
+    return _description = setField(_description, 'description', DbType.text);
   }
 
   ProductField _price;
@@ -2078,7 +2053,7 @@ class ProductFields {
   static TableField _fDescription;
   static TableField get description {
     return _fDescription = _fDescription ??
-        SqlSyntax.setField(_fDescription, 'description', DbType.blob);
+        SqlSyntax.setField(_fDescription, 'description', DbType.text);
   }
 
   static TableField _fPrice;
