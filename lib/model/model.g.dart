@@ -33,6 +33,7 @@ class TableCategory extends SqfEntityTableBase {
     fields = [
       SqfEntityFieldBase('name', DbType.text),
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
+      SqfEntityFieldBase('image', DbType.blob),
     ];
     super.init();
   }
@@ -120,7 +121,7 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 // BEGIN DATABASE MODEL
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
-    databaseName = 'sampleORM.db';
+    databaseName = 'sampleORMxc.db';
     databaseTables = [
       TableCategory.getInstance,
       TableProduct.getInstance,
@@ -140,13 +141,14 @@ class MyDbModel extends SqfEntityModelProvider {
 // BEGIN ENTITIES
 // region Category
 class Category {
-  Category({this.id, this.name, this.isActive, this.isDeleted}) {
+  Category({this.id, this.name, this.isActive, this.image, this.isDeleted}) {
     setDefaultValues();
   }
-  Category.withFields(this.name, this.isActive, this.isDeleted) {
+  Category.withFields(this.name, this.isActive, this.image, this.isDeleted) {
     setDefaultValues();
   }
-  Category.withId(this.id, this.name, this.isActive, this.isDeleted) {
+  Category.withId(
+      this.id, this.name, this.isActive, this.image, this.isDeleted) {
     setDefaultValues();
   }
   Category.fromMap(Map<String, dynamic> o) {
@@ -155,12 +157,15 @@ class Category {
 
     isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
 
+    image = o['image'] as Uint8List;
+
     isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
   }
   // FIELDS
   int id;
   String name;
   bool isActive;
+  Uint8List image;
   bool isDeleted;
   // end FIELDS
 
@@ -196,6 +201,10 @@ class Category {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
     }
 
+    if (image != null) {
+      map['image'] = image;
+    }
+
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
     }
@@ -215,6 +224,10 @@ class Category {
 
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+    }
+
+    if (image != null) {
+      map['image'] = image;
     }
 
     if (isDeleted != null) {
@@ -241,7 +254,7 @@ class Category {
   }
 
   List<dynamic> toArgs() {
-    return [id, name, isActive, isDeleted];
+    return [id, name, isActive, image, isDeleted];
   }
 
   static Future<List<Category>> fromWebUrl(String url) async {
@@ -327,7 +340,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> saveAll(List<Category> categories) async {
     final results = _mnCategory.saveAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, isActive, image,isDeleted)  VALUES (?,?,?,?,?)',
         categories);
     return results;
   }
@@ -338,8 +351,8 @@ class Category {
   /// <returns>Returns id</returns>
   Future<int> _upsert() async {
     return id = await _mnCategory.rawInsert(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
-        [id, name, isActive, isDeleted]);
+        'INSERT OR REPLACE INTO category (id,  name, isActive, image,isDeleted)  VALUES (?,?,?,?,?)',
+        [id, name, isActive, image, isDeleted]);
   }
 
   /// <summary>
@@ -349,7 +362,7 @@ class Category {
   /// <returns> Returns a <List<BoolResult>> </returns>
   Future<List<BoolResult>> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO category (id,  name, isActive, image,isDeleted)  VALUES (?,?,?,?,?)',
         categories);
     return results;
   }
@@ -741,6 +754,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
+  CategoryField _image;
+  CategoryField get image {
+    return _image = setField(_image, 'image', DbType.blob);
+  }
+
   CategoryField _isDeleted;
   CategoryField get isDeleted {
     return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
@@ -1035,6 +1053,12 @@ class CategoryFields {
   static TableField get isActive {
     return _fIsActive =
         _fIsActive ?? SqlSyntax.setField(_fIsActive, 'isActive', DbType.bool);
+  }
+
+  static TableField _fImage;
+  static TableField get image {
+    return _fImage =
+        _fImage ?? SqlSyntax.setField(_fImage, 'image', DbType.blob);
   }
 
   static TableField _fIsDeleted;

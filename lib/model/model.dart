@@ -21,6 +21,7 @@ const tableCategory = SqfEntityTable(
     fields: [
       SqfEntityField('name', DbType.text),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
+      SqfEntityField('image', DbType.blob)
     ]);
 
 // Define the 'TableProduct' constant as SqfEntityTable.

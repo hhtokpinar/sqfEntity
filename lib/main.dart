@@ -809,7 +809,7 @@ Future<void> addSomeProducts() async {
 
 Future<void> addCategories() async {
   await Category(name: 'Notebooks', isActive: true).save();
-  await Category.withFields('Ultrabooks', true, false).save();
+  await Category.withFields('Ultrabooks', true,null, false).save();
 }
 
 Future<bool> addProducts() async {
