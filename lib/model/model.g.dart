@@ -121,7 +121,7 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 // BEGIN DATABASE MODEL
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
-    databaseName = 'sampleORMxc.db';
+    databaseName = 'sampleORM.db';
     databaseTables = [
       TableCategory.getInstance,
       TableProduct.getInstance,
