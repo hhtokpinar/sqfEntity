@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_base/sqfentity_base.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
@@ -809,7 +810,7 @@ Future<void> addSomeProducts() async {
 
 Future<void> addCategories() async {
   await Category(name: 'Notebooks', isActive: true).save();
-  await Category.withFields('Ultrabooks', true,null, false).save();
+  await Category.withFields('Ultrabooks', true, false).save();
 }
 
 Future<bool> addProducts() async {

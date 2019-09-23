@@ -1,4 +1,5 @@
-import 'package:sqfentity_gen/sqfentity_gen.dart';
+
+import 'package:sqfentity_base/sqfentity_base.dart';
 import 'package:sqfentity_sample/model/model.dart';
 import 'package:sqfentity_sample/tools/global.dart';
 import 'package:sqfentity_sample/tools/helper.dart';
@@ -29,7 +30,7 @@ class CategoryListState extends State {
       final categoriesData = await Category()
           .select(getIsDeleted: SearchFilter.showIsDeleted)
           .orderByDesc(['isdeleted']).toList();
-      categoriesData.add(Category.withId(0, 'List All', true,null, false));
+      categoriesData.add(Category.withId(0, 'List All', true, false));
       setState(() {
         categories = categoriesData;
         //count = categoriesData.length;

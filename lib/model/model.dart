@@ -3,7 +3,8 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sqfentity/sqfentity.dart';
-import 'package:sqfentity_gen/sqfentity_gen.dart';
+import 'package:sqfentity_base/sqfentity_base.dart';
+
 
 part 'model.g.dart';
 
@@ -21,7 +22,6 @@ const tableCategory = SqfEntityTable(
     fields: [
       SqfEntityField('name', DbType.text),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
-      SqfEntityField('image', DbType.blob)
     ]);
 
 // Define the 'TableProduct' constant as SqfEntityTable.
