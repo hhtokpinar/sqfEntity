@@ -24,7 +24,6 @@ dependencies:
 dev_dependencies:
   sqfentity_gen: ^1.0.3
   build_runner: ^1.6.5
-  build_verify: ^1.1.0
   
   
   
