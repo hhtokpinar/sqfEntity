@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqfentity/sqfentity.dart';
-import 'package:sqfentity_base/sqfentity_base.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
@@ -21,9 +20,10 @@ void main(List<String> args) async {
   }
 }
 
-class BundledModelBase extends SqfEntityModelProvider {}
 
 Future<bool> runSamples() async {
+  
+
   // add some products
   await addSomeProducts();
 

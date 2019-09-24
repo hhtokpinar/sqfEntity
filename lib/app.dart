@@ -112,7 +112,7 @@ class HomeState extends State<Home> {
           print('Something went wrong. Please check DEBUG CONSOLE for errors');
         }
         UITools(context).alertDialog(
-            'runSamples() was run. Go DEBUG CONSOLE for see results');
+            'runSamples() ran. Go DEBUG CONSOLE for see results');
         break;
       case 3:
         txtModel.text = '''import 'dart:convert';

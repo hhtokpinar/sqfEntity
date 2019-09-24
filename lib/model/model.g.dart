@@ -95,6 +95,28 @@ class TableTodo extends SqfEntityTableBase {
     return _instance = _instance ?? TableTodo();
   }
 }
+
+// BleDevice TABLE
+class TableBleDevice extends SqfEntityTableBase {
+  TableBleDevice() {
+    // declare properties of EntityTable
+    tableName = 'bleDevice';
+    primaryKeyName = 'macID';
+    primaryKeyType = PrimaryKeyType.text;
+    useSoftDeleting = false;
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+
+    // declare fields
+    fields = [
+      SqfEntityFieldBase('name', DbType.text),
+    ];
+    super.init();
+  }
+  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase get getInstance {
+    return _instance = _instance ?? TableBleDevice();
+  }
+}
 // END TABLES
 
 // BEGIN SEQUENCES
@@ -125,6 +147,7 @@ class MyDbModel extends SqfEntityModelProvider {
       TableCategory.getInstance,
       TableProduct.getInstance,
       TableTodo.getInstance,
+      TableBleDevice.getInstance,
     ];
 
     sequences = [
@@ -287,7 +310,7 @@ class Category {
 
   /// returns Category by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Category if exist, otherwise returns null</returns>
+  /// <returns>returns Category if exist, otherwise returns null
   Future<Category> getById(int id) async {
     Category categoryObj;
     final data = await _mnCategory.getById(id);
@@ -299,10 +322,9 @@ class Category {
     return categoryObj;
   }
 
-  /// <summary>
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
       id = await _mnCategory.insert(this);
@@ -312,19 +334,16 @@ class Category {
     return id;
   }
 
-  /// <summary>
   /// saveAs Category. Returns a new Primary Key value of Category
-  /// </summary>
-  /// <returns>Returns a new Primary Key value of Category</returns>
+
+  /// <returns>Returns a new Primary Key value of Category
   Future<int> saveAs() async {
     id = null;
     return save();
   }
 
-  /// <summary>
   /// saveAll method saves the sent List<Category> as a batch in one transaction
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> saveAll(List<Category> categories) async {
     final results = _mnCategory.saveAll(
         'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
@@ -332,21 +351,18 @@ class Category {
     return results;
   }
 
-  /// <summary>
   /// Updates if the record exists, otherwise adds a new row
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> _upsert() async {
     return id = await _mnCategory.rawInsert(
         'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
         [id, name, isActive, isDeleted]);
   }
 
-  /// <summary>
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
         'INSERT OR REPLACE INTO category (id,  name, isActive,isDeleted)  VALUES (?,?,?,?)',
@@ -354,10 +370,9 @@ class Category {
     return results;
   }
 
-  /// <summary>
   /// Deletes Category
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Category invoked (id=$id)');
     var result = BoolResult();
@@ -371,22 +386,24 @@ class Category {
     if (!result.success) {
       return result;
     } else if (!_softDeleteActivated || hardDelete || isDeleted) {
-      return _mnCategory.delete(QueryParams(whereString: 'id=$id'));
-    } else {
       return _mnCategory
-          .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 1});
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
+    } else {
+      return _mnCategory.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 1});
     }
   }
 
-  /// <summary>
   /// Recover Category>
-  /// </summary>
-  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
+
+  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
   Future<BoolResult> recover([bool recoverChilds = true]) async {
     print('SQFENTITIY: recover Category invoked (id=$id)');
     {
-      return _mnCategory
-          .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 0});
+      return _mnCategory.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 0});
     }
   }
 
@@ -807,8 +824,8 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   /// <summary>
   /// Deletes List<Category> batch by query
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
@@ -833,7 +850,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns CategoryObj if exist, otherwise returns null
-  /// <returns>List<Category></returns>
+  /// <returns>List<Category>
   Future<Category> toSingle([VoidCallback category(Category o)]) async {
     _pagesize = 1;
     _buildParameters();
@@ -852,7 +869,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
-  /// <returns>int</returns>
+  /// <returns>int
   Future<int> toCount([VoidCallback categoryCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
@@ -865,7 +882,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<Category>.
-  /// <returns>List<Category></returns>
+  /// <returns>List<Category>
   Future<List<Category>> toList(
       [VoidCallback categoryList(List<Category> o)]) async {
     final List<Category> categoriesData = List<Category>();
@@ -899,7 +916,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
-  /// <returns>List<dynamic></returns>
+  /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
     return await _obj._mnCategory.toList(qparams);
@@ -963,7 +980,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Primary Key List<int>.
-  /// <returns>List<int></returns>
+  /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
@@ -1279,7 +1296,7 @@ class Product {
 
   /// returns Product by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Product if exist, otherwise returns null</returns>
+  /// <returns>returns Product if exist, otherwise returns null
   Future<Product> getById(int id) async {
     Product productObj;
     final data = await _mnProduct.getById(id);
@@ -1291,10 +1308,9 @@ class Product {
     return productObj;
   }
 
-  /// <summary>
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
       id = await _mnProduct.insert(this);
@@ -1304,19 +1320,16 @@ class Product {
     return id;
   }
 
-  /// <summary>
   /// saveAs Product. Returns a new Primary Key value of Product
-  /// </summary>
-  /// <returns>Returns a new Primary Key value of Product</returns>
+
+  /// <returns>Returns a new Primary Key value of Product
   Future<int> saveAs() async {
     id = null;
     return save();
   }
 
-  /// <summary>
   /// saveAll method saves the sent List<Product> as a batch in one transaction
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> saveAll(List<Product> products) async {
     final results = _mnProduct.saveAll(
         'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -1324,10 +1337,9 @@ class Product {
     return results;
   }
 
-  /// <summary>
   /// Updates if the record exists, otherwise adds a new row
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> _upsert() async {
     return id = await _mnProduct.rawInsert(
         'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -1344,11 +1356,9 @@ class Product {
         ]);
   }
 
-  /// <summary>
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
         'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -1356,29 +1366,30 @@ class Product {
     return results;
   }
 
-  /// <summary>
   /// Deletes Product
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Product invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete || isDeleted) {
-      return _mnProduct.delete(QueryParams(whereString: 'id=$id'));
-    } else {
       return _mnProduct
-          .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 1});
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
+    } else {
+      return _mnProduct.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 1});
     }
   }
 
-  /// <summary>
   /// Recover Product>
-  /// </summary>
-  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered</returns>
+
+  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
   Future<BoolResult> recover([bool recoverChilds = true]) async {
     print('SQFENTITIY: recover Product invoked (id=$id)');
     {
-      return _mnProduct
-          .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 0});
+      return _mnProduct.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 0});
     }
   }
 
@@ -1826,8 +1837,8 @@ class ProductFilterBuilder extends SearchCriteria {
 
   /// <summary>
   /// Deletes List<Product> batch by query
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
@@ -1852,7 +1863,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns ProductObj if exist, otherwise returns null
-  /// <returns>List<Product></returns>
+  /// <returns>List<Product>
   Future<Product> toSingle([VoidCallback product(Product o)]) async {
     _pagesize = 1;
     _buildParameters();
@@ -1871,7 +1882,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
-  /// <returns>int</returns>
+  /// <returns>int
   Future<int> toCount([VoidCallback productCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
@@ -1884,7 +1895,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<Product>.
-  /// <returns>List<Product></returns>
+  /// <returns>List<Product>
   Future<List<Product>> toList(
       [VoidCallback productList(List<Product> o)]) async {
     final List<Product> productsData = List<Product>();
@@ -1918,7 +1929,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
-  /// <returns>List<dynamic></returns>
+  /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
     return await _obj._mnProduct.toList(qparams);
@@ -1982,7 +1993,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Primary Key List<int>.
-  /// <returns>List<int></returns>
+  /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
@@ -2243,7 +2254,7 @@ class Todo {
 
   /// returns Todo by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Todo if exist, otherwise returns null</returns>
+  /// <returns>returns Todo if exist, otherwise returns null
   Future<Todo> getById(int id) async {
     Todo todoObj;
     final data = await _mnTodo.getById(id);
@@ -2255,10 +2266,9 @@ class Todo {
     return todoObj;
   }
 
-  /// <summary>
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
       id = await _mnTodo.insert(this);
@@ -2268,19 +2278,16 @@ class Todo {
     return id;
   }
 
-  /// <summary>
   /// saveAs Todo. Returns a new Primary Key value of Todo
-  /// </summary>
-  /// <returns>Returns a new Primary Key value of Todo</returns>
+
+  /// <returns>Returns a new Primary Key value of Todo
   Future<int> saveAs() async {
     id = null;
     return save();
   }
 
-  /// <summary>
   /// saveAll method saves the sent List<Todo> as a batch in one transaction
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> saveAll(List<Todo> todos) async {
     final results = _mnTodo.saveAll(
         'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
@@ -2288,21 +2295,18 @@ class Todo {
     return results;
   }
 
-  /// <summary>
   /// Updates if the record exists, otherwise adds a new row
-  /// </summary>
-  /// <returns>Returns id</returns>
+
+  /// <returns>Returns id
   Future<int> _upsert() async {
     return id = await _mnTodo.rawInsert(
         'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
         [id, userId, title, completed]);
   }
 
-  /// <summary>
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// </summary>
-  /// <returns> Returns a <List<BoolResult>> </returns>
+  /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
         'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
@@ -2310,17 +2314,18 @@ class Todo {
     return results;
   }
 
-  /// <summary>
   /// Deletes Todo
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Todo invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete) {
-      return _mnTodo.delete(QueryParams(whereString: 'id=$id'));
-    } else {
       return _mnTodo
-          .updateBatch(QueryParams(whereString: 'id=$id'), {'isDeleted': 1});
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
+    } else {
+      return _mnTodo.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 1});
     }
   }
 
@@ -2739,8 +2744,8 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// <summary>
   /// Deletes List<Todo> batch by query
-  /// </summary>
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted</returns>
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
@@ -2758,7 +2763,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns TodoObj if exist, otherwise returns null
-  /// <returns>List<Todo></returns>
+  /// <returns>List<Todo>
   Future<Todo> toSingle([VoidCallback todo(Todo o)]) async {
     _pagesize = 1;
     _buildParameters();
@@ -2777,7 +2782,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
-  /// <returns>int</returns>
+  /// <returns>int
   Future<int> toCount([VoidCallback todoCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
@@ -2790,7 +2795,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<Todo>.
-  /// <returns>List<Todo></returns>
+  /// <returns>List<Todo>
   Future<List<Todo>> toList([VoidCallback todoList(List<Todo> o)]) async {
     final List<Todo> todosData = List<Todo>();
     final data = await toMapList();
@@ -2823,7 +2828,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
-  /// <returns>List<dynamic></returns>
+  /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
     return await _obj._mnTodo.toList(qparams);
@@ -2886,7 +2891,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns Primary Key List<int>.
-  /// <returns>List<int></returns>
+  /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
@@ -2977,6 +2982,831 @@ class TodoManager extends SqfEntityProvider {
 }
 
 //endregion TodoManager
+// region BleDevice
+class BleDevice {
+  BleDevice({this.macID, this.name}) {
+    setDefaultValues();
+  }
+  BleDevice.withFields(this.name) {
+    setDefaultValues();
+  }
+  BleDevice.withId(this.macID, this.name) {
+    setDefaultValues();
+  }
+  BleDevice.fromMap(Map<String, dynamic> o) {
+    macID = o['macID'] as String;
+    name = o['name'] as String;
+  }
+  // FIELDS
+  String macID;
+  String name;
+  // end FIELDS
+
+  static const bool _softDeleteActivated = false;
+  BleDeviceManager __mnBleDevice;
+
+  BleDeviceManager get _mnBleDevice {
+    return __mnBleDevice = __mnBleDevice ?? BleDeviceManager();
+  }
+
+  // methods
+  Map<String, dynamic> toMap({bool forQuery = false}) {
+    final map = Map<String, dynamic>();
+    if (macID != null) {
+      map['macID'] = macID;
+    }
+    if (name != null) {
+      map['name'] = name;
+    }
+
+    return map;
+  }
+
+  // methods
+  Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false]) async {
+    final map = Map<String, dynamic>();
+    if (macID != null) {
+      map['macID'] = macID;
+    }
+    if (name != null) {
+      map['name'] = name;
+    }
+
+    return map;
+  }
+
+  /// This method always returns Json String
+  String toJson() {
+    return json.encode(toMap());
+  }
+
+  /// This method always returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds());
+  }
+
+  List<dynamic> toArgs() {
+    return [macID, name];
+  }
+
+  static Future<List<BleDevice>> fromWebUrl(String url) async {
+    try {
+      final response = await http.get(url);
+      return await fromJson(response.body);
+    } catch (e) {
+      print(
+          'SQFENTITY ERROR BleDevice.fromWebUrl: ErrorMessage: ${e.toString()}');
+      return null;
+    }
+  }
+
+  static Future<List<BleDevice>> fromJson(String jsonBody) async {
+    final Iterable list = await json.decode(jsonBody) as Iterable;
+    var objList = List<BleDevice>();
+    try {
+      objList = list
+          .map((bledevice) =>
+              BleDevice.fromMap(bledevice as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print(
+          'SQFENTITY ERROR BleDevice.fromJson: ErrorMessage: ${e.toString()}');
+    }
+    return objList;
+  }
+
+  static Future<List<BleDevice>> fromObjectList(Future<List<dynamic>> o) async {
+    final bledevicesList = List<BleDevice>();
+    final data = await o;
+    for (int i = 0; i < data.length; i++) {
+      bledevicesList.add(BleDevice.fromMap(data[i] as Map<String, dynamic>));
+    }
+    return bledevicesList;
+  }
+
+  static List<BleDevice> fromMapList(List<Map<String, dynamic>> query) {
+    final List<BleDevice> bledevices = List<BleDevice>();
+    for (Map map in query) {
+      bledevices.add(BleDevice.fromMap(map as Map<String, dynamic>));
+    }
+    return bledevices;
+  }
+
+  /// returns BleDevice by ID if exist, otherwise returns null
+  /// <param name='macID'>Primary Key Value</param>
+  /// <returns>returns BleDevice if exist, otherwise returns null
+  Future<BleDevice> getById(String macid) async {
+    BleDevice bledeviceObj;
+    final data = await _mnBleDevice.getById(macid);
+    if (data.length != 0) {
+      bledeviceObj = BleDevice.fromMap(data[0] as Map<String, dynamic>);
+    } else {
+      bledeviceObj = null;
+    }
+    return bledeviceObj;
+  }
+
+  /// Saves the object. If the Primary Key (macID) field is null, returns Error.
+  /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null.
+  /// Call the saveAs() method if you do not want to save it when there is another row with the same macID
+
+  /// <returns>Returns BoolResult
+  Future<BoolResult> save() async {
+    final result = BoolResult(success: false);
+    try {
+      await _mnBleDevice.rawInsert(
+          'INSERT OR REPLACE INTO bleDevice (macID,  name)  VALUES (?,?)',
+          [macID, name]);
+      result.success = true;
+    } catch (e) {
+      result.errorMessage = e.toString();
+    }
+    return result;
+  }
+
+  /// saveAs BleDevice
+  /// Use this method if you do not want to update existing row when conflicts another row that have the same macID
+
+  /// Returns a BoolResult
+  Future<BoolResult> saveAs() async {
+    final result = BoolResult(success: false);
+    try {
+      await _mnBleDevice.rawInsert(
+          'INSERT INTO bleDevice (macID,  name)  VALUES (?,?)', [macID, name]);
+
+      result.success = true;
+    } catch (e) {
+      result.errorMessage = e.toString();
+    }
+    return result;
+  }
+
+  /// saveAll method saves the sent List<BleDevice> as a batch in one transaction
+  /// Returns a <List<BoolResult>>
+  Future<List<BoolResult>> saveAll(List<BleDevice> bledevices) async {
+    final results = _mnBleDevice.saveAll(
+        'INSERT OR REPLACE INTO bleDevice (macID,  name)  VALUES (?,?)',
+        bledevices);
+    return results;
+  }
+
+  /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
+  /// Returns a <List<BoolResult>>
+  Future<List<BoolResult>> upsertAll(List<BleDevice> bledevices) async {
+    final results = await _mnBleDevice.rawInsertAll(
+        'INSERT OR REPLACE INTO bleDevice (macID,  name)  VALUES (?,?)',
+        bledevices);
+    return results;
+  }
+
+  /// Deletes BleDevice
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    print('SQFENTITIY: delete BleDevice invoked (macID=$macID)');
+    if (!_softDeleteActivated || hardDelete) {
+      return _mnBleDevice
+          .delete(QueryParams(whereString: 'macID=?', whereArguments: [macID]));
+    } else {
+      return _mnBleDevice.updateBatch(
+          QueryParams(whereString: 'macID=?', whereArguments: [macID]),
+          {'isDeleted': 1});
+    }
+  }
+
+  //private BleDeviceFilterBuilder _Select;
+  BleDeviceFilterBuilder select(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return BleDeviceFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect;
+  }
+
+  BleDeviceFilterBuilder distinct(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return BleDeviceFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect
+      ..qparams.distinct = true;
+  }
+
+  void setDefaultValues() {}
+  //end methods
+}
+// endregion bledevice
+
+// region BleDeviceField
+class BleDeviceField extends SearchCriteria {
+  BleDeviceField(this.bledeviceFB) {
+    param = DbParameter();
+  }
+  DbParameter param;
+  String _waitingNot = '';
+  BleDeviceFilterBuilder bledeviceFB;
+
+  BleDeviceField get not {
+    _waitingNot = ' NOT ';
+    return this;
+  }
+
+  BleDeviceFilterBuilder equals(var pValue) {
+    param.expression = '=';
+    bledeviceFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bledeviceFB.parameters, param, SqlSyntax.EQuals,
+            bledeviceFB._addedBlocks)
+        : setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.NotEQuals, bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder isNull() {
+    bledeviceFB._addedBlocks = setCriteria(
+        0,
+        bledeviceFB.parameters,
+        param,
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder contains(dynamic pValue) {
+    if (pValue != null) {
+      bledeviceFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}%',
+          bledeviceFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          bledeviceFB._addedBlocks);
+      _waitingNot = '';
+      bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+          bledeviceFB._addedBlocks.retVal;
+    }
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder startsWith(dynamic pValue) {
+    if (pValue != null) {
+      bledeviceFB._addedBlocks = setCriteria(
+          '${pValue.toString()}%',
+          bledeviceFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          bledeviceFB._addedBlocks);
+      _waitingNot = '';
+      bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+          bledeviceFB._addedBlocks.retVal;
+      bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+          bledeviceFB._addedBlocks.retVal;
+    }
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder endsWith(dynamic pValue) {
+    if (pValue != null) {
+      bledeviceFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}',
+          bledeviceFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          bledeviceFB._addedBlocks);
+      _waitingNot = '';
+      bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+          bledeviceFB._addedBlocks.retVal;
+    }
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    if (pFirst != null && pLast != null) {
+      bledeviceFB._addedBlocks = setCriteria(
+          pFirst,
+          bledeviceFB.parameters,
+          param,
+          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          bledeviceFB._addedBlocks,
+          pLast);
+    } else if (pFirst != null) {
+      if (_waitingNot != '') {
+        bledeviceFB._addedBlocks = setCriteria(pFirst, bledeviceFB.parameters,
+            param, SqlSyntax.LessThan, bledeviceFB._addedBlocks);
+      } else {
+        bledeviceFB._addedBlocks = setCriteria(pFirst, bledeviceFB.parameters,
+            param, SqlSyntax.GreaterThanOrEquals, bledeviceFB._addedBlocks);
+      }
+    } else if (pLast != null) {
+      if (_waitingNot != '') {
+        bledeviceFB._addedBlocks = setCriteria(pLast, bledeviceFB.parameters,
+            param, SqlSyntax.GreaterThan, bledeviceFB._addedBlocks);
+      } else {
+        bledeviceFB._addedBlocks = setCriteria(pLast, bledeviceFB.parameters,
+            param, SqlSyntax.LessThanOrEquals, bledeviceFB._addedBlocks);
+      }
+    }
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder greaterThan(dynamic pValue) {
+    param.expression = '>';
+    bledeviceFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.GreaterThan, bledeviceFB._addedBlocks)
+        : setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder lessThan(dynamic pValue) {
+    param.expression = '<';
+    bledeviceFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bledeviceFB.parameters, param, SqlSyntax.LessThan,
+            bledeviceFB._addedBlocks)
+        : setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    param.expression = '>=';
+    bledeviceFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, bledeviceFB._addedBlocks)
+        : setCriteria(pValue, bledeviceFB.parameters, param, SqlSyntax.LessThan,
+            bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder lessThanOrEquals(dynamic pValue) {
+    param.expression = '<=';
+    bledeviceFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, bledeviceFB._addedBlocks)
+        : setCriteria(pValue, bledeviceFB.parameters, param,
+            SqlSyntax.GreaterThan, bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+
+  BleDeviceFilterBuilder inValues(var pValue) {
+    bledeviceFB._addedBlocks = setCriteria(
+        pValue,
+        bledeviceFB.parameters,
+        param,
+        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        bledeviceFB._addedBlocks);
+    _waitingNot = '';
+    bledeviceFB._addedBlocks.needEndBlock[bledeviceFB._blockIndex] =
+        bledeviceFB._addedBlocks.retVal;
+    return bledeviceFB;
+  }
+}
+// endregion BleDeviceField
+
+// region BleDeviceFilterBuilder
+class BleDeviceFilterBuilder extends SearchCriteria {
+  BleDeviceFilterBuilder(BleDevice obj) {
+    whereString = '';
+    qparams = QueryParams();
+    parameters = List<DbParameter>();
+    orderByList = List<String>();
+    groupByList = List<String>();
+    _addedBlocks = AddedBlocks(List<bool>(), List<bool>());
+    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock.add(false);
+    _pagesize = 0;
+    _page = 0;
+    _obj = obj;
+  }
+  AddedBlocks _addedBlocks;
+  int _blockIndex = 0;
+  List<DbParameter> parameters;
+  List<String> orderByList;
+  BleDevice _obj;
+  QueryParams qparams;
+  int _pagesize;
+  int _page;
+
+  BleDeviceFilterBuilder get and {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' AND ';
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder get or {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' OR ';
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder get startBlock {
+    _addedBlocks.waitingStartBlock.add(true);
+    _addedBlocks.needEndBlock.add(false);
+    _blockIndex++;
+    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    return this;
+  }
+
+  BleDeviceFilterBuilder where(String whereCriteria) {
+    if (whereCriteria != null && whereCriteria != '') {
+      final DbParameter param = DbParameter();
+      _addedBlocks =
+          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder page(int page, int pagesize) {
+    if (page > 0) _page = page;
+    if (pagesize > 0) _pagesize = pagesize;
+    return this;
+  }
+
+  BleDeviceFilterBuilder top(int count) {
+    if (count > 0) {
+      _pagesize = count;
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder get endBlock {
+    if (_addedBlocks.needEndBlock[_blockIndex]) {
+      parameters[parameters.length - 1].whereString += ' ) ';
+    }
+    _addedBlocks.needEndBlock.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _blockIndex--;
+    return this;
+  }
+
+  BleDeviceFilterBuilder orderBy(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add(argFields);
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') orderByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder orderByDesc(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add('$argFields desc ');
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') orderByList.add(' $s desc ');
+        }
+      }
+    }
+    return this;
+  }
+
+  BleDeviceFilterBuilder groupBy(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        groupByList.add(' $argFields ');
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') groupByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  BleDeviceField setField(BleDeviceField field, String colName, DbType dbtype) {
+    return BleDeviceField(this)
+      ..param = DbParameter(
+          dbType: dbtype,
+          columnName: colName,
+          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+  }
+
+  BleDeviceField _macID;
+  BleDeviceField get macID {
+    return _macID = setField(_macID, 'macID', DbType.integer);
+  }
+
+  BleDeviceField _name;
+  BleDeviceField get name {
+    return _name = setField(_name, 'name', DbType.text);
+  }
+
+  bool _getIsDeleted;
+
+  void _buildParameters() {
+    if (_page > 0 && _pagesize > 0) {
+      qparams
+        ..limit = _pagesize
+        ..offset = (_page - 1) * _pagesize;
+    } else {
+      qparams
+        ..limit = _pagesize
+        ..offset = _page;
+    }
+    for (DbParameter param in parameters) {
+      if (param.columnName != null) {
+        if (param.value is List) {
+          param.value = param.value
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .toString();
+          whereString += param.whereString
+              .replaceAll('{field}', param.columnName)
+              .replaceAll('?', param.value.toString());
+          param.value = null;
+        } else {
+          whereString +=
+              param.whereString.replaceAll('{field}', param.columnName);
+        }
+        switch (param.dbType) {
+          case DbType.bool:
+            if (param.value != null) param.value = param.value == true ? 1 : 0;
+            break;
+          default:
+        }
+
+        if (param.value != null) whereArguments.add(param.value);
+        if (param.value2 != null) whereArguments.add(param.value2);
+      } else {
+        whereString += param.whereString;
+      }
+    }
+    if (BleDevice._softDeleteActivated) {
+      if (whereString != '') {
+        whereString =
+            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
+      } else if (!_getIsDeleted) {
+        whereString = 'ifnull(isDeleted,0)=0';
+      }
+    }
+
+    if (whereString != '') {
+      qparams.whereString = whereString;
+    }
+    qparams
+      ..whereArguments = whereArguments
+      ..groupBy = groupByList.join(',')
+      ..orderBy = orderByList.join(',');
+  }
+
+  /// <summary>
+  /// Deletes List<BleDevice> batch by query
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    _buildParameters();
+    var r = BoolResult();
+    if (BleDevice._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnBleDevice.updateBatch(qparams, {'isDeleted': 1});
+    } else {
+      r = await _obj._mnBleDevice.delete(qparams);
+    }
+    return r;
+  }
+
+  Future<BoolResult> update(Map<String, dynamic> values) {
+    _buildParameters();
+    return _obj._mnBleDevice.updateBatch(qparams, values);
+  }
+
+  /// This method always returns BleDeviceObj if exist, otherwise returns null
+  /// <returns>List<BleDevice>
+  Future<BleDevice> toSingle([VoidCallback bledevice(BleDevice o)]) async {
+    _pagesize = 1;
+    _buildParameters();
+    final objFuture = _obj._mnBleDevice.toList(qparams);
+    final data = await objFuture;
+    BleDevice retVal;
+    if (data.isNotEmpty) {
+      retVal = BleDevice.fromMap(data[0] as Map<String, dynamic>);
+    } else {
+      retVal = null;
+    }
+    if (bledevice != null) {
+      bledevice(retVal);
+    }
+    return retVal;
+  }
+
+  /// This method always returns int.
+  /// <returns>int
+  Future<int> toCount([VoidCallback bledeviceCount(int c)]) async {
+    _buildParameters();
+    qparams.selectColumns = ['COUNT(1) AS CNT'];
+    final bledevicesFuture = await _obj._mnBleDevice.toList(qparams);
+    final int count = bledevicesFuture[0]['CNT'] as int;
+    if (bledeviceCount != null) {
+      bledeviceCount(count);
+    }
+    return count;
+  }
+
+  /// This method always returns List<BleDevice>.
+  /// <returns>List<BleDevice>
+  Future<List<BleDevice>> toList(
+      [VoidCallback bledeviceList(List<BleDevice> o)]) async {
+    final List<BleDevice> bledevicesData = List<BleDevice>();
+    final data = await toMapList();
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      bledevicesData.add(BleDevice.fromMap(data[i] as Map<String, dynamic>));
+    }
+    if (bledeviceList != null) bledeviceList(bledevicesData);
+    return bledevicesData;
+  }
+
+  /// This method always returns Json String
+  Future<String> toJson() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns List<dynamic>.
+  /// <returns>List<dynamic>
+  Future<List<dynamic>> toMapList() async {
+    _buildParameters();
+    return await _obj._mnBleDevice.toList(qparams);
+  }
+
+  /// Returns List<DropdownMenuItem<BleDevice>>
+  Future<List<DropdownMenuItem<BleDevice>>> toDropDownMenu(
+      String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<BleDevice>> o)]) async {
+    _buildParameters();
+    final bledevicesFuture = _obj._mnBleDevice.toList(qparams);
+
+    final data = await bledevicesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<BleDevice>> items = List()
+      ..add(DropdownMenuItem(
+        value: BleDevice(),
+        child: Text('Select BleDevice'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: BleDevice.fromMap(data[i] as Map<String, dynamic>),
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// Returns List<DropdownMenuItem<int>>
+  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
+      String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
+    _buildParameters();
+    qparams.selectColumns = ['macID', displayTextColumn];
+    final bledevicesFuture = _obj._mnBleDevice.toList(qparams);
+
+    final data = await bledevicesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<int>> items = List()
+      ..add(DropdownMenuItem(
+        value: 0,
+        child: Text('Select BleDevice'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: data[i]['macID'] as int,
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// This method always returns Primary Key List<int>.
+  /// <returns>List<int>
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
+    if (buildParameters) _buildParameters();
+    final List<int> macIDData = List<int>();
+    qparams.selectColumns = ['macID'];
+    final macIDFuture = await _obj._mnBleDevice.toList(qparams);
+
+    final int count = macIDFuture.length;
+    for (int i = 0; i < count; i++) {
+      macIDData.add(macIDFuture[i]['macID'] as int);
+    }
+    return macIDData;
+  }
+
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
+  Future<List<dynamic>> toListObject(
+      [VoidCallback listObject(List<dynamic> o)]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnBleDevice.toList(qparams);
+
+    final List<dynamic> objectsData = List<dynamic>();
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i]);
+    }
+    if (listObject != null) {
+      listObject(objectsData);
+    }
+    return objectsData;
+  }
+
+  /// Returns List<String> for selected first column
+  /// Sample usage: await BleDevice.select(columnsToSelect: ['columnName']).toListString()
+  Future<List<String>> toListString(
+      [VoidCallback listString(List<String> o)]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnBleDevice.toList(qparams);
+
+    final List<String> objectsData = List<String>();
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+    }
+    if (listString != null) {
+      listString(objectsData);
+    }
+    return objectsData;
+  }
+}
+// endregion BleDeviceFilterBuilder
+
+// region BleDeviceFields
+class BleDeviceFields {
+  static TableField _fMacID;
+  static TableField get macid {
+    return _fMacID =
+        _fMacID ?? SqlSyntax.setField(_fMacID, 'macid', DbType.integer);
+  }
+
+  static TableField _fName;
+  static TableField get name {
+    return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
+  }
+}
+// endregion BleDeviceFields
+
+//region BleDeviceManager
+class BleDeviceManager extends SqfEntityProvider {
+  BleDeviceManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  static String _tableName = 'bleDevice';
+  static String _colId = 'macID';
+}
+
+//endregion BleDeviceManager
 /// Region SEQUENCE IdentitySequence
 class IdentitySequence {
   /// Assigns a new value when it is triggered and returns the new value
