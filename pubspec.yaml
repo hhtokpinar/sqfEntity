@@ -15,8 +15,8 @@ dependencies:
   intl: ^0.15.7
   http: ^0.12.0+1 
   cached_network_image: ^1.1.1
-  sqfentity: ^1.2.0
-  sqfentity_gen: ^1.1.0
+  sqfentity: ^1.2.0+2
+  sqfentity_gen: ^1.1.0+3
  
     
 
