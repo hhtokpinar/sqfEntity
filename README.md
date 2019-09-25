@@ -28,8 +28,8 @@ Some files in the project:
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.2.0
-      sqfentity_gen: ^1.1.0
+      sqfentity: ^1.2.0+1
+      sqfentity_gen: ^1.1.0+3
 
     dev_dependencies:
       build_runner: ^1.6.5
