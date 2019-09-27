@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity_sample/model/model.dart';
 import 'package:sqfentity_sample/view/categoryList.dart';
 import 'package:sqfentity_sample/tools/popup.dart';
 
@@ -105,12 +104,7 @@ class HomeState extends State<Home> {
 
         break;
       case 2:
-        final bool isInitialized = await MyDbModel().initializeDB();
-        if (isInitialized == true) {
           runSamples();
-        } else {
-          print('Something went wrong. Please check DEBUG CONSOLE for errors');
-        }
         UITools(context).alertDialog(
             'runSamples() ran. Go DEBUG CONSOLE for see results');
         break;

@@ -8,22 +8,15 @@ import 'model/model.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Run Entity Model samples
-  // ATTENTION! when the software/app is started, you must check the database was it initialized.
-  // If needed, initilizeDb method runs CREATE / ALTER TABLE query for you.
-  final bool isInitialized = await MyDbModel().initializeDB();
-  if (isInitialized == true)
+  
+  // ATTENTION! when the software/app is started, database will initialized.
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
-  {
-    await runSamples();
-    runApp(MyApp());
-  }
+
+  await runSamples();
+  runApp(MyApp());
 }
 
-
 Future<bool> runSamples() async {
-  
-
   // add some products
   await addSomeProducts();
 
@@ -108,7 +101,7 @@ flutter:
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
   final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'chinook.db', bundledDatabasePath: 'assets/chinook.sqlite');
+      databaseName: 'mynewdb.db', bundledDatabasePath: 'assets/sampleORM.db');
 
 // STEP 3
 // Run this function to convert the model to annotation
@@ -147,7 +140,6 @@ flutter:
 }
 
 Future<String> createSqfEntityModelString() async {
-  
   // To get the class from the clipboard, run it separately for each object
   // Create Entity Model String of model from file at '/lib/model/model.dart'
   // and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
