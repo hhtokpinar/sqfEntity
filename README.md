@@ -28,7 +28,7 @@ Some files in the project:
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.2.0+4
+      sqfentity: ^1.2.0+6
       sqfentity_gen: ^1.1.0+4
 
     dev_dependencies:
@@ -223,24 +223,17 @@ Note: You can see this sample import in the createModelFromDatabaseSample() func
   Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
 ![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/generate_model.jpg)
   
-### Database initializer async method
-When the software/app is started, you must check the database was it initialized.
-If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
 
-    final bool isInitialized = await MyDbModel().initializeDB();
-      if (isInitialized == true)
-      {
+### Database initializer async method
+When the application was initialize, initializeDB() method is performed automatically
+initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
+
+    void main(List<String> args) async {
         runSamples();
-        // TO DO
-        // ex: runApp(MyApp());
-      } 
-      else {
-       // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
-       // TO DO
+        // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
       }
     }
     
- If result is **true**, the database is ready to use
 
 ## That's Great! now we can use our created new models
 
