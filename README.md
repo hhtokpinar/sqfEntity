@@ -19,7 +19,7 @@ Some files in the project:
     1. main.dart                    : Startup file contains sample methods for using sqfEntity
     2. model / model.dart           : Declare and modify your database model
     3. model / model.g.dart         : Sample created model for examples
-    4. assets / sample.db           : Sample db if you want to use an exiting db
+    4. assets / chinook.sqlite      : Sample db if you want to use an exiting database or create model from database
     5. app.dart                     : Sample App for display created model. 
                                       (Updating frequently. Please click 'Watch' to follow updates)
     6. LICENSE.txt                  : see this file for License Terms
