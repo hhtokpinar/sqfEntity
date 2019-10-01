@@ -493,7 +493,8 @@ and then Todo().saveAll(todosList) method saves all data in your local database
  ### EXAMPLE 9.1: Execute custom SQL command on database
   
     final sql = "UPDATE product set isActive=1 where isActive=1";
-    MyDbModel().execSQL(sql)
+    final result = await MyDbModel().execSQL(sql);
+    print(result.toString());
 
 result:
 
@@ -503,7 +504,8 @@ result:
 ### EXAMPLE 9.2: Execute custom SQL command List on database
  
     final sqlList=List<String>();
-    MyDbModel().execSQLList(sqlList);
+    final result = await MyDbModel().execSQLList(sqlList);
+    print(result.toString());
 
 result:
 
