@@ -101,7 +101,7 @@ flutter:
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
   final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'mynewdb.db', bundledDatabasePath: 'assets/sampleORM.db');
+      databaseName: 'mynewdb.db', bundledDatabasePath: 'assets/chinook.sqlite');
 
 // STEP 3
 // Run this function to convert the model to annotation
@@ -881,7 +881,7 @@ void sampleModelConvert() {
     ..sequences = [seq]
     ..databaseTables = [
       SqfEntityTableBase()
-        ..dbModel = 'myyymodelll'
+        ..dbModel = 'sampleModel'
         ..defaultJsonUrl = 'none'
         ..fields = [
           SqfEntityFieldBase('name', DbType.text)..defaultValue = 'test',
