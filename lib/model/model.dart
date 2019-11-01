@@ -43,6 +43,7 @@ const tableProduct = SqfEntityTable(
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
+      //SqfEntityField('imageUrl2', DbType.text),
       
     ]);
 
