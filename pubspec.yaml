@@ -15,8 +15,8 @@ dependencies:
   intl: ^0.15.7
   http: ^0.12.0+1 
   cached_network_image: ^1.1.1
-  sqfentity: ^1.2.0+6
-  sqfentity_gen: ^1.1.0+4
+  sqfentity: ^1.2.1
+  sqfentity_gen: ^1.1.1
  
     
 
@@ -24,7 +24,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  #sqfentity_gen: ^1.0.3+5
   build_runner: ^1.6.5
   build_verify: ^1.1.0
   
