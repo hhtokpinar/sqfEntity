@@ -5,6 +5,8 @@
 
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
 
+SqfEntity also generates add/edit forms with validations and special controls (DropDown List, DateTime pickers, Checkboxes.. etc) for your table. 
+
 Leave the job to SqfEntitiy for CRUD operations. Do easily and faster adding tables, adding columns, defining multiple tables, soft deleting, recovery, syncronize data from the web and more with the help of SqfEntityTable class.
 
 If you have a bundled database, you can use it or EntityBase will create a new database automatically for you.
