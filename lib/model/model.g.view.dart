@@ -202,7 +202,6 @@ class ProductAddState extends State {
   final txtDatetime = TextEditingController();
   final txtTimeForDatetime = TextEditingController();
   final txtDate = TextEditingController();
-  final txtTimeForDate = TextEditingController();
 
   @override
   void initState() {
@@ -220,8 +219,6 @@ class ProductAddState extends State {
 
     txtDate.text =
         product.date == null ? '' : UITools.convertDate(product.date);
-    txtTimeForDate.text =
-        product.date == null ? '' : UITools.convertTime(product.date);
 
     super.initState();
   }
@@ -453,7 +450,7 @@ class ProductAddState extends State {
           minTime: DateTime.parse('2015-01-01'),
           maxTime: DateTime.now().add(Duration(days: 365)),
           onConfirm: (sqfSelectedDate) {
-        txtDate.text = UITools.convertTime(sqfSelectedDate);
+        txtDate.text = UITools.convertDate(sqfSelectedDate);
         setState(() {
           product.date = sqfSelectedDate;
         });
