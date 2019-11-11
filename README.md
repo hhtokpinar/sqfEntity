@@ -77,8 +77,8 @@ Write the following statement for the file to be created
 
 
 *Table 1: Category*
-
-    // You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+    
     @SqfEntityBuilderForm(tableCategory,
     formListTitleField: 'name' // when formListTitleField is null, sqfentity gets first text field for this property
     , hasSubItems: true // when hasSubItems is true, goes to sub items instead of detail when click on item
@@ -103,8 +103,8 @@ in this case it is possible to recover a deleted item using the recover() method
 If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
 
 *Table 2: Product*
-
-    // You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+    
     @SqfEntityBuilderForm(tableProduct, formListTitleField: 'name', // when formListTitleField is null, sqfentity gets first text field for this property
     formListSubTitleField: 'description', // optional 
     )
