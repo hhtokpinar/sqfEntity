@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity_sample/view/categoryList.dart';
-import 'package:sqfentity_sample/tools/popup.dart';
-
-import './tools/helper.dart';
 import 'main.dart';
+import 'model/controller.dart';
+import 'tools/helper.dart';
+import 'tools/popup.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -88,7 +87,9 @@ class HomeState extends State<Home> {
           )
         ],
       ),
-      body: CategoryList(),
+      body: 
+      //Text('HELLO')
+       MainController(),
     );
   }
 

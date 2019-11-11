@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sqfentity_sample/tools/helper.dart';
+import 'helper.dart';
 
 /*
 

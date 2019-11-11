@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqfentity_sample/tools/helper.dart';
+import 'helper.dart';
 
 class SlideMenu extends StatefulWidget {
   SlideMenu({this.child, this.menuItems});

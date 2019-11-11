@@ -5,10 +5,33 @@ import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
 
+/*
+
+------------------------------------   GETTING STARTED  ------------------------------------------
+
+This project is a starting point for a SqfEntity ORM for database application.
+Some files in the project:
+
+    1. main.dart (this file)          : Startup file contains sample methods for using sqfEntity
+    2. model / model.dart             : Declare and modify your database model (CAN BE MODIFIED)
+    3. model / model.g.dart           : Sample generated model for examples (DO NOT MODIFY BY HAND)
+    4. model / model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
+    5. model / controller.dart        : main controller that provides access to created form views from
+                                        the application main page (CAN BE MODIFIED)
+    6. model / view.list.dart         : The Sample for List View that your saved table items (CAN BE MODIFIED)
+    7. model / view.detail.dart       : The Sample for Detail View that your saved table items (CAN BE MODIFIED)
+    8. sample_filter / *.dart         : Sample Widget showing how to filter toList() at runtime
+    9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
+                                        model from database
+    10. app.dart                      : Sample App for display created model. 
+                                        (Updating frequently. Please click 'Watch' to follow updates at: 
+                                        https://github.com/hhtokpinar/sqfEntity)
+
+*/
+
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  
   // ATTENTION! when the software/app is started, database will initialized.
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
 
@@ -17,6 +40,8 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
+
+
   // add some products
   await addSomeProducts();
 
@@ -67,9 +92,13 @@ Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
   printList(list);
 }
 
-void printList(List<dynamic> list) {
+void printList(List<dynamic> list, {bool isMap = false}) {
   for (final o in list) {
-    print(o.toString());
+    if (isMap) {
+      print(o.toMap());
+    } else {
+      print(o.toString());
+    }
   }
 }
 
@@ -101,7 +130,7 @@ flutter:
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
   final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'mynewdb.db', bundledDatabasePath: 'assets/chinook.sqlite');
+      databaseName: 'chinook.db', bundledDatabasePath: 'assets/chinook.sqlite');
 
 // STEP 3
 // Run this function to convert the model to annotation
@@ -115,8 +144,8 @@ flutter:
       Model were created succesfuly and set to the Clipboard. 
 
       STEP 1:
-      Open model.dart file in lib/model folder and paste models after following line
-      part 'model.g.dart';
+      Open model.dart file in lib/model folder and paste (Ctrl+V) models after following line
+      part 'model.g.view.dart';
 
       STEP 2:
       Go Terminal Window and run command below
@@ -142,16 +171,11 @@ flutter:
 Future<String> createSqfEntityModelString() async {
   // To get the class from the clipboard, run it separately for each object
   // Create Entity Model String of model from file at '/lib/model/model.dart'
-  // and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard)
+  /// and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard into `model.g.dart`)
 
   final model = SqfEntityModelConverter(myDbModel).toModelBase();
   final strModel = StringBuffer()
-    ..writeln('''import 'dart:convert';
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:sqfentity/sqfentity.dart';
-import 'package:sqfentity_base/sqfentity_base.dart';''')
+    ..writeln('part of \'model.dart\';')
     ..writeln(SqfEntityConverter(model).createModelDatabase())
     ..writeln(SqfEntityConverter(model).createEntites());
 
@@ -647,7 +671,7 @@ Future<void> samples7() async {
   // EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {});
   final product = await Product().getById(3);
   if (product != null) {
-    final category = await product.getCategory();
+    final category = await product.getCategoryByCategoryId();
     print(
         'EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ');
 
@@ -657,7 +681,7 @@ Future<void> samples7() async {
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
   for (var category in categoryList) {
-    final productList = await category.getProducts().toList();
+    final productList = await category.getProductsBycategoryId().toList();
     print(
         'EXAMPLE 7.2.${category.id}: Products of \'${category.name}\' listing \n-> category.getProducts((productList) {}); ');
     // PRINT RESULTS TO DEBUG CONSOLE
@@ -781,14 +805,7 @@ Future<void> samples11() async {
 
 /// add new categories if not any Category
 Future<void> addSomeProducts() async {
-  final category = await Category().select().toSingle();
-  if (category == null) {
-    await addCategories();
-  } else {
-    print(
-        'There is already categories in the database.. addCategories will not run');
-  }
-
+  await addCategories();
   // add new products if not any Product..
   final product = await Product().select().toSingle();
   if (product == null) {
@@ -801,102 +818,124 @@ Future<void> addSomeProducts() async {
 }
 
 Future<void> addCategories() async {
-  await Category(name: 'Notebooks', isActive: true).save();
-  await Category.withFields('Ultrabooks', true, false).save();
+  final category = await Category().select().toSingle();
+  if (category == null) {
+    await Category(name: 'Notebooks', isActive: true).save();
+    await Category(name: 'Ultrabooks', isActive: true).save();
+  } else {
+    print(
+        'There is already categories in the database.. addCategories will not run');
+  }
 }
 
 Future<bool> addProducts() async {
   final productList = await Product().select(getIsDeleted: true).toList();
   if (productList.length < 15) {
     // some dummy rows for select (id:1- to 15)
-    await Product.withFields(
-            'Notebook 12"', '128 GB SSD i7', 6899, true, 1, 0, '', false)
-        .save();
-    await Product.withFields(
-            'Notebook 12"', '256 GB SSD i7', 8244, true, 1, 0, '', false)
-        .save();
-    await Product.withFields(
-            'Notebook 12"', '512 GB SSD i7', 9214, false, 1, 0, '', false)
+    await Product(
+            name: 'Notebook 12"',
+            description: '128 GB SSD i7',
+            price: 6899,
+            categoryId: 1)
         .save();
 
-    await Product.withFields(
-            'Notebook 13"', '128 GB SSD', 8500, true, 1, 0, '', false)
+    await Product(
+            name: 'Notebook 12"',
+            description: '256 GB SSD i7',
+            price: 8244,
+            categoryId: 1)
         .save();
-    await Product.withFields(
-            'Notebook 13"', '256 GB SSD', 9900, true, 1, 0, '', false)
-        .save();
-    await Product.withFields(
-            'Notebook 13"', '512 GB SSD', 11000, null, 1, 0, '', false)
-        .save();
-
-    await Product.withFields(
-            'Notebook 15"', '128 GB SSD', 8999, null, 1, 0, '', false)
-        .save();
-    await Product.withFields(
-            'Notebook 15"', '256 GB SSD', 10499, null, 1, 0, '', false)
-        .save();
-    await Product.withFields(
-            'Notebook 15"', '512 GB SSD', 11999, true, 1, 0, '', false)
+    await Product(
+            name: 'Notebook 12"',
+            description: '512 GB SSD i7',
+            price: 9214,
+            categoryId: 1)
         .save();
 
-    await Product.withFields(
-            'Ultrabook 13"', '128 GB SSD i5', 9954, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 13"',
+            description: '128 GB SSD',
+            price: 8500,
+            categoryId: 1)
         .save();
-    await Product.withFields(
-            'Ultrabook 13"', '256 GB SSD i5', 11154, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 13"',
+            description: '256 GB SSD',
+            price: 9900,
+            categoryId: 1)
         .save();
-    await Product.withFields(
-            'Ultrabook 13"', '512 GB SSD i5', 13000, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 13"',
+            description: '512 GB SSD',
+            price: 11000,
+            categoryId: 1)
         .save();
 
-    await Product.withFields(
-            'Ultrabook 15"', '128 GB SSD i7', 11000, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 15"',
+            description: '128 GB SSD',
+            price: 8999,
+            categoryId: 1)
         .save();
-    await Product.withFields(
-            'Ultrabook 15"', '256 GB SSD i7', 12000, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 15"',
+            description: '256 GB SSD',
+            price: 10499,
+            categoryId: 1)
         .save();
-    await Product.withFields(
-            'Ultrabook 15"', '512 GB SSD i7', 14000, true, 2, 0, '', false)
+    await Product(
+            name: 'Notebook 15"',
+            description: '512 GB SSD',
+            price: 11999,
+            categoryId: 1)
+        .save();
+
+    await Product(
+            name: 'Ultrabook 13"',
+            description: '128 GB SSD i5',
+            price: 9954,
+            categoryId: 2)
+        .save();
+    await Product(
+            name: 'Ultrabook 13"',
+            description: '256 GB SSD i5',
+            price: 11154,
+            categoryId: 2)
+        .save();
+    await Product(
+            name: 'Ultrabook 13"',
+            description: '512 GB SSD i5',
+            price: 13000,
+            categoryId: 2)
+        .save();
+
+    await Product(
+            name: 'Ultrabook 15"',
+            description: '128 GB SSD i7',
+            price: 11000,
+            categoryId: 2)
+        .save();
+    await Product(
+            name: 'Ultrabook 15"',
+            description: '256 GB SSD i7',
+            price: 12000,
+            categoryId: 2)
+        .save();
+    await Product(
+            name: 'Ultrabook 15"',
+            description: '512 GB SSD i7',
+            price: 14000,
+            categoryId: 2)
         .save();
     print('added 15 new products');
 
     // add a few dummy products for delete (id:from 16 to 20)
-    await Product.withFields('Product 1', '', 0, true, 2, 0, '', false).save();
-    await Product.withFields('Product 2', '', 0, true, 2, 0, '', false).save();
-    await Product.withFields('Product 3', '', 0, true, 2, 0, '', false).save();
-    await Product.withFields('Product 4', '', 0, true, 2, 0, '', false).save();
-    await Product.withFields('Product 5', '', 0, true, 2, 0, '', false).save();
+    await Product(name: 'Product 1').save();
+    await Product(name: 'Product 2').save();
+    await Product(name: 'Product 3').save();
+    await Product(name: 'Product 4').save();
+    await Product(name: 'Product 5').save();
     print('added 5 dummy products');
   }
   return true;
 }
-
-void sampleModelConvert() {
-  final seq = SqfEntitySequenceBase()
-    ..sequenceName = 'sample'
-    ..init();
-
-  final model = MyDb()
-    ..databaseName = 'sampleORM.db'
-    ..sequences = [seq]
-    ..databaseTables = [
-      SqfEntityTableBase()
-        ..dbModel = 'sampleModel'
-        ..defaultJsonUrl = 'none'
-        ..fields = [
-          SqfEntityFieldBase('name', DbType.text)..defaultValue = 'test',
-          SqfEntityFieldBase('identity', DbType.text, sequencedBy: seq)
-            ..defaultValue = 'test'
-        ]
-        ..primaryKeyName = 'id'
-        ..primaryKeyType = PrimaryKeyType.integer_auto_incremental
-        ..tableName = 'category'
-        ..useSoftDeleting = true
-        ..init()
-    ];
-
-  final modelStr = SqfEntityConverter(model).createEntites();
-  print(modelStr);
-}
-
-class MyDb extends SqfEntityModelBase {}
