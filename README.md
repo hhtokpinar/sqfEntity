@@ -36,7 +36,7 @@ Some files in the project:
     5. model / model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
     6. model / view.list.dart         : The View that List your saved table items (CAN BE MODIFIED)
     7. model / view.detail.dart       : The View that List your saved table items (CAN BE MODIFIED)
-    8. sample_filter / *.dart         : Sample Widget showing how to filter toList() at runtime
+    8. sample_advanced_form / *.dart  : Sample Widget showing how to filter toList() at runtime
     9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
                                         model from database
     10. app.dart                      : Sample App for display created model. 
