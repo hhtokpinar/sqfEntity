@@ -1,0 +1,139 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
+import '../tools/helper.dart';
+import 'view.list.dart';
+
+part 'model.g.dart';
+part 'model.g.view.dart';
+
+// STEP 1: define your tables as shown in the example Classes below.
+
+// Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+@SqfEntityBuilderForm(tableCategory,
+    formListTitleField:
+        'name' // when formListTitleField is null, sqfentity gets first text field for this property
+    ,
+    hasSubItems:
+        true // when hasSubItems is true, goes to sub items instead of detail when click on item
+    )
+
+// Define the 'tableCategory' constant as SqfEntityTable for the category table
+const tableCategory = SqfEntityTable(
+    tableName: 'category',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    useSoftDeleting: false,
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+    modelName:
+        null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
+    // declare fields
+    fields: [
+      SqfEntityField('name', DbType.text, formIsRequired: true),
+      SqfEntityField('isActive', DbType.bool, defaultValue: true),
+    ]);
+
+// You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+@SqfEntityBuilderForm(
+  tableProduct,
+  formListTitleField:
+      'name', // when formListTitleField is null, sqfentity gets first text field for this property
+  formListSubTitleField: 'description', // optional
+)
+// Define the 'tableProduct' constant as SqfEntityTable for the product table
+const tableProduct = SqfEntityTable(
+    tableName: 'product',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    useSoftDeleting: true,
+    fields: [
+      SqfEntityField(
+        'name',
+        DbType.text,
+        formIsRequired: true,
+      ),
+      SqfEntityField('description', DbType.text),
+      SqfEntityField('price', DbType.real, defaultValue: 0),
+      SqfEntityField('isActive', DbType.bool, defaultValue: true),
+
+      /// Relationship column for CategoryId of Product
+      SqfEntityFieldRelationship(
+          parentTable: tableCategory,
+          deleteRule: DeleteRule.CASCADE,
+          defaultValue: 0,
+          formDropDownTextField:
+              'name' // displayText of dropdownList for category. 'name' => a text field from the category table
+          ),
+      SqfEntityField('rownum', DbType.integer,
+          sequencedBy:
+              seqIdentity /*Example of linking a column to a sequence */),
+      SqfEntityField('imageUrl', DbType.text),
+      SqfEntityField('datetime', DbType.datetime,
+          defaultValue: 'DateTime.now()',
+          minValue: '2019-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 30))'),
+      SqfEntityField('date', DbType.date,
+          minValue: '2015-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 365))')
+    ]);
+
+// Define the 'Todo' constant as SqfEntityTable.
+@SqfEntityBuilderForm(tableTodo)
+const tableTodo = SqfEntityTable(
+    tableName: 'todos',
+    primaryKeyName: 'id',
+    useSoftDeleting:
+        false, // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+    primaryKeyType: PrimaryKeyType.integer_unique,
+    defaultJsonUrl:
+        'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
+
+    // declare fields
+    fields: [
+      SqfEntityField('userId', DbType.integer),
+      SqfEntityField('title', DbType.text),
+      SqfEntityField('completed', DbType.bool, defaultValue: false),
+    ]);
+
+// Define the 'identity' constant as SqfEntitySequence.
+const seqIdentity = SqfEntitySequence(
+  sequenceName: 'identity',
+  //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+  //modelName: 'SQEidentity',
+  /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
+  //cycle : false,    /* optional. default is false; */
+  //minValue = 0;     /* optional. default is 0 */
+  //incrementBy = 1;  /* optional. default is 1 */
+  // startWith = 0;   /* optional. default is 0 */
+);
+
+// STEP 2: Create your Database Model constant instanced from SqfEntityModel
+// Note: SqfEntity provides support for the use of multiple databases.
+// So you can create many Database Models and use them in the application.
+@SqfEntityBuilder(myDbModel, formControllers: [
+  // Creates controllers for Add/Edit forms and listing page of tables (optional)
+  tableProduct, tableCategory, tableTodo
+])
+const myDbModel = SqfEntityModel(
+    modelName: 'MyDbModel',
+    databaseName: 'sampleORM.db',
+    // put defined tables into the tables list.
+    databaseTables: [tableProduct, tableCategory, tableTodo],
+    // put defined sequences into the sequences list.
+    sequences: [seqIdentity],
+    bundledDatabasePath: null //         'assets/sample.db'
+    // This value is optional. When bundledDatabasePath is empty then
+    // EntityBase creats a new database when initializing the database
+    );
+
+/* STEP 3: That's All.. 
+--> Go Terminal Window and run command below
+    flutter pub run build_runner build --delete-conflicting-outputs
+  Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If @SqfEntityBuilderForm annotation is used)
+  Enjoy.. Huseyin TOKPINAR
+*/
