@@ -11,25 +11,43 @@ If you have a bundled database, you can use it or EntityBase will create a new d
 
 Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
+## What's New?
+   
+   Added **@SqfEntityBuilderForm** annotation to generate add/edit/list view controllers and added these special controls:
+   - DropdownList controls for related tables
+   - checkbox for bool field
+   - datetime picker for datetime field
+   - date picker for date field
+
+  See the application for sample use
+
 ## Getting Started
 
 This project is a starting point for a SqfEntity ORM for database application.
 Some files in the project:
 
-    1. main.dart                    : Startup file contains sample methods for using sqfEntity
-    2. model / model.dart           : Declare and modify your database model
-    3. model / model.g.dart         : Sample created model for examples
-    4. assets / chinook.sqlite      : Sample db if you want to use an exiting database or create model from database
-    5. app.dart                     : Sample App for display created model. 
-                                      (Updating frequently. Please click 'Watch' to follow updates)
-    6. LICENSE.txt                  : see this file for License Terms
+    1. main.dart                      : Startup file contains sample methods for using sqfEntity
+    2. model / controller.dart        : main controller that provides access to created form views from
+                                        the application main page (CAN BE MODIFIED)
+    3. model / model.dart             : Declare and modify your database model (CAN BE MODIFIED)
+    4. model / model.g.dart           : Sample generated model for examples (DO NOT MODIFY BY HAND)
+    5. model / model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
+    6. model / view.list.dart         : The View that List your saved table items (CAN BE MODIFIED)
+    7. model / view.detail.dart       : The View that List your saved table items (CAN BE MODIFIED)
+    8. sample_filter / *.dart         : Sample Widget showing how to filter toList() at runtime
+    9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
+                                        model from database
+    10. app.dart                      : Sample App for display created model. 
+                                        (Updating frequently. Please click 'Watch' to follow updates)
+    11. LICENSE.txt                   : see this file for License Terms
 
 
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.2.0+6
-      sqfentity_gen: ^1.1.0+4
+      sqfentity: ^1.2.2+7
+      sqfentity_gen: ^1.2.0+8
+
 
     dev_dependencies:
       build_runner: ^1.6.5
@@ -51,6 +69,7 @@ First, create your **model.dart** file in **lib/model/** folder to define your m
 Write the following statement for the file to be created 
 
     part 'model.g.dart';
+    part 'model.g.view.dart'; 
     
 
 **STEP 1:** Our model file is ready to use. Define your tables as shown in the example below.
@@ -59,6 +78,12 @@ Write the following statement for the file to be created
 
 *Table 1: Category*
 
+    // You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+    @SqfEntityBuilderForm(tableCategory,
+    formListTitleField: 'name' // when formListTitleField is null, sqfentity gets first text field for this property
+    , hasSubItems: true // when hasSubItems is true, goes to sub items instead of detail when click on item
+    )
+    // Define the 'tableCategory' constant as SqfEntityTable for the category table.
     const tableCategory = SqfEntityTable(
       tableName: 'category',
       primaryKeyName: 'id',
@@ -79,6 +104,11 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
 
 *Table 2: Product*
 
+    // You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
+    @SqfEntityBuilderForm(tableProduct, formListTitleField: 'name', // when formListTitleField is null, sqfentity gets first text field for this property
+    formListSubTitleField: 'description', // optional 
+    )
+    // Define the 'tableProduct' constant as SqfEntityTable for the product table.
     const tableProduct = SqfEntityTable(
       tableName: 'product',
       primaryKeyName: 'id',
@@ -127,7 +157,6 @@ This table is for creating a synchronization with json data from the web url
 
 *And add a Sequence for samples*
 
-
     const seqIdentity = SqfEntitySequence(
       sequenceName: 'identity',
       // maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
@@ -145,7 +174,9 @@ This table is for creating a synchronization with json data from the web url
 *Note:* SqfEntity provides support for the use of **multiple databases**.
 So you can create many Database Models and use them in your application.
 
-    @SqfEntityBuilder(myDbModel)
+    @SqfEntityBuilder(myDbModel, 
+    formControllers: [tableProduct, tableCategory], // Creates controllers for Add/Edit forms and listing page of tables (optional)
+    )
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
         databaseName: 'sampleORM.db',
@@ -163,7 +194,8 @@ Go Terminal Window and run command below
 
     flutter pub run build_runner build --delete-conflicting-outputs
 
-  Note: After running the command Please check lib/model/model.g.dart 
+  After running the command Please check lib/model/model.g.dart
+  Note: If @SqfEntityBuilderForm annotation is used then check also lib/model/model.g.view.dart 
 
 
 ### Attach existing SQLite database with bundledDatabasePath parameter
