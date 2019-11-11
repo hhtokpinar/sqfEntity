@@ -124,9 +124,6 @@ class SQFViewDetailState extends State {
                   false,
                   formListTitleField,
                   getData);
-              if (useSoftDeleting) {
-                Navigator.pop(context, true);
-              }
             },
           ),
           SizedBox(
