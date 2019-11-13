@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../tools/helper.dart';
-import '../tools/slidemenu.dart';
+import 'package:sqfentity_example/tools/helper.dart';
+import 'package:sqfentity_example/tools/slidemenu.dart';
 import 'view.detail.dart';
 
 //import 'package:sqfentity_sample/view/Update.dart';
@@ -59,7 +58,7 @@ class SQFViewListState extends State {
       if (formListSubTitleField != null && formListSubTitleField.isNotEmpty) {
         selectCols.add(formListSubTitleField);
       }
-      if(useSoftDeleting){
+      if (useSoftDeleting) {
         selectCols.add('isDeleted');
       }
 
@@ -74,7 +73,7 @@ class SQFViewListState extends State {
 
     if (datalist.isEmpty || SessionDetail.updatedItem) {
       getData();
-      SessionDetail.updatedItem =false;
+      SessionDetail.updatedItem = false;
     }
     void goToDetail(dynamic data) async {
       final bool result = await Navigator.push(
@@ -82,8 +81,8 @@ class SQFViewListState extends State {
           MaterialPageRoute(
               builder: (context) => Scaffold(
                     backgroundColor: UITools.mainBgColor,
-                    body: SQFViewDetail(
-                        data, formListTitleField, T, useSoftDeleting,primaryKeyName),
+                    body: SQFViewDetail(data, formListTitleField, T,
+                        useSoftDeleting, primaryKeyName),
                     //body: SQFViewListItems(),
                     appBar: AppBar(
                       backgroundColor: UITools.mainBgColorLighter,
@@ -137,7 +136,6 @@ class SQFViewListState extends State {
         }
       }
     }
-
 
     ListTile makeSQFViewListTile(dynamic data) => ListTile(
           contentPadding:
@@ -211,9 +209,17 @@ class SQFViewListState extends State {
                               : Icons.delete_outline,
                       color: Colors.pinkAccent,
                     ),
-                    onPressed: () async{
-                      final obj = await T.getById(datalist[index][primaryKeyName]);
-                     UITools(context).selectOption(Choice.Delete, datalist[index], obj, useSoftDeleting,false,formListTitleField, getData);
+                    onPressed: () async {
+                      final obj =
+                          await T.getById(datalist[index][primaryKeyName]);
+                      UITools(context).selectOption(
+                          Choice.Delete,
+                          datalist[index],
+                          obj,
+                          useSoftDeleting,
+                          false,
+                          formListTitleField,
+                          getData);
                     }),
               ),
               Container(
@@ -226,16 +232,26 @@ class SQFViewListState extends State {
                               : Icons.edit,
                       color: Colors.tealAccent,
                     ),
-                    onPressed: () async{
-                      final obj = await T.getById(datalist[index][primaryKeyName]);
-                     
-                     UITools(context).selectOption(
-                          !useSoftDeleting
-                              ? Choice.Update
-                              : datalist[index]['isDeleted'] == 1
-                                  ? Choice.Recover
-                                  : Choice.Update,
-                          datalist[index], obj, useSoftDeleting,false,formListTitleField, getData);
+                    onPressed: () async {
+                      final obj =
+                          await T.getById(datalist[index][primaryKeyName]);
+                      final choice = !useSoftDeleting
+                          ? Choice.Update
+                          : datalist[index]['isDeleted'] == 1
+                              ? Choice.Recover
+                              : Choice.Update;
+                      if (choice == Choice.Update) {
+                        await goToUpdate(datalist[index]);
+                      } else {
+                        UITools(context).selectOption(
+                            choice,
+                            datalist[index],
+                            obj,
+                            useSoftDeleting,
+                            false,
+                            formListTitleField,
+                            getData);
+                      }
                     }),
               ),
             ],
@@ -289,7 +305,10 @@ class SQFViewListState extends State {
           goToUpdate(null);
         },
         tooltip: 'add new item',
-        child: Icon(Icons.add, color: UITools.mainIconsColor,),
+        child: Icon(
+          Icons.add,
+          color: UITools.mainIconsColor,
+        ),
       ),
     );
   }
