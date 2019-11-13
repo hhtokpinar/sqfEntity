@@ -23,6 +23,8 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
   See the application for sample use
 
+![Sqf Entity Generated Forms Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/sqfentity_form_generator.jpg) 
+
 ## Getting Started
 
 This project is a starting point for a SqfEntity ORM for database application.
@@ -47,8 +49,8 @@ Some files in the project:
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.2.2+7
-      sqfentity_gen: ^1.2.0+8
+      sqfentity: ^1.2.2+8
+      sqfentity_gen: ^1.2.0+12
 
 
     dev_dependencies:
