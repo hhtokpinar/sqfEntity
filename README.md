@@ -16,10 +16,11 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 ## What's New?
    
    Added **@SqfEntityBuilderForm** annotation to generate add/edit/list view controllers and added these special controls:
+   - Validators (Required Fields, regular expression for data types)
    - DropdownList controls for related tables
-   - checkbox for bool field
-   - datetime picker for datetime field
-   - date picker for date field
+   - Checkbox for boolean fields
+   - DateTime picker for datetime field
+   - Date picker for date field
 
   See the application for sample use
 
