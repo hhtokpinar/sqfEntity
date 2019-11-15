@@ -20,7 +20,7 @@ Some files in the project:
                                         the application main page (CAN BE MODIFIED)
     6. model / view.list.dart         : The Sample for List View that your saved table items (CAN BE MODIFIED)
     7. model / view.detail.dart       : The Sample for Detail View that your saved table items (CAN BE MODIFIED)
-    8. sample_filter / *.dart         : Sample Widget showing how to filter toList() at runtime
+    8. sample_advanced_form / *.dart  : Sample Widget showing how to filter toList() at runtime
     9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
                                         model from database
     10. app.dart                      : Sample App for display created model. 
@@ -92,7 +92,8 @@ Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
   printList(list);
 }
 
-void printList(List<dynamic> list, {bool isMap = false}) {
+void printList(List<dynamic> list, {bool isMap = false, String title}) {
+  print('PRINTLIST--------------$title---------------lenght: ${list.length}');
   for (final o in list) {
     if (isMap) {
       print(o.toMap());
@@ -103,7 +104,7 @@ void printList(List<dynamic> list, {bool isMap = false}) {
 }
 
 Future<void> printCategories(bool getIsDeleted) async {
-  final categoryList = await Category().select().toList();
+  final categoryList = await Category().select(getIsDeleted: getIsDeleted).toList();
   print('LISTING CATEGORIES -> Category().select().toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
   print('${categoryList.length} matches found:');
@@ -671,7 +672,7 @@ Future<void> samples7() async {
   // EXAMPLE 7.1: goto Category Object from Product \n-> Product.category((_category) {});
   final product = await Product().getById(3);
   if (product != null) {
-    final category = await product.getCategoryByCategoryId();
+    final category = await product.getCategory();
     print(
         'EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ');
 
@@ -681,7 +682,7 @@ Future<void> samples7() async {
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
   for (var category in categoryList) {
-    final productList = await category.getProductsBycategoryId().toList();
+    final productList = await category.getProducts().toList();
     print(
         'EXAMPLE 7.2.${category.id}: Products of \'${category.name}\' listing \n-> category.getProducts((productList) {}); ');
     // PRINT RESULTS TO DEBUG CONSOLE
