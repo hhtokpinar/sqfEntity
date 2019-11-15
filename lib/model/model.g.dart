@@ -217,9 +217,8 @@ class Product {
         : null;
 
     isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
-    isSaved = true;
   }
-  // FIELDS
+  // FIELDS (Product)
   int id;
   String name;
   String description;
@@ -231,21 +230,20 @@ class Product {
   DateTime datetime;
   DateTime date;
   bool isDeleted;
-  bool isSaved;
-  BoolResult saveResult;
-  // end FIELDS
 
-// RELATIONSHIPS
-  /// get CategoryByCategoryId By CategoryId
-  Future<Category> getCategoryByCategoryId(
-      [VoidCallback category(Category o)]) async {
+  BoolResult saveResult;
+  // end FIELDS (Product)
+
+// RELATIONSHIPS (Product)
+  /// get Category By CategoryId
+  Future<Category> getCategory([VoidCallback category(Category o)]) async {
     final _obj = await Category().getById(categoryId);
     if (category != null) {
       category(_obj);
     }
     return _obj;
   }
-  // END RELATIONSHIPS
+  // END RELATIONSHIPS (Product)
 
   static const bool _softDeleteActivated = true;
   ProductManager __mnProduct;
@@ -254,7 +252,7 @@ class Product {
     return __mnProduct = __mnProduct ?? ProductManager();
   }
 
-  // methods
+  // METHODS
   Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
     final map = Map<String, dynamic>();
     if (id != null) {
@@ -309,7 +307,6 @@ class Product {
     return map;
   }
 
-  // methods
   Future<Map<String, dynamic>> toMapWithChilds(
       [bool forQuery = false, bool forJson = false]) async {
     final map = Map<String, dynamic>();
@@ -416,17 +413,18 @@ class Product {
   }
 
   static Future<List<Product>> fromObjectList(Future<List<dynamic>> o) async {
-    final productsList = List<Product>();
     final data = await o;
-    for (int i = 0; i < data.length; i++) {
-      productsList.add(Product.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final productsList = Product.fromMapList(data);
+    /*  for (int i = 0; i < data.length; i++) {
+        productsList.add(Product.fromMap(data[i] as Map<String, dynamic>));
+      }
+      */
     return productsList;
   }
 
-  static List<Product> fromMapList(List<Map<String, dynamic>> query) {
+  static List<Product> fromMapList(List<dynamic> data) {
     final List<Product> products = List<Product>();
-    for (Map map in query) {
+    for (final Map map in data as List<Map>) {
       products.add(Product.fromMap(map as Map<String, dynamic>));
     }
     return products;
@@ -436,6 +434,9 @@ class Product {
   /// <param name='id'>Primary Key Value</param>
   /// <returns>returns Product if exist, otherwise returns null
   Future<Product> getById(int id) async {
+    if (id == null) {
+      return null;
+    }
     Product productObj;
     final data = await _mnProduct.getById(id);
     if (data.length != 0) {
@@ -450,9 +451,9 @@ class Product {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0 || !isSaved) {
+    if (id == null || id == 0) {
       id = await _mnProduct.insert(this);
-      isSaved = true;
+
       if (id != null) {
         rownum = await IdentitySequence().nextVal();
         save();
@@ -467,7 +468,6 @@ class Product {
 
   /// <returns>Returns a new Primary Key value of Product
   Future<int> saveAs() async {
-    isSaved = false;
     id = null;
     return save();
   }
@@ -566,14 +566,32 @@ class Product {
   }
 
   void setDefaultValues() {
-    isSaved = false;
     price = price ?? 0;
     isActive = isActive ?? false;
     categoryId = categoryId ?? 0;
     datetime = datetime ?? DateTime.now();
     isDeleted = isDeleted ?? false;
   }
-  //end methods
+  // END METHODS
+  // CUSTOM CODES
+  /*
+    you must define customCode property of your SqfEntityTable constant for ex:
+    const tablePerson = SqfEntityTable(
+    tableName: 'person',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('firstName', DbType.text),
+      SqfEntityField('lastName', DbType.text),
+    ],
+    customCode: '''
+     String fullName()
+     { 
+       return '$firstName $lastName';
+     }
+    ''');
+   */
+  // END CUSTOM CODES
 }
 // endregion product
 
@@ -598,6 +616,19 @@ class ProductField extends SearchCriteria {
             productFB._addedBlocks)
         : setCriteria(pValue, productFB.parameters, param, SqlSyntax.NotEQuals,
             productFB._addedBlocks);
+    _waitingNot = '';
+    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+        productFB._addedBlocks.retVal;
+    return productFB;
+  }
+
+  ProductFilterBuilder equalsOrNull(var pValue) {
+    param.expression = '=';
+    productFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, productFB.parameters, param,
+            SqlSyntax.EQualsOrNull, productFB._addedBlocks)
+        : setCriteria(pValue, productFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, productFB._addedBlocks);
     _waitingNot = '';
     productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
         productFB._addedBlocks.retVal;
@@ -787,6 +818,7 @@ class ProductFilterBuilder extends SearchCriteria {
   int _pagesize;
   int _page;
 
+  /// put the sql keyword 'AND'
   ProductFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
@@ -794,6 +826,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// put the sql keyword 'OR'
   ProductFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
@@ -801,6 +834,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// open parentheses
   ProductFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
@@ -809,6 +843,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   ProductFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
@@ -819,12 +854,16 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
   ProductFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
+  /// int count = LIMIT
   ProductFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
@@ -832,6 +871,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// close parentheses
   ProductFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
@@ -842,6 +882,11 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
   ProductFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -855,6 +900,11 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   ProductFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -868,6 +918,11 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   ProductFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -972,30 +1027,32 @@ class ProductFilterBuilder extends SearchCriteria {
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
-        switch (param.dbType) {
-          case DbType.bool:
-            param.value =
-                param.value == null ? null : param.value == true ? 1 : 0;
-            param.value2 =
-                param.value2 == null ? null : param.value2 == true ? 1 : 0;
-            break;
-          case DbType.date:
-          case DbType.datetime:
-            param.value = param.value == null
-                ? null
-                : (param.value as DateTime).millisecondsSinceEpoch;
-            param.value2 = param.value2 == null
-                ? null
-                : (param.value2 as DateTime).millisecondsSinceEpoch;
-            break;
-          default:
-        }
-
-        if (param.value != null) {
-          whereArguments.add(param.value);
-        }
-        if (param.value2 != null) {
-          whereArguments.add(param.value2);
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
@@ -1019,9 +1076,8 @@ class ProductFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// <summary>
   /// Deletes List<Product> batch by query
-
+  ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
@@ -1041,8 +1097,17 @@ class ProductFilterBuilder extends SearchCriteria {
     return _obj._mnProduct.updateBatch(qparams, {'isDeleted': 0});
   }
 
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'id IN (SELECT id from product ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
     return _obj._mnProduct.updateBatch(qparams, values);
   }
 
@@ -1066,6 +1131,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
+  ///
   /// <returns>int
   Future<int> toCount([VoidCallback productCount(int c)]) async {
     _buildParameters();
@@ -1082,12 +1148,14 @@ class ProductFilterBuilder extends SearchCriteria {
   /// <returns>List<Product>
   Future<List<Product>> toList(
       [VoidCallback productList(List<Product> o)]) async {
-    final List<Product> productsData = List<Product>();
     final data = await toMapList();
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      productsData.add(Product.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final List<Product> productsData = Product.fromMapList(data);
+
+    /* old version
+      final int count = data.length;
+      for (int i = 0; i < count; i++) {
+        productsData.add(Product.fromMap(data[i] as Map<String, dynamic>));
+      } */
     if (productList != null) productList(productsData);
     return productsData;
   }
@@ -1113,6 +1181,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
+  ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
@@ -1192,6 +1261,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject(
       [VoidCallback listObject(List<dynamic> o)]) async {
@@ -1212,6 +1282,7 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<String> for selected first column
+  ///
   /// Sample usage: await Product.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
@@ -1324,20 +1395,18 @@ class Category {
     name = o['name'] as String;
 
     isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
-
-    isSaved = true;
   }
-  // FIELDS
+  // FIELDS (Category)
   int id;
   String name;
   bool isActive;
-  bool isSaved;
-  BoolResult saveResult;
-  // end FIELDS
 
-// COLLECTIONS
+  BoolResult saveResult;
+  // end FIELDS (Category)
+
+// COLLECTIONS (Category)
   /// get Product(s) filtered by categoryId=id
-  ProductFilterBuilder getProductsBycategoryId(
+  ProductFilterBuilder getProducts(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Product()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
@@ -1345,7 +1414,7 @@ class Category {
         .equals(id)
         .and;
   }
-// END COLLECTIONS
+// END COLLECTIONS (Category)
 
   static const bool _softDeleteActivated = false;
   CategoryManager __mnCategory;
@@ -1354,7 +1423,7 @@ class Category {
     return __mnCategory = __mnCategory ?? CategoryManager();
   }
 
-  // methods
+  // METHODS
   Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
     final map = Map<String, dynamic>();
     if (id != null) {
@@ -1371,7 +1440,6 @@ class Category {
     return map;
   }
 
-  // methods
   Future<Map<String, dynamic>> toMapWithChilds(
       [bool forQuery = false, bool forJson = false]) async {
     final map = Map<String, dynamic>();
@@ -1386,11 +1454,11 @@ class Category {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
     }
 
-// COLLECTIONS
+// COLLECTIONS (Category)
     if (!forQuery) {
-      map['ProductsBycategoryId'] = await getProductsBycategoryId().toMapList();
+      map['Products'] = await getProducts().toMapList();
     }
-// END COLLECTIONS
+// END COLLECTIONS (Category)
 
     return map;
   }
@@ -1434,17 +1502,18 @@ class Category {
   }
 
   static Future<List<Category>> fromObjectList(Future<List<dynamic>> o) async {
-    final categorysList = List<Category>();
     final data = await o;
-    for (int i = 0; i < data.length; i++) {
-      categorysList.add(Category.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final categorysList = Category.fromMapList(data);
+    /*  for (int i = 0; i < data.length; i++) {
+        categorysList.add(Category.fromMap(data[i] as Map<String, dynamic>));
+      }
+      */
     return categorysList;
   }
 
-  static List<Category> fromMapList(List<Map<String, dynamic>> query) {
+  static List<Category> fromMapList(List<dynamic> data) {
     final List<Category> categorys = List<Category>();
-    for (Map map in query) {
+    for (final Map map in data as List<Map>) {
       categorys.add(Category.fromMap(map as Map<String, dynamic>));
     }
     return categorys;
@@ -1454,6 +1523,9 @@ class Category {
   /// <param name='id'>Primary Key Value</param>
   /// <returns>returns Category if exist, otherwise returns null
   Future<Category> getById(int id) async {
+    if (id == null) {
+      return null;
+    }
     Category categoryObj;
     final data = await _mnCategory.getById(id);
     if (data.length != 0) {
@@ -1468,9 +1540,8 @@ class Category {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0 || !isSaved) {
+    if (id == null || id == 0) {
       id = await _mnCategory.insert(this);
-      isSaved = true;
     } else {
       id = await _upsert();
     }
@@ -1481,7 +1552,6 @@ class Category {
 
   /// <returns>Returns a new Primary Key value of Category
   Future<int> saveAs() async {
-    isSaved = false;
     id = null;
     return save();
   }
@@ -1564,10 +1634,28 @@ class Category {
   }
 
   void setDefaultValues() {
-    isSaved = false;
     isActive = isActive ?? false;
   }
-  //end methods
+  // END METHODS
+  // CUSTOM CODES
+  /*
+    you must define customCode property of your SqfEntityTable constant for ex:
+    const tablePerson = SqfEntityTable(
+    tableName: 'person',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('firstName', DbType.text),
+      SqfEntityField('lastName', DbType.text),
+    ],
+    customCode: '''
+     String fullName()
+     { 
+       return '$firstName $lastName';
+     }
+    ''');
+   */
+  // END CUSTOM CODES
 }
 // endregion category
 
@@ -1592,6 +1680,19 @@ class CategoryField extends SearchCriteria {
             categoryFB._addedBlocks)
         : setCriteria(pValue, categoryFB.parameters, param, SqlSyntax.NotEQuals,
             categoryFB._addedBlocks);
+    _waitingNot = '';
+    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+        categoryFB._addedBlocks.retVal;
+    return categoryFB;
+  }
+
+  CategoryFilterBuilder equalsOrNull(var pValue) {
+    param.expression = '=';
+    categoryFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, categoryFB.parameters, param,
+            SqlSyntax.EQualsOrNull, categoryFB._addedBlocks)
+        : setCriteria(pValue, categoryFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, categoryFB._addedBlocks);
     _waitingNot = '';
     categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
@@ -1781,6 +1882,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   int _pagesize;
   int _page;
 
+  /// put the sql keyword 'AND'
   CategoryFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
@@ -1788,6 +1890,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// put the sql keyword 'OR'
   CategoryFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
@@ -1795,6 +1898,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// open parentheses
   CategoryFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
@@ -1803,6 +1907,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   CategoryFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
@@ -1813,12 +1918,16 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
   CategoryFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
+  /// int count = LIMIT
   CategoryFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
@@ -1826,6 +1935,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// close parentheses
   CategoryFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
@@ -1836,6 +1946,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
   CategoryFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -1849,6 +1964,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   CategoryFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -1862,6 +1982,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   CategoryFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -1926,30 +2051,32 @@ class CategoryFilterBuilder extends SearchCriteria {
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
-        switch (param.dbType) {
-          case DbType.bool:
-            param.value =
-                param.value == null ? null : param.value == true ? 1 : 0;
-            param.value2 =
-                param.value2 == null ? null : param.value2 == true ? 1 : 0;
-            break;
-          case DbType.date:
-          case DbType.datetime:
-            param.value = param.value == null
-                ? null
-                : (param.value as DateTime).millisecondsSinceEpoch;
-            param.value2 = param.value2 == null
-                ? null
-                : (param.value2 as DateTime).millisecondsSinceEpoch;
-            break;
-          default:
-        }
-
-        if (param.value != null) {
-          whereArguments.add(param.value);
-        }
-        if (param.value2 != null) {
-          whereArguments.add(param.value2);
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
@@ -1973,9 +2100,8 @@ class CategoryFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// <summary>
   /// Deletes List<Category> batch by query
-
+  ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
@@ -1995,8 +2121,17 @@ class CategoryFilterBuilder extends SearchCriteria {
     return r;
   }
 
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'id IN (SELECT id from category ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
     return _obj._mnCategory.updateBatch(qparams, values);
   }
 
@@ -2020,6 +2155,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
+  ///
   /// <returns>int
   Future<int> toCount([VoidCallback categoryCount(int c)]) async {
     _buildParameters();
@@ -2036,12 +2172,14 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// <returns>List<Category>
   Future<List<Category>> toList(
       [VoidCallback categoryList(List<Category> o)]) async {
-    final List<Category> categoriesData = List<Category>();
     final data = await toMapList();
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      categoriesData.add(Category.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final List<Category> categoriesData = Category.fromMapList(data);
+
+    /* old version
+      final int count = data.length;
+      for (int i = 0; i < count; i++) {
+        categoriesData.add(Category.fromMap(data[i] as Map<String, dynamic>));
+      } */
     if (categoryList != null) categoryList(categoriesData);
     return categoriesData;
   }
@@ -2067,6 +2205,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
+  ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
@@ -2146,6 +2285,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject(
       [VoidCallback listObject(List<dynamic> o)]) async {
@@ -2166,6 +2306,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<String> for selected first column
+  ///
   /// Sample usage: await Category.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
@@ -2236,14 +2377,14 @@ class Todo {
 
     isSaved = true;
   }
-  // FIELDS
+  // FIELDS (Todo)
   int id;
   int userId;
   String title;
   bool completed;
   bool isSaved;
   BoolResult saveResult;
-  // end FIELDS
+  // end FIELDS (Todo)
 
   static const bool _softDeleteActivated = false;
   TodoManager __mnTodo;
@@ -2252,7 +2393,7 @@ class Todo {
     return __mnTodo = __mnTodo ?? TodoManager();
   }
 
-  // methods
+  // METHODS
   Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
     final map = Map<String, dynamic>();
     if (id != null) {
@@ -2273,7 +2414,6 @@ class Todo {
     return map;
   }
 
-  // methods
   Future<Map<String, dynamic>> toMapWithChilds(
       [bool forQuery = false, bool forJson = false]) async {
     final map = Map<String, dynamic>();
@@ -2343,17 +2483,18 @@ class Todo {
   }
 
   static Future<List<Todo>> fromObjectList(Future<List<dynamic>> o) async {
-    final todosList = List<Todo>();
     final data = await o;
-    for (int i = 0; i < data.length; i++) {
-      todosList.add(Todo.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final todosList = Todo.fromMapList(data);
+    /*  for (int i = 0; i < data.length; i++) {
+        todosList.add(Todo.fromMap(data[i] as Map<String, dynamic>));
+      }
+      */
     return todosList;
   }
 
-  static List<Todo> fromMapList(List<Map<String, dynamic>> query) {
+  static List<Todo> fromMapList(List<dynamic> data) {
     final List<Todo> todos = List<Todo>();
-    for (Map map in query) {
+    for (final Map map in data as List<Map>) {
       todos.add(Todo.fromMap(map as Map<String, dynamic>));
     }
     return todos;
@@ -2363,6 +2504,9 @@ class Todo {
   /// <param name='id'>Primary Key Value</param>
   /// <returns>returns Todo if exist, otherwise returns null
   Future<Todo> getById(int id) async {
+    if (id == null) {
+      return null;
+    }
     Todo todoObj;
     final data = await _mnTodo.getById(id);
     if (data.length != 0) {
@@ -2391,6 +2535,7 @@ class Todo {
   /// <returns>Returns a new Primary Key value of Todo
   Future<int> saveAs() async {
     isSaved = false;
+
     return save();
   }
 
@@ -2466,7 +2611,26 @@ class Todo {
     isSaved = false;
     completed = completed ?? false;
   }
-  //end methods
+  // END METHODS
+  // CUSTOM CODES
+  /*
+    you must define customCode property of your SqfEntityTable constant for ex:
+    const tablePerson = SqfEntityTable(
+    tableName: 'person',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('firstName', DbType.text),
+      SqfEntityField('lastName', DbType.text),
+    ],
+    customCode: '''
+     String fullName()
+     { 
+       return '$firstName $lastName';
+     }
+    ''');
+   */
+  // END CUSTOM CODES
 }
 // endregion todo
 
@@ -2491,6 +2655,19 @@ class TodoField extends SearchCriteria {
             todoFB._addedBlocks)
         : setCriteria(pValue, todoFB.parameters, param, SqlSyntax.NotEQuals,
             todoFB._addedBlocks);
+    _waitingNot = '';
+    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+        todoFB._addedBlocks.retVal;
+    return todoFB;
+  }
+
+  TodoFilterBuilder equalsOrNull(var pValue) {
+    param.expression = '=';
+    todoFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, todoFB.parameters, param, SqlSyntax.EQualsOrNull,
+            todoFB._addedBlocks)
+        : setCriteria(pValue, todoFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, todoFB._addedBlocks);
     _waitingNot = '';
     todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
@@ -2680,6 +2857,7 @@ class TodoFilterBuilder extends SearchCriteria {
   int _pagesize;
   int _page;
 
+  /// put the sql keyword 'AND'
   TodoFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
@@ -2687,6 +2865,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// put the sql keyword 'OR'
   TodoFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
@@ -2694,6 +2873,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// open parentheses
   TodoFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
@@ -2702,6 +2882,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   TodoFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
@@ -2712,12 +2893,16 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
   TodoFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
+  /// int count = LIMIT
   TodoFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
@@ -2725,6 +2910,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// close parentheses
   TodoFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
@@ -2735,6 +2921,11 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
   TodoFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -2748,6 +2939,11 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   TodoFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -2761,6 +2957,11 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
   TodoFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
@@ -2830,30 +3031,32 @@ class TodoFilterBuilder extends SearchCriteria {
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
-        switch (param.dbType) {
-          case DbType.bool:
-            param.value =
-                param.value == null ? null : param.value == true ? 1 : 0;
-            param.value2 =
-                param.value2 == null ? null : param.value2 == true ? 1 : 0;
-            break;
-          case DbType.date:
-          case DbType.datetime:
-            param.value = param.value == null
-                ? null
-                : (param.value as DateTime).millisecondsSinceEpoch;
-            param.value2 = param.value2 == null
-                ? null
-                : (param.value2 as DateTime).millisecondsSinceEpoch;
-            break;
-          default:
-        }
-
-        if (param.value != null) {
-          whereArguments.add(param.value);
-        }
-        if (param.value2 != null) {
-          whereArguments.add(param.value2);
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
@@ -2877,9 +3080,8 @@ class TodoFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// <summary>
   /// Deletes List<Todo> batch by query
-
+  ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
@@ -2892,8 +3094,17 @@ class TodoFilterBuilder extends SearchCriteria {
     return r;
   }
 
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'id IN (SELECT id from todos ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
     return _obj._mnTodo.updateBatch(qparams, values);
   }
 
@@ -2917,6 +3128,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns int.
+  ///
   /// <returns>int
   Future<int> toCount([VoidCallback todoCount(int c)]) async {
     _buildParameters();
@@ -2932,12 +3144,14 @@ class TodoFilterBuilder extends SearchCriteria {
   /// This method always returns List<Todo>.
   /// <returns>List<Todo>
   Future<List<Todo>> toList([VoidCallback todoList(List<Todo> o)]) async {
-    final List<Todo> todosData = List<Todo>();
     final data = await toMapList();
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      todosData.add(Todo.fromMap(data[i] as Map<String, dynamic>));
-    }
+    final List<Todo> todosData = Todo.fromMapList(data);
+
+    /* old version
+      final int count = data.length;
+      for (int i = 0; i < count; i++) {
+        todosData.add(Todo.fromMap(data[i] as Map<String, dynamic>));
+      } */
     if (todoList != null) todoList(todosData);
     return todosData;
   }
@@ -2963,6 +3177,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// This method always returns List<dynamic>.
+  ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
@@ -3041,6 +3256,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject(
       [VoidCallback listObject(List<dynamic> o)]) async {
@@ -3061,6 +3277,7 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// Returns List<String> for selected first column
+  ///
   /// Sample usage: await Todo.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
