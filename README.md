@@ -51,8 +51,8 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
 
     dependencies:
       flutter_datetime_picker: ^1.2.8  
-      sqfentity: ^1.2.2+13
-      sqfentity_gen: ^1.2.1+23
+      sqfentity: ^1.2.3
+      sqfentity_gen: ^1.2.3
 
 
     dev_dependencies:
