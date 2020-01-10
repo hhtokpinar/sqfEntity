@@ -66,24 +66,26 @@ First, You need to:
 2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/tools/helper.dart) into your /lib/tools folder
 3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
+       import 'dart:convert';
+       import 'dart:typed_data';
+       import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+       import 'package:http/http.dart' as http;
+       import 'package:flutter/material.dart';
+       import 'package:sqfentity/sqfentity.dart';
+       import 'package:sqfentity_gen/sqfentity_gen.dart';
+       import '../tools/helper.dart';
+       import 'view.list.dart';
 
-    import 'dart:convert';
-    import 'dart:typed_data';
-    import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-    import 'package:http/http.dart' as http;
-    import 'package:flutter/material.dart';
-    import 'package:sqfentity/sqfentity.dart';
-    import 'package:sqfentity_gen/sqfentity_gen.dart';
-    import '../tools/helper.dart';
-    import 'view.list.dart';
 
-Write the following statement for the file to be created 
+4. Write the following statement for the file to be created 
 
-    part 'model.g.dart';
-    part 'model.g.view.dart'; // you do not need this part if you do not want to use the Form Generator property
+       part 'model.g.dart';
+       part 'model.g.view.dart'; // you do not need this part if you do not want to use the Form Generator property
     
 
-**STEP 1:** Our model file is ready to use. Define your tables as shown in the example below.
+Our model file is ready to use. Define your tables as shown in the example below.
+
+**STEP 1:** 
  For example, we have created 3 tables constant for category, product and todo that instanced from "SqfEntityTable" as follows:
 
 
