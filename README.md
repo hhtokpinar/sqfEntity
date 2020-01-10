@@ -47,9 +47,10 @@ Some files in the project:
 
 
 ### dependencies:
+Note: You do not need **flutter_datetime_picker** if you do not want to use the Form Generator property
 
     dependencies:
-      flutter_datetime_picker: ^1.2.8  # you do not need this package if you do not want to use the Form Generator property
+      flutter_datetime_picker: ^1.2.8  
       sqfentity: ^1.2.2+13
       sqfentity_gen: ^1.2.1+23
 
