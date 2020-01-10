@@ -38,20 +38,20 @@ Some files in the project:
     4. model / model.g.dart           : Sample generated model for examples (DO NOT MODIFY BY HAND)
     5. model / model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
     6. model / view.list.dart         : The View that List your saved table items (CAN BE MODIFIED)
-    7. model / view.detail.dart       : The View that List your saved table items (CAN BE MODIFIED)
+    7. model / view.detail.dart       : The View that see detail selected item (CAN BE MODIFIED)
     8. sample_advanced_form / *.dart  : Sample Widget showing how to filter toList() at runtime
     9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
                                         model from database
     10. app.dart                      : Sample App for display created model. 
-                                        (Updating frequently. Please click 'Watch' to follow updates)
     11. LICENSE.txt                   : see this file for License Terms
 
 
 ### dependencies:
 
     dependencies:
-      sqfentity: ^1.2.2+8
-      sqfentity_gen: ^1.2.0+12
+      flutter_datetime_picker: ^1.2.8  # you do not need this package if you do not want to use the Form Generator property
+      sqfentity: ^1.2.2+13
+      sqfentity_gen: ^1.2.1+23
 
 
     dev_dependencies:
@@ -61,20 +61,26 @@ Some files in the project:
   
 # Create a new Database Model
 
-First, create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
+First, You need to:
+1. Copy these two files into your /lib/model folder: [view.list.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/model/view.list.dart) and [view.detail.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/model/view.detail.dart)
+2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/tools/helper.dart) into your /lib/tools folder
+3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
+
 
     import 'dart:convert';
     import 'dart:typed_data';
+    import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
     import 'package:http/http.dart' as http;
     import 'package:flutter/material.dart';
     import 'package:sqfentity/sqfentity.dart';
     import 'package:sqfentity_gen/sqfentity_gen.dart';
-
+    import '../tools/helper.dart';
+    import 'view.list.dart';
 
 Write the following statement for the file to be created 
 
     part 'model.g.dart';
-    part 'model.g.view.dart'; 
+    part 'model.g.view.dart'; // you do not need this part if you do not want to use the Form Generator property
     
 
 **STEP 1:** Our model file is ready to use. Define your tables as shown in the example below.
