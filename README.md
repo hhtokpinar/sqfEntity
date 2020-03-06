@@ -13,6 +13,13 @@ If you have a bundled database, you can use it or EntityBase will create a new d
 
 Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
+
+# Before Start: You can help us build the future sooner
+ If this project help you reduce time to develop, you can give me a cup of coffee to help my sleepless nights :)
+ https://www.patreon.com/hhtokpinar
+
+
+
 ## What's New?
    
    Added **@SqfEntityBuilderForm** annotation to generate add/edit/list view controllers and added these special controls:
@@ -136,7 +143,7 @@ Note: You do not need to define this @SqfEntityBuilderForm annotation if you do 
         SqfEntityFieldRelationship(
             parentTable: tableCategory,
             deleteRule: DeleteRule.CASCADE,
-            defaultValue: '0'), // Relationship column for CategoryId of Product
+            defaultValue: 0), // Relationship column for CategoryId of Product
         SqfEntityField('rownum', DbType.integer,
             sequencedBy:
                 seqIdentity /*Example of linking a column to a sequence */),
@@ -220,7 +227,7 @@ Go Terminal Window and run command below
 
 *STEP 1*
 
-Copy your existing database in /assets folder (in this sample we copied chinook.sqlite database) and define your asset database in pubspec.yaml as below
+Copy your existing database in /assets folder (in this sample we have copied chinook.sqlite database) and define your asset database in pubspec.yaml as below
 
     flutter:
       assets:
@@ -229,8 +236,10 @@ Copy your existing database in /assets folder (in this sample we copied chinook.
 
 *STEP 2*
 
-Run this script with this parameters. 
+Run this script with this parameters.
+
 **databaseName:** Specify a name for your database to use for the database connection
+
 **bundledDatabasePath:** File path of your copied database
 
     final bundledDbModel = await convertDatabaseToModelBase(
@@ -655,7 +664,7 @@ result is:
 
 ## SAMPLE APPLICATION
 
-main.dart includes many examples of what you need, in addition to what we see.
+main.dart includes many examples of what you need, as well as what we can see.
 Also This sample project includes a sample application on how you can use sqfentity
 
 ![SqfEntity Sample Mobile Application for Flutter](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
