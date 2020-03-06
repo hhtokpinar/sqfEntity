@@ -14,7 +14,7 @@ If you have a bundled database, you can use it or EntityBase will create a new d
 Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages" button in the alert window that "Some packages are missing or out of date, would you like to get them now?"
 
 
-# Before Start: You can help us build the future sooner
+## Before Start: You can help us build the future sooner
  If this project help you reduce time to develop, you can give me a cup of coffee to help my sleepless nights :)
  https://www.patreon.com/hhtokpinar
 
