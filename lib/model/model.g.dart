@@ -438,7 +438,7 @@ class Product {
       return null;
     }
     Product productObj;
-    final data = await _mnProduct.getById(id);
+    final data = await _mnProduct.getById([id]);
     if (data.length != 0) {
       productObj = Product.fromMap(data[0] as Map<String, dynamic>);
     } else {
@@ -1527,7 +1527,7 @@ class Category {
       return null;
     }
     Category categoryObj;
-    final data = await _mnCategory.getById(id);
+    final data = await _mnCategory.getById([id]);
     if (data.length != 0) {
       categoryObj = Category.fromMap(data[0] as Map<String, dynamic>);
     } else {
@@ -2508,7 +2508,7 @@ class Todo {
       return null;
     }
     Todo todoObj;
-    final data = await _mnTodo.getById(id);
+    final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
       todoObj = Todo.fromMap(data[0] as Map<String, dynamic>);
     } else {
