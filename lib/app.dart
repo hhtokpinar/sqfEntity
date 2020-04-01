@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'model/.controller.dart';
+import 'model/controller.dart';
 import 'tools/helper.dart';
 import 'tools/popup.dart';
 
