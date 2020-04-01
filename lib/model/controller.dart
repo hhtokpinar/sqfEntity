@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_example/model/chinook.dart';
 import '../sample_advanced_form/productList.dart';
 import '../tools/helper.dart';
 import 'model.dart';
 
+
 class MainController extends StatefulWidget {
+  
   @override
   State<StatefulWidget> createState() => MainControllerState();
 }
 
 class MainControllerState extends State {
+  
+
   Map<String, dynamic> controllers = Map<String, dynamic>();
 
   @override
@@ -18,18 +23,26 @@ class MainControllerState extends State {
     void refreshList() {
       setState(() {
         /// Load controller cards from generated models
-        controllers = MyDbModel().getControllers();
+
+        switch (UITools.selectedDb) {
+          case 0: // CHINOOKDB MODEL
+            controllers = Chinookdb().getControllers();
+            break;
+          case 1: // MYDBMODEL
+            controllers = MyDbModel().getControllers();
+            break;
+          default:
+        }
 
         /// We added this card sample includes how to filter by form values and order, listing deleted items and recovery..
         controllers['Advanced Form'] = ProductList();
         //controllers['Datetime Picker'] = MyPickerApp();
-
       });
     }
 
     //if (controllers.isEmpty) {
-      /// Load controllers from generated models
-      refreshList();
+    /// Load controllers from generated models
+    refreshList();
     //}
 
     //}
@@ -45,6 +58,6 @@ class MainControllerState extends State {
     );
 
     return UITools(context).getMainPage(makeMainController,
-        'Listing generated (${controllers.length - 1}) models\nand Advanced Form');
+        'Listing generated (${controllers.length - 1}) models in ${UITools.selectedDb == 0 ? 'Chinook.db' : 'Sample.db'} \nand Advanced Form');
   }
 }
