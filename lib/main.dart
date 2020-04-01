@@ -375,7 +375,7 @@ Future<void> samples2() async {
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
   productList =
-      await Product().select().where('id IN (3,6,9) OR price>8000').toList();
+      await Product().select().where('id IN (3,6,9) OR price>?',parameterValue: 8000).toList();
   print(
       'EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\'id IN (3,6,9) OR price>8000\').toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
