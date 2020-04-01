@@ -4,179 +4,7 @@
 // SqfEntityFormGenerator
 // **************************************************************************
 
-part of 'model.dart'; // CONTROLLER hasSubItems:true
-
-class CategoryController extends Category {
-  static SQFViewList getController = SQFViewList(
-    CategoryController(),
-    primaryKeyName: 'id',
-    useSoftDeleting: false,
-    formListTitleField: 'name',
-    formListSubTitleField: null,
-    hasSubItems: true,
-  );
-  SQFViewList subList(int id) {
-    return SQFViewList(CategoryControllerSub(),
-        primaryKeyName: CategoryControllerSub.primaryKeyName,
-        useSoftDeleting: CategoryControllerSub.useSoftDeleting,
-        formListTitleField: CategoryControllerSub.formListTitleField,
-        formListSubTitleField: CategoryControllerSub.formListSubTitleField,
-        filterExpression: '${CategoryControllerSub.relationshipFieldName}=$id');
-  }
-
-  Future<Widget> gotoEdit(dynamic obj) async {
-    return CategoryAdd(obj == null
-        ? Category()
-        : await Category().getById(obj['id'] as int) ?? Category());
-  }
-}
-// END CONTROLLER
-
-class CategoryAdd extends StatefulWidget {
-  CategoryAdd(this._category);
-  final dynamic _category;
-  @override
-  State<StatefulWidget> createState() =>
-      CategoryAddState(_category as Category);
-}
-
-class CategoryAddState extends State {
-  CategoryAddState(this.category);
-  Category category;
-  final _formKey = GlobalKey<FormState>();
-  final txtName = TextEditingController();
-
-  @override
-  void initState() {
-    txtName.text = category.name == null ? '' : category.name;
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: (category.id == null)
-            ? Text('Add a new category')
-            : Text('Edit category'),
-      ),
-      body: Container(
-        alignment: Alignment.topCenter,
-        width: double.infinity,
-        height: double.infinity,
-        child: SingleChildScrollView(
-          child: Padding(
-              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    buildRowName(),
-                    buildRowIsActive(),
-                    FlatButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                        }
-                      },
-                    )
-                  ],
-                ),
-              )),
-        ),
-      ),
-    );
-  }
-
-  Widget buildRowName() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Please enter Name()';
-        }
-        return null;
-      },
-      controller: txtName,
-      decoration: InputDecoration(labelText: 'Name'),
-    );
-  }
-
-  Widget buildRowIsActive() {
-    return Row(
-      children: <Widget>[
-        Text('IsActive?'),
-        Checkbox(
-          value: category.isActive,
-          onChanged: (bool value) {
-            setState(() {
-              category.isActive = value;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
-    );
-  }
-
-  void save() async {
-    category..name = txtName.text;
-    final result = await category.save();
-    if (result != 0) {
-      Navigator.pop(context, true);
-    } else {
-      UITools(context).alertDialog(category.saveResult.toString(),
-          title: 'save Category Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
-    }
-  }
-}
-
-// CONTROLLER hasSubItems:false
-class CategoryControllerSub extends ProductController {
-  static String relationshipFieldName = 'categoryId';
-  static String primaryKeyName = 'id';
-  static bool useSoftDeleting = true;
-  static String formListTitleField = 'name';
-  static String formListSubTitleField;
-}
-
-class ProductController extends Product {
-  static SQFViewList getController = SQFViewList(
-    ProductController(),
-    primaryKeyName: 'id',
-    useSoftDeleting: true,
-    formListTitleField: 'name',
-    formListSubTitleField: null,
-    hasSubItems: false,
-  );
-
-  Future<Widget> gotoEdit(dynamic obj) async {
-    return ProductAdd(obj == null
-        ? Product()
-        : await Product().getById(obj['id'] as int) ?? Product());
-  }
-}
-// END CONTROLLER
+part of 'model.dart';
 
 class ProductAdd extends StatefulWidget {
   ProductAdd(this._product);
@@ -189,19 +17,19 @@ class ProductAddState extends State {
   ProductAddState(this.product);
   Product product;
   final _formKey = GlobalKey<FormState>();
-  final txtName = TextEditingController();
-  final txtDescription = TextEditingController();
-  final txtPrice = TextEditingController();
+  final TextEditingController txtName = TextEditingController();
+  final TextEditingController txtDescription = TextEditingController();
+  final TextEditingController txtPrice = TextEditingController();
 
   List<DropdownMenuItem<int>> _dropdownMenuItemsForCategoryId =
-      List<DropdownMenuItem<int>>();
+      <DropdownMenuItem<int>>[];
   int _selectedCategoryId;
 
-  final txtRownum = TextEditingController();
-  final txtImageUrl = TextEditingController();
-  final txtDatetime = TextEditingController();
-  final txtTimeForDatetime = TextEditingController();
-  final txtDate = TextEditingController();
+  final TextEditingController txtRownum = TextEditingController();
+  final TextEditingController txtImageUrl = TextEditingController();
+  final TextEditingController txtDatetime = TextEditingController();
+  final TextEditingController txtTimeForDatetime = TextEditingController();
+  final TextEditingController txtDate = TextEditingController();
 
   @override
   void initState() {
@@ -266,7 +94,6 @@ class ProductAddState extends State {
                     buildRowPrice(),
                     buildRowIsActive(),
                     buildRowCategoryId(onChangeDropdownItemForCategoryId),
-                    buildRowRownum(),
                     buildRowImageUrl(),
                     buildRowDatetime(),
                     buildRowDate(),
@@ -276,9 +103,10 @@ class ProductAddState extends State {
                         if (_formKey.currentState.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
-                          Scaffold.of(context).showSnackBar(SnackBar(
+                          /* Scaffold.of(context).showSnackBar(SnackBar(
                               duration: Duration(seconds: 2),
                               content: Text('Processing Data')));
+                           */
                         }
                       },
                     )
@@ -294,7 +122,7 @@ class ProductAddState extends State {
     return TextFormField(
       validator: (value) {
         if (value.isEmpty) {
-          return 'Please enter Name()';
+          return 'Please enter Name';
         }
         return null;
       },
@@ -316,6 +144,7 @@ class ProductAddState extends State {
         if (value.isNotEmpty && double.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
+
         return null;
       },
       controller: txtPrice,
@@ -328,7 +157,7 @@ class ProductAddState extends State {
       children: <Widget>[
         Text('IsActive?'),
         Checkbox(
-          value: product.isActive,
+          value: product.isActive ?? false,
           onChanged: (bool value) {
             setState(() {
               product.isActive = value;
@@ -340,7 +169,7 @@ class ProductAddState extends State {
   }
 
   Widget buildRowCategoryId(
-      void onChangeDropdownItemForCategoryId(int selectedCategoryId)) {
+      void Function(int selectedCategoryId) onChangeDropdownItemForCategoryId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -348,7 +177,7 @@ class ProductAddState extends State {
           child: Text('Category'),
         ),
         Expanded(
-            flex: 1,
+            flex: 2,
             child: Container(
               child: DropdownButtonFormField(
                 value: _selectedCategoryId,
@@ -356,7 +185,7 @@ class ProductAddState extends State {
                 onChanged: onChangeDropdownItemForCategoryId,
                 validator: (value) {
                   if ((_selectedCategoryId != null &&
-                          _selectedCategoryId > 0) ||
+                          _selectedCategoryId.toString() != '0') ||
                       true) {
                     return null;
                   } else if (value == null || value == 0) {
@@ -376,6 +205,7 @@ class ProductAddState extends State {
         if (value.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
+
         return null;
       },
       controller: txtRownum,
@@ -404,14 +234,18 @@ class ProductAddState extends State {
             txtDatetime.text = UITools.convertDate(sqfSelectedDate);
             txtTimeForDatetime.text = UITools.convertTime(sqfSelectedDate);
             setState(() {
-              final d = product.datetime ?? DateTime.now();
+              final d = DateTime.tryParse(txtDatetime.text) ??
+                  product.datetime ??
+                  DateTime.now();
               product.datetime = DateTime(sqfSelectedDate.year,
                       sqfSelectedDate.month, sqfSelectedDate.day)
                   .add(Duration(
                       hours: d.hour, minutes: d.minute, seconds: d.second));
             });
           },
-              currentTime: product.datetime ?? DateTime.now(),
+              currentTime: DateTime.tryParse(txtDatetime.text) ??
+                  product.datetime ??
+                  DateTime.now(),
               locale: UITools.mainDatePickerLocaleType),
           controller: txtDatetime,
           decoration: InputDecoration(labelText: 'Datetime'),
@@ -425,7 +259,9 @@ class ProductAddState extends State {
                 onConfirm: (sqfSelectedDate) {
               txtTimeForDatetime.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
-                final d = product.datetime ?? DateTime.now();
+                final d = DateTime.tryParse(txtDatetime.text) ??
+                    product.datetime ??
+                    DateTime.now();
                 product.datetime = DateTime(d.year, d.month, d.day).add(
                     Duration(
                         hours: sqfSelectedDate.hour,
@@ -434,7 +270,10 @@ class ProductAddState extends State {
                 txtDatetime.text = UITools.convertDate(product.datetime);
               });
             },
-                currentTime: product.datetime ?? DateTime(2019),
+                currentTime: DateTime.tryParse(
+                        '${UITools.convertDate(DateTime.now())} ${txtTimeForDatetime.text}') ??
+                    product.datetime ??
+                    DateTime.now(),
                 locale: UITools.mainDatePickerLocaleType),
             controller: txtTimeForDatetime,
             decoration: InputDecoration(labelText: ''),
@@ -455,7 +294,8 @@ class ProductAddState extends State {
           product.date = sqfSelectedDate;
         });
       },
-          currentTime: product.date ?? DateTime.now(),
+          currentTime:
+              DateTime.tryParse(txtDate.text) ?? product.date ?? DateTime.now(),
           locale: UITools.mainDatePickerLocaleType),
       controller: txtDate,
       decoration: InputDecoration(labelText: 'Date'),
@@ -477,13 +317,25 @@ class ProductAddState extends State {
   }
 
   void save() async {
+    var _datetime = DateTime.tryParse(txtDatetime.text);
+    final _datetimeTime = DateTime.tryParse(txtTimeForDatetime.text);
+    if (_datetime != null && _datetimeTime != null) {
+      _datetime = _datetime.add(Duration(
+          hours: _datetimeTime.hour,
+          minutes: _datetimeTime.minute,
+          seconds: _datetimeTime.second));
+    }
+    final _date = DateTime.tryParse(txtDate.text);
+
     product
       ..name = txtName.text
       ..description = txtDescription.text
       ..price = double.tryParse(txtPrice.text)
       ..categoryId = _selectedCategoryId
       ..rownum = int.tryParse(txtRownum.text)
-      ..imageUrl = txtImageUrl.text;
+      ..imageUrl = txtImageUrl.text
+      ..datetime = _datetime
+      ..date = _date;
     final result = await product.save();
     if (result != 0) {
       Navigator.pop(context, true);
@@ -496,25 +348,125 @@ class ProductAddState extends State {
   }
 }
 
-// CONTROLLER hasSubItems:false
+class CategoryAdd extends StatefulWidget {
+  CategoryAdd(this._category);
+  final dynamic _category;
+  @override
+  State<StatefulWidget> createState() =>
+      CategoryAddState(_category as Category);
+}
 
-class TodoController extends Todo {
-  static SQFViewList getController = SQFViewList(
-    TodoController(),
-    primaryKeyName: 'id',
-    useSoftDeleting: false,
-    formListTitleField: 'title',
-    formListSubTitleField: null,
-    hasSubItems: false,
-  );
+class CategoryAddState extends State {
+  CategoryAddState(this.category);
+  Category category;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtName = TextEditingController();
 
-  Future<Widget> gotoEdit(dynamic obj) async {
-    return TodoAdd(obj == null
-        ? Todo()
-        : await Todo().getById(obj['id'] as int) ?? Todo());
+  @override
+  void initState() {
+    txtName.text = category.name == null ? '' : category.name;
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: (category.id == null)
+            ? Text('Add a new category')
+            : Text('Edit category'),
+      ),
+      body: Container(
+        alignment: Alignment.topCenter,
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    buildRowName(),
+                    buildRowIsActive(),
+                    FlatButton(
+                      child: saveButton(),
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          // If the form is valid, display a Snackbar.
+                          save();
+                          /* Scaffold.of(context).showSnackBar(SnackBar(
+                              duration: Duration(seconds: 2),
+                              content: Text('Processing Data')));
+                           */
+                        }
+                      },
+                    )
+                  ],
+                ),
+              )),
+        ),
+      ),
+    );
+  }
+
+  Widget buildRowName() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter Name';
+        }
+        return null;
+      },
+      controller: txtName,
+      decoration: InputDecoration(labelText: 'Name'),
+    );
+  }
+
+  Widget buildRowIsActive() {
+    return Row(
+      children: <Widget>[
+        Text('IsActive?'),
+        Checkbox(
+          value: category.isActive ?? false,
+          onChanged: (bool value) {
+            setState(() {
+              category.isActive = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Container saveButton() {
+    return Container(
+      padding: const EdgeInsets.all(7.0),
+      decoration: BoxDecoration(
+          color: Color.fromRGBO(95, 66, 119, 1.0),
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(5.0)),
+      child: Text(
+        'Save',
+        style: TextStyle(color: Colors.white, fontSize: 20),
+      ),
+    );
+  }
+
+  void save() async {
+    category..name = txtName.text;
+    final result = await category.save();
+    if (result != 0) {
+      Navigator.pop(context, true);
+    } else {
+      UITools(context).alertDialog(category.saveResult.toString(),
+          title: 'save Category Failed!', callBack: () {
+        Navigator.pop(context, true);
+      });
+    }
   }
 }
-// END CONTROLLER
 
 class TodoAdd extends StatefulWidget {
   TodoAdd(this._todos);
@@ -527,8 +479,9 @@ class TodoAddState extends State {
   TodoAddState(this.todos);
   Todo todos;
   final _formKey = GlobalKey<FormState>();
-  final txtUserId = TextEditingController();
-  final txtTitle = TextEditingController();
+  final TextEditingController txtId = TextEditingController();
+  final TextEditingController txtUserId = TextEditingController();
+  final TextEditingController txtTitle = TextEditingController();
 
   @override
   void initState() {
@@ -556,6 +509,7 @@ class TodoAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowId(),
                     buildRowUserId(),
                     buildRowTitle(),
                     buildRowCompleted(),
@@ -565,9 +519,10 @@ class TodoAddState extends State {
                         if (_formKey.currentState.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
-                          Scaffold.of(context).showSnackBar(SnackBar(
+                          /* Scaffold.of(context).showSnackBar(SnackBar(
                               duration: Duration(seconds: 2),
                               content: Text('Processing Data')));
+                           */
                         }
                       },
                     )
@@ -579,12 +534,27 @@ class TodoAddState extends State {
     );
   }
 
+  Widget buildRowId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtId,
+      decoration: InputDecoration(labelText: 'Id'),
+    );
+  }
+
   Widget buildRowUserId() {
     return TextFormField(
       validator: (value) {
         if (value.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
+
         return null;
       },
       controller: txtUserId,
@@ -604,7 +574,7 @@ class TodoAddState extends State {
       children: <Widget>[
         Text('Completed?'),
         Checkbox(
-          value: todos.completed,
+          value: todos.completed ?? false,
           onChanged: (bool value) {
             setState(() {
               todos.completed = value;
@@ -631,6 +601,7 @@ class TodoAddState extends State {
 
   void save() async {
     todos
+      ..id = int.tryParse(txtId.text)
       ..userId = int.tryParse(txtUserId.text)
       ..title = txtTitle.text;
     final result = await todos.save();

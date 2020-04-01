@@ -19,7 +19,9 @@ class SQFViewDetailState extends State {
       this.useSoftDeleting, this.primaryKeyName);
   dynamic data;
   Map<String, dynamic> objData;
-  List<String> objKeys;
+  Map<String, String> objMenu;
+  List<String> objDataKeys;
+  List<String> objMenuKeys;
   final dynamic T;
   final String formListTitleField;
   final String primaryKeyName;
@@ -33,15 +35,17 @@ class SQFViewDetailState extends State {
   }
 
   Future<void> getData() async {
-    obj = await T.getById(data[primaryKeyName]);
+    obj = await T.getById(data[primaryKeyName],loadParents : true);
     if (obj == null) {
       Navigator.pop(context, true);
       return;
     }
+    objData = await obj.toMap(forView: true) as Map<String, dynamic>;
     setState(() {
-      objData = obj.toMap() as Map<String, dynamic>;
       data = objData;
-      objKeys = objData.keys.toList();
+      objDataKeys = objData.keys.toList();
+      objMenu = T.subMenu() as Map<String, String>;
+      objMenuKeys = objMenu.keys.toList();
     });
   }
 
@@ -57,12 +61,14 @@ class SQFViewDetailState extends State {
                           padding: const EdgeInsets.all(8.0),
                           child: ListTile(
                             title: Text(
-                              objKeys[index].toString(),
+                              objDataKeys[index] != null
+                                  ? objDataKeys[index].toString()
+                                  : '',
                               style: TextStyle(
                                   color: UITools.mainTextColorAlternative),
                             ),
                             subtitle: Text(
-                              objData[objKeys[index]].toString(),
+                              objData[objDataKeys[index]].toString(),
                               style: TextStyle(
                                   color: UITools.mainTextColor,
                                   fontSize: UITools(context).scaleWidth(18)),
@@ -84,55 +90,72 @@ class SQFViewDetailState extends State {
       }
     }
 
+    void getSubList(String controllerName) async {
+      final bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Scaffold(
+                    backgroundColor: UITools.mainBgColor,
+                    body: T.subList(data[primaryKeyName], controllerName)
+                        as Widget,
+                    appBar: AppBar(
+                      backgroundColor: UITools.mainBgColorLighter,
+                      elevation: 1,
+                      centerTitle: false,
+                      title: Text(
+                        '${data[formListTitleField]} items...',
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  )));
+      if (result != null) {
+        if (result) {
+          getData();
+        }
+      }
+    }
+
+    FlatButton buildFlatButton(
+        Color buttonColor, String text, Function onpressed) {
+      return FlatButton(
+        color: buttonColor,
+      
+        textColor: UITools.mainTextColor,
+        clipBehavior: Clip.hardEdge,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: UITools(context).scaleWidth(14)),
+        ),
+        onPressed: () async {
+          onpressed();
+        },
+      );
+    }
+
     final actions = <Widget>[
       //actionBar
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          FlatButton(
-            color: UITools.mainAlertColor,
-            autofocus: false,
-            textColor: UITools.mainTextColor,
-            clipBehavior: Clip.hardEdge,
-            child: Text(
-              'Edit',
-              style: TextStyle(fontSize: UITools(context).scaleWidth(14)),
-            ),
-            onPressed: () {
-              goToUpdate(data);
-            },
-          ),
+          buildFlatButton(
+              UITools.mainAlertColor, 'Edit', () => goToUpdate(data)),
           SizedBox(
             width: 20,
           ),
-          FlatButton(
-            color: UITools.mainItemDeletedBgColor,
-            autofocus: false,
-            textColor: UITools.mainTextColor,
-            clipBehavior: Clip.hardEdge,
-            child: Text(
+          buildFlatButton(
+              UITools.mainItemDeletedBgColor,
               '${(!useSoftDeleting ? '' : data['isDeleted'] == true ? 'Hard ' : '')}Delete',
-              style: TextStyle(fontSize: UITools(context).scaleWidth(14)),
-            ),
-            onPressed: () async {
-              SessionDetail.updatedItem = await UITools(context).selectOption(
-                  Choice.Delete,
-                  data,
-                  obj,
-                  useSoftDeleting,
-                  false,
-                  formListTitleField,
-                  getData);
-            },
-          ),
+              () async => SessionDetail.updatedItem = await UITools(context)
+                  .selectOption(Choice.Delete, data, obj, useSoftDeleting,
+                      false, formListTitleField, getData)),
           SizedBox(
             width: 10,
           ),
           useSoftDeleting && data['isDeleted'] == true
               ? FlatButton(
                   color: Colors.blueGrey,
-                  autofocus: false,
+                 
                   textColor: UITools.mainTextColor,
                   clipBehavior: Clip.hardEdge,
                   child: Text(
@@ -153,6 +176,46 @@ class SQFViewDetailState extends State {
                 )
               : Text(''),
         ],
+      ),
+      Row(
+        children: objMenu == null || objMenu.isEmpty
+            ? <Widget>[Text('')]
+            : <Widget>[
+                PopupMenuButton<String>(
+                    child: Container(
+                      height: UITools(context).scaleHeight(30),
+                      width: UITools(context).scaleWidth(120),
+                      color: UITools.mainBgColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              'Sub Items',
+                              style: TextStyle(
+                                  fontSize: UITools(context).scaleWidth(14)),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: UITools(context).scaleWidth(28),
+                              color: Colors.white,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    onSelected: getSubList,
+                    itemBuilder: (BuildContext context) =>
+                        List.generate(objMenu.length, (index) {
+                          return PopupMenuItem<String>(
+                            child: Text(objMenu[objMenuKeys[index]].toString()),
+                            value: objMenuKeys[index],
+                          );
+                        })),
+              ],
+      ),
+      SizedBox(
+        width: 10,
       ),
     ];
     return UITools(context).getSubPage(makeMainController, actions);

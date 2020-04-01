@@ -1,3 +1,5 @@
+
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -14,15 +16,6 @@ part 'model.g.view.dart';
 
 // STEP 1: define your tables as shown in the example Classes below.
 
-// Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
-@SqfEntityBuilderForm(tableCategory,
-    formListTitleField:
-        'name' // when formListTitleField is null, sqfentity gets first text field for this property
-    ,
-    hasSubItems:
-        true // when hasSubItems is true, goes to sub items instead of detail when click on item
-    )
-
 // Define the 'tableCategory' constant as SqfEntityTable for the category table
 const tableCategory = SqfEntityTable(
     tableName: 'category',
@@ -36,15 +29,10 @@ const tableCategory = SqfEntityTable(
     fields: [
       SqfEntityField('name', DbType.text, formIsRequired: true),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
-    ]);
+    ],
+    formListSubTitleField: ''
+    );
 
-// You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
-@SqfEntityBuilderForm(
-  tableProduct,
-  formListTitleField:
-      'name', // when formListTitleField is null, sqfentity gets first text field for this property
-  formListSubTitleField: 'description', // optional
-)
 // Define the 'tableProduct' constant as SqfEntityTable for the product table
 const tableProduct = SqfEntityTable(
     tableName: 'product',
@@ -83,7 +71,7 @@ const tableProduct = SqfEntityTable(
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
-@SqfEntityBuilderForm(tableTodo)
+
 const tableTodo = SqfEntityTable(
     tableName: 'todos',
     primaryKeyName: 'id',
@@ -115,15 +103,14 @@ const seqIdentity = SqfEntitySequence(
 // STEP 2: Create your Database Model constant instanced from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases.
 // So you can create many Database Models and use them in the application.
-@SqfEntityBuilder(myDbModel, formControllers: [
-  // Creates controllers for Add/Edit forms and listing page of tables (optional)
-  tableProduct, tableCategory, tableTodo
-])
+@SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM.db',
+    databaseName: 'sampleORM_0104_1.db',
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],
+    // You can define tables to generate add/edit view forms if you want to use Form Generator property
+    formTables: [tableProduct, tableCategory,tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath: null //         'assets/sample.db'
@@ -137,3 +124,4 @@ const myDbModel = SqfEntityModel(
   Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If @SqfEntityBuilderForm annotation is used)
   Enjoy.. Huseyin TOKPINAR
 */
+

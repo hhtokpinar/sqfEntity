@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'model/controller.dart';
+import 'model/.controller.dart';
 import 'tools/helper.dart';
 import 'tools/popup.dart';
 
@@ -28,7 +28,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   TextEditingController txtModel = TextEditingController();
-
+  int selectedDb;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +83,26 @@ class HomeState extends State<Home> {
                 ),
                 value: 2,
               ),
+               PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right, color: Colors.black),
+                    Text('switch to Chinook.db'),
+                  ],
+                ),
+                value: 4,
+              ),
+               PopupMenuItem<int>(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.arrow_right, color: Colors.black),
+                    Text('switch to Sample.db'),
+                  ],
+                ), 
+                value: 5,
+              ),
             ],
           )
         ],
@@ -124,6 +144,12 @@ part 'model.g.dart';
         showPopup(context, _createdModelWindow(),
             'Model was generated\nfrom database successfully');
 
+        break;
+        case 4:
+        case 5:
+        setState(() {
+          UITools.selectedDb=value-4;
+        });
         break;
       default:
     }

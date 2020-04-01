@@ -6,53 +6,44 @@ import 'view.detail.dart';
 //import 'package:sqfentity_sample/view/Update.dart';
 
 class SQFViewList extends StatefulWidget {
-  SQFViewList(this.T,
-      {this.useSoftDeleting,
-      this.formListTitleField,
-      this.formListSubTitleField,
-      this.hasSubItems,
-      this.filterExpression,
-      this.primaryKeyName});
+  SQFViewList(
+    this.T, {
+    this.useSoftDeleting,
+    //this.formListTitleField,
+    //this.formListSubTitleField,
+    this.filterExpression,
+    this.primaryKeyName,
+    this.filterParameter,
+  });
   final dynamic T;
   final bool useSoftDeleting;
-  final bool hasSubItems;
-  final String formListTitleField;
-  final String formListSubTitleField;
   final String filterExpression;
+  final dynamic filterParameter;
   final String primaryKeyName;
   @override
   State<StatefulWidget> createState() => SQFViewListState(
-      T,
-      useSoftDeleting,
-      formListTitleField,
-      formListSubTitleField,
-      hasSubItems ?? false,
-      filterExpression,
-      primaryKeyName);
+      T, useSoftDeleting, filterExpression, primaryKeyName, filterParameter);
 }
 
 class SQFViewListState extends State {
-  SQFViewListState(
-      this.T,
-      this.useSoftDeleting,
-      this.formListTitleField,
-      this.formListSubTitleField,
-      this.hasSubItems,
-      this.filterExpression,
-      this.primaryKeyName);
+  SQFViewListState(this.T, this.useSoftDeleting, this.filterExpression,
+      this.primaryKeyName, this.filterParameter);
   dynamic T;
   final bool useSoftDeleting;
-  final bool hasSubItems;
-  final String formListTitleField;
-  final String formListSubTitleField;
+
+  String formListTitleField;
+  String formListSubTitleField;
   final String filterExpression;
+  final dynamic filterParameter;
   final String primaryKeyName;
-  var datalist = List<dynamic>();
+  List<dynamic> datalist = <dynamic>[];
   bool showIsDeleted = false;
   @override
   Widget build(BuildContext context) {
     void getData() async {
-      final selectCols = List<String>()
+      formListTitleField = T.formListTitleField as String;
+      formListSubTitleField = T.formListSubTitleField as String;
+      final selectCols = <String>[]
         ..add(primaryKeyName)
         ..add(formListTitleField);
       if (formListSubTitleField != null && formListSubTitleField.isNotEmpty) {
@@ -64,7 +55,7 @@ class SQFViewListState extends State {
 
       final datalistData = await T
           .select(columnsToSelect: selectCols, getIsDeleted: showIsDeleted)
-          .where(filterExpression)
+          .where(filterExpression, parameterValue: filterParameter)
           .toMapList();
       setState(() {
         datalist = datalistData as List;
@@ -75,6 +66,7 @@ class SQFViewListState extends State {
       getData();
       SessionDetail.updatedItem = false;
     }
+
     void goToDetail(dynamic data) async {
       final bool result = await Navigator.push(
           context,
@@ -90,31 +82,6 @@ class SQFViewListState extends State {
                       centerTitle: false,
                       title: Text(
                         '${data[formListTitleField]} details..',
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  )));
-      if (result != null) {
-        if (result) {
-          getData();
-        }
-      }
-    }
-
-    void getSubList(dynamic data) async {
-      final bool result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Scaffold(
-                    backgroundColor: UITools.mainBgColor,
-                    body: T.subList(data[primaryKeyName]) as Widget,
-                    //body: SQFViewListItems(),
-                    appBar: AppBar(
-                      backgroundColor: UITools.mainBgColorLighter,
-                      elevation: 1,
-                      centerTitle: false,
-                      title: Text(
-                        '${data[formListTitleField]} items..',
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -148,7 +115,7 @@ class SQFViewListState extends State {
             child: SizedBox(
               width: UITools(context).scaleWidth(60),
               height: UITools(context).scaleHeight(50),
-              child: Icon(hasSubItems ? Icons.folder : Icons.description,
+              child: Icon(Icons.description,
                   color: UITools.mainIconsColor,
                   size: UITools(context).scaleHeight(30.0)),
             ),
@@ -165,17 +132,18 @@ class SQFViewListState extends State {
                         : null,
                 fontSize: UITools(context).scaleWidth(24)),
           ),
-          subtitle: formListSubTitleField != null
-              ? Text(data[formListSubTitleField].toString(),
-                  style: TextStyle(
-                    color: UITools.mainTextColorAlternative,
-                    fontSize: UITools(context).scaleWidth(14),
-                    fontWeight: FontWeight.bold,
-                  ))
-              : null,
+          subtitle:
+              formListSubTitleField != null && formListSubTitleField.isNotEmpty
+                  ? Text(data[formListSubTitleField].toString(),
+                      style: TextStyle(
+                        color: UITools.mainTextColorAlternative,
+                        fontSize: UITools(context).scaleWidth(14),
+                        fontWeight: FontWeight.bold,
+                      ))
+                  : null,
           trailing: Icon(Icons.keyboard_arrow_right,
               color: Colors.white, size: UITools(context).scaleHeight(30.0)),
-          onTap: () => hasSubItems ? getSubList(data) : goToDetail(data),
+          onTap: () => goToDetail(data),
         );
 
     Card makeItemCard(dynamic data) => Card(
@@ -280,6 +248,12 @@ class SQFViewListState extends State {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: <Widget>[
+                InkWell(
+                  child: Icon(Icons.refresh),
+                  onTap: () {
+                    getData();
+                  },
+                ),
                 Checkbox(
                   activeColor: Color.fromRGBO(52, 20, 86, 1),
                   value: showIsDeleted,

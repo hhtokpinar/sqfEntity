@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: lib/model/*.g.dart
+
 part of 'model.dart';
 
 // **************************************************************************
@@ -24,6 +26,7 @@ class TableProduct extends SqfEntityTableBase {
   TableProduct() {
     // declare properties of EntityTable
     tableName = 'product';
+    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'id';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
@@ -37,7 +40,9 @@ class TableProduct extends SqfEntityTableBase {
       SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationshipBase(
           TableCategory.getInstance, DeleteRule.CASCADE,
-          defaultValue: 0, fieldName: 'categoryId'),
+          defaultValue: 0,
+          fieldName: 'categoryId',
+          relationType: RelationType.ONE_TO_MANY),
       SqfEntityFieldBase('rownum', DbType.integer),
       SqfEntityFieldBase('imageUrl', DbType.text),
       SqfEntityFieldBase('datetime', DbType.datetime,
@@ -106,7 +111,7 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
   SequenceIdentitySequence() {
     sequenceName = 'identity';
     maxValue =
-        9223372036854775807; /* optional. default is max int (9.223.372.036.854.775.807) */
+        9007199254740991; /* optional. default is max int (9.223.372.036.854.775.807) */
     cycle = false; /* optional. default is false; */
     minValue = 0; /* optional. default is 0 */
     incrementBy = 1; /* optional. default is 1 */
@@ -138,7 +143,7 @@ class MyDbModel extends SqfEntityModelProvider {
         .bundledDatabasePath; //'assets/sample.db'; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
   }
   Map<String, dynamic> getControllers() {
-    final controllers = Map<String, dynamic>();
+    final controllers = <String, dynamic>{};
     controllers['product'] = ProductController.getController;
     controllers['category'] = CategoryController.getController;
     controllers['todos'] = TodoController.getController;
@@ -163,7 +168,7 @@ class Product {
       this.datetime,
       this.date,
       this.isDeleted}) {
-    setDefaultValues();
+    _setDefaultValues();
   }
   Product.withFields(
       this.name,
@@ -176,10 +181,10 @@ class Product {
       this.datetime,
       this.date,
       this.isDeleted) {
-    setDefaultValues();
+    _setDefaultValues();
   }
   Product.withId(
-      this.id,
+      id,
       this.name,
       this.description,
       this.price,
@@ -190,33 +195,39 @@ class Product {
       this.datetime,
       this.date,
       this.isDeleted) {
-    setDefaultValues();
+    _setDefaultValues();
   }
   Product.fromMap(Map<String, dynamic> o) {
-    id = o['id'] as int;
-    name = o['name'] as String;
+    _setDefaultValues();
+    id = int.tryParse(o['id'].toString());
+    if (o['name'] != null) name = o['name'] as String;
+    if (o['description'] != null) description = o['description'] as String;
+    if (o['price'] != null) price = double.tryParse(o['price'].toString());
+    if (o['isActive'] != null)
+      isActive = o['isActive'] == 1 || o['isActive'] == true;
+    categoryId = int.tryParse(o['categoryId'].toString());
 
-    description = o['description'] as String;
-
-    price = o['price'] as double;
-
-    isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
-
-    categoryId = o['categoryId'] as int;
-
-    rownum = o['rownum'] as int;
-
-    imageUrl = o['imageUrl'] as String;
-
-    datetime = o['datetime'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(o['datetime'] as int)
+    if (o['rownum'] != null) rownum = int.tryParse(o['rownum'].toString());
+    if (o['imageUrl'] != null) imageUrl = o['imageUrl'] as String;
+    if (o['datetime'] != null)
+      datetime = int.tryParse(o['datetime'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['datetime'].toString()))
+          : DateTime.tryParse(o['datetime'].toString());
+    if (o['date'] != null)
+      date = int.tryParse(o['date'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['date'].toString()))
+          : DateTime.tryParse(o['date'].toString());
+    isDeleted = o['isDeleted'] != null
+        ? o['isDeleted'] == 1 || o['isDeleted'] == true
         : null;
 
-    date = o['date'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(o['date'] as int)
+    // RELATIONSHIPS FromMAP
+    plCategory = o['category'] != null
+        ? Category.fromMap(o['category'] as Map<String, dynamic>)
         : null;
-
-    isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
+    // END RELATIONSHIPS FromMAP
   }
   // FIELDS (Product)
   int id;
@@ -235,12 +246,13 @@ class Product {
   // end FIELDS (Product)
 
 // RELATIONSHIPS (Product)
+  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plCategory', 'plField2'..]) or so on..
+  Category plCategory;
+
   /// get Category By CategoryId
-  Future<Category> getCategory([VoidCallback category(Category o)]) async {
-    final _obj = await Category().getById(categoryId);
-    if (category != null) {
-      category(_obj);
-    }
+  Future<Category> getCategory({bool loadParents = false}) async {
+    final _obj = await Category().getById(categoryId, loadParents: loadParents);
     return _obj;
   }
   // END RELATIONSHIPS (Product)
@@ -253,8 +265,9 @@ class Product {
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
-    final map = Map<String, dynamic>();
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -275,7 +288,7 @@ class Product {
     }
 
     if (categoryId != null) {
-      map['categoryId'] = categoryId;
+      map['categoryId'] = forView ? plCategory.name : categoryId;
     }
 
     if (rownum != null) {
@@ -288,7 +301,7 @@ class Product {
 
     if (datetime != null) {
       map['datetime'] = forJson
-          ? datetime.toUtc().toString()
+          ? datetime.toString()
           : forQuery ? datetime.millisecondsSinceEpoch : datetime;
     }
 
@@ -308,8 +321,10 @@ class Product {
   }
 
   Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
-    final map = Map<String, dynamic>();
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -330,7 +345,7 @@ class Product {
     }
 
     if (categoryId != null) {
-      map['categoryId'] = categoryId;
+      map['categoryId'] = forView ? plCategory.name : categoryId;
     }
 
     if (rownum != null) {
@@ -343,7 +358,7 @@ class Product {
 
     if (datetime != null) {
       map['datetime'] = forJson
-          ? datetime.toUtc().toString()
+          ? datetime.toString()
           : forQuery ? datetime.millisecondsSinceEpoch : datetime;
     }
 
@@ -362,17 +377,32 @@ class Product {
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds());
+    return json.encode(await toMapWithChilds(false, true));
   }
 
   List<dynamic> toArgs() {
+    return [
+      name,
+      description,
+      price,
+      isActive,
+      categoryId,
+      rownum,
+      imageUrl,
+      datetime != null ? datetime.millisecondsSinceEpoch : null,
+      date != null ? date.millisecondsSinceEpoch : null,
+      isDeleted
+    ];
+  }
+
+  List<dynamic> toArgsWithIds() {
     return [
       id,
       name,
@@ -401,7 +431,7 @@ class Product {
 
   static Future<List<Product>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Product>();
+    var objList = <Product>[];
     try {
       objList = list
           .map((product) => Product.fromMap(product as Map<String, dynamic>))
@@ -412,42 +442,90 @@ class Product {
     return objList;
   }
 
-  static Future<List<Product>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    final productsList = Product.fromMapList(data);
-    /*  for (int i = 0; i < data.length; i++) {
-        productsList.add(Product.fromMap(data[i] as Map<String, dynamic>));
-      }
-      */
-    return productsList;
-  }
+  /*
+    /// REMOVED AFTER v1.2.1+14 
+    static Future<List<Product>> fromObjectList(Future<List<dynamic>> o) async {
+      final data = await o;
+      return await Product.fromMapList(data);
+    } 
+    */
 
-  static List<Product> fromMapList(List<dynamic> data) {
-    final List<Product> products = List<Product>();
-    for (final Map map in data as List<Map>) {
-      products.add(Product.fromMap(map as Map<String, dynamic>));
+  static Future<List<Product>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final List<Product> objList = <Product>[];
+    for (final map in data) {
+      final obj = Product.fromMap(map as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plCategory') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plCategory'))) {
+          loadedFields.add('category.plCategory');
+          obj.plCategory =
+              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
+      objList.add(obj);
     }
-    return products;
+    return objList;
   }
 
   /// returns Product by ID if exist, otherwise returns null
-  /// <param name='id'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Product if exist, otherwise returns null
-  Future<Product> getById(int id) async {
+  Future<Product> getById(int id,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     if (id == null) {
       return null;
     }
-    Product productObj;
+    Product obj;
     final data = await _mnProduct.getById([id]);
     if (data.length != 0) {
-      productObj = Product.fromMap(data[0] as Map<String, dynamic>);
+      obj = Product.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plCategory') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plCategory'))) {
+          loadedFields.add('category.plCategory');
+          obj.plCategory =
+              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
     } else {
-      productObj = null;
+      obj = null;
     }
-    return productObj;
+    return obj;
   }
 
-  /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
 
   /// <returns>Returns id
   Future<int> save() async {
@@ -459,8 +537,10 @@ class Product {
         save();
       }
     } else {
-      id = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnProduct.update(this);
     }
+
     return id;
   }
 
@@ -469,40 +549,51 @@ class Product {
   /// <returns>Returns a new Primary Key value of Product
   Future<int> saveAs() async {
     id = null;
+
     return save();
   }
 
-  /// saveAll method saves the sent List<Product> as a batch in one transaction
+  /// saveAll method saves the sent List<Product> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Product> products) async {
-    final results = _mnProduct.saveAll(
-        'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-        products);
-    return results;
+  Future<List<dynamic>> saveAll(List<Product> products) async {
+    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',products);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    MyDbModel().batchStart();
+    for (final obj in products) {
+      await obj.save();
+    }
+    return MyDbModel().batchCommit();
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
-  Future<int> _upsert() async {
+  Future<int> upsert() async {
     try {
-      id = await _mnProduct.rawInsert(
-          'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-          [
-            id,
-            name,
-            description,
-            price,
-            isActive,
-            categoryId,
-            rownum,
-            imageUrl,
-            datetime != null ? datetime.millisecondsSinceEpoch : null,
-            date != null ? date.millisecondsSinceEpoch : null,
-            isDeleted
-          ]);
-      saveResult = BoolResult(
-          success: true, successMessage: 'Product id=$id updated successfuly');
+      if (await _mnProduct.rawInsert(
+              'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+              [
+                id,
+                name,
+                description,
+                price,
+                isActive,
+                categoryId,
+                rownum,
+                imageUrl,
+                datetime != null ? datetime.millisecondsSinceEpoch : null,
+                date != null ? date.millisecondsSinceEpoch : null,
+                isDeleted
+              ]) ==
+          1) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage: 'Product id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Product id=$id did not update');
+      }
       return id;
     } catch (e) {
       saveResult = BoolResult(
@@ -512,12 +603,14 @@ class Product {
     }
   }
 
-  /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+  /// inserts or replaces the sent List<<Product>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Product> products) async {
+  ///
+  /// Returns a BoolCommitResult
+  Future<BoolCommitResult> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
-        'INSERT OR REPLACE INTO product (id,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
         products);
     return results;
   }
@@ -565,9 +658,9 @@ class Product {
       ..qparams.distinct = true;
   }
 
-  void setDefaultValues() {
+  void _setDefaultValues() {
     price = price ?? 0;
-    isActive = isActive ?? false;
+    isActive = isActive ?? true;
     categoryId = categoryId ?? 0;
     datetime = datetime ?? DateTime.now();
     isDeleted = isDeleted ?? false;
@@ -575,22 +668,22 @@ class Product {
   // END METHODS
   // CUSTOM CODES
   /*
-    you must define customCode property of your SqfEntityTable constant for ex:
-    const tablePerson = SqfEntityTable(
-    tableName: 'person',
-    primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-    fields: [
-      SqfEntityField('firstName', DbType.text),
-      SqfEntityField('lastName', DbType.text),
-    ],
-    customCode: '''
-     String fullName()
-     { 
-       return '$firstName $lastName';
-     }
-    ''');
-   */
+      you must define customCode property of your SqfEntityTable constant for ex:
+      const tablePerson = SqfEntityTable(
+      tableName: 'person',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+      ],
+      customCode: '''
+       String fullName()
+       { 
+         return '$firstName $lastName';
+       }
+      ''');
+     */
   // END CUSTOM CODES
 }
 // endregion product
@@ -609,7 +702,7 @@ class ProductField extends SearchCriteria {
     return this;
   }
 
-  ProductFilterBuilder equals(var pValue) {
+  ProductFilterBuilder equals(dynamic pValue) {
     param.expression = '=';
     productFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, productFB.parameters, param, SqlSyntax.EQuals,
@@ -622,7 +715,7 @@ class ProductField extends SearchCriteria {
     return productFB;
   }
 
-  ProductFilterBuilder equalsOrNull(var pValue) {
+  ProductFilterBuilder equalsOrNull(dynamic pValue) {
     param.expression = '=';
     productFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, productFB.parameters, param,
@@ -779,7 +872,7 @@ class ProductField extends SearchCriteria {
     return productFB;
   }
 
-  ProductFilterBuilder inValues(var pValue) {
+  ProductFilterBuilder inValues(dynamic pValue) {
     productFB._addedBlocks = setCriteria(
         pValue,
         productFB.parameters,
@@ -799,10 +892,10 @@ class ProductFilterBuilder extends SearchCriteria {
   ProductFilterBuilder(Product obj) {
     whereString = '';
     qparams = QueryParams();
-    parameters = List<DbParameter>();
-    orderByList = List<String>();
-    groupByList = List<String>();
-    _addedBlocks = AddedBlocks(List<bool>(), List<bool>());
+    parameters = <DbParameter>[];
+    orderByList = <String>[];
+    groupByList = <String>[];
+    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
     _addedBlocks.needEndBlock.add(false);
     _addedBlocks.waitingStartBlock.add(false);
     _pagesize = 0;
@@ -844,11 +937,11 @@ class ProductFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  ProductFilterBuilder where(String whereCriteria) {
+  ProductFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
     }
     return this;
@@ -887,12 +980,12 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  ProductFilterBuilder orderBy(var argFields) {
+  ProductFilterBuilder orderBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s ');
         }
       }
@@ -905,12 +998,12 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  ProductFilterBuilder orderByDesc(var argFields) {
+  ProductFilterBuilder orderByDesc(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s desc ');
         }
       }
@@ -923,12 +1016,12 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  ProductFilterBuilder groupBy(var argFields) {
+  ProductFilterBuilder groupBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') groupByList.add(' $s ');
         }
       }
@@ -1038,6 +1131,7 @@ class ProductFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -1047,15 +1141,15 @@ class ProductFilterBuilder extends SearchCriteria {
               break;
             default:
           }
-          if (param.value != null) {
-            whereArguments.add(param.value);
-          }
-          if (param.value2 != null) {
-            whereArguments.add(param.value2);
-          }
         }
       } else {
         whereString += param.whereString;
+      }
+      if (param.value != null) {
+        whereArguments.add(param.value);
+      }
+      if (param.value2 != null) {
+        whereArguments.add(param.value2);
       }
     }
     if (Product._softDeleteActivated) {
@@ -1076,7 +1170,7 @@ class ProductFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Product> batch by query
+  /// Deletes List<Product> bulk by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
@@ -1093,7 +1187,7 @@ class ProductFilterBuilder extends SearchCriteria {
   Future<BoolResult> recover() async {
     _getIsDeleted = true;
     _buildParameters();
-    print('SQFENTITIY: recover Product batch invoked');
+    print('SQFENTITIY: recover Product bulk invoked');
     return _obj._mnProduct.updateBatch(qparams, {'isDeleted': 0});
   }
 
@@ -1111,29 +1205,56 @@ class ProductFilterBuilder extends SearchCriteria {
     return _obj._mnProduct.updateBatch(qparams, values);
   }
 
-  /// This method always returns ProductObj if exist, otherwise returns null
+  /// This method always returns Product Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Product>
-  Future<Product> toSingle([VoidCallback product(Product o)]) async {
+  Future<Product> toSingle(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
     final objFuture = _obj._mnProduct.toList(qparams);
     final data = await objFuture;
-    Product retVal;
+    Product obj;
     if (data.isNotEmpty) {
-      retVal = Product.fromMap(data[0] as Map<String, dynamic>);
+      obj = Product.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plCategory') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plCategory'))) {
+          loadedFields.add('category.plCategory');
+          obj.plCategory =
+              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
     } else {
-      retVal = null;
+      obj = null;
     }
-    if (product != null) {
-      product(retVal);
-    }
-    return retVal;
+    return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback productCount(int c)]) async {
+  Future<int> toCount([VoidCallback Function(int c) productCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
     final productsFuture = await _obj._mnProduct.toList(qparams);
@@ -1144,43 +1265,55 @@ class ProductFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Product>.
+  /// This method returns List<Product>.
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Product>
   Future<List<Product>> toList(
-      [VoidCallback productList(List<Product> o)]) async {
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     final data = await toMapList();
-    final List<Product> productsData = Product.fromMapList(data);
-
-    /* old version
-      final int count = data.length;
-      for (int i = 0; i < count; i++) {
-        productsData.add(Product.fromMap(data[i] as Map<String, dynamic>));
-      } */
-    if (productList != null) productList(productsData);
+    final List<Product> productsData = await Product.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields);
     return productsData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJson() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(o.toMap());
+      list.add(o.toMap(forJson: true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String.
   Future<String> toJsonWithChilds() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds());
+      list.add(await o.toMapWithChilds(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>.
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -1191,14 +1324,14 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<Product>>
   Future<List<DropdownMenuItem<Product>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Product>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<Product>> o)
+          dropDownMenu]) async {
     _buildParameters();
     final productsFuture = _obj._mnProduct.toList(qparams);
 
     final data = await productsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Product>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Product>> items = []..add(DropdownMenuItem(
         value: Product(),
         child: Text('Select Product'),
       ));
@@ -1219,15 +1352,15 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+          dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
     final productsFuture = _obj._mnProduct.toList(qparams);
 
     final data = await productsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
         child: Text('Select Product'),
       ));
@@ -1245,11 +1378,11 @@ class ProductFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    final List<int> idData = List<int>();
+    final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnProduct.toList(qparams);
 
@@ -1263,20 +1396,16 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback listObject(List<dynamic> o)]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
     final objectFuture = _obj._mnProduct.toList(qparams);
 
-    final List<dynamic> objectsData = List<dynamic>();
+    final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -1285,12 +1414,12 @@ class ProductFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Product.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback listString(List<String> o)]) async {
+      [VoidCallback Function(List<String> o) listString]) async {
     _buildParameters();
 
     final objectFuture = _obj._mnProduct.toList(qparams);
 
-    final List<String> objectsData = List<String>();
+    final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
@@ -1373,28 +1502,35 @@ class ProductFields {
 
 //region ProductManager
 class ProductManager extends SqfEntityProvider {
-  ProductManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  ProductManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static String _tableName = 'product';
-  static String _colId = 'id';
+  //static String _colId = 'id';
+  static List<String> _primaryKeyList = ['id'];
+  static String _whereStr = 'id=?';
 }
 
 //endregion ProductManager
 // region Category
 class Category {
   Category({this.id, this.name, this.isActive}) {
-    setDefaultValues();
+    _setDefaultValues();
   }
   Category.withFields(this.name, this.isActive) {
-    setDefaultValues();
+    _setDefaultValues();
   }
-  Category.withId(this.id, this.name, this.isActive) {
-    setDefaultValues();
+  Category.withId(id, this.name, this.isActive) {
+    _setDefaultValues();
   }
   Category.fromMap(Map<String, dynamic> o) {
-    id = o['id'] as int;
-    name = o['name'] as String;
-
-    isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
+    _setDefaultValues();
+    id = int.tryParse(o['id'].toString());
+    if (o['name'] != null) name = o['name'] as String;
+    if (o['isActive'] != null)
+      isActive = o['isActive'] == 1 || o['isActive'] == true;
   }
   // FIELDS (Category)
   int id;
@@ -1404,7 +1540,11 @@ class Category {
   BoolResult saveResult;
   // end FIELDS (Category)
 
-// COLLECTIONS (Category)
+// COLLECTIONS & VIRTUALS (Category)
+  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plProducts', 'plField2'..]) or so on..
+  List<Product> plProducts;
+
   /// get Product(s) filtered by categoryId=id
   ProductFilterBuilder getProducts(
       {List<String> columnsToSelect, bool getIsDeleted}) {
@@ -1414,7 +1554,8 @@ class Category {
         .equals(id)
         .and;
   }
-// END COLLECTIONS (Category)
+
+// END COLLECTIONS & VIRTUALS (Category)
 
   static const bool _softDeleteActivated = false;
   CategoryManager __mnCategory;
@@ -1424,8 +1565,9 @@ class Category {
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
-    final map = Map<String, dynamic>();
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -1441,8 +1583,10 @@ class Category {
   }
 
   Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
-    final map = Map<String, dynamic>();
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -1463,17 +1607,21 @@ class Category {
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds());
+    return json.encode(await toMapWithChilds(false, true));
   }
 
   List<dynamic> toArgs() {
+    return [name, isActive];
+  }
+
+  List<dynamic> toArgsWithIds() {
     return [id, name, isActive];
   }
 
@@ -1490,7 +1638,7 @@ class Category {
 
   static Future<List<Category>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Category>();
+    var objList = <Category>[];
     try {
       objList = list
           .map((category) => Category.fromMap(category as Map<String, dynamic>))
@@ -1501,50 +1649,104 @@ class Category {
     return objList;
   }
 
-  static Future<List<Category>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    final categorysList = Category.fromMapList(data);
-    /*  for (int i = 0; i < data.length; i++) {
-        categorysList.add(Category.fromMap(data[i] as Map<String, dynamic>));
-      }
-      */
-    return categorysList;
-  }
+  /*
+    /// REMOVED AFTER v1.2.1+14 
+    static Future<List<Category>> fromObjectList(Future<List<dynamic>> o) async {
+      final data = await o;
+      return await Category.fromMapList(data);
+    } 
+    */
 
-  static List<Category> fromMapList(List<dynamic> data) {
-    final List<Category> categorys = List<Category>();
-    for (final Map map in data as List<Map>) {
-      categorys.add(Category.fromMap(map as Map<String, dynamic>));
+  static Future<List<Category>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final List<Category> objList = <Category>[];
+    for (final map in data) {
+      final obj = Category.fromMap(map as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plProducts') &&
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
+          loadedFields.add('category.plProducts');
+          obj.plProducts = obj.plProducts ??
+              await obj.getProducts().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
+      objList.add(obj);
     }
-    return categorys;
+    return objList;
   }
 
   /// returns Category by ID if exist, otherwise returns null
-  /// <param name='id'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Category if exist, otherwise returns null
-  Future<Category> getById(int id) async {
+  Future<Category> getById(int id,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     if (id == null) {
       return null;
     }
-    Category categoryObj;
+    Category obj;
     final data = await _mnCategory.getById([id]);
     if (data.length != 0) {
-      categoryObj = Category.fromMap(data[0] as Map<String, dynamic>);
+      obj = Category.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plProducts') &&
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
+          loadedFields.add('category.plProducts');
+          obj.plProducts = obj.plProducts ??
+              await obj.getProducts().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
     } else {
-      categoryObj = null;
+      obj = null;
     }
-    return categoryObj;
+    return obj;
   }
 
-  /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
 
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
       id = await _mnCategory.insert(this);
     } else {
-      id = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnCategory.update(this);
     }
+
     return id;
   }
 
@@ -1553,28 +1755,39 @@ class Category {
   /// <returns>Returns a new Primary Key value of Category
   Future<int> saveAs() async {
     id = null;
+
     return save();
   }
 
-  /// saveAll method saves the sent List<Category> as a batch in one transaction
+  /// saveAll method saves the sent List<Category> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Category> categories) async {
-    final results = _mnCategory.saveAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive)  VALUES (?,?,?)',
-        categories);
-    return results;
+  Future<List<dynamic>> saveAll(List<Category> categories) async {
+    // final results = _mnCategory.saveAll('INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',categories);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    MyDbModel().batchStart();
+    for (final obj in categories) {
+      await obj.save();
+    }
+    return MyDbModel().batchCommit();
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
-  Future<int> _upsert() async {
+  Future<int> upsert() async {
     try {
-      id = await _mnCategory.rawInsert(
-          'INSERT OR REPLACE INTO category (id,  name, isActive)  VALUES (?,?,?)',
-          [id, name, isActive]);
-      saveResult = BoolResult(
-          success: true, successMessage: 'Category id=$id updated successfuly');
+      if (await _mnCategory.rawInsert(
+              'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
+              [id, name, isActive]) ==
+          1) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage: 'Category id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Category id=$id did not update');
+      }
       return id;
     } catch (e) {
       saveResult = BoolResult(
@@ -1584,12 +1797,14 @@ class Category {
     }
   }
 
-  /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+  /// inserts or replaces the sent List<<Category>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Category> categories) async {
+  ///
+  /// Returns a BoolCommitResult
+  Future<BoolCommitResult> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (id,  name, isActive)  VALUES (?,?,?)',
+        'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
         categories);
     return results;
   }
@@ -1633,28 +1848,28 @@ class Category {
       ..qparams.distinct = true;
   }
 
-  void setDefaultValues() {
-    isActive = isActive ?? false;
+  void _setDefaultValues() {
+    isActive = isActive ?? true;
   }
   // END METHODS
   // CUSTOM CODES
   /*
-    you must define customCode property of your SqfEntityTable constant for ex:
-    const tablePerson = SqfEntityTable(
-    tableName: 'person',
-    primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-    fields: [
-      SqfEntityField('firstName', DbType.text),
-      SqfEntityField('lastName', DbType.text),
-    ],
-    customCode: '''
-     String fullName()
-     { 
-       return '$firstName $lastName';
-     }
-    ''');
-   */
+      you must define customCode property of your SqfEntityTable constant for ex:
+      const tablePerson = SqfEntityTable(
+      tableName: 'person',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+      ],
+      customCode: '''
+       String fullName()
+       { 
+         return '$firstName $lastName';
+       }
+      ''');
+     */
   // END CUSTOM CODES
 }
 // endregion category
@@ -1673,7 +1888,7 @@ class CategoryField extends SearchCriteria {
     return this;
   }
 
-  CategoryFilterBuilder equals(var pValue) {
+  CategoryFilterBuilder equals(dynamic pValue) {
     param.expression = '=';
     categoryFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, categoryFB.parameters, param, SqlSyntax.EQuals,
@@ -1686,7 +1901,7 @@ class CategoryField extends SearchCriteria {
     return categoryFB;
   }
 
-  CategoryFilterBuilder equalsOrNull(var pValue) {
+  CategoryFilterBuilder equalsOrNull(dynamic pValue) {
     param.expression = '=';
     categoryFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, categoryFB.parameters, param,
@@ -1843,7 +2058,7 @@ class CategoryField extends SearchCriteria {
     return categoryFB;
   }
 
-  CategoryFilterBuilder inValues(var pValue) {
+  CategoryFilterBuilder inValues(dynamic pValue) {
     categoryFB._addedBlocks = setCriteria(
         pValue,
         categoryFB.parameters,
@@ -1863,10 +2078,10 @@ class CategoryFilterBuilder extends SearchCriteria {
   CategoryFilterBuilder(Category obj) {
     whereString = '';
     qparams = QueryParams();
-    parameters = List<DbParameter>();
-    orderByList = List<String>();
-    groupByList = List<String>();
-    _addedBlocks = AddedBlocks(List<bool>(), List<bool>());
+    parameters = <DbParameter>[];
+    orderByList = <String>[];
+    groupByList = <String>[];
+    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
     _addedBlocks.needEndBlock.add(false);
     _addedBlocks.waitingStartBlock.add(false);
     _pagesize = 0;
@@ -1908,11 +2123,11 @@ class CategoryFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  CategoryFilterBuilder where(String whereCriteria) {
+  CategoryFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
     }
     return this;
@@ -1951,12 +2166,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  CategoryFilterBuilder orderBy(var argFields) {
+  CategoryFilterBuilder orderBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s ');
         }
       }
@@ -1969,12 +2184,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  CategoryFilterBuilder orderByDesc(var argFields) {
+  CategoryFilterBuilder orderByDesc(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s desc ');
         }
       }
@@ -1987,12 +2202,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  CategoryFilterBuilder groupBy(var argFields) {
+  CategoryFilterBuilder groupBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') groupByList.add(' $s ');
         }
       }
@@ -2062,6 +2277,7 @@ class CategoryFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -2071,15 +2287,15 @@ class CategoryFilterBuilder extends SearchCriteria {
               break;
             default:
           }
-          if (param.value != null) {
-            whereArguments.add(param.value);
-          }
-          if (param.value2 != null) {
-            whereArguments.add(param.value2);
-          }
         }
       } else {
         whereString += param.whereString;
+      }
+      if (param.value != null) {
+        whereArguments.add(param.value);
+      }
+      if (param.value2 != null) {
+        whereArguments.add(param.value2);
       }
     }
     if (Category._softDeleteActivated) {
@@ -2100,7 +2316,7 @@ class CategoryFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Category> batch by query
+  /// Deletes List<Category> bulk by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
@@ -2135,29 +2351,58 @@ class CategoryFilterBuilder extends SearchCriteria {
     return _obj._mnCategory.updateBatch(qparams, values);
   }
 
-  /// This method always returns CategoryObj if exist, otherwise returns null
+  /// This method always returns Category Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Category>
-  Future<Category> toSingle([VoidCallback category(Category o)]) async {
+  Future<Category> toSingle(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
     final objFuture = _obj._mnCategory.toList(qparams);
     final data = await objFuture;
-    Category retVal;
+    Category obj;
     if (data.isNotEmpty) {
-      retVal = Category.fromMap(data[0] as Map<String, dynamic>);
+      obj = Category.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('category.plProducts') &&
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
+          loadedFields.add('category.plProducts');
+          obj.plProducts = obj.plProducts ??
+              await obj.getProducts().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
     } else {
-      retVal = null;
+      obj = null;
     }
-    if (category != null) {
-      category(retVal);
-    }
-    return retVal;
+    return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback categoryCount(int c)]) async {
+  Future<int> toCount([VoidCallback Function(int c) categoryCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
     final categoriesFuture = await _obj._mnCategory.toList(qparams);
@@ -2168,43 +2413,55 @@ class CategoryFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Category>.
+  /// This method returns List<Category>.
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Category>
   Future<List<Category>> toList(
-      [VoidCallback categoryList(List<Category> o)]) async {
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     final data = await toMapList();
-    final List<Category> categoriesData = Category.fromMapList(data);
-
-    /* old version
-      final int count = data.length;
-      for (int i = 0; i < count; i++) {
-        categoriesData.add(Category.fromMap(data[i] as Map<String, dynamic>));
-      } */
-    if (categoryList != null) categoryList(categoriesData);
+    final List<Category> categoriesData = await Category.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields);
     return categoriesData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJson() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(o.toMap());
+      list.add(o.toMap(forJson: true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String.
   Future<String> toJsonWithChilds() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds());
+      list.add(await o.toMapWithChilds(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>.
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -2215,14 +2472,14 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<Category>>
   Future<List<DropdownMenuItem<Category>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Category>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<Category>> o)
+          dropDownMenu]) async {
     _buildParameters();
     final categoriesFuture = _obj._mnCategory.toList(qparams);
 
     final data = await categoriesFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Category>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Category>> items = []..add(DropdownMenuItem(
         value: Category(),
         child: Text('Select Category'),
       ));
@@ -2243,15 +2500,15 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+          dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
     final categoriesFuture = _obj._mnCategory.toList(qparams);
 
     final data = await categoriesFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
         child: Text('Select Category'),
       ));
@@ -2269,11 +2526,11 @@ class CategoryFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    final List<int> idData = List<int>();
+    final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnCategory.toList(qparams);
 
@@ -2287,20 +2544,16 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback listObject(List<dynamic> o)]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
     final objectFuture = _obj._mnCategory.toList(qparams);
 
-    final List<dynamic> objectsData = List<dynamic>();
+    final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -2309,12 +2562,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Category.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback listString(List<String> o)]) async {
+      [VoidCallback Function(List<String> o) listString]) async {
     _buildParameters();
 
     final objectFuture = _obj._mnCategory.toList(qparams);
 
-    final List<String> objectsData = List<String>();
+    final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
@@ -2350,30 +2603,36 @@ class CategoryFields {
 
 //region CategoryManager
 class CategoryManager extends SqfEntityProvider {
-  CategoryManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  CategoryManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static String _tableName = 'category';
-  static String _colId = 'id';
+  //static String _colId = 'id';
+  static List<String> _primaryKeyList = ['id'];
+  static String _whereStr = 'id=?';
 }
 
 //endregion CategoryManager
 // region Todo
 class Todo {
   Todo({this.id, this.userId, this.title, this.completed}) {
-    setDefaultValues();
+    _setDefaultValues();
   }
-  Todo.withFields(this.userId, this.title, this.completed) {
-    setDefaultValues();
+  Todo.withFields(id, this.userId, this.title, this.completed) {
+    _setDefaultValues();
   }
-  Todo.withId(this.id, this.userId, this.title, this.completed) {
-    setDefaultValues();
+  Todo.withId(id, this.userId, this.title, this.completed) {
+    _setDefaultValues();
   }
   Todo.fromMap(Map<String, dynamic> o) {
-    id = o['id'] as int;
-    userId = o['userId'] as int;
-
-    title = o['title'] as String;
-
-    completed = o['completed'] != null ? o['completed'] == 1 : null;
+    _setDefaultValues();
+    id = int.tryParse(o['id'].toString());
+    if (o['userId'] != null) userId = int.tryParse(o['userId'].toString());
+    if (o['title'] != null) title = o['title'] as String;
+    if (o['completed'] != null)
+      completed = o['completed'] == 1 || o['completed'] == true;
 
     isSaved = true;
   }
@@ -2394,8 +2653,9 @@ class Todo {
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
-    final map = Map<String, dynamic>();
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -2415,8 +2675,10 @@ class Todo {
   }
 
   Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
-    final map = Map<String, dynamic>();
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
+    final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
     }
@@ -2435,22 +2697,26 @@ class Todo {
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds());
+    return json.encode(await toMapWithChilds(false, true));
   }
 
   List<dynamic> toArgs() {
     return [id, userId, title, completed];
   }
 
+  List<dynamic> toArgsWithIds() {
+    return [id, userId, title, completed];
+  }
+
   static Future<List<Todo>> fromWeb(
-      [VoidCallback todoList(List<Todo> o)]) async {
+      [VoidCallback Function(List<Todo> o) todoList]) async {
     final objList =
         await fromWebUrl('https://jsonplaceholder.typicode.com/todos');
     if (todoList != null) {
@@ -2471,7 +2737,7 @@ class Todo {
 
   static Future<List<Todo>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Todo>();
+    var objList = <Todo>[];
     try {
       objList = list
           .map((todo) => Todo.fromMap(todo as Map<String, dynamic>))
@@ -2482,82 +2748,105 @@ class Todo {
     return objList;
   }
 
-  static Future<List<Todo>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    final todosList = Todo.fromMapList(data);
-    /*  for (int i = 0; i < data.length; i++) {
-        todosList.add(Todo.fromMap(data[i] as Map<String, dynamic>));
-      }
-      */
-    return todosList;
-  }
+  /*
+    /// REMOVED AFTER v1.2.1+14 
+    static Future<List<Todo>> fromObjectList(Future<List<dynamic>> o) async {
+      final data = await o;
+      return await Todo.fromMapList(data);
+    } 
+    */
 
-  static List<Todo> fromMapList(List<dynamic> data) {
-    final List<Todo> todos = List<Todo>();
-    for (final Map map in data as List<Map>) {
-      todos.add(Todo.fromMap(map as Map<String, dynamic>));
+  static Future<List<Todo>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final List<Todo> objList = <Todo>[];
+    for (final map in data) {
+      final obj = Todo.fromMap(map as Map<String, dynamic>);
+
+      objList.add(obj);
     }
-    return todos;
+    return objList;
   }
 
   /// returns Todo by ID if exist, otherwise returns null
-  /// <param name='id'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Todo if exist, otherwise returns null
-  Future<Todo> getById(int id) async {
+  Future<Todo> getById(int id,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     if (id == null) {
       return null;
     }
-    Todo todoObj;
+    Todo obj;
     final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
-      todoObj = Todo.fromMap(data[0] as Map<String, dynamic>);
+      obj = Todo.fromMap(data[0] as Map<String, dynamic>);
     } else {
-      todoObj = null;
+      obj = null;
     }
-    return todoObj;
+    return obj;
   }
 
-  /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
 
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
-      id = await _mnTodo.insert(this);
-      isSaved = true;
+      await _mnTodo.insert(this);
+      if (saveResult.success) isSaved = true;
     } else {
-      id = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTodo.update(this);
     }
+
     return id;
   }
 
-  /// saveAs Todo. Returns a new Primary Key value of Todo
-
-  /// <returns>Returns a new Primary Key value of Todo
-  Future<int> saveAs() async {
-    isSaved = false;
-
-    return save();
-  }
-
-  /// saveAll method saves the sent List<Todo> as a batch in one transaction
+  /// saveAll method saves the sent List<Todo> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Todo> todos) async {
-    final results = _mnTodo.saveAll(
-        'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
-        todos);
-    return results;
+  Future<List<dynamic>> saveAll(List<Todo> todos) async {
+    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',todos);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    MyDbModel().batchStart();
+    for (final obj in todos) {
+      await obj.save();
+    }
+    return MyDbModel().batchCommit();
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
-  Future<int> _upsert() async {
+  Future<int> upsert() async {
     try {
-      id = await _mnTodo.rawInsert(
-          'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
-          [id, userId, title, completed]);
-      saveResult = BoolResult(
-          success: true, successMessage: 'Todo id=$id updated successfuly');
+      if (await _mnTodo.rawInsert(
+              'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
+              [id, userId, title, completed]) ==
+          1) {
+        saveResult = BoolResult(
+            success: true, successMessage: 'Todo id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Todo id=$id did not update');
+      }
       return id;
     } catch (e) {
       saveResult = BoolResult(
@@ -2567,12 +2856,14 @@ class Todo {
     }
   }
 
-  /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+  /// inserts or replaces the sent List<<Todo>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Todo> todos) async {
+  ///
+  /// Returns a BoolCommitResult
+  Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
-        'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
         todos);
     return results;
   }
@@ -2607,29 +2898,29 @@ class Todo {
       ..qparams.distinct = true;
   }
 
-  void setDefaultValues() {
+  void _setDefaultValues() {
     isSaved = false;
     completed = completed ?? false;
   }
   // END METHODS
   // CUSTOM CODES
   /*
-    you must define customCode property of your SqfEntityTable constant for ex:
-    const tablePerson = SqfEntityTable(
-    tableName: 'person',
-    primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-    fields: [
-      SqfEntityField('firstName', DbType.text),
-      SqfEntityField('lastName', DbType.text),
-    ],
-    customCode: '''
-     String fullName()
-     { 
-       return '$firstName $lastName';
-     }
-    ''');
-   */
+      you must define customCode property of your SqfEntityTable constant for ex:
+      const tablePerson = SqfEntityTable(
+      tableName: 'person',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+      ],
+      customCode: '''
+       String fullName()
+       { 
+         return '$firstName $lastName';
+       }
+      ''');
+     */
   // END CUSTOM CODES
 }
 // endregion todo
@@ -2648,7 +2939,7 @@ class TodoField extends SearchCriteria {
     return this;
   }
 
-  TodoFilterBuilder equals(var pValue) {
+  TodoFilterBuilder equals(dynamic pValue) {
     param.expression = '=';
     todoFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, todoFB.parameters, param, SqlSyntax.EQuals,
@@ -2661,7 +2952,7 @@ class TodoField extends SearchCriteria {
     return todoFB;
   }
 
-  TodoFilterBuilder equalsOrNull(var pValue) {
+  TodoFilterBuilder equalsOrNull(dynamic pValue) {
     param.expression = '=';
     todoFB._addedBlocks = _waitingNot == ''
         ? setCriteria(pValue, todoFB.parameters, param, SqlSyntax.EQualsOrNull,
@@ -2818,7 +3109,7 @@ class TodoField extends SearchCriteria {
     return todoFB;
   }
 
-  TodoFilterBuilder inValues(var pValue) {
+  TodoFilterBuilder inValues(dynamic pValue) {
     todoFB._addedBlocks = setCriteria(
         pValue,
         todoFB.parameters,
@@ -2838,10 +3129,10 @@ class TodoFilterBuilder extends SearchCriteria {
   TodoFilterBuilder(Todo obj) {
     whereString = '';
     qparams = QueryParams();
-    parameters = List<DbParameter>();
-    orderByList = List<String>();
-    groupByList = List<String>();
-    _addedBlocks = AddedBlocks(List<bool>(), List<bool>());
+    parameters = <DbParameter>[];
+    orderByList = <String>[];
+    groupByList = <String>[];
+    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
     _addedBlocks.needEndBlock.add(false);
     _addedBlocks.waitingStartBlock.add(false);
     _pagesize = 0;
@@ -2883,11 +3174,11 @@ class TodoFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  TodoFilterBuilder where(String whereCriteria) {
+  TodoFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
     }
     return this;
@@ -2926,12 +3217,12 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  TodoFilterBuilder orderBy(var argFields) {
+  TodoFilterBuilder orderBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s ');
         }
       }
@@ -2944,12 +3235,12 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  TodoFilterBuilder orderByDesc(var argFields) {
+  TodoFilterBuilder orderByDesc(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') orderByList.add(' $s desc ');
         }
       }
@@ -2962,12 +3253,12 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  TodoFilterBuilder groupBy(var argFields) {
+  TodoFilterBuilder groupBy(dynamic argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields) {
+        for (String s in argFields as List<String>) {
           if (s != null && s != '') groupByList.add(' $s ');
         }
       }
@@ -3042,6 +3333,7 @@ class TodoFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -3051,15 +3343,15 @@ class TodoFilterBuilder extends SearchCriteria {
               break;
             default:
           }
-          if (param.value != null) {
-            whereArguments.add(param.value);
-          }
-          if (param.value2 != null) {
-            whereArguments.add(param.value2);
-          }
         }
       } else {
         whereString += param.whereString;
+      }
+      if (param.value != null) {
+        whereArguments.add(param.value);
+      }
+      if (param.value2 != null) {
+        whereArguments.add(param.value2);
       }
     }
     if (Todo._softDeleteActivated) {
@@ -3080,7 +3372,7 @@ class TodoFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Todo> batch by query
+  /// Deletes List<Todo> bulk by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
@@ -3108,29 +3400,42 @@ class TodoFilterBuilder extends SearchCriteria {
     return _obj._mnTodo.updateBatch(qparams, values);
   }
 
-  /// This method always returns TodoObj if exist, otherwise returns null
+  /// This method always returns Todo Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Todo>
-  Future<Todo> toSingle([VoidCallback todo(Todo o)]) async {
+  Future<Todo> toSingle(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
     final objFuture = _obj._mnTodo.toList(qparams);
     final data = await objFuture;
-    Todo retVal;
+    Todo obj;
     if (data.isNotEmpty) {
-      retVal = Todo.fromMap(data[0] as Map<String, dynamic>);
+      obj = Todo.fromMap(data[0] as Map<String, dynamic>);
     } else {
-      retVal = null;
+      obj = null;
     }
-    if (todo != null) {
-      todo(retVal);
-    }
-    return retVal;
+    return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback todoCount(int c)]) async {
+  Future<int> toCount([VoidCallback Function(int c) todoCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
     final todosFuture = await _obj._mnTodo.toList(qparams);
@@ -3141,42 +3446,55 @@ class TodoFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Todo>.
-  /// <returns>List<Todo>
-  Future<List<Todo>> toList([VoidCallback todoList(List<Todo> o)]) async {
-    final data = await toMapList();
-    final List<Todo> todosData = Todo.fromMapList(data);
+  /// This method returns List<Todo>.
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-    /* old version
-      final int count = data.length;
-      for (int i = 0; i < count; i++) {
-        todosData.add(Todo.fromMap(data[i] as Map<String, dynamic>));
-      } */
-    if (todoList != null) todoList(todosData);
+  ///
+  /// <returns>List<Todo>
+  Future<List<Todo>> toList(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final data = await toMapList();
+    final List<Todo> todosData = await Todo.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields);
     return todosData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String
   Future<String> toJson() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(o.toMap());
+      list.add(o.toMap(forJson: true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String.
   Future<String> toJsonWithChilds() async {
-    final list = List<dynamic>();
+    final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds());
+      list.add(await o.toMapWithChilds(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>.
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -3186,14 +3504,14 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// Returns List<DropdownMenuItem<Todo>>
   Future<List<DropdownMenuItem<Todo>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Todo>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<Todo>> o)
+          dropDownMenu]) async {
     _buildParameters();
     final todosFuture = _obj._mnTodo.toList(qparams);
 
     final data = await todosFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Todo>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Todo>> items = []..add(DropdownMenuItem(
         value: Todo(),
         child: Text('Select Todo'),
       ));
@@ -3214,15 +3532,15 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+          dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
     final todosFuture = _obj._mnTodo.toList(qparams);
 
     final data = await todosFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = List()
-      ..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
         child: Text('Select Todo'),
       ));
@@ -3240,11 +3558,11 @@ class TodoFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    final List<int> idData = List<int>();
+    final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnTodo.toList(qparams);
 
@@ -3258,20 +3576,16 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback listObject(List<dynamic> o)]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
     final objectFuture = _obj._mnTodo.toList(qparams);
 
-    final List<dynamic> objectsData = List<dynamic>();
+    final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -3280,12 +3594,12 @@ class TodoFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Todo.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback listString(List<String> o)]) async {
+      [VoidCallback Function(List<String> o) listString]) async {
     _buildParameters();
 
     final objectFuture = _obj._mnTodo.toList(qparams);
 
-    final List<String> objectsData = List<String>();
+    final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
@@ -3328,9 +3642,15 @@ class TodoFields {
 
 //region TodoManager
 class TodoManager extends SqfEntityProvider {
-  TodoManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  TodoManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static String _tableName = 'todos';
-  static String _colId = 'id';
+  //static String _colId = 'id';
+  static List<String> _primaryKeyList = ['id'];
+  static String _whereStr = 'id=?';
 }
 
 //endregion TodoManager
@@ -3338,7 +3658,7 @@ class TodoManager extends SqfEntityProvider {
 class IdentitySequence {
   /// Assigns a new value when it is triggered and returns the new value
   /// returns Future<int>
-  Future<int> nextVal([VoidCallback nextval(int o)]) async {
+  Future<int> nextVal([VoidCallback Function(int o) nextval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, true);
     if (nextval != null) {
@@ -3349,7 +3669,7 @@ class IdentitySequence {
 
   /// Get the current value
   /// returns Future<int>
-  Future<int> currentVal([VoidCallback currentval(int o)]) async {
+  Future<int> currentVal([VoidCallback Function(int o) currentval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, false);
     if (currentval != null) {
@@ -3360,7 +3680,7 @@ class IdentitySequence {
 
   /// Reset sequence to start value
   /// returns start value
-  Future<int> reset([VoidCallback currentval(int o)]) async {
+  Future<int> reset([VoidCallback Function(int o) currentval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, false, reset: true);
     if (currentval != null) {
@@ -3376,3 +3696,105 @@ class MyDbModelSequenceManager extends SqfEntityProvider {
   MyDbModelSequenceManager() : super(MyDbModel());
 }
 // END OF ENTITIES
+
+// BEGIN CONTROLLERS
+// BEGIN CONTROLLER (Product)
+
+class ProductController extends Product {
+  String formListTitleField = 'name';
+  String formListSubTitleField = 'description';
+  static SQFViewList getController = SQFViewList(
+    ProductController(),
+    primaryKeyName: 'id',
+    useSoftDeleting: true,
+  );
+  Map<String, String> subMenu() {
+    final menu = <String, String>{};
+
+    return menu;
+  }
+
+  Future<Widget> gotoEdit(dynamic obj) async {
+    return ProductAdd(obj == null
+        ? Product()
+        : await Product().getById(obj['id'] as int) ?? Product());
+  }
+}
+// END CONTROLLER (Product)
+
+// BEGIN CONTROLLER (Category)
+class CategoryToProductControllerSub extends ProductController {
+  static String relationshipFieldName = 'categoryId';
+  static String primaryKeyName = 'id';
+  static bool useSoftDeleting = true;
+  //static String formListTitleField = 'name';
+  //static String formListSubTitleField = '';
+}
+
+class CategoryController extends Category {
+  String formListTitleField = 'name';
+  String formListSubTitleField = '';
+  static SQFViewList getController = SQFViewList(
+    CategoryController(),
+    primaryKeyName: 'id',
+    useSoftDeleting: false,
+  );
+  Map<String, String> subMenu() {
+    final menu = <String, String>{};
+    menu['CategoryToProduct'] = 'Category To Product';
+
+    return menu;
+  }
+
+  SQFViewList subList(int id, String controllerName) {
+    switch (controllerName) {
+      case 'CategoryToProduct':
+        return SQFViewList(
+          CategoryToProductControllerSub(),
+          primaryKeyName: CategoryToProductControllerSub.primaryKeyName,
+          useSoftDeleting: CategoryToProductControllerSub.useSoftDeleting,
+          //formListTitleField: 'name',
+          //formListSubTitleField: '',
+          filterExpression:
+              '${CategoryToProductControllerSub.relationshipFieldName}=?',
+          filterParameter: id,
+        );
+
+      default:
+        return null;
+    }
+  }
+
+  Future<Widget> gotoEdit(dynamic obj) async {
+    return CategoryAdd(obj == null
+        ? Category()
+        : await Category().getById(obj['id'] as int) ?? Category());
+  }
+}
+// END CONTROLLER (Category)
+
+// BEGIN CONTROLLER (Todo)
+
+class TodoController extends Todo {
+  String formListTitleField = 'title';
+  String formListSubTitleField = 'userId';
+  static SQFViewList getController = SQFViewList(
+    TodoController(),
+    primaryKeyName: 'id',
+    useSoftDeleting: false,
+  );
+  Map<String, String> subMenu() {
+    final menu = <String, String>{};
+
+    return menu;
+  }
+
+  Future<Widget> gotoEdit(dynamic obj) async {
+    return TodoAdd(obj == null
+        ? Todo()
+        : await Todo().getById(obj['id'] as int) ?? Todo());
+  }
+}
+// END CONTROLLER (Todo)
+
+// END OF CONTROLLERS

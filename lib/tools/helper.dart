@@ -11,6 +11,7 @@ class UITools {
     _context = context;
   }
 
+  static int selectedDb =0;
 // BEGIN MAIN CONTROLLER DESIGN
 
   static const mainBgColor = Color.fromRGBO(95, 66, 119, 1.0);

@@ -719,7 +719,7 @@ Future<void> samples8() async {
         'EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);');
 
     // print upsert Results
-    for (var res in results) {
+    for (var res in results.commitResult) {
       res = res; // dummy line for analysis_options (unused_local_variable)
       //print(res.toString()); // uncomment this line for print save results
     }
