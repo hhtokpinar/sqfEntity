@@ -58,8 +58,8 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
 
     dependencies:
       flutter_datetime_picker: ^1.2.8  
-      sqfentity: ^1.2.3
-      sqfentity_gen: ^1.2.3
+      sqfentity: ^1.3.2
+      sqfentity_gen: ^1.3.2+1
 
 
     dev_dependencies:
@@ -74,15 +74,17 @@ First, You need to:
 2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/tools/helper.dart) into your /lib/tools folder
 3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
-       import 'dart:convert';
-       import 'dart:typed_data';
-       import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-       import 'package:http/http.dart' as http;
-       import 'package:flutter/material.dart';
-       import 'package:sqfentity/sqfentity.dart';
-       import 'package:sqfentity_gen/sqfentity_gen.dart';
-       import '../tools/helper.dart';
-       import 'view.list.dart';
+        import 'dart:convert';
+        import 'dart:typed_data';
+        import 'package:flutter/foundation.dart';
+        import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+        import 'package:http/http.dart' as http;
+        import 'package:flutter/material.dart';
+        import 'package:sqfentity/sqfentity.dart';
+        import 'package:sqfentity_gen/sqfentity_gen.dart';
+        import '../tools/helper.dart';
+        import 'view.list.dart';
+
 
 
 4. Write the following statement for the file to be created 
@@ -98,24 +100,24 @@ Our model file is ready to use. Define your tables as shown in the example below
 
 
 *Table 1: Category*
-Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
     
-    @SqfEntityBuilderForm(tableCategory,
-    formListTitleField: 'name' // when formListTitleField is null, sqfentity gets first text field for this property
-    , hasSubItems: true // when hasSubItems is true, goes to sub items instead of detail when click on item
-    )
     // Define the 'tableCategory' constant as SqfEntityTable for the category table.
     const tableCategory = SqfEntityTable(
-      tableName: 'category',
-      primaryKeyName: 'id',
-      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-      useSoftDeleting: true,
-      modelName: null,
-      fields: [
-        SqfEntityField('name', DbType.text),
+        tableName: 'category',
+        primaryKeyName: 'id',
+        primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+        useSoftDeleting: false,
+        // When useSoftDeleting is true, creates a field named 'isDeleted' on the table, 
+        // and set to '1' this field when item deleted (does not hard delete)
+        modelName:
+            null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
+        // declare fields
+        fields: [
+        SqfEntityField('name', DbType.text, formIsRequired: true),
         SqfEntityField('isActive', DbType.bool, defaultValue: true),
-      ]
+        ],
     );
+
 
 
 If **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
@@ -124,12 +126,8 @@ in this case it is possible to recover a deleted item using the recover() method
 If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
 
 *Table 2: Product*
-Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
-    
-    @SqfEntityBuilderForm(tableProduct, formListTitleField: 'name', // when formListTitleField is null, sqfentity gets first text field for this property
-    formListSubTitleField: 'description', // optional 
-    )
-    // Define the 'tableProduct' constant as SqfEntityTable for the product table.
+
+   // Define the 'tableProduct' constant as SqfEntityTable for the product table.
     const tableProduct = SqfEntityTable(
       tableName: 'product',
       primaryKeyName: 'id',
@@ -195,14 +193,17 @@ This table is for creating a synchronization with json data from the web url
 *Note:* SqfEntity provides support for the use of **multiple databases**.
 So you can create many Database Models and use them in your application.
 
-    @SqfEntityBuilder(myDbModel, 
-    formControllers: [tableProduct, tableCategory], // Creates controllers for Add/Edit forms and listing page of tables (optional)
-    )
+    @SqfEntityBuilder(myDbModel)
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
         databaseName: 'sampleORM.db',
+
         // put defined tables into the tables list.
         databaseTables: [tableCategory, tableProduct, tableTodo],
+
+         // You can define tables to generate add/edit view forms if you want to use Form Generator property (optional)
+        formTables: [tableProduct, tableCategory,tableTodo],
+
         // put defined sequences into the sequences list.
         sequences: [seqIdentity],
         bundledDatabasePath:
@@ -216,7 +217,9 @@ Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs
 
   After running the command Please check lib/model/model.g.dart
-  Note: If @SqfEntityBuilderForm annotation is used then check also lib/model/model.g.view.dart 
+  Note: After running the command Please check:
+  1- **lib/model/model.g.dart** for generated entity models
+  2- **lib/model/model.g.view.dart** for the views if formTables parameter is defined in the model.
 
 
 ### Attach existing SQLite database with bundledDatabasePath parameter
