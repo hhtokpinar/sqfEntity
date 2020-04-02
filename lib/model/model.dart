@@ -121,7 +121,7 @@ const myDbModel = SqfEntityModel(
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs
-  Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If @SqfEntityBuilderForm annotation is used)
+  Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If formTables parameter is defined in the model)
   Enjoy.. Huseyin TOKPINAR
 */
 
