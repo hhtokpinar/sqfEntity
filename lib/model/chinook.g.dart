@@ -261,6 +261,7 @@ class TablePlaylist extends SqfEntityTableBase {
   TablePlaylist() {
     // declare properties of EntityTable
     tableName = 'Playlist';
+    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'PlaylistId';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
@@ -278,43 +279,12 @@ class TablePlaylist extends SqfEntityTableBase {
   }
 }
 
-// PlaylistTrack TABLE
-class TablePlaylistTrack extends SqfEntityTableBase {
-  TablePlaylistTrack() {
-    // declare properties of EntityTable
-    tableName = 'PlaylistTrack';
-    relationType = RelationType.ONE_TO_MANY;
-    primaryKeyName = '';
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-    useSoftDeleting = false;
-    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
-
-    // declare fields
-    fields = [
-      SqfEntityFieldRelationshipBase(
-          TableTrack.getInstance, DeleteRule.NO_ACTION,
-          fieldName: 'TrackId',
-          isPrimaryKeyField: true,
-          relationType: RelationType.ONE_TO_MANY),
-      SqfEntityFieldRelationshipBase(
-          TablePlaylist.getInstance, DeleteRule.NO_ACTION,
-          fieldName: 'PlaylistId',
-          isPrimaryKeyField: true,
-          relationType: RelationType.ONE_TO_MANY),
-    ];
-    super.init();
-  }
-  static SqfEntityTableBase _instance;
-  static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TablePlaylistTrack();
-  }
-}
-
 // Track TABLE
 class TableTrack extends SqfEntityTableBase {
   TableTrack() {
     // declare properties of EntityTable
     tableName = 'Track';
+    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'TrackId';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
@@ -350,6 +320,38 @@ class TableTrack extends SqfEntityTableBase {
     return _instance = _instance ?? TableTrack();
   }
 }
+
+// PlaylistTrack TABLE
+class TablePlaylistTrack extends SqfEntityTableBase {
+  TablePlaylistTrack() {
+    // declare properties of EntityTable
+    tableName = 'PlaylistTrack';
+    relationType = RelationType.MANY_TO_MANY;
+    primaryKeyName = '';
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    useSoftDeleting = false;
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+
+    // declare fields
+    fields = [
+      SqfEntityFieldRelationshipBase(
+          TableTrack.getInstance, DeleteRule.NO_ACTION,
+          fieldName: 'TrackId',
+          isPrimaryKeyField: true,
+          relationType: RelationType.ONE_TO_MANY),
+      SqfEntityFieldRelationshipBase(
+          TablePlaylist.getInstance, DeleteRule.NO_ACTION,
+          fieldName: 'PlaylistId',
+          isPrimaryKeyField: true,
+          relationType: RelationType.ONE_TO_MANY),
+    ];
+    super.init();
+  }
+  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase get getInstance {
+    return _instance = _instance ?? TablePlaylistTrack();
+  }
+}
 // END TABLES
 
 // BEGIN DATABASE MODEL
@@ -366,8 +368,8 @@ class Chinookdb extends SqfEntityModelProvider {
       TableInvoiceLine.getInstance,
       TableMediaType.getInstance,
       TablePlaylist.getInstance,
-      TablePlaylistTrack.getInstance,
       TableTrack.getInstance,
+      TablePlaylistTrack.getInstance,
     ];
 
     bundledDatabasePath = chinookdb
@@ -384,7 +386,6 @@ class Chinookdb extends SqfEntityModelProvider {
     controllers['invoiceline'] = InvoiceLineController.getController;
     controllers['mediatype'] = MediaTypeController.getController;
     controllers['playlist'] = PlaylistController.getController;
-    controllers['playlisttrack'] = PlaylistTrackController.getController;
     controllers['track'] = TrackController.getController;
 
     return controllers;
@@ -8993,6 +8994,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+
     if (InvoiceLine._softDeleteActivated && !hardDelete) {
       r = await _obj._mnInvoiceLine.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -10410,20 +10412,6 @@ class Playlist {
   // end FIELDS (Playlist)
 
 // COLLECTIONS & VIRTUALS (Playlist)
-  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylistTracks', 'plField2'..]) or so on..
-  List<PlaylistTrack> plPlaylistTracks;
-
-  /// get PlaylistTrack(s) filtered by PlaylistId=PlaylistId
-  PlaylistTrackFilterBuilder getPlaylistTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
-    return PlaylistTrack()
-        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .PlaylistId
-        .equals(PlaylistId)
-        .and;
-  }
-
   ///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
   List<Track> plTracks;
@@ -10475,9 +10463,6 @@ class Playlist {
     }
 
 // COLLECTIONS (Playlist)
-    if (!forQuery) {
-      map['PlaylistTracks'] = await getPlaylistTracks().toMapList();
-    }
     if (!forQuery) {
       map['Tracks'] = await getTracks().toMapList();
     }
@@ -10548,17 +10533,6 @@ class Playlist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Playlist.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
           loadedFields.add('Playlist.plTracks');
@@ -10608,17 +10582,6 @@ class Playlist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Playlist.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
           loadedFields.add('Playlist.plTracks');
@@ -10717,13 +10680,6 @@ class Playlist {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Playlist invoked (PlaylistId=$PlaylistId)');
-    if (await PlaylistTrack().select().PlaylistId.equals(PlaylistId).toCount() >
-        0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (PlaylistTrack.PlaylistId)');
-    }
     if (!_softDeleteActivated || hardDelete) {
       return _mnPlaylist.delete(QueryParams(
           whereString: 'PlaylistId=?', whereArguments: [PlaylistId]));
@@ -11218,18 +11174,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
-    final playlistTrackByPlaylistIdidList = await toListPrimaryKey(false);
-    if (await PlaylistTrack()
-            .select()
-            .PlaylistId
-            .inValues(playlistTrackByPlaylistIdidList)
-            .toCount() >
-        0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (PlaylistTrack.PlaylistId)');
-    }
+
     if (Playlist._softDeleteActivated && !hardDelete) {
       r = await _obj._mnPlaylist.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -11282,17 +11227,6 @@ class PlaylistFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Playlist.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
           loadedFields.add('Playlist.plTracks');
@@ -11522,12 +11456,1466 @@ class PlaylistManager extends SqfEntityProvider {
 }
 
 //endregion PlaylistManager
+// region Track
+class Track {
+  Track(
+      {this.TrackId,
+      this.Name,
+      this.Composer,
+      this.Milliseconds,
+      this.Bytes,
+      this.UnitPrice,
+      this.MediaTypeId,
+      this.GenreId,
+      this.AlbumId}) {
+    _setDefaultValues();
+  }
+  Track.withFields(this.Name, this.Composer, this.Milliseconds, this.Bytes,
+      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
+    _setDefaultValues();
+  }
+  Track.withId(TrackId, this.Name, this.Composer, this.Milliseconds, this.Bytes,
+      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
+    _setDefaultValues();
+  }
+  Track.fromMap(Map<String, dynamic> o) {
+    _setDefaultValues();
+    TrackId = int.tryParse(o['TrackId'].toString());
+    if (o['Name'] != null) Name = o['Name'] as String;
+    if (o['Composer'] != null) Composer = o['Composer'] as String;
+    if (o['Milliseconds'] != null)
+      Milliseconds = int.tryParse(o['Milliseconds'].toString());
+    if (o['Bytes'] != null) Bytes = int.tryParse(o['Bytes'].toString());
+    if (o['UnitPrice'] != null)
+      UnitPrice = double.tryParse(o['UnitPrice'].toString());
+    MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
+
+    GenreId = int.tryParse(o['GenreId'].toString());
+
+    AlbumId = int.tryParse(o['AlbumId'].toString());
+
+    // RELATIONSHIPS FromMAP
+    plMediaType = o['mediaType'] != null
+        ? MediaType.fromMap(o['mediaType'] as Map<String, dynamic>)
+        : null;
+    plGenre = o['genre'] != null
+        ? Genre.fromMap(o['genre'] as Map<String, dynamic>)
+        : null;
+    plAlbum = o['album'] != null
+        ? Album.fromMap(o['album'] as Map<String, dynamic>)
+        : null;
+    // END RELATIONSHIPS FromMAP
+  }
+  // FIELDS (Track)
+  int TrackId;
+  String Name;
+  String Composer;
+  int Milliseconds;
+  int Bytes;
+  double UnitPrice;
+  int MediaTypeId;
+  int GenreId;
+  int AlbumId;
+
+  BoolResult saveResult;
+  // end FIELDS (Track)
+
+// RELATIONSHIPS (Track)
+  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plMediaType', 'plField2'..]) or so on..
+  MediaType plMediaType;
+
+  /// get MediaType By MediaTypeId
+  Future<MediaType> getMediaType({bool loadParents = false}) async {
+    final _obj =
+        await MediaType().getById(MediaTypeId, loadParents: loadParents);
+    return _obj;
+  }
+
+  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plGenre', 'plField2'..]) or so on..
+  Genre plGenre;
+
+  /// get Genre By GenreId
+  Future<Genre> getGenre({bool loadParents = false}) async {
+    final _obj = await Genre().getById(GenreId, loadParents: loadParents);
+    return _obj;
+  }
+
+  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plAlbum', 'plField2'..]) or so on..
+  Album plAlbum;
+
+  /// get Album By AlbumId
+  Future<Album> getAlbum({bool loadParents = false}) async {
+    final _obj = await Album().getById(AlbumId, loadParents: loadParents);
+    return _obj;
+  }
+  // END RELATIONSHIPS (Track)
+
+// COLLECTIONS & VIRTUALS (Track)
+  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
+  List<InvoiceLine> plInvoiceLines;
+
+  /// get InvoiceLine(s) filtered by TrackId=TrackId
+  InvoiceLineFilterBuilder getInvoiceLines(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return InvoiceLine()
+        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
+        .TrackId
+        .equals(TrackId)
+        .and;
+  }
+
+  ///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylists', 'plField2'..]) or so on..
+  List<Playlist> plPlaylists;
+
+  /// get Playlist(s) filtered by PlaylistId IN PlaylistTrack
+  PlaylistFilterBuilder getPlaylists(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return Playlist()
+        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
+        .where(
+            'PlaylistId IN (SELECT PlaylistId FROM PlaylistTrack WHERE TrackId=?)',
+            parameterValue: TrackId)
+        .and;
+  }
+
+// END COLLECTIONS & VIRTUALS (Track)
+
+  static const bool _softDeleteActivated = false;
+  TrackManager __mnTrack;
+
+  TrackManager get _mnTrack {
+    return __mnTrack = __mnTrack ?? TrackManager();
+  }
+
+  // METHODS
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
+    final map = <String, dynamic>{};
+    if (TrackId != null) {
+      map['TrackId'] = TrackId;
+    }
+    if (Name != null) {
+      map['Name'] = Name;
+    }
+
+    if (Composer != null) {
+      map['Composer'] = Composer;
+    }
+
+    if (Milliseconds != null) {
+      map['Milliseconds'] = Milliseconds;
+    }
+
+    if (Bytes != null) {
+      map['Bytes'] = Bytes;
+    }
+
+    if (UnitPrice != null) {
+      map['UnitPrice'] = UnitPrice;
+    }
+
+    if (MediaTypeId != null) {
+      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
+    }
+
+    if (GenreId != null) {
+      map['GenreId'] = forView ? plGenre.Name : GenreId;
+    }
+
+    if (AlbumId != null) {
+      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
+    }
+
+    return map;
+  }
+
+  Future<Map<String, dynamic>> toMapWithChilds(
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
+    final map = <String, dynamic>{};
+    if (TrackId != null) {
+      map['TrackId'] = TrackId;
+    }
+    if (Name != null) {
+      map['Name'] = Name;
+    }
+
+    if (Composer != null) {
+      map['Composer'] = Composer;
+    }
+
+    if (Milliseconds != null) {
+      map['Milliseconds'] = Milliseconds;
+    }
+
+    if (Bytes != null) {
+      map['Bytes'] = Bytes;
+    }
+
+    if (UnitPrice != null) {
+      map['UnitPrice'] = UnitPrice;
+    }
+
+    if (MediaTypeId != null) {
+      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
+    }
+
+    if (GenreId != null) {
+      map['GenreId'] = forView ? plGenre.Name : GenreId;
+    }
+
+    if (AlbumId != null) {
+      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
+    }
+
+// COLLECTIONS (Track)
+    if (!forQuery) {
+      map['InvoiceLines'] = await getInvoiceLines().toMapList();
+    }
+    if (!forQuery) {
+      map['Playlists'] = await getPlaylists().toMapList();
+    }
+// END COLLECTIONS (Track)
+
+    return map;
+  }
+
+  /// This method returns Json String
+  String toJson() {
+    return json.encode(toMap(forJson: true));
+  }
+
+  /// This method returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds(false, true));
+  }
+
+  List<dynamic> toArgs() {
+    return [
+      Name,
+      Composer,
+      Milliseconds,
+      Bytes,
+      UnitPrice,
+      MediaTypeId,
+      GenreId,
+      AlbumId
+    ];
+  }
+
+  List<dynamic> toArgsWithIds() {
+    return [
+      TrackId,
+      Name,
+      Composer,
+      Milliseconds,
+      Bytes,
+      UnitPrice,
+      MediaTypeId,
+      GenreId,
+      AlbumId
+    ];
+  }
+
+  static Future<List<Track>> fromWebUrl(String url) async {
+    try {
+      final response = await http.get(url);
+      return await fromJson(response.body);
+    } catch (e) {
+      print('SQFENTITY ERROR Track.fromWebUrl: ErrorMessage: ${e.toString()}');
+      return null;
+    }
+  }
+
+  static Future<List<Track>> fromJson(String jsonBody) async {
+    final Iterable list = await json.decode(jsonBody) as Iterable;
+    var objList = <Track>[];
+    try {
+      objList = list
+          .map((track) => Track.fromMap(track as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('SQFENTITY ERROR Track.fromJson: ErrorMessage: ${e.toString()}');
+    }
+    return objList;
+  }
+
+  /*
+    /// REMOVED AFTER v1.2.1+14 
+    static Future<List<Track>> fromObjectList(Future<List<dynamic>> o) async {
+      final data = await o;
+      return await Track.fromMapList(data);
+    } 
+    */
+
+  static Future<List<Track>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final List<Track> objList = <Track>[];
+    for (final map in data) {
+      final obj = Track.fromMap(map as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('Track.plInvoiceLines') &&
+            (preloadFields == null ||
+                preloadFields.contains('plInvoiceLines'))) {
+          loadedFields.add('Track.plInvoiceLines');
+          obj.plInvoiceLines = obj.plInvoiceLines ??
+              await obj.getInvoiceLines().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+        if (!loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+          loadedFields.add('Track.plPlaylists');
+          obj.plPlaylists = obj.plPlaylists ??
+              await obj.getPlaylists().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('MediaType.plMediaType') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plMediaType'))) {
+          loadedFields.add('MediaType.plMediaType');
+          obj.plMediaType = obj.plMediaType ??
+              await obj.getMediaType(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Genre.plGenre') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plGenre'))) {
+          loadedFields.add('Genre.plGenre');
+          obj.plGenre =
+              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Album.plAlbum') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plAlbum'))) {
+          loadedFields.add('Album.plAlbum');
+          obj.plAlbum =
+              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
+      objList.add(obj);
+    }
+    return objList;
+  }
+
+  /// returns Track by ID if exist, otherwise returns null
+  ///
+  /// Primary Keys: int TrackId
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>returns Track if exist, otherwise returns null
+  Future<Track> getById(int TrackId,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    if (TrackId == null) {
+      return null;
+    }
+    Track obj;
+    final data = await _mnTrack.getById([TrackId]);
+    if (data.length != 0) {
+      obj = Track.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('Track.plInvoiceLines') &&
+            (preloadFields == null ||
+                preloadFields.contains('plInvoiceLines'))) {
+          loadedFields.add('Track.plInvoiceLines');
+          obj.plInvoiceLines = obj.plInvoiceLines ??
+              await obj.getInvoiceLines().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+        if (!loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+          loadedFields.add('Track.plPlaylists');
+          obj.plPlaylists = obj.plPlaylists ??
+              await obj.getPlaylists().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('MediaType.plMediaType') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plMediaType'))) {
+          loadedFields.add('MediaType.plMediaType');
+          obj.plMediaType = obj.plMediaType ??
+              await obj.getMediaType(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Genre.plGenre') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plGenre'))) {
+          loadedFields.add('Genre.plGenre');
+          obj.plGenre =
+              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Album.plAlbum') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plAlbum'))) {
+          loadedFields.add('Album.plAlbum');
+          obj.plAlbum =
+              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
+    } else {
+      obj = null;
+    }
+    return obj;
+  }
+
+  /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
+
+  /// <returns>Returns TrackId
+  Future<int> save() async {
+    if (TrackId == null || TrackId == 0) {
+      TrackId = await _mnTrack.insert(this);
+    } else {
+      // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTrack.update(this);
+    }
+
+    return TrackId;
+  }
+
+  /// saveAs Track. Returns a new Primary Key value of Track
+
+  /// <returns>Returns a new Primary Key value of Track
+  Future<int> saveAs() async {
+    TrackId = null;
+
+    return save();
+  }
+
+  /// saveAll method saves the sent List<Track> as a bulk in one transaction
+  ///
+  /// Returns a <List<BoolResult>>
+  Future<List<dynamic>> saveAll(List<Track> tracks) async {
+    // final results = _mnTrack.saveAll('INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',tracks);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    Chinookdb().batchStart();
+    for (final obj in tracks) {
+      await obj.save();
+    }
+    return Chinookdb().batchCommit();
+  }
+
+  /// Updates if the record exists, otherwise adds a new row
+
+  /// <returns>Returns TrackId
+  Future<int> upsert() async {
+    try {
+      if (await _mnTrack.rawInsert(
+              'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
+              [
+                TrackId,
+                Name,
+                Composer,
+                Milliseconds,
+                Bytes,
+                UnitPrice,
+                MediaTypeId,
+                GenreId,
+                AlbumId
+              ]) ==
+          1) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage: 'Track TrackId=$TrackId updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false,
+            errorMessage: 'Track TrackId=$TrackId did not update');
+      }
+      return TrackId;
+    } catch (e) {
+      saveResult = BoolResult(
+          success: false,
+          errorMessage: 'Track Save failed. Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  /// inserts or replaces the sent List<<Track>> as a bulk in one transaction.
+  ///
+  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
+  ///
+  /// Returns a BoolCommitResult
+  Future<BoolCommitResult> upsertAll(List<Track> tracks) async {
+    final results = await _mnTrack.rawInsertAll(
+        'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
+        tracks);
+    return results;
+  }
+
+  /// Deletes Track
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
+    if (await InvoiceLine().select().TrackId.equals(TrackId).toCount() > 0) {
+      return BoolResult(
+          success: false,
+          errorMessage:
+              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.TrackId)');
+    }
+    if (!_softDeleteActivated || hardDelete) {
+      return _mnTrack.delete(
+          QueryParams(whereString: 'TrackId=?', whereArguments: [TrackId]));
+    } else {
+      return _mnTrack.updateBatch(
+          QueryParams(whereString: 'TrackId=?', whereArguments: [TrackId]),
+          {'isDeleted': 1});
+    }
+  }
+
+  //private TrackFilterBuilder _Select;
+  TrackFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+    return TrackFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect;
+  }
+
+  TrackFilterBuilder distinct(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return TrackFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect
+      ..qparams.distinct = true;
+  }
+
+  void _setDefaultValues() {}
+  // END METHODS
+  // CUSTOM CODES
+  /*
+      you must define customCode property of your SqfEntityTable constant for ex:
+      const tablePerson = SqfEntityTable(
+      tableName: 'person',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+      ],
+      customCode: '''
+       String fullName()
+       { 
+         return '$firstName $lastName';
+       }
+      ''');
+     */
+  // END CUSTOM CODES
+}
+// endregion track
+
+// region TrackField
+class TrackField extends SearchCriteria {
+  TrackField(this.trackFB) {
+    param = DbParameter();
+  }
+  DbParameter param;
+  String _waitingNot = '';
+  TrackFilterBuilder trackFB;
+
+  TrackField get not {
+    _waitingNot = ' NOT ';
+    return this;
+  }
+
+  TrackFilterBuilder equals(dynamic pValue) {
+    param.expression = '=';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.EQuals,
+            trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.NotEQuals,
+            trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder equalsOrNull(dynamic pValue) {
+    param.expression = '=';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.EQualsOrNull,
+            trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder isNull() {
+    trackFB._addedBlocks = setCriteria(
+        0,
+        trackFB.parameters,
+        param,
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder contains(dynamic pValue) {
+    if (pValue != null) {
+      trackFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}%',
+          trackFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          trackFB._addedBlocks);
+      _waitingNot = '';
+      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+          trackFB._addedBlocks.retVal;
+    }
+    return trackFB;
+  }
+
+  TrackFilterBuilder startsWith(dynamic pValue) {
+    if (pValue != null) {
+      trackFB._addedBlocks = setCriteria(
+          '${pValue.toString()}%',
+          trackFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          trackFB._addedBlocks);
+      _waitingNot = '';
+      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+          trackFB._addedBlocks.retVal;
+      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+          trackFB._addedBlocks.retVal;
+    }
+    return trackFB;
+  }
+
+  TrackFilterBuilder endsWith(dynamic pValue) {
+    if (pValue != null) {
+      trackFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}',
+          trackFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          trackFB._addedBlocks);
+      _waitingNot = '';
+      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+          trackFB._addedBlocks.retVal;
+    }
+    return trackFB;
+  }
+
+  TrackFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    if (pFirst != null && pLast != null) {
+      trackFB._addedBlocks = setCriteria(
+          pFirst,
+          trackFB.parameters,
+          param,
+          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          trackFB._addedBlocks,
+          pLast);
+    } else if (pFirst != null) {
+      if (_waitingNot != '') {
+        trackFB._addedBlocks = setCriteria(pFirst, trackFB.parameters, param,
+            SqlSyntax.LessThan, trackFB._addedBlocks);
+      } else {
+        trackFB._addedBlocks = setCriteria(pFirst, trackFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks);
+      }
+    } else if (pLast != null) {
+      if (_waitingNot != '') {
+        trackFB._addedBlocks = setCriteria(pLast, trackFB.parameters, param,
+            SqlSyntax.GreaterThan, trackFB._addedBlocks);
+      } else {
+        trackFB._addedBlocks = setCriteria(pLast, trackFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks);
+      }
+    }
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder greaterThan(dynamic pValue) {
+    param.expression = '>';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.GreaterThan,
+            trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder lessThan(dynamic pValue) {
+    param.expression = '<';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.LessThan,
+            trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    param.expression = '>=';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.LessThan,
+            trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder lessThanOrEquals(dynamic pValue) {
+    param.expression = '<=';
+    trackFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, trackFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks)
+        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.GreaterThan,
+            trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+
+  TrackFilterBuilder inValues(dynamic pValue) {
+    trackFB._addedBlocks = setCriteria(
+        pValue,
+        trackFB.parameters,
+        param,
+        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        trackFB._addedBlocks);
+    _waitingNot = '';
+    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+        trackFB._addedBlocks.retVal;
+    return trackFB;
+  }
+}
+// endregion TrackField
+
+// region TrackFilterBuilder
+class TrackFilterBuilder extends SearchCriteria {
+  TrackFilterBuilder(Track obj) {
+    whereString = '';
+    qparams = QueryParams();
+    parameters = <DbParameter>[];
+    orderByList = <String>[];
+    groupByList = <String>[];
+    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
+    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock.add(false);
+    _pagesize = 0;
+    _page = 0;
+    _obj = obj;
+  }
+  AddedBlocks _addedBlocks;
+  int _blockIndex = 0;
+  List<DbParameter> parameters;
+  List<String> orderByList;
+  Track _obj;
+  QueryParams qparams;
+  int _pagesize;
+  int _page;
+
+  /// put the sql keyword 'AND'
+  TrackFilterBuilder get and {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' AND ';
+    }
+    return this;
+  }
+
+  /// put the sql keyword 'OR'
+  TrackFilterBuilder get or {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' OR ';
+    }
+    return this;
+  }
+
+  /// open parentheses
+  TrackFilterBuilder get startBlock {
+    _addedBlocks.waitingStartBlock.add(true);
+    _addedBlocks.needEndBlock.add(false);
+    _blockIndex++;
+    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    return this;
+  }
+
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
+  TrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+    if (whereCriteria != null && whereCriteria != '') {
+      final DbParameter param = DbParameter();
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+    }
+    return this;
+  }
+
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
+  TrackFilterBuilder page(int page, int pagesize) {
+    if (page > 0) _page = page;
+    if (pagesize > 0) _pagesize = pagesize;
+    return this;
+  }
+
+  /// int count = LIMIT
+  TrackFilterBuilder top(int count) {
+    if (count > 0) {
+      _pagesize = count;
+    }
+    return this;
+  }
+
+  /// close parentheses
+  TrackFilterBuilder get endBlock {
+    if (_addedBlocks.needEndBlock[_blockIndex]) {
+      parameters[parameters.length - 1].whereString += ' ) ';
+    }
+    _addedBlocks.needEndBlock.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _blockIndex--;
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  TrackFilterBuilder orderBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') orderByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  TrackFilterBuilder orderByDesc(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add('$argFields desc ');
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') orderByList.add(' $s desc ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  TrackFilterBuilder groupBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        groupByList.add(' $argFields ');
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') groupByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  TrackField setField(TrackField field, String colName, DbType dbtype) {
+    return TrackField(this)
+      ..param = DbParameter(
+          dbType: dbtype,
+          columnName: colName,
+          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+  }
+
+  TrackField _TrackId;
+  TrackField get TrackId {
+    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
+  }
+
+  TrackField _Name;
+  TrackField get Name {
+    return _Name = setField(_Name, 'Name', DbType.text);
+  }
+
+  TrackField _Composer;
+  TrackField get Composer {
+    return _Composer = setField(_Composer, 'Composer', DbType.text);
+  }
+
+  TrackField _Milliseconds;
+  TrackField get Milliseconds {
+    return _Milliseconds =
+        setField(_Milliseconds, 'Milliseconds', DbType.integer);
+  }
+
+  TrackField _Bytes;
+  TrackField get Bytes {
+    return _Bytes = setField(_Bytes, 'Bytes', DbType.integer);
+  }
+
+  TrackField _UnitPrice;
+  TrackField get UnitPrice {
+    return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
+  }
+
+  TrackField _MediaTypeId;
+  TrackField get MediaTypeId {
+    return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
+  }
+
+  TrackField _GenreId;
+  TrackField get GenreId {
+    return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
+  }
+
+  TrackField _AlbumId;
+  TrackField get AlbumId {
+    return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
+  }
+
+  bool _getIsDeleted;
+
+  void _buildParameters() {
+    if (_page > 0 && _pagesize > 0) {
+      qparams
+        ..limit = _pagesize
+        ..offset = (_page - 1) * _pagesize;
+    } else {
+      qparams
+        ..limit = _pagesize
+        ..offset = _page;
+    }
+    for (DbParameter param in parameters) {
+      if (param.columnName != null) {
+        if (param.value is List) {
+          param.value = param.value
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .toString();
+          whereString += param.whereString
+              .replaceAll('{field}', param.columnName)
+              .replaceAll('?', param.value.toString());
+          param.value = null;
+        } else {
+          whereString +=
+              param.whereString.replaceAll('{field}', param.columnName);
+        }
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+            case DbType.datetimeUtc:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+        }
+      } else {
+        whereString += param.whereString;
+      }
+      if (param.value != null) {
+        whereArguments.add(param.value);
+      }
+      if (param.value2 != null) {
+        whereArguments.add(param.value2);
+      }
+    }
+    if (Track._softDeleteActivated) {
+      if (whereString != '') {
+        whereString =
+            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
+      } else if (!_getIsDeleted) {
+        whereString = 'ifnull(isDeleted,0)=0';
+      }
+    }
+
+    if (whereString != '') {
+      qparams.whereString = whereString;
+    }
+    qparams
+      ..whereArguments = whereArguments
+      ..groupBy = groupByList.join(',')
+      ..orderBy = orderByList.join(',');
+  }
+
+  /// Deletes List<Track> bulk by query
+  ///
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    _buildParameters();
+    var r = BoolResult();
+    final invoiceLineByTrackIdidList = await toListPrimaryKey(false);
+    if (await InvoiceLine()
+            .select()
+            .TrackId
+            .inValues(invoiceLineByTrackIdidList)
+            .toCount() >
+        0) {
+      return BoolResult(
+          success: false,
+          errorMessage:
+              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.TrackId)');
+    }
+    if (Track._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnTrack.updateBatch(qparams, {'isDeleted': 1});
+    } else {
+      r = await _obj._mnTrack.delete(qparams);
+    }
+    return r;
+  }
+
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
+  Future<BoolResult> update(Map<String, dynamic> values) {
+    _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'TrackId IN (SELECT TrackId from Track ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
+    return _obj._mnTrack.updateBatch(qparams, values);
+  }
+
+  /// This method always returns Track Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>List<Track>
+  Future<Track> toSingle(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    _pagesize = 1;
+    _buildParameters();
+    final objFuture = _obj._mnTrack.toList(qparams);
+    final data = await objFuture;
+    Track obj;
+    if (data.isNotEmpty) {
+      obj = Track.fromMap(data[0] as Map<String, dynamic>);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('Track.plInvoiceLines') &&
+            (preloadFields == null ||
+                preloadFields.contains('plInvoiceLines'))) {
+          loadedFields.add('Track.plInvoiceLines');
+          obj.plInvoiceLines = obj.plInvoiceLines ??
+              await obj.getInvoiceLines().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+        if (!loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+          loadedFields.add('Track.plPlaylists');
+          obj.plPlaylists = obj.plPlaylists ??
+              await obj.getPlaylists().toList(
+                  preload: preload,
+                  preloadFields: preloadFields,
+                  loadParents: false,
+                  loadedFields: loadedFields);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (!loadedFields.contains('MediaType.plMediaType') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plMediaType'))) {
+          loadedFields.add('MediaType.plMediaType');
+          obj.plMediaType = obj.plMediaType ??
+              await obj.getMediaType(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Genre.plGenre') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plGenre'))) {
+          loadedFields.add('Genre.plGenre');
+          obj.plGenre =
+              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+        }
+        if (!loadedFields.contains('Album.plAlbum') &&
+            (preloadFields == null ||
+                loadParents ||
+                preloadFields.contains('plAlbum'))) {
+          loadedFields.add('Album.plAlbum');
+          obj.plAlbum =
+              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
+    } else {
+      obj = null;
+    }
+    return obj;
+  }
+
+  /// This method returns int.
+  ///
+  /// <returns>int
+  Future<int> toCount([VoidCallback Function(int c) trackCount]) async {
+    _buildParameters();
+    qparams.selectColumns = ['COUNT(1) AS CNT'];
+    final tracksFuture = await _obj._mnTrack.toList(qparams);
+    final int count = tracksFuture[0]['CNT'] as int;
+    if (trackCount != null) {
+      trackCount(count);
+    }
+    return count;
+  }
+
+  /// This method returns List<Track>.
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>List<Track>
+  Future<List<Track>> toList(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final data = await toMapList();
+    final List<Track> tracksData = await Track.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields);
+    return tracksData;
+  }
+
+  /// This method returns Json String
+  Future<String> toJson() async {
+    final list = <dynamic>[];
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap(forJson: true));
+    }
+    return json.encode(list);
+  }
+
+  /// This method returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = <dynamic>[];
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds(false, true));
+    }
+    return json.encode(list);
+  }
+
+  /// This method returns List<dynamic>.
+  ///
+  /// <returns>List<dynamic>
+  Future<List<dynamic>> toMapList() async {
+    _buildParameters();
+    return await _obj._mnTrack.toList(qparams);
+  }
+
+  /// Returns List<DropdownMenuItem<Track>>
+  Future<List<DropdownMenuItem<Track>>> toDropDownMenu(String displayTextColumn,
+      [VoidCallback Function(List<DropdownMenuItem<Track>> o)
+          dropDownMenu]) async {
+    _buildParameters();
+    final tracksFuture = _obj._mnTrack.toList(qparams);
+
+    final data = await tracksFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<Track>> items = []..add(DropdownMenuItem(
+        value: Track(),
+        child: Text('Select Track'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: Track.fromMap(data[i] as Map<String, dynamic>),
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// Returns List<DropdownMenuItem<int>>
+  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
+      String displayTextColumn,
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+          dropDownMenu]) async {
+    _buildParameters();
+    qparams.selectColumns = ['TrackId', displayTextColumn];
+    final tracksFuture = _obj._mnTrack.toList(qparams);
+
+    final data = await tracksFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
+        value: 0,
+        child: Text('Select Track'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: data[i]['TrackId'] as int,
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// This method returns Primary Key List<int>.
+  /// <returns>List<int>
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
+    if (buildParameters) _buildParameters();
+    final List<int> TrackIdData = <int>[];
+    qparams.selectColumns = ['TrackId'];
+    final TrackIdFuture = await _obj._mnTrack.toList(qparams);
+
+    final int count = TrackIdFuture.length;
+    for (int i = 0; i < count; i++) {
+      TrackIdData.add(TrackIdFuture[i]['TrackId'] as int);
+    }
+    return TrackIdData;
+  }
+
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
+  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
+  Future<List<dynamic>> toListObject() async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnTrack.toList(qparams);
+
+    final List<dynamic> objectsData = <dynamic>[];
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i]);
+    }
+    return objectsData;
+  }
+
+  /// Returns List<String> for selected first column
+  ///
+  /// Sample usage: await Track.select(columnsToSelect: ['columnName']).toListString()
+  Future<List<String>> toListString(
+      [VoidCallback Function(List<String> o) listString]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnTrack.toList(qparams);
+
+    final List<String> objectsData = <String>[];
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+    }
+    if (listString != null) {
+      listString(objectsData);
+    }
+    return objectsData;
+  }
+}
+// endregion TrackFilterBuilder
+
+// region TrackFields
+class TrackFields {
+  static TableField _fTrackId;
+  static TableField get TrackId {
+    return _fTrackId =
+        _fTrackId ?? SqlSyntax.setField(_fTrackId, 'trackid', DbType.integer);
+  }
+
+  static TableField _fName;
+  static TableField get Name {
+    return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
+  }
+
+  static TableField _fComposer;
+  static TableField get Composer {
+    return _fComposer =
+        _fComposer ?? SqlSyntax.setField(_fComposer, 'Composer', DbType.text);
+  }
+
+  static TableField _fMilliseconds;
+  static TableField get Milliseconds {
+    return _fMilliseconds = _fMilliseconds ??
+        SqlSyntax.setField(_fMilliseconds, 'Milliseconds', DbType.integer);
+  }
+
+  static TableField _fBytes;
+  static TableField get Bytes {
+    return _fBytes =
+        _fBytes ?? SqlSyntax.setField(_fBytes, 'Bytes', DbType.integer);
+  }
+
+  static TableField _fUnitPrice;
+  static TableField get UnitPrice {
+    return _fUnitPrice = _fUnitPrice ??
+        SqlSyntax.setField(_fUnitPrice, 'UnitPrice', DbType.real);
+  }
+
+  static TableField _fMediaTypeId;
+  static TableField get MediaTypeId {
+    return _fMediaTypeId = _fMediaTypeId ??
+        SqlSyntax.setField(_fMediaTypeId, 'MediaTypeId', DbType.integer);
+  }
+
+  static TableField _fGenreId;
+  static TableField get GenreId {
+    return _fGenreId =
+        _fGenreId ?? SqlSyntax.setField(_fGenreId, 'GenreId', DbType.integer);
+  }
+
+  static TableField _fAlbumId;
+  static TableField get AlbumId {
+    return _fAlbumId =
+        _fAlbumId ?? SqlSyntax.setField(_fAlbumId, 'AlbumId', DbType.integer);
+  }
+}
+// endregion TrackFields
+
+//region TrackManager
+class TrackManager extends SqfEntityProvider {
+  TrackManager()
+      : super(Chinookdb(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
+  static String _tableName = 'Track';
+  //static String _colId = 'TrackId';
+  static List<String> _primaryKeyList = ['TrackId'];
+  static String _whereStr = 'TrackId=?';
+}
+
+//endregion TrackManager
 // region PlaylistTrack
 class PlaylistTrack {
   PlaylistTrack({this.TrackId, this.PlaylistId}) {
     _setDefaultValues();
   }
-  PlaylistTrack.withFields() {
+  PlaylistTrack.withFields(this.TrackId, this.PlaylistId) {
     _setDefaultValues();
   }
   PlaylistTrack.withId(this.TrackId, this.PlaylistId) {
@@ -11628,7 +13016,7 @@ class PlaylistTrack {
   }
 
   List<dynamic> toArgs() {
-    return [];
+    return [TrackId, PlaylistId];
   }
 
   List<dynamic> toArgsWithIds() {
@@ -12348,6 +13736,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+
     if (PlaylistTrack._softDeleteActivated && !hardDelete) {
       r = await _obj._mnPlaylistTrack.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -12638,1528 +14027,6 @@ class PlaylistTrackManager extends SqfEntityProvider {
 }
 
 //endregion PlaylistTrackManager
-// region Track
-class Track {
-  Track(
-      {this.TrackId,
-      this.Name,
-      this.Composer,
-      this.Milliseconds,
-      this.Bytes,
-      this.UnitPrice,
-      this.MediaTypeId,
-      this.GenreId,
-      this.AlbumId}) {
-    _setDefaultValues();
-  }
-  Track.withFields(this.Name, this.Composer, this.Milliseconds, this.Bytes,
-      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
-    _setDefaultValues();
-  }
-  Track.withId(TrackId, this.Name, this.Composer, this.Milliseconds, this.Bytes,
-      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
-    _setDefaultValues();
-  }
-  Track.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
-    TrackId = int.tryParse(o['TrackId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
-    if (o['Composer'] != null) Composer = o['Composer'] as String;
-    if (o['Milliseconds'] != null)
-      Milliseconds = int.tryParse(o['Milliseconds'].toString());
-    if (o['Bytes'] != null) Bytes = int.tryParse(o['Bytes'].toString());
-    if (o['UnitPrice'] != null)
-      UnitPrice = double.tryParse(o['UnitPrice'].toString());
-    MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
-
-    GenreId = int.tryParse(o['GenreId'].toString());
-
-    AlbumId = int.tryParse(o['AlbumId'].toString());
-
-    // RELATIONSHIPS FromMAP
-    plMediaType = o['mediaType'] != null
-        ? MediaType.fromMap(o['mediaType'] as Map<String, dynamic>)
-        : null;
-    plGenre = o['genre'] != null
-        ? Genre.fromMap(o['genre'] as Map<String, dynamic>)
-        : null;
-    plAlbum = o['album'] != null
-        ? Album.fromMap(o['album'] as Map<String, dynamic>)
-        : null;
-    // END RELATIONSHIPS FromMAP
-  }
-  // FIELDS (Track)
-  int TrackId;
-  String Name;
-  String Composer;
-  int Milliseconds;
-  int Bytes;
-  double UnitPrice;
-  int MediaTypeId;
-  int GenreId;
-  int AlbumId;
-
-  BoolResult saveResult;
-  // end FIELDS (Track)
-
-// RELATIONSHIPS (Track)
-  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plMediaType', 'plField2'..]) or so on..
-  MediaType plMediaType;
-
-  /// get MediaType By MediaTypeId
-  Future<MediaType> getMediaType({bool loadParents = false}) async {
-    final _obj =
-        await MediaType().getById(MediaTypeId, loadParents: loadParents);
-    return _obj;
-  }
-
-  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plGenre', 'plField2'..]) or so on..
-  Genre plGenre;
-
-  /// get Genre By GenreId
-  Future<Genre> getGenre({bool loadParents = false}) async {
-    final _obj = await Genre().getById(GenreId, loadParents: loadParents);
-    return _obj;
-  }
-
-  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plAlbum', 'plField2'..]) or so on..
-  Album plAlbum;
-
-  /// get Album By AlbumId
-  Future<Album> getAlbum({bool loadParents = false}) async {
-    final _obj = await Album().getById(AlbumId, loadParents: loadParents);
-    return _obj;
-  }
-  // END RELATIONSHIPS (Track)
-
-// COLLECTIONS & VIRTUALS (Track)
-  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
-  List<InvoiceLine> plInvoiceLines;
-
-  /// get InvoiceLine(s) filtered by TrackId=TrackId
-  InvoiceLineFilterBuilder getInvoiceLines(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
-    return InvoiceLine()
-        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .TrackId
-        .equals(TrackId)
-        .and;
-  }
-
-  ///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylists', 'plField2'..]) or so on..
-  List<Playlist> plPlaylists;
-
-  /// get Playlist(s) filtered by PlaylistId IN PlaylistTrack
-  PlaylistFilterBuilder getPlaylists(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
-    return Playlist()
-        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where(
-            'PlaylistId IN (SELECT PlaylistId FROM PlaylistTrack WHERE TrackId=?)',
-            parameterValue: TrackId)
-        .and;
-  }
-
-  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylistTracks', 'plField2'..]) or so on..
-  List<PlaylistTrack> plPlaylistTracks;
-
-  /// get PlaylistTrack(s) filtered by TrackId=TrackId
-  PlaylistTrackFilterBuilder getPlaylistTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
-    return PlaylistTrack()
-        .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .TrackId
-        .equals(TrackId)
-        .and;
-  }
-
-// END COLLECTIONS & VIRTUALS (Track)
-
-  static const bool _softDeleteActivated = false;
-  TrackManager __mnTrack;
-
-  TrackManager get _mnTrack {
-    return __mnTrack = __mnTrack ?? TrackManager();
-  }
-
-  // METHODS
-  Map<String, dynamic> toMap(
-      {bool forQuery = false, bool forJson = false, bool forView = false}) {
-    final map = <String, dynamic>{};
-    if (TrackId != null) {
-      map['TrackId'] = TrackId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (Composer != null) {
-      map['Composer'] = Composer;
-    }
-
-    if (Milliseconds != null) {
-      map['Milliseconds'] = Milliseconds;
-    }
-
-    if (Bytes != null) {
-      map['Bytes'] = Bytes;
-    }
-
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
-    if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
-    }
-
-    if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre.Name : GenreId;
-    }
-
-    if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
-    }
-
-    return map;
-  }
-
-  Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false,
-      bool forJson = false,
-      bool forView = false]) async {
-    final map = <String, dynamic>{};
-    if (TrackId != null) {
-      map['TrackId'] = TrackId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (Composer != null) {
-      map['Composer'] = Composer;
-    }
-
-    if (Milliseconds != null) {
-      map['Milliseconds'] = Milliseconds;
-    }
-
-    if (Bytes != null) {
-      map['Bytes'] = Bytes;
-    }
-
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
-    if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
-    }
-
-    if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre.Name : GenreId;
-    }
-
-    if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
-    }
-
-// COLLECTIONS (Track)
-    if (!forQuery) {
-      map['InvoiceLines'] = await getInvoiceLines().toMapList();
-    }
-    if (!forQuery) {
-      map['Playlists'] = await getPlaylists().toMapList();
-    }
-    if (!forQuery) {
-      map['PlaylistTracks'] = await getPlaylistTracks().toMapList();
-    }
-// END COLLECTIONS (Track)
-
-    return map;
-  }
-
-  /// This method returns Json String
-  String toJson() {
-    return json.encode(toMap(forJson: true));
-  }
-
-  /// This method returns Json String
-  Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
-  }
-
-  List<dynamic> toArgs() {
-    return [
-      Name,
-      Composer,
-      Milliseconds,
-      Bytes,
-      UnitPrice,
-      MediaTypeId,
-      GenreId,
-      AlbumId
-    ];
-  }
-
-  List<dynamic> toArgsWithIds() {
-    return [
-      TrackId,
-      Name,
-      Composer,
-      Milliseconds,
-      Bytes,
-      UnitPrice,
-      MediaTypeId,
-      GenreId,
-      AlbumId
-    ];
-  }
-
-  static Future<List<Track>> fromWebUrl(String url) async {
-    try {
-      final response = await http.get(url);
-      return await fromJson(response.body);
-    } catch (e) {
-      print('SQFENTITY ERROR Track.fromWebUrl: ErrorMessage: ${e.toString()}');
-      return null;
-    }
-  }
-
-  static Future<List<Track>> fromJson(String jsonBody) async {
-    final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = <Track>[];
-    try {
-      objList = list
-          .map((track) => Track.fromMap(track as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      print('SQFENTITY ERROR Track.fromJson: ErrorMessage: ${e.toString()}');
-    }
-    return objList;
-  }
-
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Track>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Track.fromMapList(data);
-    } 
-    */
-
-  static Future<List<Track>> fromMapList(List<dynamic> data,
-      {bool preload = false,
-      List<String> preloadFields,
-      bool loadParents = false,
-      List<String> loadedFields}) async {
-    final List<Track> objList = <Track>[];
-    for (final map in data) {
-      final obj = Track.fromMap(map as Map<String, dynamic>);
-
-      // RELATIONSHIPS PRELOAD CHILD
-      if (preload) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
-            (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Track.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-      } // END RELATIONSHIPS PRELOAD CHILD
-
-      // RELATIONSHIPS PRELOAD
-      if (preload || loadParents) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
-          obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Genre.plGenre') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Album.plAlbum') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
-        }
-      } // END RELATIONSHIPS PRELOAD
-
-      objList.add(obj);
-    }
-    return objList;
-  }
-
-  /// returns Track by ID if exist, otherwise returns null
-  ///
-  /// Primary Keys: int TrackId
-  ///
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  ///
-  /// ex: getById(preload:true) -> Loads all related objects
-  ///
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  ///
-  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  ///
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  ///
-  /// <returns>returns Track if exist, otherwise returns null
-  Future<Track> getById(int TrackId,
-      {bool preload = false,
-      List<String> preloadFields,
-      bool loadParents = false,
-      List<String> loadedFields}) async {
-    if (TrackId == null) {
-      return null;
-    }
-    Track obj;
-    final data = await _mnTrack.getById([TrackId]);
-    if (data.length != 0) {
-      obj = Track.fromMap(data[0] as Map<String, dynamic>);
-
-      // RELATIONSHIPS PRELOAD CHILD
-      if (preload) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
-            (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Track.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-      } // END RELATIONSHIPS PRELOAD CHILD
-
-      // RELATIONSHIPS PRELOAD
-      if (preload || loadParents) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
-          obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Genre.plGenre') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Album.plAlbum') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
-        }
-      } // END RELATIONSHIPS PRELOAD
-
-    } else {
-      obj = null;
-    }
-    return obj;
-  }
-
-  /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
-
-  /// <returns>Returns TrackId
-  Future<int> save() async {
-    if (TrackId == null || TrackId == 0) {
-      TrackId = await _mnTrack.insert(this);
-    } else {
-      // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-      await _mnTrack.update(this);
-    }
-
-    return TrackId;
-  }
-
-  /// saveAs Track. Returns a new Primary Key value of Track
-
-  /// <returns>Returns a new Primary Key value of Track
-  Future<int> saveAs() async {
-    TrackId = null;
-
-    return save();
-  }
-
-  /// saveAll method saves the sent List<Track> as a bulk in one transaction
-  ///
-  /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Track> tracks) async {
-    // final results = _mnTrack.saveAll('INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',tracks);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
-    for (final obj in tracks) {
-      await obj.save();
-    }
-    return Chinookdb().batchCommit();
-  }
-
-  /// Updates if the record exists, otherwise adds a new row
-
-  /// <returns>Returns TrackId
-  Future<int> upsert() async {
-    try {
-      if (await _mnTrack.rawInsert(
-              'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
-              [
-                TrackId,
-                Name,
-                Composer,
-                Milliseconds,
-                Bytes,
-                UnitPrice,
-                MediaTypeId,
-                GenreId,
-                AlbumId
-              ]) ==
-          1) {
-        saveResult = BoolResult(
-            success: true,
-            successMessage: 'Track TrackId=$TrackId updated successfully');
-      } else {
-        saveResult = BoolResult(
-            success: false,
-            errorMessage: 'Track TrackId=$TrackId did not update');
-      }
-      return TrackId;
-    } catch (e) {
-      saveResult = BoolResult(
-          success: false,
-          errorMessage: 'Track Save failed. Error: ${e.toString()}');
-      return 0;
-    }
-  }
-
-  /// inserts or replaces the sent List<<Track>> as a bulk in one transaction.
-  ///
-  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  ///
-  /// Returns a BoolCommitResult
-  Future<BoolCommitResult> upsertAll(List<Track> tracks) async {
-    final results = await _mnTrack.rawInsertAll(
-        'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
-        tracks);
-    return results;
-  }
-
-  /// Deletes Track
-
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
-  Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
-    if (await InvoiceLine().select().TrackId.equals(TrackId).toCount() > 0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.TrackId)');
-    }
-    if (await PlaylistTrack().select().TrackId.equals(TrackId).toCount() > 0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (PlaylistTrack.TrackId)');
-    }
-    if (!_softDeleteActivated || hardDelete) {
-      return _mnTrack.delete(
-          QueryParams(whereString: 'TrackId=?', whereArguments: [TrackId]));
-    } else {
-      return _mnTrack.updateBatch(
-          QueryParams(whereString: 'TrackId=?', whereArguments: [TrackId]),
-          {'isDeleted': 1});
-    }
-  }
-
-  //private TrackFilterBuilder _Select;
-  TrackFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
-    return TrackFilterBuilder(this)
-      .._getIsDeleted = getIsDeleted == true
-      ..qparams.selectColumns = columnsToSelect;
-  }
-
-  TrackFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
-    return TrackFilterBuilder(this)
-      .._getIsDeleted = getIsDeleted == true
-      ..qparams.selectColumns = columnsToSelect
-      ..qparams.distinct = true;
-  }
-
-  void _setDefaultValues() {}
-  // END METHODS
-  // CUSTOM CODES
-  /*
-      you must define customCode property of your SqfEntityTable constant for ex:
-      const tablePerson = SqfEntityTable(
-      tableName: 'person',
-      primaryKeyName: 'id',
-      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-      fields: [
-        SqfEntityField('firstName', DbType.text),
-        SqfEntityField('lastName', DbType.text),
-      ],
-      customCode: '''
-       String fullName()
-       { 
-         return '$firstName $lastName';
-       }
-      ''');
-     */
-  // END CUSTOM CODES
-}
-// endregion track
-
-// region TrackField
-class TrackField extends SearchCriteria {
-  TrackField(this.trackFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
-  String _waitingNot = '';
-  TrackFilterBuilder trackFB;
-
-  TrackField get not {
-    _waitingNot = ' NOT ';
-    return this;
-  }
-
-  TrackFilterBuilder equals(dynamic pValue) {
-    param.expression = '=';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.EQuals,
-            trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.NotEQuals,
-            trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder equalsOrNull(dynamic pValue) {
-    param.expression = '=';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.EQualsOrNull,
-            trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param,
-            SqlSyntax.NotEQualsOrNull, trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder isNull() {
-    trackFB._addedBlocks = setCriteria(
-        0,
-        trackFB.parameters,
-        param,
-        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder contains(dynamic pValue) {
-    if (pValue != null) {
-      trackFB._addedBlocks = setCriteria(
-          '%${pValue.toString()}%',
-          trackFB.parameters,
-          param,
-          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          trackFB._addedBlocks);
-      _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-          trackFB._addedBlocks.retVal;
-    }
-    return trackFB;
-  }
-
-  TrackFilterBuilder startsWith(dynamic pValue) {
-    if (pValue != null) {
-      trackFB._addedBlocks = setCriteria(
-          '${pValue.toString()}%',
-          trackFB.parameters,
-          param,
-          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          trackFB._addedBlocks);
-      _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-          trackFB._addedBlocks.retVal;
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-          trackFB._addedBlocks.retVal;
-    }
-    return trackFB;
-  }
-
-  TrackFilterBuilder endsWith(dynamic pValue) {
-    if (pValue != null) {
-      trackFB._addedBlocks = setCriteria(
-          '%${pValue.toString()}',
-          trackFB.parameters,
-          param,
-          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          trackFB._addedBlocks);
-      _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-          trackFB._addedBlocks.retVal;
-    }
-    return trackFB;
-  }
-
-  TrackFilterBuilder between(dynamic pFirst, dynamic pLast) {
-    if (pFirst != null && pLast != null) {
-      trackFB._addedBlocks = setCriteria(
-          pFirst,
-          trackFB.parameters,
-          param,
-          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          trackFB._addedBlocks,
-          pLast);
-    } else if (pFirst != null) {
-      if (_waitingNot != '') {
-        trackFB._addedBlocks = setCriteria(pFirst, trackFB.parameters, param,
-            SqlSyntax.LessThan, trackFB._addedBlocks);
-      } else {
-        trackFB._addedBlocks = setCriteria(pFirst, trackFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks);
-      }
-    } else if (pLast != null) {
-      if (_waitingNot != '') {
-        trackFB._addedBlocks = setCriteria(pLast, trackFB.parameters, param,
-            SqlSyntax.GreaterThan, trackFB._addedBlocks);
-      } else {
-        trackFB._addedBlocks = setCriteria(pLast, trackFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks);
-      }
-    }
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder greaterThan(dynamic pValue) {
-    param.expression = '>';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.GreaterThan,
-            trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder lessThan(dynamic pValue) {
-    param.expression = '<';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param, SqlSyntax.LessThan,
-            trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder greaterThanOrEquals(dynamic pValue) {
-    param.expression = '>=';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.LessThan,
-            trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder lessThanOrEquals(dynamic pValue) {
-    param.expression = '<=';
-    trackFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, trackFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, trackFB._addedBlocks)
-        : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.GreaterThan,
-            trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-
-  TrackFilterBuilder inValues(dynamic pValue) {
-    trackFB._addedBlocks = setCriteria(
-        pValue,
-        trackFB.parameters,
-        param,
-        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        trackFB._addedBlocks);
-    _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
-        trackFB._addedBlocks.retVal;
-    return trackFB;
-  }
-}
-// endregion TrackField
-
-// region TrackFilterBuilder
-class TrackFilterBuilder extends SearchCriteria {
-  TrackFilterBuilder(Track obj) {
-    whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
-    groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
-    _obj = obj;
-  }
-  AddedBlocks _addedBlocks;
-  int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Track _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
-
-  /// put the sql keyword 'AND'
-  TrackFilterBuilder get and {
-    if (parameters.isNotEmpty) {
-      parameters[parameters.length - 1].wOperator = ' AND ';
-    }
-    return this;
-  }
-
-  /// put the sql keyword 'OR'
-  TrackFilterBuilder get or {
-    if (parameters.isNotEmpty) {
-      parameters[parameters.length - 1].wOperator = ' OR ';
-    }
-    return this;
-  }
-
-  /// open parentheses
-  TrackFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
-    _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
-    return this;
-  }
-
-  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  TrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
-    if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
-      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
-          '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
-    }
-    return this;
-  }
-
-  /// page = page number,
-  ///
-  /// pagesize = row(s) per page
-  TrackFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
-    return this;
-  }
-
-  /// int count = LIMIT
-  TrackFilterBuilder top(int count) {
-    if (count > 0) {
-      _pagesize = count;
-    }
-    return this;
-  }
-
-  /// close parentheses
-  TrackFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
-      parameters[parameters.length - 1].whereString += ' ) ';
-    }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
-    _blockIndex--;
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  ///
-  /// Example 1: argFields='name, date'
-  ///
-  /// Example 2: argFields = ['name', 'date']
-  TrackFilterBuilder orderBy(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        orderByList.add(argFields);
-      } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
-        }
-      }
-    }
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  ///
-  /// Example 1: argFields='field1, field2'
-  ///
-  /// Example 2: argFields = ['field1', 'field2']
-  TrackFilterBuilder orderByDesc(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        orderByList.add('$argFields desc ');
-      } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
-        }
-      }
-    }
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  ///
-  /// Example 1: argFields='field1, field2'
-  ///
-  /// Example 2: argFields = ['field1', 'field2']
-  TrackFilterBuilder groupBy(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        groupByList.add(' $argFields ');
-      } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
-        }
-      }
-    }
-    return this;
-  }
-
-  TrackField setField(TrackField field, String colName, DbType dbtype) {
-    return TrackField(this)
-      ..param = DbParameter(
-          dbType: dbtype,
-          columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
-  }
-
-  TrackField _TrackId;
-  TrackField get TrackId {
-    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
-  }
-
-  TrackField _Name;
-  TrackField get Name {
-    return _Name = setField(_Name, 'Name', DbType.text);
-  }
-
-  TrackField _Composer;
-  TrackField get Composer {
-    return _Composer = setField(_Composer, 'Composer', DbType.text);
-  }
-
-  TrackField _Milliseconds;
-  TrackField get Milliseconds {
-    return _Milliseconds =
-        setField(_Milliseconds, 'Milliseconds', DbType.integer);
-  }
-
-  TrackField _Bytes;
-  TrackField get Bytes {
-    return _Bytes = setField(_Bytes, 'Bytes', DbType.integer);
-  }
-
-  TrackField _UnitPrice;
-  TrackField get UnitPrice {
-    return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
-  }
-
-  TrackField _MediaTypeId;
-  TrackField get MediaTypeId {
-    return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
-  }
-
-  TrackField _GenreId;
-  TrackField get GenreId {
-    return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
-  }
-
-  TrackField _AlbumId;
-  TrackField get AlbumId {
-    return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
-  }
-
-  bool _getIsDeleted;
-
-  void _buildParameters() {
-    if (_page > 0 && _pagesize > 0) {
-      qparams
-        ..limit = _pagesize
-        ..offset = (_page - 1) * _pagesize;
-    } else {
-      qparams
-        ..limit = _pagesize
-        ..offset = _page;
-    }
-    for (DbParameter param in parameters) {
-      if (param.columnName != null) {
-        if (param.value is List) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
-          whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
-          param.value = null;
-        } else {
-          whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
-        }
-        if (!param.whereString.contains('?')) {
-        } else {
-          switch (param.dbType) {
-            case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
-              break;
-            case DbType.date:
-            case DbType.datetime:
-            case DbType.datetimeUtc:
-              param.value = param.value == null
-                  ? null
-                  : (param.value as DateTime).millisecondsSinceEpoch;
-              param.value2 = param.value2 == null
-                  ? null
-                  : (param.value2 as DateTime).millisecondsSinceEpoch;
-              break;
-            default:
-          }
-        }
-      } else {
-        whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
-      }
-    }
-    if (Track._softDeleteActivated) {
-      if (whereString != '') {
-        whereString =
-            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
-      } else if (!_getIsDeleted) {
-        whereString = 'ifnull(isDeleted,0)=0';
-      }
-    }
-
-    if (whereString != '') {
-      qparams.whereString = whereString;
-    }
-    qparams
-      ..whereArguments = whereArguments
-      ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
-  }
-
-  /// Deletes List<Track> bulk by query
-  ///
-  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
-  Future<BoolResult> delete([bool hardDelete = false]) async {
-    _buildParameters();
-    var r = BoolResult();
-    final invoiceLineByTrackIdidList = await toListPrimaryKey(false);
-    if (await InvoiceLine()
-            .select()
-            .TrackId
-            .inValues(invoiceLineByTrackIdidList)
-            .toCount() >
-        0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.TrackId)');
-    }
-    final playlistTrackByTrackIdidList = await toListPrimaryKey(false);
-    if (await PlaylistTrack()
-            .select()
-            .TrackId
-            .inValues(playlistTrackByTrackIdidList)
-            .toCount() >
-        0) {
-      return BoolResult(
-          success: false,
-          errorMessage:
-              'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (PlaylistTrack.TrackId)');
-    }
-    if (Track._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnTrack.updateBatch(qparams, {'isDeleted': 1});
-    } else {
-      r = await _obj._mnTrack.delete(qparams);
-    }
-    return r;
-  }
-
-  /// using:
-  ///
-  /// update({'fieldName': Value})
-  ///
-  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
-  Future<BoolResult> update(Map<String, dynamic> values) {
-    _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
-      qparams.whereString =
-          'TrackId IN (SELECT TrackId from Track ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
-    }
-    return _obj._mnTrack.updateBatch(qparams, values);
-  }
-
-  /// This method always returns Track Obj if exist, otherwise returns null
-  ///
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  ///
-  /// ex: toSingle(preload:true) -> Loads all related objects
-  ///
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  ///
-  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  ///
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  ///
-  /// <returns>List<Track>
-  Future<Track> toSingle(
-      {bool preload = false,
-      List<String> preloadFields,
-      bool loadParents = false,
-      List<String> loadedFields}) async {
-    _pagesize = 1;
-    _buildParameters();
-    final objFuture = _obj._mnTrack.toList(qparams);
-    final data = await objFuture;
-    Track obj;
-    if (data.isNotEmpty) {
-      obj = Track.fromMap(data[0] as Map<String, dynamic>);
-
-      // RELATIONSHIPS PRELOAD CHILD
-      if (preload) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
-            (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-        if (!loadedFields.contains('Track.plPlaylistTracks') &&
-            (preloadFields == null ||
-                preloadFields.contains('plPlaylistTracks'))) {
-          loadedFields.add('Track.plPlaylistTracks');
-          obj.plPlaylistTracks = obj.plPlaylistTracks ??
-              await obj.getPlaylistTracks().toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: loadedFields);
-        }
-      } // END RELATIONSHIPS PRELOAD CHILD
-
-      // RELATIONSHIPS PRELOAD
-      if (preload || loadParents) {
-        loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
-          obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Genre.plGenre') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
-        }
-        if (!loadedFields.contains('Album.plAlbum') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
-        }
-      } // END RELATIONSHIPS PRELOAD
-
-    } else {
-      obj = null;
-    }
-    return obj;
-  }
-
-  /// This method returns int.
-  ///
-  /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) trackCount]) async {
-    _buildParameters();
-    qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final tracksFuture = await _obj._mnTrack.toList(qparams);
-    final int count = tracksFuture[0]['CNT'] as int;
-    if (trackCount != null) {
-      trackCount(count);
-    }
-    return count;
-  }
-
-  /// This method returns List<Track>.
-  ///
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  ///
-  /// ex: toList(preload:true) -> Loads all related objects
-  ///
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  ///
-  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  ///
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  ///
-  /// <returns>List<Track>
-  Future<List<Track>> toList(
-      {bool preload = false,
-      List<String> preloadFields,
-      bool loadParents = false,
-      List<String> loadedFields}) async {
-    final data = await toMapList();
-    final List<Track> tracksData = await Track.fromMapList(data,
-        preload: preload,
-        preloadFields: preloadFields,
-        loadParents: loadParents,
-        loadedFields: loadedFields);
-    return tracksData;
-  }
-
-  /// This method returns Json String
-  Future<String> toJson() async {
-    final list = <dynamic>[];
-    final data = await toList();
-    for (var o in data) {
-      list.add(o.toMap(forJson: true));
-    }
-    return json.encode(list);
-  }
-
-  /// This method returns Json String.
-  Future<String> toJsonWithChilds() async {
-    final list = <dynamic>[];
-    final data = await toList();
-    for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
-    }
-    return json.encode(list);
-  }
-
-  /// This method returns List<dynamic>.
-  ///
-  /// <returns>List<dynamic>
-  Future<List<dynamic>> toMapList() async {
-    _buildParameters();
-    return await _obj._mnTrack.toList(qparams);
-  }
-
-  /// Returns List<DropdownMenuItem<Track>>
-  Future<List<DropdownMenuItem<Track>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Track>> o)
-          dropDownMenu]) async {
-    _buildParameters();
-    final tracksFuture = _obj._mnTrack.toList(qparams);
-
-    final data = await tracksFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<Track>> items = []..add(DropdownMenuItem(
-        value: Track(),
-        child: Text('Select Track'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: Track.fromMap(data[i] as Map<String, dynamic>),
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// Returns List<DropdownMenuItem<int>>
-  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
-      String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
-          dropDownMenu]) async {
-    _buildParameters();
-    qparams.selectColumns = ['TrackId', displayTextColumn];
-    final tracksFuture = _obj._mnTrack.toList(qparams);
-
-    final data = await tracksFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
-        value: 0,
-        child: Text('Select Track'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: data[i]['TrackId'] as int,
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// This method returns Primary Key List<int>.
-  /// <returns>List<int>
-  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
-    final List<int> TrackIdData = <int>[];
-    qparams.selectColumns = ['TrackId'];
-    final TrackIdFuture = await _obj._mnTrack.toList(qparams);
-
-    final int count = TrackIdFuture.length;
-    for (int i = 0; i < count; i++) {
-      TrackIdData.add(TrackIdFuture[i]['TrackId'] as int);
-    }
-    return TrackIdData;
-  }
-
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
-  ///
-  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject() async {
-    _buildParameters();
-
-    final objectFuture = _obj._mnTrack.toList(qparams);
-
-    final List<dynamic> objectsData = <dynamic>[];
-    final data = await objectFuture;
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      objectsData.add(data[i]);
-    }
-    return objectsData;
-  }
-
-  /// Returns List<String> for selected first column
-  ///
-  /// Sample usage: await Track.select(columnsToSelect: ['columnName']).toListString()
-  Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
-    _buildParameters();
-
-    final objectFuture = _obj._mnTrack.toList(qparams);
-
-    final List<String> objectsData = <String>[];
-    final data = await objectFuture;
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
-    }
-    if (listString != null) {
-      listString(objectsData);
-    }
-    return objectsData;
-  }
-}
-// endregion TrackFilterBuilder
-
-// region TrackFields
-class TrackFields {
-  static TableField _fTrackId;
-  static TableField get TrackId {
-    return _fTrackId =
-        _fTrackId ?? SqlSyntax.setField(_fTrackId, 'trackid', DbType.integer);
-  }
-
-  static TableField _fName;
-  static TableField get Name {
-    return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
-  }
-
-  static TableField _fComposer;
-  static TableField get Composer {
-    return _fComposer =
-        _fComposer ?? SqlSyntax.setField(_fComposer, 'Composer', DbType.text);
-  }
-
-  static TableField _fMilliseconds;
-  static TableField get Milliseconds {
-    return _fMilliseconds = _fMilliseconds ??
-        SqlSyntax.setField(_fMilliseconds, 'Milliseconds', DbType.integer);
-  }
-
-  static TableField _fBytes;
-  static TableField get Bytes {
-    return _fBytes =
-        _fBytes ?? SqlSyntax.setField(_fBytes, 'Bytes', DbType.integer);
-  }
-
-  static TableField _fUnitPrice;
-  static TableField get UnitPrice {
-    return _fUnitPrice = _fUnitPrice ??
-        SqlSyntax.setField(_fUnitPrice, 'UnitPrice', DbType.real);
-  }
-
-  static TableField _fMediaTypeId;
-  static TableField get MediaTypeId {
-    return _fMediaTypeId = _fMediaTypeId ??
-        SqlSyntax.setField(_fMediaTypeId, 'MediaTypeId', DbType.integer);
-  }
-
-  static TableField _fGenreId;
-  static TableField get GenreId {
-    return _fGenreId =
-        _fGenreId ?? SqlSyntax.setField(_fGenreId, 'GenreId', DbType.integer);
-  }
-
-  static TableField _fAlbumId;
-  static TableField get AlbumId {
-    return _fAlbumId =
-        _fAlbumId ?? SqlSyntax.setField(_fAlbumId, 'AlbumId', DbType.integer);
-  }
-}
-// endregion TrackFields
-
-//region TrackManager
-class TrackManager extends SqfEntityProvider {
-  TrackManager()
-      : super(Chinookdb(),
-            tableName: _tableName,
-            primaryKeyList: _primaryKeyList,
-            whereStr: _whereStr);
-  static String _tableName = 'Track';
-  //static String _colId = 'TrackId';
-  static List<String> _primaryKeyList = ['TrackId'];
-  static String _whereStr = 'TrackId=?';
-}
-
-//endregion TrackManager
 class ChinookdbSequenceManager extends SqfEntityProvider {
   ChinookdbSequenceManager() : super(Chinookdb());
 }
@@ -14569,14 +14436,6 @@ class MediaTypeController extends MediaType {
 // END CONTROLLER (MediaType)
 
 // BEGIN CONTROLLER (Playlist)
-class PlaylistToPlaylistTrackControllerSub extends PlaylistTrackController {
-  static String relationshipFieldName = 'PlaylistId';
-  static String primaryKeyName = 'TrackId';
-  static bool useSoftDeleting = false;
-  //static String formListTitleField = 'Name';
-  //static String formListSubTitleField = '';
-}
-
 class PlaylistToTrackControllerSub extends TrackController {
   static String relationshipFieldName = 'PlaylistPlaylistId';
   static String primaryKeyName = 'TrackId';
@@ -14595,7 +14454,6 @@ class PlaylistController extends Playlist {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['PlaylistToPlaylistTrack'] = 'Playlist To PlaylistTrack';
     menu['PlaylistToTrack'] = 'Playlist To Track';
 
     return menu;
@@ -14603,17 +14461,6 @@ class PlaylistController extends Playlist {
 
   SQFViewList subList(int id, String controllerName) {
     switch (controllerName) {
-      case 'PlaylistToPlaylistTrack':
-        return SQFViewList(
-          PlaylistToPlaylistTrackControllerSub(),
-          primaryKeyName: PlaylistToPlaylistTrackControllerSub.primaryKeyName,
-          useSoftDeleting: PlaylistToPlaylistTrackControllerSub.useSoftDeleting,
-          //formListTitleField: 'Name',
-          //formListSubTitleField: '',
-          filterExpression:
-              '${PlaylistToPlaylistTrackControllerSub.relationshipFieldName}=?',
-          filterParameter: id,
-        );
       case 'PlaylistToTrack':
         return SQFViewList(
           PlaylistToTrackControllerSub(),
@@ -14639,32 +14486,6 @@ class PlaylistController extends Playlist {
 }
 // END CONTROLLER (Playlist)
 
-// BEGIN CONTROLLER (PlaylistTrack)
-
-class PlaylistTrackController extends PlaylistTrack {
-  String formListTitleField = 'TrackId';
-  String formListSubTitleField = 'PlaylistId';
-  static SQFViewList getController = SQFViewList(
-    PlaylistTrackController(),
-    primaryKeyName: 'TrackId',
-    useSoftDeleting: false,
-  );
-  Map<String, String> subMenu() {
-    final menu = <String, String>{};
-
-    return menu;
-  }
-
-  Future<Widget> gotoEdit(dynamic obj) async {
-    return PlaylistTrackAdd(obj == null
-        ? PlaylistTrack()
-        : await PlaylistTrack()
-                .getById(obj['TrackId'] as int, obj['PlaylistId'] as int) ??
-            PlaylistTrack());
-  }
-}
-// END CONTROLLER (PlaylistTrack)
-
 // BEGIN CONTROLLER (Track)
 class TrackToInvoiceLineControllerSub extends InvoiceLineController {
   static String relationshipFieldName = 'TrackId';
@@ -14682,14 +14503,6 @@ class TrackToPlaylistControllerSub extends PlaylistController {
   //static String formListSubTitleField = 'Composer';
 }
 
-class TrackToPlaylistTrackControllerSub extends PlaylistTrackController {
-  static String relationshipFieldName = 'TrackId';
-  static String primaryKeyName = 'TrackId';
-  static bool useSoftDeleting = false;
-  //static String formListTitleField = 'Name';
-  //static String formListSubTitleField = 'Composer';
-}
-
 class TrackController extends Track {
   String formListTitleField = 'Name';
   String formListSubTitleField = 'Composer';
@@ -14702,7 +14515,6 @@ class TrackController extends Track {
     final menu = <String, String>{};
     menu['TrackToInvoiceLine'] = 'Track To InvoiceLine';
     menu['TrackToPlaylist'] = 'Track To Playlist';
-    menu['TrackToPlaylistTrack'] = 'Track To PlaylistTrack';
 
     return menu;
   }
@@ -14729,17 +14541,6 @@ class TrackController extends Track {
           //formListSubTitleField: 'Composer',
           filterExpression:
               'PlaylistId IN (SELECT PlaylistId FROM PlaylistTrack WHERE TrackId=?)',
-          filterParameter: id,
-        );
-      case 'TrackToPlaylistTrack':
-        return SQFViewList(
-          TrackToPlaylistTrackControllerSub(),
-          primaryKeyName: TrackToPlaylistTrackControllerSub.primaryKeyName,
-          useSoftDeleting: TrackToPlaylistTrackControllerSub.useSoftDeleting,
-          //formListTitleField: 'Name',
-          //formListSubTitleField: 'Composer',
-          filterExpression:
-              '${TrackToPlaylistTrackControllerSub.relationshipFieldName}=?',
           filterParameter: id,
         );
 

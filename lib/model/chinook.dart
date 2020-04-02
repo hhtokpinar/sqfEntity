@@ -149,22 +149,7 @@ const tablePlaylist = SqfEntityTable(
       SqfEntityField('Name', DbType.text),
     ]);
 
-const tablePlaylistTrack = SqfEntityTable(
-    tableName: 'PlaylistTrack',
-    primaryKeyName: '',
-    relationType: RelationType.MANY_TO_MANY,
-    fields: [
-      SqfEntityFieldRelationship(
-          parentTable: tableTrack,
-          deleteRule: DeleteRule.NO_ACTION,
-          fieldName: 'TrackId',
-          isPrimaryKeyField: true),
-      SqfEntityFieldRelationship(
-          parentTable: tablePlaylist,
-          deleteRule: DeleteRule.NO_ACTION,
-          fieldName: 'PlaylistId',
-          isPrimaryKeyField: true),
-    ]);
+
 
 const tableTrack = SqfEntityTable(
     tableName: 'Track',
@@ -215,7 +200,6 @@ const chinookdb = SqfEntityModel(
       tableInvoiceLine,
       tableMediaType,
       tablePlaylist,
-      tablePlaylistTrack,
       tableTrack,
     ],
     formTables: [
@@ -228,7 +212,6 @@ const chinookdb = SqfEntityModel(
       tableInvoiceLine,
       tableMediaType,
       tablePlaylist,
-      tablePlaylistTrack,
       tableTrack,
     ],
     // put defined sequences into the sequences list.
