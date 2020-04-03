@@ -236,7 +236,6 @@ Copy your existing database in /assets folder (in this sample we have copied chi
       assets:
         - assets/chinook.sqlite
 
-
 *STEP 2*
 Run these functions to create the model based on your database structure
 
@@ -254,22 +253,23 @@ Run these functions to create the model based on your database structure
 
 **bundledDatabasePath:** File path of your copied database
 
-That's all. Model were created succesfuly and set to the Clipboard. 
+That's all. The model were created successfully and set to the Clipboard. 
 
 Now, follow these steps to create entity models
 
-1. Open model.dart file in lib/model folder and paste models after following line
+1. Open model.dart file in lib/model folder and paste models after the following line
 
     part 'model.g.dart';
 
 
-2. Go Terminal Window and run command below
+2. Go Terminal Window and run the command below
 
     flutter pub run build_runner build --delete-conflicting-outputs
 
 Great! Your Entity models will be created in lib/model/model.g.dart
 
 Note: You can see this sample import in the createModelFromDatabaseSample() function in main.dart
+
 
 
   Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
