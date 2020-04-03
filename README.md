@@ -238,8 +238,7 @@ Copy your existing database in /assets folder (in this sample we have copied chi
 
 
 *STEP 2*
-
-Run these functions to convert the model to annotation
+Run these functions to create the model based on your database structure
 
     final bundledDbModel = await convertDatabaseToModelBase(
         databaseName: 'chinook.db',  
@@ -248,29 +247,27 @@ Run these functions to convert the model to annotation
     final String modelConstString =
         SqfEntityConverter(bundledDbModel).createConstDatabase();
         
+     await Clipboard.setData(ClipboardData(text: modelConstString));    
+        
 
 **databaseName:** Specify a name for your database to use for the database connection
 
 **bundledDatabasePath:** File path of your copied database
 
-That's all. Set clipboard to paste codes
+That's all. Model were created succesfuly and set to the Clipboard. 
 
-      await Clipboard.setData(ClipboardData(text: modelConstString));
+Now, follow these steps to create entity models
 
-
-Model were created succesfuly and set to the Clipboard. 
-
-
-Open model.dart file in lib/model folder and paste models after following line
+1. Open model.dart file in lib/model folder and paste models after following line
 
     part 'model.g.dart';
 
 
-Go Terminal Window and run command below
+2. Go Terminal Window and run command below
 
     flutter pub run build_runner build --delete-conflicting-outputs
 
-Your Entity models will be created in lib/model/model.g.dart
+Great! Your Entity models will be created in lib/model/model.g.dart
 
 Note: You can see this sample import in the createModelFromDatabaseSample() function in main.dart
 
