@@ -239,23 +239,20 @@ Copy your existing database in /assets folder (in this sample we have copied chi
 
 *STEP 2*
 
-Run this script with this parameters.
-
-**databaseName:** Specify a name for your database to use for the database connection
-
-**bundledDatabasePath:** File path of your copied database
+Run these functions to convert the model to annotation
 
     final bundledDbModel = await convertDatabaseToModelBase(
         databaseName: 'chinook.db',  
         bundledDatabasePath: 'assets/chinook.sqlite');
 
-*STEP 3*
-
-Run this function to convert the model to annotation
-
     final String modelConstString =
         SqfEntityConverter(bundledDbModel).createConstDatabase();
-  
+        
+
+**databaseName:** Specify a name for your database to use for the database connection
+
+**bundledDatabasePath:** File path of your copied database
+
 That's all. Set clipboard to paste codes
 
       await Clipboard.setData(ClipboardData(text: modelConstString));
