@@ -127,26 +127,26 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
 
 *Table 2: Product*
 
-   // Define the 'tableProduct' constant as SqfEntityTable for the product table.
-    const tableProduct = SqfEntityTable(
-      tableName: 'product',
-      primaryKeyName: 'id',
-      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-      useSoftDeleting: true,
-      fields: [
-        SqfEntityField('name', DbType.text),
-        SqfEntityField('description', DbType.text),
-        SqfEntityField('price', DbType.real, defaultValue: 0),
-        SqfEntityField('isActive', DbType.bool, defaultValue: true),
-        SqfEntityFieldRelationship(
-            parentTable: tableCategory,
-            deleteRule: DeleteRule.CASCADE,
-            defaultValue: 0), // Relationship column for CategoryId of Product
-        SqfEntityField('rownum', DbType.integer,
-            sequencedBy:
-                seqIdentity /*Example of linking a column to a sequence */),
-        SqfEntityField('imageUrl', DbType.text)
-    ]);
+    // Define the 'tableProduct' constant as SqfEntityTable for the product table.
+     const tableProduct = SqfEntityTable(
+       tableName: 'product',
+       primaryKeyName: 'id',
+       primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+       useSoftDeleting: true,
+       fields: [
+         SqfEntityField('name', DbType.text),
+         SqfEntityField('description', DbType.text),
+         SqfEntityField('price', DbType.real, defaultValue: 0),
+         SqfEntityField('isActive', DbType.bool, defaultValue: true),
+         SqfEntityFieldRelationship(
+             parentTable: tableCategory,
+             deleteRule: DeleteRule.CASCADE,
+             defaultValue: 0), // Relationship column for CategoryId of Product
+         SqfEntityField('rownum', DbType.integer,
+             sequencedBy:
+                 seqIdentity /*Example of linking a column to a sequence */),
+         SqfEntityField('imageUrl', DbType.text)
+     ]);
 
 
 If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
