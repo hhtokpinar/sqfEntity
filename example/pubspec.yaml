@@ -22,7 +22,7 @@ dependencies:
   
 dependency_overrides:
   sqfentity: 
-    path: ../
+    path: ../sqfentity
   sqfentity_gen: 
     path: ../sqfentity_gen      
 

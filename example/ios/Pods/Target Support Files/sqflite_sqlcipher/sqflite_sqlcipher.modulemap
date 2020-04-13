@@ -1,0 +1,6 @@
+module sqflite_sqlcipher {
+  umbrella header "sqflite_sqlcipher-umbrella.h"
+
+  export *
+  module * { export * }
+}
