@@ -8,7 +8,7 @@
             "name": "Flutter",
             "request": "launch",
             "args": ["--enable-software-rendering"],
-            "program": "lib/main.dart",
+            "program": "sqfentity/example/lib/main.dart",
             "type": "dart"
         }
     ]

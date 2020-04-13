@@ -38,19 +38,20 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 This project is a starting point for a SqfEntity ORM for database application.
 Some files in the project:
 
-    1. main.dart                      : Startup file contains sample methods for using sqfEntity
-    2. model / controller.dart        : main controller that provides access to created form views from
+    located: sqfentity/example
+    1. ..main.dart                     : Startup file contains sample methods for using sqfEntity
+    2. ../model/controller.dart        : main controller that provides access to created form views from
                                         the application main page (CAN BE MODIFIED)
-    3. model / model.dart             : Declare and modify your database model (CAN BE MODIFIED)
-    4. model / model.g.dart           : Sample generated model for examples (DO NOT MODIFY BY HAND)
-    5. model / model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
-    6. model / view.list.dart         : The View that List your saved table items (CAN BE MODIFIED)
-    7. model / view.detail.dart       : The View that see detail selected item (CAN BE MODIFIED)
-    8. sample_advanced_form / *.dart  : Sample Widget showing how to filter toList() at runtime
-    9. assets / chinook.sqlite        : Sample db if you want to use an exiting database or create 
+    3. ../model/model.dart             : Declare and modify your database model (CAN BE MODIFIED)
+    4. ../model/model.g.dart           : Sample generated model for examples (DO NOT MODIFY BY HAND)
+    5. ../model/model.g.view.dart      : Sample generated form views for examples (DO NOT MODIFY BY HAND)
+    6. ../model/view.list.dart         : The View that List your saved table items (CAN BE MODIFIED)
+    7. ../model/view.detail.dart       : The View that see detail selected item (CAN BE MODIFIED)
+    8. ../sample_advanced_form/*.dart  : Sample Widget showing how to filter toList() at runtime
+    9. ../assets/chinook.sqlite        : Sample db if you want to use an exiting database or create 
                                         model from database
-    10. app.dart                      : Sample App for display created model. 
-    11. LICENSE.txt                   : see this file for License Terms
+    10. app.dart                       : Sample App for display created model. 
+    11. LICENSE.txt                    : see this file for License Terms
 
 
 ### dependencies:
@@ -70,8 +71,8 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
 # Create a new Database Model
 
 First, You need to:
-1. Copy these two files into your /lib/model folder: [view.list.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/model/view.list.dart) and [view.detail.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/model/view.detail.dart)
-2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/tools/helper.dart) into your /lib/tools folder
+1. Copy these two files into your /lib/model folder: [view.list.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/sqfentity/example/lib/model/view.list.dart) and [view.detail.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/sqfentity/example/lib/model/view.detail.dart)
+2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/sqfentity/example/lib/tools/helper.dart) into your /lib/tools folder
 3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
         import 'dart:convert';
