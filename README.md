@@ -1,6 +1,6 @@
 # sqfEntity ORM for Flutter SQLite (sqflite)
 
-![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_ORM.gif) 
+![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/img/SqfEntity_ORM.gif) 
 
 
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
