@@ -627,7 +627,7 @@ ${_m.modelName}SequenceManager() : super(${_m.modelName}());
       modelString
         ..printToDebug('CREATE CONTROLLER FOR TABLE: ${table.tableName}')
         ..writeln(
-            SqfEntityControllerBuilder(table).toControllersCode().toString());
+            SqfEntityControllerBuilder(table,_m.formTables).toControllersCode().toString());
     }
 
     modelString.writeln('// END OF CONTROLLERS');

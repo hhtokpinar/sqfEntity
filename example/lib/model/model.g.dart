@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: lib/model/*.g.dart
-
 part of 'model.dart';
 
 // **************************************************************************
@@ -26,9 +24,8 @@ class TableProduct extends SqfEntityTableBase {
   TableProduct() {
     // declare properties of EntityTable
     tableName = 'product';
-    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    primaryKeyType = PrimaryKeyType.integer_unique;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -57,13 +54,42 @@ class TableProduct extends SqfEntityTableBase {
   }
 }
 
+// Product_property TABLE
+class TableProduct_property extends SqfEntityTableBase {
+  TableProduct_property() {
+    // declare properties of EntityTable
+    tableName = 'product_properties';
+    relationType = RelationType.ONE_TO_ONE;
+    primaryKeyName = 'propertyId';
+    primaryKeyType = PrimaryKeyType.integer_unique;
+    useSoftDeleting = false;
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+
+    // declare fields
+    fields = [
+      SqfEntityFieldBase('title', DbType.text),
+      SqfEntityFieldRelationshipBase(
+          TableProduct.getInstance, DeleteRule.CASCADE,
+          fieldName: '_prodId', relationType: RelationType.ONE_TO_ONE),
+      SqfEntityFieldRelationshipBase(
+          TableCategory.getInstance, DeleteRule.CASCADE,
+          fieldName: '_catId', relationType: RelationType.ONE_TO_ONE),
+    ];
+    super.init();
+  }
+  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase get getInstance {
+    return _instance = _instance ?? TableProduct_property();
+  }
+}
+
 // Category TABLE
 class TableCategory extends SqfEntityTableBase {
   TableCategory() {
     // declare properties of EntityTable
     tableName = 'category';
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    primaryKeyType = PrimaryKeyType.integer_unique;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -129,8 +155,11 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
     databaseName = myDbModel.databaseName;
+    password = myDbModel.password;
+
     databaseTables = [
       TableProduct.getInstance,
+      TableProduct_property.getInstance,
       TableCategory.getInstance,
       TableTodo.getInstance,
     ];
@@ -171,6 +200,7 @@ class Product {
     _setDefaultValues();
   }
   Product.withFields(
+      id,
       this.name,
       this.description,
       this.price,
@@ -228,6 +258,8 @@ class Product {
         ? Category.fromMap(o['category'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
+
+    isSaved = true;
   }
   // FIELDS (Product)
   int id;
@@ -241,7 +273,7 @@ class Product {
   DateTime datetime;
   DateTime date;
   bool isDeleted;
-
+  bool isSaved;
   BoolResult saveResult;
   // end FIELDS (Product)
 
@@ -251,11 +283,26 @@ class Product {
   Category plCategory;
 
   /// get Category By CategoryId
-  Future<Category> getCategory({bool loadParents = false}) async {
-    final _obj = await Category().getById(categoryId, loadParents: loadParents);
+  Future<Category> getCategory(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Category().getById(categoryId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Product)
+
+// COLLECTIONS & VIRTUALS (Product)
+  Product_property _product_property;
+  Product_property get product_property {
+    _product_property = _product_property ?? Product_property();
+    return _product_property;
+  }
+
+  void set product_property(Product_property product_property) {
+    _product_property = product_property;
+  }
+
+// END COLLECTIONS & VIRTUALS (Product)
 
   static const bool _softDeleteActivated = true;
   ProductManager __mnProduct;
@@ -374,6 +421,12 @@ class Product {
       map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
     }
 
+// COLLECTIONS (Product)
+    if (!forQuery && product_property != null) {
+      map['product_property'] = product_property.toMap();
+    }
+// END COLLECTIONS (Product)
+
     return map;
   }
 
@@ -389,6 +442,7 @@ class Product {
 
   List<dynamic> toArgs() {
     return [
+      id,
       name,
       description,
       price,
@@ -456,8 +510,16 @@ class Product {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Product> objList = <Product>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Product.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
+
+//      RELATIONS OneToOne (Product)
+      obj._product_property =
+          await Product_property().select()._prodId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Product)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -466,9 +528,10 @@ class Product {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCategory'))) {
-          loadedFields.add('category.plCategory');
-          obj.plCategory =
-              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+          _loadedFields.add('category.plCategory');
+          obj.plCategory = obj.plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -505,6 +568,13 @@ class Product {
     final data = await _mnProduct.getById([id]);
     if (data.length != 0) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+
+//      RELATIONS OneToOne (Product)
+      obj._product_property =
+          await Product_property().select()._prodId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Product)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -513,9 +583,10 @@ class Product {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCategory'))) {
-          loadedFields.add('category.plCategory');
-          obj.plCategory =
-              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+          _loadedFields.add('category.plCategory');
+          obj.plCategory = obj.plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -529,9 +600,9 @@ class Product {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0) {
-      id = await _mnProduct.insert(this);
-
+    if (id == null || id == 0 || !isSaved) {
+      await _mnProduct.insert(this);
+      if (saveResult.success) isSaved = true;
       if (id != null) {
         rownum = await IdentitySequence().nextVal();
         save();
@@ -541,16 +612,12 @@ class Product {
       await _mnProduct.update(this);
     }
 
+// save() OneToOne relations (Product)
+    _product_property?._prodId = id;
+    await _product_property?._save();
+// END save() OneToOne relations (Product)
+
     return id;
-  }
-
-  /// saveAs Product. Returns a new Primary Key value of Product
-
-  /// <returns>Returns a new Primary Key value of Product
-  Future<int> saveAs() async {
-    id = null;
-
-    return save();
   }
 
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
@@ -620,6 +687,17 @@ class Product {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Product invoked (id=$id)');
+    var result = BoolResult();
+    {
+      result = await Product_property()
+          .select()
+          ._prodId
+          .equals(id)
+          .delete(hardDelete);
+    }
+    if (!result.success) {
+      return result;
+    }
     if (!_softDeleteActivated || hardDelete || isDeleted) {
       return _mnProduct
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
@@ -659,6 +737,7 @@ class Product {
   }
 
   void _setDefaultValues() {
+    isSaved = false;
     price = price ?? 0;
     isActive = isActive ?? true;
     categoryId = categoryId ?? 0;
@@ -939,7 +1018,8 @@ class ProductFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   ProductFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -1141,15 +1221,15 @@ class ProductFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Product._softDeleteActivated) {
@@ -1176,6 +1256,7 @@ class ProductFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+
     if (Product._softDeleteActivated && !hardDelete) {
       r = await _obj._mnProduct.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -1231,6 +1312,13 @@ class ProductFilterBuilder extends SearchCriteria {
     Product obj;
     if (data.isNotEmpty) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+
+//      RELATIONS OneToOne (Product)
+      obj._product_property =
+          await Product_property().select()._prodId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Product)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -1239,9 +1327,10 @@ class ProductFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCategory'))) {
-          loadedFields.add('category.plCategory');
-          obj.plCategory =
-              obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
+          _loadedFields.add('category.plCategory');
+          obj.plCategory = obj.plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -1514,12 +1603,1051 @@ class ProductManager extends SqfEntityProvider {
 }
 
 //endregion ProductManager
+// region Product_property
+class Product_property {
+  Product_property({this.title}) {
+    _setDefaultValues();
+  }
+  Product_property.withFields(this.title, this._prodId, this._catId) {
+    _setDefaultValues();
+  }
+  Product_property.withId(this.title, this._prodId, this._catId) {
+    _setDefaultValues();
+  }
+  Product_property.fromMap(Map<String, dynamic> o) {
+    _setDefaultValues();
+    propertyId = int.tryParse(o['propertyId'].toString());
+    if (o['title'] != null) title = o['title'] as String;
+    _prodId = int.tryParse(o['_prodId'].toString());
+
+    _catId = int.tryParse(o['_catId'].toString());
+
+    isSaved = true;
+  }
+  // FIELDS (Product_property)
+  int propertyId;
+  String title;
+  int _prodId;
+  int _catId;
+  bool isSaved;
+  BoolResult saveResult;
+  // end FIELDS (Product_property)
+
+  static const bool _softDeleteActivated = false;
+  Product_propertyManager __mnProduct_property;
+
+  Product_propertyManager get _mnProduct_property {
+    return __mnProduct_property =
+        __mnProduct_property ?? Product_propertyManager();
+  }
+
+  // METHODS
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
+    final map = <String, dynamic>{};
+    if (title != null) {
+      map['title'] = title;
+    }
+
+    if (_prodId != null) {
+      map['_prodId'] = _prodId;
+    }
+
+    if (_catId != null) {
+      map['_catId'] = _catId;
+    }
+
+    return map;
+  }
+
+  Future<Map<String, dynamic>> toMapWithChilds(
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
+    final map = <String, dynamic>{};
+    if (title != null) {
+      map['title'] = title;
+    }
+
+    if (_prodId != null) {
+      map['_prodId'] = _prodId;
+    }
+
+    if (_catId != null) {
+      map['_catId'] = _catId;
+    }
+
+    return map;
+  }
+
+  /// This method returns Json String
+  String toJson() {
+    return json.encode(toMap(forJson: true));
+  }
+
+  /// This method returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds(false, true));
+  }
+
+  List<dynamic> toArgs() {
+    return [title, _prodId, _catId];
+  }
+
+  List<dynamic> toArgsWithIds() {
+    return [title, _prodId, _catId];
+  }
+
+  static Future<List<Product_property>> fromWebUrl(String url) async {
+    try {
+      final response = await http.get(url);
+      return await fromJson(response.body);
+    } catch (e) {
+      print(
+          'SQFENTITY ERROR Product_property.fromWebUrl: ErrorMessage: ${e.toString()}');
+      return null;
+    }
+  }
+
+  static Future<List<Product_property>> fromJson(String jsonBody) async {
+    final Iterable list = await json.decode(jsonBody) as Iterable;
+    var objList = <Product_property>[];
+    try {
+      objList = list
+          .map((product_property) => Product_property.fromMap(
+              product_property as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print(
+          'SQFENTITY ERROR Product_property.fromJson: ErrorMessage: ${e.toString()}');
+    }
+    return objList;
+  }
+
+  /*
+    /// REMOVED AFTER v1.2.1+14 
+    static Future<List<Product_property>> fromObjectList(Future<List<dynamic>> o) async {
+      final data = await o;
+      return await Product_property.fromMapList(data);
+    } 
+    */
+
+  static Future<List<Product_property>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final List<Product_property> objList = <Product_property>[];
+    loadedFields = loadedFields ?? [];
+    for (final map in data) {
+      final obj = Product_property.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
+
+      objList.add(obj);
+    }
+    return objList;
+  }
+
+  /// returns Product_property by ID if exist, otherwise returns null
+  ///
+  /// Primary Keys: int propertyId
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>returns Product_property if exist, otherwise returns null
+  Future<Product_property> getById(int propertyId,
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    if (propertyId == null) {
+      return null;
+    }
+    Product_property obj;
+    final data = await _mnProduct_property.getById([propertyId]);
+    if (data.length != 0) {
+      obj = Product_property.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+    } else {
+      obj = null;
+    }
+    return obj;
+  }
+
+  /// Saves the (Product_property) object. If the propertyId field is null, saves as a new record and returns new propertyId, if propertyId is not null then updates record
+
+  /// <returns>Returns propertyId
+  Future<int> _save() async {
+    if (propertyId == null || propertyId == 0 || !isSaved) {
+      await _mnProduct_property.insert(this);
+      if (saveResult.success) isSaved = true;
+    } else {
+      // propertyId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnProduct_property.update(this);
+    }
+
+    return propertyId;
+  }
+
+  /// Updates if the record exists, otherwise adds a new row
+
+  /// <returns>Returns propertyId
+  Future<int> upsert() async {
+    try {
+      if (await _mnProduct_property.rawInsert(
+              'INSERT OR REPLACE INTO product_properties (title, _prodId, _catId)  VALUES (?,?,?)',
+              [title, _prodId, _catId]) ==
+          1) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage:
+                'Product_property propertyId=$propertyId updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false,
+            errorMessage:
+                'Product_property propertyId=$propertyId did not update');
+      }
+      return propertyId;
+    } catch (e) {
+      saveResult = BoolResult(
+          success: false,
+          errorMessage: 'Product_property Save failed. Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  /// Deletes Product_property
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    print(
+        'SQFENTITIY: delete Product_property invoked (propertyId=$propertyId)');
+    if (!_softDeleteActivated || hardDelete) {
+      return _mnProduct_property.delete(QueryParams(
+          whereString: 'propertyId=?', whereArguments: [propertyId]));
+    } else {
+      return _mnProduct_property.updateBatch(
+          QueryParams(
+              whereString: 'propertyId=?', whereArguments: [propertyId]),
+          {'isDeleted': 1});
+    }
+  }
+
+  //private Product_propertyFilterBuilder _Select;
+  Product_propertyFilterBuilder select(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return Product_propertyFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect;
+  }
+
+  Product_propertyFilterBuilder distinct(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return Product_propertyFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect
+      ..qparams.distinct = true;
+  }
+
+  void _setDefaultValues() {
+    isSaved = false;
+  }
+  // END METHODS
+  // CUSTOM CODES
+  /*
+      you must define customCode property of your SqfEntityTable constant for ex:
+      const tablePerson = SqfEntityTable(
+      tableName: 'person',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+      ],
+      customCode: '''
+       String fullName()
+       { 
+         return '$firstName $lastName';
+       }
+      ''');
+     */
+  // END CUSTOM CODES
+}
+// endregion product_property
+
+// region Product_propertyField
+class Product_propertyField extends SearchCriteria {
+  Product_propertyField(this.product_propertyFB) {
+    param = DbParameter();
+  }
+  DbParameter param;
+  String _waitingNot = '';
+  Product_propertyFilterBuilder product_propertyFB;
+
+  Product_propertyField get not {
+    _waitingNot = ' NOT ';
+    return this;
+  }
+
+  Product_propertyFilterBuilder equals(dynamic pValue) {
+    param.expression = '=';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.EQuals, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.NotEQuals, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder equalsOrNull(dynamic pValue) {
+    param.expression = '=';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.EQualsOrNull, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder isNull() {
+    product_propertyFB._addedBlocks = setCriteria(
+        0,
+        product_propertyFB.parameters,
+        param,
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder contains(dynamic pValue) {
+    if (pValue != null) {
+      product_propertyFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}%',
+          product_propertyFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          product_propertyFB._addedBlocks);
+      _waitingNot = '';
+      product_propertyFB
+              ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+          product_propertyFB._addedBlocks.retVal;
+    }
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder startsWith(dynamic pValue) {
+    if (pValue != null) {
+      product_propertyFB._addedBlocks = setCriteria(
+          '${pValue.toString()}%',
+          product_propertyFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          product_propertyFB._addedBlocks);
+      _waitingNot = '';
+      product_propertyFB
+              ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+          product_propertyFB._addedBlocks.retVal;
+      product_propertyFB
+              ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+          product_propertyFB._addedBlocks.retVal;
+    }
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder endsWith(dynamic pValue) {
+    if (pValue != null) {
+      product_propertyFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}',
+          product_propertyFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          product_propertyFB._addedBlocks);
+      _waitingNot = '';
+      product_propertyFB
+              ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+          product_propertyFB._addedBlocks.retVal;
+    }
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    if (pFirst != null && pLast != null) {
+      product_propertyFB._addedBlocks = setCriteria(
+          pFirst,
+          product_propertyFB.parameters,
+          param,
+          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          product_propertyFB._addedBlocks,
+          pLast);
+    } else if (pFirst != null) {
+      if (_waitingNot != '') {
+        product_propertyFB._addedBlocks = setCriteria(
+            pFirst,
+            product_propertyFB.parameters,
+            param,
+            SqlSyntax.LessThan,
+            product_propertyFB._addedBlocks);
+      } else {
+        product_propertyFB._addedBlocks = setCriteria(
+            pFirst,
+            product_propertyFB.parameters,
+            param,
+            SqlSyntax.GreaterThanOrEquals,
+            product_propertyFB._addedBlocks);
+      }
+    } else if (pLast != null) {
+      if (_waitingNot != '') {
+        product_propertyFB._addedBlocks = setCriteria(
+            pLast,
+            product_propertyFB.parameters,
+            param,
+            SqlSyntax.GreaterThan,
+            product_propertyFB._addedBlocks);
+      } else {
+        product_propertyFB._addedBlocks = setCriteria(
+            pLast,
+            product_propertyFB.parameters,
+            param,
+            SqlSyntax.LessThanOrEquals,
+            product_propertyFB._addedBlocks);
+      }
+    }
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder greaterThan(dynamic pValue) {
+    param.expression = '>';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.GreaterThan, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder lessThan(dynamic pValue) {
+    param.expression = '<';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.LessThan, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    param.expression = '>=';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.LessThan, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder lessThanOrEquals(dynamic pValue) {
+    param.expression = '<=';
+    product_propertyFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, product_propertyFB._addedBlocks)
+        : setCriteria(pValue, product_propertyFB.parameters, param,
+            SqlSyntax.GreaterThan, product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+
+  Product_propertyFilterBuilder inValues(dynamic pValue) {
+    product_propertyFB._addedBlocks = setCriteria(
+        pValue,
+        product_propertyFB.parameters,
+        param,
+        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        product_propertyFB._addedBlocks);
+    _waitingNot = '';
+    product_propertyFB
+            ._addedBlocks.needEndBlock[product_propertyFB._blockIndex] =
+        product_propertyFB._addedBlocks.retVal;
+    return product_propertyFB;
+  }
+}
+// endregion Product_propertyField
+
+// region Product_propertyFilterBuilder
+class Product_propertyFilterBuilder extends SearchCriteria {
+  Product_propertyFilterBuilder(Product_property obj) {
+    whereString = '';
+    qparams = QueryParams();
+    parameters = <DbParameter>[];
+    orderByList = <String>[];
+    groupByList = <String>[];
+    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
+    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock.add(false);
+    _pagesize = 0;
+    _page = 0;
+    _obj = obj;
+  }
+  AddedBlocks _addedBlocks;
+  int _blockIndex = 0;
+  List<DbParameter> parameters;
+  List<String> orderByList;
+  Product_property _obj;
+  QueryParams qparams;
+  int _pagesize;
+  int _page;
+
+  /// put the sql keyword 'AND'
+  Product_propertyFilterBuilder get and {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' AND ';
+    }
+    return this;
+  }
+
+  /// put the sql keyword 'OR'
+  Product_propertyFilterBuilder get or {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' OR ';
+    }
+    return this;
+  }
+
+  /// open parentheses
+  Product_propertyFilterBuilder get startBlock {
+    _addedBlocks.waitingStartBlock.add(true);
+    _addedBlocks.needEndBlock.add(false);
+    _blockIndex++;
+    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    return this;
+  }
+
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
+  Product_propertyFilterBuilder where(String whereCriteria,
+      {dynamic parameterValue}) {
+    if (whereCriteria != null && whereCriteria != '') {
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+    }
+    return this;
+  }
+
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
+  Product_propertyFilterBuilder page(int page, int pagesize) {
+    if (page > 0) _page = page;
+    if (pagesize > 0) _pagesize = pagesize;
+    return this;
+  }
+
+  /// int count = LIMIT
+  Product_propertyFilterBuilder top(int count) {
+    if (count > 0) {
+      _pagesize = count;
+    }
+    return this;
+  }
+
+  /// close parentheses
+  Product_propertyFilterBuilder get endBlock {
+    if (_addedBlocks.needEndBlock[_blockIndex]) {
+      parameters[parameters.length - 1].whereString += ' ) ';
+    }
+    _addedBlocks.needEndBlock.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _blockIndex--;
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  Product_propertyFilterBuilder orderBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') orderByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  Product_propertyFilterBuilder orderByDesc(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add('$argFields desc ');
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') orderByList.add(' $s desc ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  Product_propertyFilterBuilder groupBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        groupByList.add(' $argFields ');
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s != '') groupByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  Product_propertyField setField(
+      Product_propertyField field, String colName, DbType dbtype) {
+    return Product_propertyField(this)
+      ..param = DbParameter(
+          dbType: dbtype,
+          columnName: colName,
+          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+  }
+
+  Product_propertyField _propertyId;
+  Product_propertyField get propertyId {
+    return _propertyId = setField(_propertyId, 'propertyId', DbType.integer);
+  }
+
+  Product_propertyField _title;
+  Product_propertyField get title {
+    return _title = setField(_title, 'title', DbType.text);
+  }
+
+  Product_propertyField __prodId;
+  Product_propertyField get _prodId {
+    return __prodId = setField(__prodId, '_prodId', DbType.integer);
+  }
+
+  Product_propertyField __catId;
+  Product_propertyField get _catId {
+    return __catId = setField(__catId, '_catId', DbType.integer);
+  }
+
+  bool _getIsDeleted;
+
+  void _buildParameters() {
+    if (_page > 0 && _pagesize > 0) {
+      qparams
+        ..limit = _pagesize
+        ..offset = (_page - 1) * _pagesize;
+    } else {
+      qparams
+        ..limit = _pagesize
+        ..offset = _page;
+    }
+    for (DbParameter param in parameters) {
+      if (param.columnName != null) {
+        if (param.value is List) {
+          param.value = param.value
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .toString();
+          whereString += param.whereString
+              .replaceAll('{field}', param.columnName)
+              .replaceAll('?', param.value.toString());
+          param.value = null;
+        } else {
+          whereString +=
+              param.whereString.replaceAll('{field}', param.columnName);
+        }
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+            case DbType.datetimeUtc:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
+        }
+      } else {
+        whereString += param.whereString;
+      }
+    }
+    if (Product_property._softDeleteActivated) {
+      if (whereString != '') {
+        whereString =
+            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
+      } else if (!_getIsDeleted) {
+        whereString = 'ifnull(isDeleted,0)=0';
+      }
+    }
+
+    if (whereString != '') {
+      qparams.whereString = whereString;
+    }
+    qparams
+      ..whereArguments = whereArguments
+      ..groupBy = groupByList.join(',')
+      ..orderBy = orderByList.join(',');
+  }
+
+  /// Deletes List<Product_property> bulk by query
+  ///
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    _buildParameters();
+    var r = BoolResult();
+
+    if (Product_property._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnProduct_property.updateBatch(qparams, {'isDeleted': 1});
+    } else {
+      r = await _obj._mnProduct_property.delete(qparams);
+    }
+    return r;
+  }
+
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
+  Future<BoolResult> update(Map<String, dynamic> values) {
+    _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'propertyId IN (SELECT propertyId from product_properties ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
+    return _obj._mnProduct_property.updateBatch(qparams, values);
+  }
+
+  /// This method always returns Product_property Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>List<Product_property>
+  Future<Product_property> toSingle(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    _pagesize = 1;
+    _buildParameters();
+    final objFuture = _obj._mnProduct_property.toList(qparams);
+    final data = await objFuture;
+    Product_property obj;
+    if (data.isNotEmpty) {
+      obj = Product_property.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+    } else {
+      obj = null;
+    }
+    return obj;
+  }
+
+  /// This method returns int.
+  ///
+  /// <returns>int
+  Future<int> toCount(
+      [VoidCallback Function(int c) product_propertyCount]) async {
+    _buildParameters();
+    qparams.selectColumns = ['COUNT(1) AS CNT'];
+    final product_propertiesFuture =
+        await _obj._mnProduct_property.toList(qparams);
+    final int count = product_propertiesFuture[0]['CNT'] as int;
+    if (product_propertyCount != null) {
+      product_propertyCount(count);
+    }
+    return count;
+  }
+
+  /// This method returns List<Product_property>.
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns>List<Product_property>
+  Future<List<Product_property>> toList(
+      {bool preload = false,
+      List<String> preloadFields,
+      bool loadParents = false,
+      List<String> loadedFields}) async {
+    final data = await toMapList();
+    final List<Product_property> product_propertiesData =
+        await Product_property.fromMapList(data,
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields);
+    return product_propertiesData;
+  }
+
+  /// This method returns Json String
+  Future<String> toJson() async {
+    final list = <dynamic>[];
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap(forJson: true));
+    }
+    return json.encode(list);
+  }
+
+  /// This method returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = <dynamic>[];
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds(false, true));
+    }
+    return json.encode(list);
+  }
+
+  /// This method returns List<dynamic>.
+  ///
+  /// <returns>List<dynamic>
+  Future<List<dynamic>> toMapList() async {
+    _buildParameters();
+    return await _obj._mnProduct_property.toList(qparams);
+  }
+
+  /// Returns List<DropdownMenuItem<Product_property>>
+  Future<List<DropdownMenuItem<Product_property>>> toDropDownMenu(
+      String displayTextColumn,
+      [VoidCallback Function(List<DropdownMenuItem<Product_property>> o)
+          dropDownMenu]) async {
+    _buildParameters();
+    final product_propertiesFuture = _obj._mnProduct_property.toList(qparams);
+
+    final data = await product_propertiesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<Product_property>> items = []
+      ..add(DropdownMenuItem(
+        value: Product_property(),
+        child: Text('Select Product_property'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: Product_property.fromMap(data[i] as Map<String, dynamic>),
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// Returns List<DropdownMenuItem<int>>
+  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
+      String displayTextColumn,
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+          dropDownMenu]) async {
+    _buildParameters();
+    qparams.selectColumns = ['propertyId', displayTextColumn];
+    final product_propertiesFuture = _obj._mnProduct_property.toList(qparams);
+
+    final data = await product_propertiesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
+        value: 0,
+        child: Text('Select Product_property'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: data[i]['propertyId'] as int,
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// This method returns Primary Key List<int>.
+  /// <returns>List<int>
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
+    if (buildParameters) _buildParameters();
+    final List<int> propertyIdData = <int>[];
+    qparams.selectColumns = ['propertyId'];
+    final propertyIdFuture = await _obj._mnProduct_property.toList(qparams);
+
+    final int count = propertyIdFuture.length;
+    for (int i = 0; i < count; i++) {
+      propertyIdData.add(propertyIdFuture[i]['propertyId'] as int);
+    }
+    return propertyIdData;
+  }
+
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
+  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
+  Future<List<dynamic>> toListObject() async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnProduct_property.toList(qparams);
+
+    final List<dynamic> objectsData = <dynamic>[];
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i]);
+    }
+    return objectsData;
+  }
+
+  /// Returns List<String> for selected first column
+  ///
+  /// Sample usage: await Product_property.select(columnsToSelect: ['columnName']).toListString()
+  Future<List<String>> toListString(
+      [VoidCallback Function(List<String> o) listString]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnProduct_property.toList(qparams);
+
+    final List<String> objectsData = <String>[];
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+    }
+    if (listString != null) {
+      listString(objectsData);
+    }
+    return objectsData;
+  }
+}
+// endregion Product_propertyFilterBuilder
+
+// region Product_propertyFields
+class Product_propertyFields {
+  static TableField _fPropertyId;
+  static TableField get propertyId {
+    return _fPropertyId = _fPropertyId ??
+        SqlSyntax.setField(_fPropertyId, 'propertyid', DbType.integer);
+  }
+
+  static TableField _fTitle;
+  static TableField get title {
+    return _fTitle =
+        _fTitle ?? SqlSyntax.setField(_fTitle, 'title', DbType.text);
+  }
+}
+// endregion Product_propertyFields
+
+//region Product_propertyManager
+class Product_propertyManager extends SqfEntityProvider {
+  Product_propertyManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
+  static String _tableName = 'product_properties';
+  //static String _colId = 'propertyId';
+  static List<String> _primaryKeyList = ['propertyId'];
+  static String _whereStr = 'propertyId=?';
+}
+
+//endregion Product_propertyManager
 // region Category
 class Category {
   Category({this.id, this.name, this.isActive}) {
     _setDefaultValues();
   }
-  Category.withFields(this.name, this.isActive) {
+  Category.withFields(id, this.name, this.isActive) {
     _setDefaultValues();
   }
   Category.withId(id, this.name, this.isActive) {
@@ -1531,12 +2659,14 @@ class Category {
     if (o['name'] != null) name = o['name'] as String;
     if (o['isActive'] != null)
       isActive = o['isActive'] == 1 || o['isActive'] == true;
+
+    isSaved = true;
   }
   // FIELDS (Category)
   int id;
   String name;
   bool isActive;
-
+  bool isSaved;
   BoolResult saveResult;
   // end FIELDS (Category)
 
@@ -1553,6 +2683,16 @@ class Category {
         .categoryId
         .equals(id)
         .and;
+  }
+
+  Product_property _product_property;
+  Product_property get product_property {
+    _product_property = _product_property ?? Product_property();
+    return _product_property;
+  }
+
+  void set product_property(Product_property product_property) {
+    _product_property = product_property;
   }
 
 // END COLLECTIONS & VIRTUALS (Category)
@@ -1602,6 +2742,9 @@ class Category {
     if (!forQuery) {
       map['Products'] = await getProducts().toMapList();
     }
+    if (!forQuery && product_property != null) {
+      map['product_property'] = product_property.toMap();
+    }
 // END COLLECTIONS (Category)
 
     return map;
@@ -1618,7 +2761,7 @@ class Category {
   }
 
   List<dynamic> toArgs() {
-    return [name, isActive];
+    return [id, name, isActive];
   }
 
   List<dynamic> toArgsWithIds() {
@@ -1663,21 +2806,29 @@ class Category {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Category> objList = <Category>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Category.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
+
+//      RELATIONS OneToOne (Category)
+      obj._product_property =
+          await Product_property().select()._catId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Category)
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('category.plProducts') &&
             (preloadFields == null || preloadFields.contains('plProducts'))) {
-          loadedFields.add('category.plProducts');
+          _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1714,19 +2865,26 @@ class Category {
     final data = await _mnCategory.getById([id]);
     if (data.length != 0) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+
+//      RELATIONS OneToOne (Category)
+      obj._product_property =
+          await Product_property().select()._catId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Category)
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('category.plProducts') &&
             (preloadFields == null || preloadFields.contains('plProducts'))) {
-          loadedFields.add('category.plProducts');
+          _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1740,23 +2898,20 @@ class Category {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0) {
-      id = await _mnCategory.insert(this);
+    if (id == null || id == 0 || !isSaved) {
+      await _mnCategory.insert(this);
+      if (saveResult.success) isSaved = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnCategory.update(this);
     }
 
+// save() OneToOne relations (Category)
+    _product_property?._catId = id;
+    await _product_property?._save();
+// END save() OneToOne relations (Category)
+
     return id;
-  }
-
-  /// saveAs Category. Returns a new Primary Key value of Category
-
-  /// <returns>Returns a new Primary Key value of Category
-  Future<int> saveAs() async {
-    id = null;
-
-    return save();
   }
 
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
@@ -1822,6 +2977,16 @@ class Category {
     if (!result.success) {
       return result;
     }
+    {
+      result = await Product_property()
+          .select()
+          ._catId
+          .equals(id)
+          .delete(hardDelete);
+    }
+    if (!result.success) {
+      return result;
+    }
     if (!_softDeleteActivated || hardDelete) {
       return _mnCategory
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
@@ -1849,6 +3014,7 @@ class Category {
   }
 
   void _setDefaultValues() {
+    isSaved = false;
     isActive = isActive ?? true;
   }
   // END METHODS
@@ -2125,7 +3291,8 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   CategoryFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -2287,15 +3454,15 @@ class CategoryFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Category._softDeleteActivated) {
@@ -2377,19 +3544,26 @@ class CategoryFilterBuilder extends SearchCriteria {
     Category obj;
     if (data.isNotEmpty) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
+
+//      RELATIONS OneToOne (Category)
+      obj._product_property =
+          await Product_property().select()._catId.equals(obj.id).toSingle();
+
+//      END RELATIONS OneToOne (Category)
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('category.plProducts') &&
             (preloadFields == null || preloadFields.contains('plProducts'))) {
-          loadedFields.add('category.plProducts');
+          _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2762,8 +3936,10 @@ class Todo {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Todo> objList = <Todo>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Todo.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       objList.add(obj);
     }
@@ -2798,6 +3974,7 @@ class Todo {
     final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
     } else {
       obj = null;
     }
@@ -3176,7 +4353,8 @@ class TodoFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   TodoFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -3343,15 +4521,15 @@ class TodoFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Todo._softDeleteActivated) {
@@ -3378,6 +4556,7 @@ class TodoFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+
     if (Todo._softDeleteActivated && !hardDelete) {
       r = await _obj._mnTodo.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -3426,6 +4605,7 @@ class TodoFilterBuilder extends SearchCriteria {
     Todo obj;
     if (data.isNotEmpty) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
     } else {
       obj = null;
     }

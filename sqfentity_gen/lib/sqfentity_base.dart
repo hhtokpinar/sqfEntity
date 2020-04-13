@@ -365,8 +365,9 @@ class Controllers {
 }
 
 class SqfEntityControllerBuilder {
-  SqfEntityControllerBuilder(this.table);
+  SqfEntityControllerBuilder(this.table, this.formTables);
   final SqfEntityTableBase table;
+  final List<SqfEntityTableBase> formTables;
   String toControllersCode() {
     final String modelName = table.modelName ?? toCamelCase(table.tableName);
 
@@ -378,7 +379,7 @@ class SqfEntityControllerBuilder {
         String objName = table.modelName;
         objName += 'To${collection.childTable.modelName}';
         //  print('subControllers: ${table.tableName} -> ${field.fieldName} -> objName:$objName');
-        if (!Controllers.controllersub.contains(objName)) {
+        if (!Controllers.controllersub.contains(objName) && formTables.contains(collection.childTable)) {
           retVal.writeln(
               '''class ${objName}ControllerSub extends ${collection.childTable.modelName}Controller {
             static String relationshipFieldName='${collection.childTableField.fieldName}';

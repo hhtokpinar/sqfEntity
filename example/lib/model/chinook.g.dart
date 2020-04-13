@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: lib/model/*.g.dart
-
 part of 'chinook.dart';
 
 // **************************************************************************
@@ -358,6 +356,8 @@ class TablePlaylistTrack extends SqfEntityTableBase {
 class Chinookdb extends SqfEntityModelProvider {
   Chinookdb() {
     databaseName = chinookdb.databaseName;
+    password = chinookdb.password;
+
     databaseTables = [
       TableAlbum.getInstance,
       TableArtist.getInstance,
@@ -431,8 +431,10 @@ class Album {
   Artist plArtist;
 
   /// get Artist By ArtistId
-  Future<Artist> getArtist({bool loadParents = false}) async {
-    final _obj = await Artist().getById(ArtistId, loadParents: loadParents);
+  Future<Artist> getArtist(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Artist().getById(ArtistId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Album)
@@ -559,21 +561,23 @@ class Album {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Album> objList = <Album>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Album.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Album.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Album.plTracks');
+          _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -584,9 +588,10 @@ class Album {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plArtist'))) {
-          loadedFields.add('Artist.plArtist');
-          obj.plArtist =
-              obj.plArtist ?? await obj.getArtist(loadParents: loadParents);
+          _loadedFields.add('Artist.plArtist');
+          obj.plArtist = obj.plArtist ??
+              await obj.getArtist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -623,19 +628,20 @@ class Album {
     final data = await _mnAlbum.getById([AlbumId]);
     if (data.length != 0) {
       obj = Album.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Album.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Album.plTracks');
+          _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -646,9 +652,10 @@ class Album {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plArtist'))) {
-          loadedFields.add('Artist.plArtist');
-          obj.plArtist =
-              obj.plArtist ?? await obj.getArtist(loadParents: loadParents);
+          _loadedFields.add('Artist.plArtist');
+          obj.plArtist = obj.plArtist ??
+              await obj.getArtist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -1043,7 +1050,8 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   AlbumFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -1205,15 +1213,15 @@ class AlbumFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Album._softDeleteActivated) {
@@ -1300,19 +1308,20 @@ class AlbumFilterBuilder extends SearchCriteria {
     Album obj;
     if (data.isNotEmpty) {
       obj = Album.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Album.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Album.plTracks');
+          _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1323,9 +1332,10 @@ class AlbumFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plArtist'))) {
-          loadedFields.add('Artist.plArtist');
-          obj.plArtist =
-              obj.plArtist ?? await obj.getArtist(loadParents: loadParents);
+          _loadedFields.add('Artist.plArtist');
+          obj.plArtist = obj.plArtist ??
+              await obj.getArtist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -1689,21 +1699,23 @@ class Artist {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Artist> objList = <Artist>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Artist.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Artist.plAlbums') &&
             (preloadFields == null || preloadFields.contains('plAlbums'))) {
-          loadedFields.add('Artist.plAlbums');
+          _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1740,19 +1752,20 @@ class Artist {
     final data = await _mnArtist.getById([ArtistId]);
     if (data.length != 0) {
       obj = Artist.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Artist.plAlbums') &&
             (preloadFields == null || preloadFields.contains('plAlbums'))) {
-          loadedFields.add('Artist.plAlbums');
+          _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2147,7 +2160,8 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   ArtistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -2304,15 +2318,15 @@ class ArtistFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Artist._softDeleteActivated) {
@@ -2399,19 +2413,20 @@ class ArtistFilterBuilder extends SearchCriteria {
     Artist obj;
     if (data.isNotEmpty) {
       obj = Artist.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Artist.plAlbums') &&
             (preloadFields == null || preloadFields.contains('plAlbums'))) {
-          loadedFields.add('Artist.plAlbums');
+          _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2727,9 +2742,10 @@ class Customer {
   Employee plEmployee;
 
   /// get Employee By SupportRepId
-  Future<Employee> getEmployee({bool loadParents = false}) async {
-    final _obj =
-        await Employee().getById(SupportRepId, loadParents: loadParents);
+  Future<Employee> getEmployee(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Employee().getById(SupportRepId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Customer)
@@ -2964,21 +2980,23 @@ class Customer {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Customer> objList = <Customer>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Customer.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Customer.plInvoices') &&
             (preloadFields == null || preloadFields.contains('plInvoices'))) {
-          loadedFields.add('Customer.plInvoices');
+          _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2989,9 +3007,10 @@ class Customer {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -3028,19 +3047,20 @@ class Customer {
     final data = await _mnCustomer.getById([CustomerId]);
     if (data.length != 0) {
       obj = Customer.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Customer.plInvoices') &&
             (preloadFields == null || preloadFields.contains('plInvoices'))) {
-          loadedFields.add('Customer.plInvoices');
+          _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -3051,9 +3071,10 @@ class Customer {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -3465,7 +3486,8 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   CustomerFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -3678,15 +3700,15 @@ class CustomerFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Customer._softDeleteActivated) {
@@ -3773,19 +3795,20 @@ class CustomerFilterBuilder extends SearchCriteria {
     Customer obj;
     if (data.isNotEmpty) {
       obj = Customer.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Customer.plInvoices') &&
             (preloadFields == null || preloadFields.contains('plInvoices'))) {
-          loadedFields.add('Customer.plInvoices');
+          _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -3796,9 +3819,10 @@ class CustomerFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -4197,8 +4221,10 @@ class Employee {
   Employee plEmployee;
 
   /// get Employee By ReportsTo
-  Future<Employee> getEmployee({bool loadParents = false}) async {
-    final _obj = await Employee().getById(ReportsTo, loadParents: loadParents);
+  Future<Employee> getEmployee(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Employee().getById(ReportsTo,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Employee)
@@ -4478,31 +4504,33 @@ class Employee {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Employee> objList = <Employee>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Employee.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Employee.plCustomers') &&
             (preloadFields == null || preloadFields.contains('plCustomers'))) {
-          loadedFields.add('Employee.plCustomers');
+          _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Employee.plReportsTos') &&
             (preloadFields == null || preloadFields.contains('plReportsTos'))) {
-          loadedFields.add('Employee.plReportsTos');
+          _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -4513,9 +4541,10 @@ class Employee {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -4552,29 +4581,30 @@ class Employee {
     final data = await _mnEmployee.getById([EmployeeId]);
     if (data.length != 0) {
       obj = Employee.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Employee.plCustomers') &&
             (preloadFields == null || preloadFields.contains('plCustomers'))) {
-          loadedFields.add('Employee.plCustomers');
+          _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Employee.plReportsTos') &&
             (preloadFields == null || preloadFields.contains('plReportsTos'))) {
-          loadedFields.add('Employee.plReportsTos');
+          _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -4585,9 +4615,10 @@ class Employee {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -5008,7 +5039,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   EmployeeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -5230,15 +5262,15 @@ class EmployeeFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Employee._softDeleteActivated) {
@@ -5337,29 +5369,30 @@ class EmployeeFilterBuilder extends SearchCriteria {
     Employee obj;
     if (data.isNotEmpty) {
       obj = Employee.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Employee.plCustomers') &&
             (preloadFields == null || preloadFields.contains('plCustomers'))) {
-          loadedFields.add('Employee.plCustomers');
+          _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Employee.plReportsTos') &&
             (preloadFields == null || preloadFields.contains('plReportsTos'))) {
-          loadedFields.add('Employee.plReportsTos');
+          _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -5370,9 +5403,10 @@ class EmployeeFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plEmployee'))) {
-          loadedFields.add('Employee.plEmployee');
-          obj.plEmployee =
-              obj.plEmployee ?? await obj.getEmployee(loadParents: loadParents);
+          _loadedFields.add('Employee.plEmployee');
+          obj.plEmployee = obj.plEmployee ??
+              await obj.getEmployee(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -5807,21 +5841,23 @@ class Genre {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Genre> objList = <Genre>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Genre.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Genre.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Genre.plTracks');
+          _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -5858,19 +5894,20 @@ class Genre {
     final data = await _mnGenre.getById([GenreId]);
     if (data.length != 0) {
       obj = Genre.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Genre.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Genre.plTracks');
+          _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -6264,7 +6301,8 @@ class GenreFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   GenreFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -6421,15 +6459,15 @@ class GenreFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Genre._softDeleteActivated) {
@@ -6516,19 +6554,20 @@ class GenreFilterBuilder extends SearchCriteria {
     Genre obj;
     if (data.isNotEmpty) {
       obj = Genre.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Genre.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Genre.plTracks');
+          _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -6830,8 +6869,10 @@ class Invoice {
   Customer plCustomer;
 
   /// get Customer By CustomerId
-  Future<Customer> getCustomer({bool loadParents = false}) async {
-    final _obj = await Customer().getById(CustomerId, loadParents: loadParents);
+  Future<Customer> getCustomer(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Customer().getById(CustomerId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Invoice)
@@ -7030,8 +7071,10 @@ class Invoice {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Invoice> objList = <Invoice>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Invoice.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -7039,13 +7082,13 @@ class Invoice {
         if (!loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Invoice.plInvoiceLines');
+          _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7056,9 +7099,10 @@ class Invoice {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCustomer'))) {
-          loadedFields.add('Customer.plCustomer');
-          obj.plCustomer =
-              obj.plCustomer ?? await obj.getCustomer(loadParents: loadParents);
+          _loadedFields.add('Customer.plCustomer');
+          obj.plCustomer = obj.plCustomer ??
+              await obj.getCustomer(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -7095,6 +7139,7 @@ class Invoice {
     final data = await _mnInvoice.getById([InvoiceId]);
     if (data.length != 0) {
       obj = Invoice.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -7102,13 +7147,13 @@ class Invoice {
         if (!loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Invoice.plInvoiceLines');
+          _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7119,9 +7164,10 @@ class Invoice {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCustomer'))) {
-          loadedFields.add('Customer.plCustomer');
-          obj.plCustomer =
-              obj.plCustomer ?? await obj.getCustomer(loadParents: loadParents);
+          _loadedFields.add('Customer.plCustomer');
+          obj.plCustomer = obj.plCustomer ??
+              await obj.getCustomer(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -7529,7 +7575,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   InvoiceFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -7725,15 +7772,15 @@ class InvoiceFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Invoice._softDeleteActivated) {
@@ -7820,6 +7867,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     Invoice obj;
     if (data.isNotEmpty) {
       obj = Invoice.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -7827,13 +7875,13 @@ class InvoiceFilterBuilder extends SearchCriteria {
         if (!loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Invoice.plInvoiceLines');
+          _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7844,9 +7892,10 @@ class InvoiceFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plCustomer'))) {
-          loadedFields.add('Customer.plCustomer');
-          obj.plCustomer =
-              obj.plCustomer ?? await obj.getCustomer(loadParents: loadParents);
+          _loadedFields.add('Customer.plCustomer');
+          obj.plCustomer = obj.plCustomer ??
+              await obj.getCustomer(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -8165,8 +8214,10 @@ class InvoiceLine {
   Track plTrack;
 
   /// get Track By TrackId
-  Future<Track> getTrack({bool loadParents = false}) async {
-    final _obj = await Track().getById(TrackId, loadParents: loadParents);
+  Future<Track> getTrack(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Track()
+        .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -8175,8 +8226,10 @@ class InvoiceLine {
   Invoice plInvoice;
 
   /// get Invoice By InvoiceId
-  Future<Invoice> getInvoice({bool loadParents = false}) async {
-    final _obj = await Invoice().getById(InvoiceId, loadParents: loadParents);
+  Future<Invoice> getInvoice(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Invoice().getById(InvoiceId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (InvoiceLine)
@@ -8299,8 +8352,10 @@ class InvoiceLine {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<InvoiceLine> objList = <InvoiceLine>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = InvoiceLine.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -8309,17 +8364,19 @@ class InvoiceLine {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plInvoice'))) {
-          loadedFields.add('Invoice.plInvoice');
-          obj.plInvoice =
-              obj.plInvoice ?? await obj.getInvoice(loadParents: loadParents);
+          _loadedFields.add('Invoice.plInvoice');
+          obj.plInvoice = obj.plInvoice ??
+              await obj.getInvoice(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -8356,6 +8413,7 @@ class InvoiceLine {
     final data = await _mnInvoiceLine.getById([InvoiceLineId]);
     if (data.length != 0) {
       obj = InvoiceLine.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -8364,17 +8422,19 @@ class InvoiceLine {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plInvoice'))) {
-          loadedFields.add('Invoice.plInvoice');
-          obj.plInvoice =
-              obj.plInvoice ?? await obj.getInvoice(loadParents: loadParents);
+          _loadedFields.add('Invoice.plInvoice');
+          obj.plInvoice = obj.plInvoice ??
+              await obj.getInvoice(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -8785,7 +8845,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   InvoiceLineFilterBuilder where(String whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -8959,15 +9020,15 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (InvoiceLine._softDeleteActivated) {
@@ -9043,6 +9104,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     InvoiceLine obj;
     if (data.isNotEmpty) {
       obj = InvoiceLine.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -9051,17 +9113,19 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plInvoice'))) {
-          loadedFields.add('Invoice.plInvoice');
-          obj.plInvoice =
-              obj.plInvoice ?? await obj.getInvoice(loadParents: loadParents);
+          _loadedFields.add('Invoice.plInvoice');
+          obj.plInvoice = obj.plInvoice ??
+              await obj.getInvoice(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -9442,21 +9506,23 @@ class MediaType {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<MediaType> objList = <MediaType>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = MediaType.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('MediaType.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('MediaType.plTracks');
+          _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -9493,19 +9559,20 @@ class MediaType {
     final data = await _mnMediaType.getById([MediaTypeId]);
     if (data.length != 0) {
       obj = MediaType.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('MediaType.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('MediaType.plTracks');
+          _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -9903,7 +9970,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   MediaTypeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -10060,15 +10128,15 @@ class MediaTypeFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (MediaType._softDeleteActivated) {
@@ -10155,19 +10223,20 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     MediaType obj;
     if (data.isNotEmpty) {
       obj = MediaType.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('MediaType.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('MediaType.plTracks');
+          _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -10527,21 +10596,23 @@ class Playlist {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Playlist> objList = <Playlist>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Playlist.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Playlist.plTracks');
+          _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -10578,19 +10649,20 @@ class Playlist {
     final data = await _mnPlaylist.getById([PlaylistId]);
     if (data.length != 0) {
       obj = Playlist.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Playlist.plTracks');
+          _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -10982,7 +11054,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   PlaylistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -11139,15 +11212,15 @@ class PlaylistFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Playlist._softDeleteActivated) {
@@ -11223,19 +11296,20 @@ class PlaylistFilterBuilder extends SearchCriteria {
     Playlist obj;
     if (data.isNotEmpty) {
       obj = Playlist.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!loadedFields.contains('Playlist.plTracks') &&
             (preloadFields == null || preloadFields.contains('plTracks'))) {
-          loadedFields.add('Playlist.plTracks');
+          _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11526,9 +11600,10 @@ class Track {
   MediaType plMediaType;
 
   /// get MediaType By MediaTypeId
-  Future<MediaType> getMediaType({bool loadParents = false}) async {
-    final _obj =
-        await MediaType().getById(MediaTypeId, loadParents: loadParents);
+  Future<MediaType> getMediaType(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await MediaType().getById(MediaTypeId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -11537,8 +11612,10 @@ class Track {
   Genre plGenre;
 
   /// get Genre By GenreId
-  Future<Genre> getGenre({bool loadParents = false}) async {
-    final _obj = await Genre().getById(GenreId, loadParents: loadParents);
+  Future<Genre> getGenre(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Genre()
+        .getById(GenreId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -11547,8 +11624,10 @@ class Track {
   Album plAlbum;
 
   /// get Album By AlbumId
-  Future<Album> getAlbum({bool loadParents = false}) async {
-    final _obj = await Album().getById(AlbumId, loadParents: loadParents);
+  Future<Album> getAlbum(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Album()
+        .getById(AlbumId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Track)
@@ -11760,8 +11839,10 @@ class Track {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<Track> objList = <Track>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = Track.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -11769,23 +11850,23 @@ class Track {
         if (!loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
+          _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Track.plPlaylists') &&
             (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
+          _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11796,25 +11877,28 @@ class Track {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
+          _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
+              await obj.getMediaType(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+          _loadedFields.add('Genre.plGenre');
+          obj.plGenre = obj.plGenre ??
+              await obj.getGenre(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+          _loadedFields.add('Album.plAlbum');
+          obj.plAlbum = obj.plAlbum ??
+              await obj.getAlbum(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -11851,6 +11935,7 @@ class Track {
     final data = await _mnTrack.getById([TrackId]);
     if (data.length != 0) {
       obj = Track.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -11858,23 +11943,23 @@ class Track {
         if (!loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
+          _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Track.plPlaylists') &&
             (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
+          _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11885,25 +11970,28 @@ class Track {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
+          _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
+              await obj.getMediaType(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+          _loadedFields.add('Genre.plGenre');
+          obj.plGenre = obj.plGenre ??
+              await obj.getGenre(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+          _loadedFields.add('Album.plAlbum');
+          obj.plAlbum = obj.plAlbum ??
+              await obj.getAlbum(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -12308,7 +12396,8 @@ class TrackFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   TrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -12501,15 +12590,15 @@ class TrackFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (Track._softDeleteActivated) {
@@ -12596,6 +12685,7 @@ class TrackFilterBuilder extends SearchCriteria {
     Track obj;
     if (data.isNotEmpty) {
       obj = Track.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
@@ -12603,23 +12693,23 @@ class TrackFilterBuilder extends SearchCriteria {
         if (!loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
                 preloadFields.contains('plInvoiceLines'))) {
-          loadedFields.add('Track.plInvoiceLines');
+          _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Track.plPlaylists') &&
             (preloadFields == null || preloadFields.contains('plPlaylists'))) {
-          loadedFields.add('Track.plPlaylists');
+          _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false,
-                  loadedFields: loadedFields);
+                  loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -12630,25 +12720,28 @@ class TrackFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plMediaType'))) {
-          loadedFields.add('MediaType.plMediaType');
+          _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
-              await obj.getMediaType(loadParents: loadParents);
+              await obj.getMediaType(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plGenre'))) {
-          loadedFields.add('Genre.plGenre');
-          obj.plGenre =
-              obj.plGenre ?? await obj.getGenre(loadParents: loadParents);
+          _loadedFields.add('Genre.plGenre');
+          obj.plGenre = obj.plGenre ??
+              await obj.getGenre(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plAlbum'))) {
-          loadedFields.add('Album.plAlbum');
-          obj.plAlbum =
-              obj.plAlbum ?? await obj.getAlbum(loadParents: loadParents);
+          _loadedFields.add('Album.plAlbum');
+          obj.plAlbum = obj.plAlbum ??
+              await obj.getAlbum(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -12951,8 +13044,10 @@ class PlaylistTrack {
   Track plTrack;
 
   /// get Track By TrackId
-  Future<Track> getTrack({bool loadParents = false}) async {
-    final _obj = await Track().getById(TrackId, loadParents: loadParents);
+  Future<Track> getTrack(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Track()
+        .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -12961,8 +13056,10 @@ class PlaylistTrack {
   Playlist plPlaylist;
 
   /// get Playlist By PlaylistId
-  Future<Playlist> getPlaylist({bool loadParents = false}) async {
-    final _obj = await Playlist().getById(PlaylistId, loadParents: loadParents);
+  Future<Playlist> getPlaylist(
+      {bool loadParents = false, List<String> loadedFields}) async {
+    final _obj = await Playlist().getById(PlaylistId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (PlaylistTrack)
@@ -13063,8 +13160,10 @@ class PlaylistTrack {
       bool loadParents = false,
       List<String> loadedFields}) async {
     final List<PlaylistTrack> objList = <PlaylistTrack>[];
+    loadedFields = loadedFields ?? [];
     for (final map in data) {
       final obj = PlaylistTrack.fromMap(map as Map<String, dynamic>);
+      final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -13073,17 +13172,19 @@ class PlaylistTrack {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plPlaylist'))) {
-          loadedFields.add('Playlist.plPlaylist');
-          obj.plPlaylist =
-              obj.plPlaylist ?? await obj.getPlaylist(loadParents: loadParents);
+          _loadedFields.add('Playlist.plPlaylist');
+          obj.plPlaylist = obj.plPlaylist ??
+              await obj.getPlaylist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -13120,6 +13221,7 @@ class PlaylistTrack {
     final data = await _mnPlaylistTrack.getById([TrackId, PlaylistId]);
     if (data.length != 0) {
       obj = PlaylistTrack.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -13128,17 +13230,19 @@ class PlaylistTrack {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plPlaylist'))) {
-          loadedFields.add('Playlist.plPlaylist');
-          obj.plPlaylist =
-              obj.plPlaylist ?? await obj.getPlaylist(loadParents: loadParents);
+          _loadedFields.add('Playlist.plPlaylist');
+          obj.plPlaylist = obj.plPlaylist ??
+              await obj.getPlaylist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -13543,7 +13647,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   PlaylistTrackFilterBuilder where(String whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
+      final DbParameter param =
+          DbParameter(columnName: parameterValue == null ? null : '');
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -13701,15 +13806,15 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
               break;
             default:
           }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
         }
       } else {
         whereString += param.whereString;
-      }
-      if (param.value != null) {
-        whereArguments.add(param.value);
-      }
-      if (param.value2 != null) {
-        whereArguments.add(param.value2);
       }
     }
     if (PlaylistTrack._softDeleteActivated) {
@@ -13785,6 +13890,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     PlaylistTrack obj;
     if (data.isNotEmpty) {
       obj = PlaylistTrack.fromMap(data[0] as Map<String, dynamic>);
+      final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -13793,17 +13899,19 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plTrack'))) {
-          loadedFields.add('Track.plTrack');
-          obj.plTrack =
-              obj.plTrack ?? await obj.getTrack(loadParents: loadParents);
+          _loadedFields.add('Track.plTrack');
+          obj.plTrack = obj.plTrack ??
+              await obj.getTrack(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
         if (!loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
                 preloadFields.contains('plPlaylist'))) {
-          loadedFields.add('Playlist.plPlaylist');
-          obj.plPlaylist =
-              obj.plPlaylist ?? await obj.getPlaylist(loadParents: loadParents);
+          _loadedFields.add('Playlist.plPlaylist');
+          obj.plPlaylist = obj.plPlaylist ??
+              await obj.getPlaylist(
+                  loadParents: loadParents, loadedFields: _loadedFields);
         }
       } // END RELATIONSHIPS PRELOAD
 

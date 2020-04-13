@@ -1,6 +1,6 @@
 # sqfEntity ORM for Flutter SQLite (sqflite)
 
-![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_ORM.gif) 
+![Sqf Entity ORM Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/img/SqfEntity_ORM.gif) 
 
 
 SqfEntity is based on SQFlite plugin and lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework
@@ -31,7 +31,7 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
   See the application for sample use
 
-![Sqf Entity Generated Forms Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/sqfentity_form_generator.jpg) 
+![Sqf Entity Generated Forms Preview](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/img/sqfentity_form_generator.jpg) 
 
 ## Getting Started
 
@@ -276,7 +276,7 @@ Note: You can see this sample import in the createModelFromDatabaseSample() func
 
 
   Also you can generate your model from the main menu in Application as shown below when you make changes to your model while your project is running.
-![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/generate_model.jpg)
+![Sqf Entity Generate Model.dart](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/img/generate_model.jpg)
   
 
 ### Database initializer async method
@@ -626,7 +626,7 @@ EXAMPLE 11.2 object list with nested objects to Json
 
 result is:
 
-    flutter: [{"id":1,"name":"Notebooks","isActive":true,"isDeleted":false,"products":[{"id":1,"name":"Notebook 12\"","description":"128 GB SSD i7","price":6899.0,"isActive":1,"categoryId":1,"rownum":1,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0},{"id":2,"name":"Notebook 12\"","description":"256 GB SSD i7","price":8244.0,"isActive":1,"categoryId":1,"rownum":2,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0},{"id":3,"name":"Notebook 12\"","description":"512 GB SSD i7","price":9214.0,"isActive":1,"categoryId":1,"rownum":3,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png","isDeleted":0}....
+    flutter: [{"id":1,"name":"Notebooks","isActive":true,"isDeleted":false,"products":[{"id":1,"name":"Notebook 12\"","description":"128 GB SSD i7","price":6899.0,"isActive":1,"categoryId":1,"rownum":1,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/notebook.png","isDeleted":0},{"id":2,"name":"Notebook 12\"","description":"256 GB SSD i7","price":8244.0,"isActive":1,"categoryId":1,"rownum":2,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/notebook.png","isDeleted":0},{"id":3,"name":"Notebook 12\"","description":"512 GB SSD i7","price":9214.0,"isActive":1,"categoryId":1,"rownum":3,"imageUrl":"https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/notebook.png","isDeleted":0}....
     .........................
     
   
@@ -667,7 +667,7 @@ result is:
 main.dart includes many examples of what you need, as well as what we can see.
 Also This sample project includes a sample application on how you can use sqfentity
 
-![SqfEntity Sample Mobile Application for Flutter](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
+![SqfEntity Sample Mobile Application for Flutter](https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/img/SqfEntity_Flutter_Mobile_Sample_Application.gif) 
 
 ### in this sample application:
 - List Category (Home Screen)

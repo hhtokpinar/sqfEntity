@@ -20,7 +20,7 @@ part 'model.g.view.dart';
 const tableCategory = SqfEntityTable(
     tableName: 'category',
     primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    primaryKeyType: PrimaryKeyType.integer_unique,
     useSoftDeleting: false,
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
     modelName:
@@ -37,7 +37,7 @@ const tableCategory = SqfEntityTable(
 const tableProduct = SqfEntityTable(
     tableName: 'product',
     primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    primaryKeyType: PrimaryKeyType.integer_unique,
     useSoftDeleting: true,
     fields: [
       SqfEntityField(
@@ -70,8 +70,23 @@ const tableProduct = SqfEntityTable(
           maxValue: 'DateTime.now().add(Duration(days: 365))')
     ]);
 
-// Define the 'Todo' constant as SqfEntityTable.
 
+const tableProductProperties = SqfEntityTable(
+    tableName: 'product_properties',
+    // now you do not need to set primaryKeyName If you set RelationshipField as primarykeyfield
+primaryKeyName: 'propertyId',
+primaryKeyType: PrimaryKeyType.integer_unique,
+    // declare fields
+    fields: [
+      SqfEntityField('title', DbType.text),
+      SqfEntityFieldRelationship(fieldName: 'prodId',
+        parentTable: tableProduct, deleteRule: DeleteRule.CASCADE, relationType: RelationType.ONE_TO_ONE),
+     SqfEntityFieldRelationship(fieldName: 'catId',
+        parentTable: tableCategory, deleteRule: DeleteRule.CASCADE, relationType: RelationType.ONE_TO_ONE),
+      
+    ]);
+
+// Define the 'Todo' constant as SqfEntityTable.
 const tableTodo = SqfEntityTable(
     tableName: 'todos',
     primaryKeyName: 'id',
@@ -108,7 +123,8 @@ const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
     databaseName: 'sampleORM_0104_1.db',
     // put defined tables into the tables list.
-    databaseTables: [tableProduct, tableCategory, tableTodo],
+    databaseTables: [tableProduct, tableProductProperties,
+    tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property
     formTables: [tableProduct, tableCategory,tableTodo],
     // put defined sequences into the sequences list.

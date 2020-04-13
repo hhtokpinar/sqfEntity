@@ -17,6 +17,7 @@ class ProductAddState extends State {
   ProductAddState(this.product);
   Product product;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtDescription = TextEditingController();
   final TextEditingController txtPrice = TextEditingController();
@@ -89,6 +90,7 @@ class ProductAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowId(),
                     buildRowName(),
                     buildRowDescription(),
                     buildRowPrice(),
@@ -115,6 +117,20 @@ class ProductAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtId,
+      decoration: InputDecoration(labelText: 'Id'),
     );
   }
 
@@ -328,6 +344,7 @@ class ProductAddState extends State {
     final _date = DateTime.tryParse(txtDate.text);
 
     product
+      ..id = int.tryParse(txtId.text)
       ..name = txtName.text
       ..description = txtDescription.text
       ..price = double.tryParse(txtPrice.text)
@@ -360,6 +377,7 @@ class CategoryAddState extends State {
   CategoryAddState(this.category);
   Category category;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
@@ -388,6 +406,7 @@ class CategoryAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowId(),
                     buildRowName(),
                     buildRowIsActive(),
                     FlatButton(
@@ -408,6 +427,20 @@ class CategoryAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtId,
+      decoration: InputDecoration(labelText: 'Id'),
     );
   }
 
@@ -455,7 +488,9 @@ class CategoryAddState extends State {
   }
 
   void save() async {
-    category..name = txtName.text;
+    category
+      ..id = int.tryParse(txtId.text)
+      ..name = txtName.text;
     final result = await category.save();
     if (result != 0) {
       Navigator.pop(context, true);
