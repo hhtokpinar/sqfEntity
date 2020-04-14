@@ -31,11 +31,11 @@ class SqfEntityFormCreator {
 
   List<SqfEntityTableBase> toTables() {
     final table = toSqfEntityTable(tableModel, instancename);
-    print('before ConvertedModel()');
+   // print('before ConvertedModel()');
     final model = ConvertedModel()
       ..databaseTables = [table]
       ..init();
-    print('before return model.databaseTables;');
+   // print('before return model.databaseTables;');
     return model.databaseTables;
   }
 }
@@ -83,7 +83,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
 
   List<SqfEntitySequenceBase> toSequenceList(List<DartObject> objSequences) {
     if (objSequences == null) {
-      print('SQFENTITY_GEN.DART: toSequenceList() returned null');
+    //  print('SQFENTITY_GEN.DART: toSequenceList() returned null');
       return null;
     }
     print('SQFENTITY_GEN.DART: recognizing Sequences ($modelName)');
@@ -581,7 +581,6 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
     if (_m.databaseTables != null) {
       modelString.writeln('// BEGIN ENTITIES');
       for (var table in _m.databaseTables) {
-        //print('');
         final fieldNames = StringBuffer();
         for (final field in table.fields) {
           fieldNames.write('${field.fieldName},');
@@ -590,15 +589,15 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
             '>>> Table ${table.tableName}(${fieldNames.toString()}) converting to entity');
         table.dbModel = _m.modelName;
         modelString
-          ..printToDebug('0: ${table.tableName}')
+        //  ..printToDebug('0: ${table.tableName}')
           ..writeln(SqfEntityObjectBuilder(table).toString())
-          ..printToDebug('1: ${table.tableName}')
+        //  ..printToDebug('1: ${table.tableName}')
           ..writeln(SqfEntityObjectField(table).toString())
-          ..printToDebug('2: ${table.tableName}')
+        //  ..printToDebug('2: ${table.tableName}')
           ..writeln(SqfEntityObjectFilterBuilder(table).toString())
-          ..printToDebug('3: ${table.tableName}')
+        //  ..printToDebug('3: ${table.tableName}')
           ..writeln(SqfEntityFieldBuilder(table).toString())
-          ..printToDebug('4: ${table.tableName}')
+        //  ..printToDebug('4: ${table.tableName}')
           ..writeln(SqfEntityObjectManagerBuilder(table).toString());
       }
     }
@@ -621,7 +620,8 @@ ${_m.modelName}SequenceManager() : super(${_m.modelName}());
 
   /// Creates model of tables
   String createControllers() {
-    print('createControllers() started');
+    if(_m.formTables.isEmpty) return '';
+   // print('createControllers() started');
     final modelString = MyStringBuffer()..writeln('// BEGIN CONTROLLERS');
     for (var table in _m.formTables) {
       modelString

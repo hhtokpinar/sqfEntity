@@ -75,3 +75,8 @@ example/build/
 example/.flutter-plugins-dependencies
 example/.flutter-plugins-dependencies
 .dart_tool/package_config.json
+example/lib/model/test.dart
+example/lib/model/test.g.dart
+.dart_tool/build/
+.dart_tool/build/generated/sqfentity/example/lib/model/model.sqfentity.g.part
+.dart_tool/build/generated/sqfentity/example/lib/model/chinook.sqfentity.g.part

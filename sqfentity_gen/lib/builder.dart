@@ -27,5 +27,7 @@ Builder sqfentityFormBuilder(BuilderOptions options) =>
     LibraryBuilder(SqfEntityFormGenerator(),
         generatedExtension: '.g.view.dart');
 
-
+Builder sqfentityFormBuilderTest(BuilderOptions options) =>
+    LibraryBuilder(SqfEntityFormGenerator(),
+        generatedExtension: '.t.view.dart');
 

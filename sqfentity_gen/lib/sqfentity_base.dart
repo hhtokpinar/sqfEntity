@@ -530,7 +530,7 @@ class SqfEntityObjectBuilder {
       }
   
     
-    Future<Map<String, dynamic>> toMapWithChilds([bool forQuery = false, bool forJson=false, bool forView=false]) async {
+    Future<Map<String, dynamic>> toMapWithChildren([bool forQuery = false, bool forJson=false, bool forView=false]) async {
       final map = <String, dynamic>{};
       $_toMapString
       $_createObjectCollectionsToMap
@@ -544,7 +544,7 @@ class SqfEntityObjectBuilder {
     
     /// This method returns Json String
     Future<String> toJsonWithChilds() async {
-      return json.encode(await toMapWithChilds(false,true));
+      return json.encode(await toMapWithChildren(false,true));
     }
   
   
@@ -929,7 +929,7 @@ class SqfEntityObjectBuilder {
   }
 
   String __createObjectRelations() {
-    print('__createObjectRelations for ${_table.tableName}');
+   // print('__createObjectRelations for ${_table.tableName}');
     var retVal = '';
     final relations = <String>[];
     for (final field
@@ -1005,10 +1005,9 @@ class SqfEntityObjectBuilder {
         final o2oNameLower = o2oName.toLowerCase();
         retVal.writeln('''$o2oName _$o2oNameLower;
             $o2oName get $o2oNameLower {
-            _$o2oNameLower = _$o2oNameLower ?? $o2oName();
-            return _$o2oNameLower; 
+            return _$o2oNameLower = _$o2oNameLower ?? $o2oName();
             }
-            void set $o2oNameLower($o2oName $o2oNameLower) {_$o2oNameLower=$o2oNameLower;}    
+            set $o2oNameLower($o2oName $o2oNameLower) {_$o2oNameLower=$o2oNameLower;}    
               ''');
         continue;
       }
@@ -1079,7 +1078,7 @@ class SqfEntityObjectBuilder {
           final relationName =
               tableCollection.childTable.modelName.toLowerCase();
           retVal.writeln(
-              '''if (!forQuery && $relationName != null) {map['$relationName'] = $relationName.toMap();}''');
+              '''if (!forQuery && $relationName != null) {map['$relationName'] = await $relationName.toMapWithChildren();}''');
         } else {
           retVal.writeln(
               '''if (!forQuery) {map['$funcName'] = await get$funcName().toMapList();}''');
@@ -1274,7 +1273,42 @@ class SqfEntityObjectBuilder {
           'if (${_table.primaryKeyNames[0]} != null) { ${sequencedField.fieldName} = await ${sequencedField.sequencedBy.modelName}().nextVal(); ${_hiddenMethod}save();}');
     }
     final retVal = StringBuffer();
-    if (_table.primaryKeyType == PrimaryKeyType.text) {
+    if (_table.primaryKeyTypes[0].startsWith('int') && _table.primaryKeyNames.length==1) {
+
+   retVal.write('''
+  
+    /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
+    
+    /// <returns>Returns ${_table.primaryKeyNames[0]}
+    Future<int> ${_hiddenMethod}save() async {
+      if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '|| !isSaved' : ''}) {
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'if (saveResult != null && saveResult.success) isSaved = true;' : ''}
+        ${seq.toString()}
+          }
+      else {
+        // ${_table.primaryKeyNames[0]}= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+        await _mn${_table.modelName}.update(this);
+         }
+        $_toOnetoOneSaveCode
+      return ${_table.primaryKeyNames[0]};
+    }''');
+      if (_table.relationType != RelationType.ONE_TO_ONE &&
+          _table.primaryKeyName.isNotEmpty &&
+          _table.primaryKeyType == PrimaryKeyType.integer_auto_incremental) {
+        retVal.writeln(
+            '''/// saveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
+    
+    /// <returns>Returns a new Primary Key value of ${_table.modelName}
+    Future<int> ${_hiddenMethod}saveAs() async {
+      ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'isSaved = false;' : ''}
+      ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '${_table.primaryKeyNames[0]} = null;' : ''}
+      $_toOnetoOneSaveAsCode
+      return ${_hiddenMethod}save();
+    }''');
+      }
+
+    } else {
       retVal.write('''
   
     /// Saves the (${_table.modelName}) object. If the Primary Key (${_table.primaryKeyNames[0]}) field is null, returns Error. 
@@ -1288,7 +1322,7 @@ class SqfEntityObjectBuilder {
       final result = BoolResult(success: false);
       try {         
         await _mn${_table.modelName}.rawInsert( 
-       'INSERT ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '\${isSaved ? \'OR REPLACE\':\'\'}' : 'OR REPLACE'} INTO ${_table.tableName} (${_createConstructure.replaceAll("this.", "")})  VALUES ($_createConstructureArgs)', toArgs());
+       'INSERT ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '\${isSaved ? \'OR REPLACE\':\'\'}' : 'OR REPLACE'} INTO ${_table.tableName} (${_createConstructureWithId.replaceAll("this.", "")})  VALUES ($_createConstructureArgsWithId)', toArgsWithIds());
         result.success=true;
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'isSaved = true;' : ''}
         
@@ -1323,39 +1357,6 @@ class SqfEntityObjectBuilder {
     }
          
     ''');
-      }
-    } else {
-      retVal.write('''
-  
-    /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    
-    /// <returns>Returns ${_table.primaryKeyNames[0]}
-    Future<int> ${_hiddenMethod}save() async {
-      if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '|| !isSaved' : ''}) {
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'if (saveResult != null && saveResult.success) isSaved = true;' : ''}
-        ${seq.toString()}
-          }
-      else {
-        // ${_table.primaryKeyNames[0]}= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-        await _mn${_table.modelName}.update(this);
-         }
-        $_toOnetoOneSaveCode
-      return ${_table.primaryKeyNames[0]};
-    }''');
-      if (_table.relationType != RelationType.ONE_TO_ONE &&
-          _table.primaryKeyName.isNotEmpty &&
-          _table.primaryKeyType == PrimaryKeyType.integer_auto_incremental) {
-        retVal.writeln(
-            '''/// saveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
-    
-    /// <returns>Returns a new Primary Key value of ${_table.modelName}
-    Future<int> ${_hiddenMethod}saveAs() async {
-      ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'isSaved = false;' : ''}
-      ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '${_table.primaryKeyNames[0]} = null;' : ''}
-      $_toOnetoOneSaveAsCode
-      return ${_hiddenMethod}save();
-    }''');
       }
     }
 
@@ -2113,7 +2114,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false,true));
+      list.add(await o.toMapWithChildren(false,true));
     }
     return json.encode(list);
   }
@@ -2650,6 +2651,10 @@ class SqfEntityTableBase {
           primaryKeyName = primaryKeyName != null && primaryKeyName.isNotEmpty
               ? '_$primaryKeyName'
               : '';
+          if (primaryKeyName.isEmpty && field.isPrimaryKeyField)
+          {
+            primaryKeyType = field.table.primaryKeyType;
+          }    
           field.fieldName =
               field.fieldName == null || field.fieldName.startsWith('_')
                   ? field.fieldName
@@ -3092,7 +3097,7 @@ abstract class SqfEntityModelBase {
           table.dbModel = toCamelCase(instanceName);
         }
       }
-      print('CHECK AND CONFIGURE MANY_TO_MANY RELATIONS');
+      //print('CHECK AND CONFIGURE MANY_TO_MANY RELATIONS');
       // CHECK AND CONFIGURE MANY_TO_MANY RELATIONS
       for (final field
           in table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
@@ -3101,8 +3106,8 @@ abstract class SqfEntityModelBase {
           print('found RelationShip ManyToMany');
           final manyToManyTable = field.manyToManyTableName ??
               '${table.tableName}${toCamelCase(field.table.tableName)}';
-          table.relationType = null;
-          field.table.relationType = null;
+          table.relationType = table.relationType != RelationType.ONE_TO_ONE ? null : table.relationType;
+          field.table.relationType = field.table.relationType != RelationType.ONE_TO_ONE ? null : field.table.relationType;
           field.manyToManyTableName = manyToManyTable;
 
           if (databaseTables.length > 1) {
@@ -3145,11 +3150,13 @@ abstract class SqfEntityModelBase {
               
               ..init());
           }
+        } else if (field is SqfEntityFieldRelationshipBase && field.relationType == RelationType.ONE_TO_ONE) {
+          table.relationType = RelationType.ONE_TO_ONE;
         }
       }
       table.collections = _getCollections(table,this);
     }
-    print('before final table in manyToManyTables lenght=${manyToManyTables.length}');
+    //print('before final table in manyToManyTables lenght=${manyToManyTables.length}');
     for (final table in manyToManyTables) {
       table.collections = _getCollections(table, this);
       databaseTables.add(table);

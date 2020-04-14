@@ -26,7 +26,7 @@ class TableProduct extends SqfEntityTableBase {
     tableName = 'product';
     relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -61,7 +61,7 @@ class TableCategory extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'category';
     primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -171,7 +171,6 @@ class Product {
     _setDefaultValues();
   }
   Product.withFields(
-      id,
       this.name,
       this.description,
       this.price,
@@ -229,8 +228,6 @@ class Product {
         ? Category.fromMap(o['category'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Product)
   int id;
@@ -244,7 +241,7 @@ class Product {
   DateTime datetime;
   DateTime date;
   bool isDeleted;
-  bool isSaved;
+
   BoolResult saveResult;
   // end FIELDS (Product)
 
@@ -325,7 +322,7 @@ class Product {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -389,12 +386,11 @@ class Product {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
     return [
-      id,
       name,
       description,
       price,
@@ -540,9 +536,9 @@ class Product {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0 || !isSaved) {
-      await _mnProduct.insert(this);
-      if (saveResult != null && saveResult.success == true) isSaved = true;
+    if (id == null || id == 0) {
+      id = await _mnProduct.insert(this);
+
       if (id != null) {
         rownum = await IdentitySequence().nextVal();
         save();
@@ -553,6 +549,15 @@ class Product {
     }
 
     return id;
+  }
+
+  /// saveAs Product. Returns a new Primary Key value of Product
+
+  /// <returns>Returns a new Primary Key value of Product
+  Future<int> saveAs() async {
+    id = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
@@ -661,7 +666,6 @@ class Product {
   }
 
   void _setDefaultValues() {
-    isSaved = false;
     price = price ?? 0;
     isActive = isActive ?? true;
     categoryId = categoryId ?? 0;
@@ -1315,7 +1319,7 @@ class ProductFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -1526,7 +1530,7 @@ class Category {
   Category({this.id, this.name, this.isActive}) {
     _setDefaultValues();
   }
-  Category.withFields(id, this.name, this.isActive) {
+  Category.withFields(this.name, this.isActive) {
     _setDefaultValues();
   }
   Category.withId(id, this.name, this.isActive) {
@@ -1538,14 +1542,12 @@ class Category {
     if (o['name'] != null) name = o['name'] as String;
     if (o['isActive'] != null)
       isActive = o['isActive'] == 1 || o['isActive'] == true;
-
-    isSaved = true;
   }
   // FIELDS (Category)
   int id;
   String name;
   bool isActive;
-  bool isSaved;
+
   BoolResult saveResult;
   // end FIELDS (Category)
 
@@ -1591,7 +1593,7 @@ class Category {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -1623,11 +1625,11 @@ class Category {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
-    return [id, name, isActive];
+    return [name, isActive];
   }
 
   List<dynamic> toArgsWithIds() {
@@ -1752,15 +1754,23 @@ class Category {
 
   /// <returns>Returns id
   Future<int> save() async {
-    if (id == null || id == 0 || !isSaved) {
-      await _mnCategory.insert(this);
-      if (saveResult.success) isSaved = true;
+    if (id == null || id == 0) {
+      id = await _mnCategory.insert(this);
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnCategory.update(this);
     }
 
     return id;
+  }
+
+  /// saveAs Category. Returns a new Primary Key value of Category
+
+  /// <returns>Returns a new Primary Key value of Category
+  Future<int> saveAs() async {
+    id = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
@@ -1853,7 +1863,6 @@ class Category {
   }
 
   void _setDefaultValues() {
-    isSaved = false;
     isActive = isActive ?? true;
   }
   // END METHODS
@@ -2463,7 +2472,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -2681,7 +2690,7 @@ class Todo {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -2711,7 +2720,7 @@ class Todo {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -2820,7 +2829,7 @@ class Todo {
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
       await _mnTodo.insert(this);
-      if (saveResult.success) isSaved = true;
+      if (saveResult != null && saveResult.success) isSaved = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnTodo.update(this);
@@ -3502,7 +3511,7 @@ class TodoFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }

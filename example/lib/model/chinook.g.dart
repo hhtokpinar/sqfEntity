@@ -481,7 +481,7 @@ class Album {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -513,7 +513,7 @@ class Album {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -1402,7 +1402,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -1623,7 +1623,7 @@ class Artist {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -1651,7 +1651,7 @@ class Artist {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -2493,7 +2493,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -2832,7 +2832,7 @@ class Customer {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -2904,7 +2904,7 @@ class Customer {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -3889,7 +3889,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -4337,7 +4337,7 @@ class Employee {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -4424,7 +4424,7 @@ class Employee {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -5473,7 +5473,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -5765,7 +5765,7 @@ class Genre {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -5793,7 +5793,7 @@ class Genre {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -6634,7 +6634,7 @@ class GenreFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -6945,7 +6945,7 @@ class Invoice {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -7003,7 +7003,7 @@ class Invoice {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -7962,7 +7962,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -8267,7 +8267,7 @@ class InvoiceLine {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -8301,7 +8301,7 @@ class InvoiceLine {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -9193,7 +9193,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -9427,7 +9427,7 @@ class MediaType {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -9455,7 +9455,7 @@ class MediaType {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -10303,7 +10303,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -10519,7 +10519,7 @@ class Playlist {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -10547,7 +10547,7 @@ class Playlist {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -11376,7 +11376,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -11713,7 +11713,7 @@ class Track {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -11772,7 +11772,7 @@ class Track {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -12808,7 +12808,7 @@ class TrackFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
@@ -13086,7 +13086,7 @@ class PlaylistTrack {
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
+  Future<Map<String, dynamic>> toMapWithChildren(
       [bool forQuery = false,
       bool forJson = false,
       bool forView = false]) async {
@@ -13109,7 +13109,7 @@ class PlaylistTrack {
 
   /// This method returns Json String
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
@@ -13252,19 +13252,27 @@ class PlaylistTrack {
     return obj;
   }
 
-  /// Saves the (PlaylistTrack) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
+  /// Saves the (PlaylistTrack) object. If the Primary Key (TrackId) field is null, returns Error.
+  ///
+  /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null.
+  ///
+  /// Call the saveAs() method if you do not want to save it when there is another row with the same TrackId
 
-  /// <returns>Returns TrackId
-  Future<int> save() async {
-    if (TrackId == null || TrackId == 0 || !isSaved) {
-      await _mnPlaylistTrack.insert(this);
-      if (saveResult.success) isSaved = true;
-    } else {
-      // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-      await _mnPlaylistTrack.update(this);
+  /// <returns>Returns BoolResult
+  Future<BoolResult> save() async {
+    final result = BoolResult(success: false);
+    try {
+      await _mnPlaylistTrack.rawInsert(
+          'INSERT ${isSaved ? 'OR REPLACE' : ''} INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+          toArgsWithIds());
+      result.success = true;
+      isSaved = true;
+    } catch (e) {
+      result.errorMessage = e.toString();
     }
 
-    return TrackId;
+    saveResult = result;
+    return result;
   }
 
   /// saveAll method saves the sent List<PlaylistTrack> as a bulk in one transaction
@@ -13979,7 +13987,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }

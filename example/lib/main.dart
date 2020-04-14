@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqfentity/sqfentity.dart';
+import 'package:sqfentity_example/model/test.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
@@ -35,12 +36,11 @@ void main(List<String> args) async {
   // ATTENTION! when the software/app is started, database will initialized.
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
 
-  await runSamples();
+  //await runSamples();
   runApp(MyApp());
 }
 
 Future<bool> runSamples() async {
-
 
   // add some products
   await addSomeProducts();
