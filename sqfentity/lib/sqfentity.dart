@@ -393,37 +393,17 @@ class SqfEntityProvider extends SqfEntityModelBase {
       {bool exclusive, bool noResult, bool continueOnError}) async {
     final result = BoolCommitResult(success: false);
     bool closeBatch = false;
-    //final result = BoolResult(success: false);
+    
     // If there is no open transaction, start one
     if (openedBatch[_dbModel.databaseName] == null) {
       await batchStart();
       closeBatch = true;
     }
 
-    // if (openedBatch[_dbModel.databaseName] == null) {
-    //   final Database db = await this.db;
-    //   for (var t in params) {
-    //     final result = BoolResult();
-    //     try {
-    //       final res =
-    //           await db.rawInsert(pSql, t.toArgsWithIds() as List<dynamic>);
-    //       result
-    //         ..success = true
-    //         ..successMessage =
-    //             '${_primaryKeyList[0]}= $res upserted successfully';
-    //     } catch (e) {
-    //       result
-    //         ..successMessage = null
-    //         ..errorMessage = e.toString();
-    //     }
-    //     results.add(result);
-    //   }
-    // } else {
     for (var t in params) {
       openedBatch[_dbModel.databaseName]
           .rawInsert(pSql, t.toArgsWithIds() as List<dynamic>);
     }
-    //}
 
     if (closeBatch) {
       try {
