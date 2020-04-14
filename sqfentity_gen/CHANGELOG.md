@@ -1,3 +1,6 @@
+## 1.3.2+6
+   fixed nested ONE_TO_ONE Relationships
+
 ## 1.3.2+5
    implemented MANY_TO_MANY Relationships
 
