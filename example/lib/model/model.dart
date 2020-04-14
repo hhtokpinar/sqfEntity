@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -30,8 +28,7 @@ const tableCategory = SqfEntityTable(
       SqfEntityField('name', DbType.text, formIsRequired: true),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
     ],
-    formListSubTitleField: ''
-    );
+    formListSubTitleField: '');
 
 // Define the 'tableProduct' constant as SqfEntityTable for the product table
 const tableProduct = SqfEntityTable(
@@ -68,22 +65,6 @@ const tableProduct = SqfEntityTable(
       SqfEntityField('date', DbType.date,
           minValue: '2015-01-01',
           maxValue: 'DateTime.now().add(Duration(days: 365))')
-    ]);
-
-
-const tableProductProperties = SqfEntityTable(
-    tableName: 'product_properties',
-    // now you do not need to set primaryKeyName If you set RelationshipField as primarykeyfield
-primaryKeyName: 'propertyId',
-primaryKeyType: PrimaryKeyType.integer_unique,
-    // declare fields
-    fields: [
-      SqfEntityField('title', DbType.text),
-      SqfEntityFieldRelationship(fieldName: 'prodId',
-        parentTable: tableProduct, deleteRule: DeleteRule.CASCADE, relationType: RelationType.ONE_TO_ONE),
-     SqfEntityFieldRelationship(fieldName: 'catId',
-        parentTable: tableCategory, deleteRule: DeleteRule.CASCADE, relationType: RelationType.ONE_TO_ONE),
-      
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
@@ -123,10 +104,9 @@ const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
     databaseName: 'sampleORM_0104_1.db',
     // put defined tables into the tables list.
-    databaseTables: [tableProduct, tableProductProperties,
-    tableCategory, tableTodo],
+    databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property
-    formTables: [tableProduct, tableCategory,tableTodo],
+    formTables: [tableProduct, tableCategory, tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath: null //         'assets/sample.db'
@@ -140,4 +120,3 @@ const myDbModel = SqfEntityModel(
   Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If formTables parameter is defined in the model)
   Enjoy.. Huseyin TOKPINAR
 */
-
