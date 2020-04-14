@@ -18,7 +18,7 @@ part 'model.g.view.dart';
 const tableCategory = SqfEntityTable(
     tableName: 'category',
     primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_unique,
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
     modelName:
@@ -34,7 +34,7 @@ const tableCategory = SqfEntityTable(
 const tableProduct = SqfEntityTable(
     tableName: 'product',
     primaryKeyName: 'id',
-    primaryKeyType: PrimaryKeyType.integer_unique,
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: true,
     fields: [
       SqfEntityField(
@@ -102,7 +102,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_0104_1.db',
+    databaseName: 'sampleORM.db',
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property

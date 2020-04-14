@@ -8,8 +8,10 @@ import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'package:sqfentity/sqfentity.dart';
 
 
-import 'model/model.dart';
-// STEP 1: define your tables as shown in the example Classes below.
+import 'model/model.dart'; // you do not need to import this file. Just follow next steps
+
+// STEP 2: define your tables as shown in the example Classes below.
+
 // Define the 'TableCategory' constant as SqfEntityTable.
 const tableCategory = SqfEntityTable(
     tableName: 'category',
@@ -75,7 +77,7 @@ const seqIdentity = SqfEntitySequence(
   // startWith = 0;   /* optional. default is 0 */
 );
 
-// STEP 2: Create your Database Model constant instanced from SqfEntityModel
+// STEP 3: Create your Database Model constant instanced from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
@@ -83,13 +85,15 @@ const myDbModel = SqfEntityModel(
     databaseName: 'sampleORM.db',
     // put defined tables into the tables list.
     databaseTables: [tableCategory, tableProduct, tableTodo],
+     // You can define tables to generate add/edit view forms if you want to use Form Generator property
+    formTables: [tableProduct, tableCategory, tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath:
         null // 'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
 );
 
-/* STEP 3: That's All.. 
+/* STEP 4: That's All.. 
 --> Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs
   Note: After running the command Please check lib/model/model.g.dart 
@@ -793,7 +797,7 @@ Future<void> samples8() async {
         'EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);');
 
     // print upsert Results
-    for (var res in results) {
+    for (var res in results.commitResult) {
       res = res; // dummy line for analysis_options (unused_local_variable)
       //print(res.toString()); // uncomment this line for print save results
     }

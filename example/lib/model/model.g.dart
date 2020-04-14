@@ -542,7 +542,7 @@ class Product {
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
       await _mnProduct.insert(this);
-      if (saveResult.success) isSaved = true;
+      if (saveResult != null && saveResult.success == true) isSaved = true;
       if (id != null) {
         rownum = await IdentitySequence().nextVal();
         save();

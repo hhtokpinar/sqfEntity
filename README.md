@@ -22,7 +22,7 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
 ## What's New?
    
-   Added **@SqfEntityBuilderForm** annotation to generate add/edit/list view controllers and added these special controls:
+   Added formTables parameter into dbModel to generate add/edit/list view controllers and added these special controls:
    - Validators (Required Fields, regular expression for data types)
    - DropdownList controls for related tables
    - Checkbox for boolean fields
@@ -97,13 +97,9 @@ Our model file is ready to use. Define your tables as shown in the example below
  For example, we have created 3 tables constant for category, product and todo that instanced from "SqfEntityTable" as follows:
 
 
-*Table 1: Category*
-Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
-    
-    @SqfEntityBuilderForm(tableCategory,
-    formListTitleField: 'name' // when formListTitleField is null, sqfentity gets first text field for this property
-    , hasSubItems: true // when hasSubItems is true, goes to sub items instead of detail when click on item
-    )
+*Table 1: Category*  
+
+   
     // Define the 'tableCategory' constant as SqfEntityTable for the category table.
     const tableCategory = SqfEntityTable(
       tableName: 'category',
@@ -124,11 +120,7 @@ in this case it is possible to recover a deleted item using the recover() method
 If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
 
 *Table 2: Product*
-Note: You do not need to define this @SqfEntityBuilderForm annotation if you do not want to use the Form Generator property
-    
-    @SqfEntityBuilderForm(tableProduct, formListTitleField: 'name', // when formListTitleField is null, sqfentity gets first text field for this property
-    formListSubTitleField: 'description', // optional 
-    )
+      
     // Define the 'tableProduct' constant as SqfEntityTable for the product table.
     const tableProduct = SqfEntityTable(
       tableName: 'product',
@@ -195,14 +187,14 @@ This table is for creating a synchronization with json data from the web url
 *Note:* SqfEntity provides support for the use of **multiple databases**.
 So you can create many Database Models and use them in your application.
 
-    @SqfEntityBuilder(myDbModel, 
-    formControllers: [tableProduct, tableCategory], // Creates controllers for Add/Edit forms and listing page of tables (optional)
-    )
+    @SqfEntityBuilder(myDbModel)
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
         databaseName: 'sampleORM.db',
         // put defined tables into the tables list.
         databaseTables: [tableCategory, tableProduct, tableTodo],
+         // You can define tables to generate add/edit view forms if you want to use Form Generator property
+        formTables: [tableProduct, tableCategory, tableTodo],
         // put defined sequences into the sequences list.
         sequences: [seqIdentity],
         bundledDatabasePath:
@@ -215,8 +207,7 @@ Go Terminal Window and run command below
 
     flutter pub run build_runner build --delete-conflicting-outputs
 
-  After running the command Please check lib/model/model.g.dart
-  Note: If @SqfEntityBuilderForm annotation is used then check also lib/model/model.g.view.dart 
+After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If formTables parameter is defined in the model)
 
 
 ### Attach existing SQLite database with bundledDatabasePath parameter

@@ -1333,7 +1333,7 @@ class SqfEntityObjectBuilder {
     Future<int> ${_hiddenMethod}save() async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '|| !isSaved' : ''}) {
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'if (saveResult.success) isSaved = true;' : ''}
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'if (saveResult != null && saveResult.success) isSaved = true;' : ''}
         ${seq.toString()}
           }
       else {

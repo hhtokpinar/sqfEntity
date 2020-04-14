@@ -84,6 +84,8 @@ const myDbModel = SqfEntityModel(
     databaseName: 'sampleORM.db',
     // put defined tables into the tables list.
     databaseTables: [tableCategory, tableProduct, tableTodo],
+    // You can define tables to generate add/edit view forms if you want to use Form Generator property
+    formTables: [tableProduct, tableCategory, tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     bundledDatabasePath:
@@ -95,7 +97,9 @@ const myDbModel = SqfEntityModel(
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs
-  Note: After running the command Please check lib/model/model.g.dart 
+  Note: After running the command Please check lib/model/model.g.dart and 
+        lib/model/model.g.view.dart (If formTables parameter is defined in the model)
+  
   Enjoy.. Huseyin TOKPINAR
 */
 
@@ -512,7 +516,7 @@ class Product {
       return null;
     }
     Product obj;
-    final data = await _mnProduct.getById(productid);
+    final data = await _mnProduct.getById([productid]);
     if (data.length != 0) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
     } else {
@@ -592,7 +596,7 @@ class Product {
   /// inserts or replaces the sent List<<Product>> as a bulk in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Product> products) async {
+  Future<BoolCommitResult> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
         'INSERT OR REPLACE INTO product (productId,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
         products);
@@ -1595,7 +1599,7 @@ class Category {
       return null;
     }
     Category obj;
-    final data = await _mnCategory.getById(categoryid);
+    final data = await _mnCategory.getById([categoryid]);
     if (data.length != 0) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
     } else {
@@ -1659,7 +1663,7 @@ class Category {
   /// inserts or replaces the sent List<<Category>> as a bulk in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Category> categories) async {
+  Future<BoolCommitResult> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
         'INSERT OR REPLACE INTO category (categoryId,  name, isActive)  VALUES (?,?,?)',
         categories);
@@ -2574,7 +2578,7 @@ class Todo {
       return null;
     }
     Todo obj;
-    final data = await _mnTodo.getById(id);
+    final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
     } else {
@@ -2637,7 +2641,7 @@ class Todo {
   /// inserts or replaces the sent List<<Todo>> as a bulk in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Todo> todos) async {
+  Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
         'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
         todos);

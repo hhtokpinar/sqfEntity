@@ -416,21 +416,28 @@ packages:
       name: sqfentity
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.2+12"
+    version: "1.3.3+5"
   sqfentity_gen:
     dependency: "direct main"
     description:
       name: sqfentity_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1+13"
-  sqflite:
+    version: "1.3.2+6"
+  sqflite_common:
     dependency: transitive
     description:
-      name: sqflite
+      name: sqflite_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.0.0+1"
+  sqflite_sqlcipher:
+    dependency: transitive
+    description:
+      name: sqflite_sqlcipher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+6"
   stack_trace:
     dependency: transitive
     description:
@@ -544,5 +551,5 @@ packages:
     source: hosted
     version: "2.1.16"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.10.1 <2.0.0"
