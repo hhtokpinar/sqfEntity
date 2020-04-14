@@ -71,7 +71,7 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
 
 First, You need to:
 1. Copy these two files into your /lib/model folder: [view.list.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/model/view.list.dart) and [view.detail.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/model/view.detail.dart)
-2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/lib/tools/helper.dart) into your /lib/tools folder
+2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/tools/helper.dart) into your /lib/tools folder
 3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
 
        import 'dart:convert';
