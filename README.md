@@ -191,6 +191,9 @@ So you can create many Database Models and use them in your application.
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
         databaseName: 'sampleORM.db',
+        password: null, // You can set a password if you want to use crypted database 
+                        (For more information: https://github.com/sqlcipher/sqlcipher)
+    
         // put defined tables into the tables list.
         databaseTables: [tableCategory, tableProduct, tableTodo],
          // You can define tables to generate add/edit view forms if you want to use Form Generator property
@@ -200,7 +203,6 @@ So you can create many Database Models and use them in your application.
         bundledDatabasePath:
             null // 'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
     );
-
 
 That's all.. one more step left for create models.dart file.
 Go Terminal Window and run command below

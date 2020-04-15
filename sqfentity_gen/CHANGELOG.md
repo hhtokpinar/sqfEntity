@@ -1,5 +1,8 @@
-## 1.3.2+6
-   fixed nested ONE_TO_ONE Relationships
+## 1.3.2+9
+   fixed bugs in MANY_TO_MANY Relationships
+
+## 1.3.2+8
+   fixed bugs in nested ONE_TO_ONE Relationships
 
 ## 1.3.2+5
    implemented MANY_TO_MANY Relationships

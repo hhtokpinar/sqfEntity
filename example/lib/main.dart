@@ -36,7 +36,7 @@ void main(List<String> args) async {
   // ATTENTION! when the software/app is started, database will initialized.
   // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
 
-  //await runSamples();
+  await runSamples();
   runApp(MyApp());
 }
 
@@ -527,11 +527,11 @@ Future<void> samples5() async {
 // UPDATE imageUrl field by CategoryId
   await Product().select().categoryId.equals(1).update({
     'imageUrl':
-        'https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/notebook.png'
+        'https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/notebook.png'
   });
   await Product().select().categoryId.equals(2).update({
     'imageUrl':
-        'https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/assets/ultrabook.png'
+        'https://raw.githubusercontent.com/hhtokpinar/sqfEntity/master/example/assets/ultrabook.png'
   });
 
 // EXAMPLE 5.2: Update multiple records with query
