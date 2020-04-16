@@ -13,7 +13,7 @@ import 'model/model.dart'; // you do not need to import this file. Just follow n
 // STEP 2: define your tables as shown in the example Classes below.
 
 // Define the 'TableCategory' constant as SqfEntityTable.
-const tableCategory = SqfEntityTable(
+const SqfEntityTable tableCategory = SqfEntityTable(
     tableName: 'category',
     primaryKeyName: 'id',
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
@@ -28,7 +28,7 @@ const tableCategory = SqfEntityTable(
     ]);
 
 // Define the 'TableProduct' constant as SqfEntityTable.
-const tableProduct = SqfEntityTable(
+const SqfEntityTable tableProduct = SqfEntityTable(
     tableName: 'product',
     primaryKeyName: 'id',
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
@@ -49,7 +49,7 @@ const tableProduct = SqfEntityTable(
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
-const tableTodo = SqfEntityTable(
+const SqfEntityTable tableTodo = SqfEntityTable(
     tableName: 'todos',
     primaryKeyName: 'id',
     useSoftDeleting:
@@ -66,7 +66,7 @@ const tableTodo = SqfEntityTable(
     ]);
 
 // Define the 'identity' constant as SqfEntitySequence.
-const seqIdentity = SqfEntitySequence(
+const SqfEntitySequence seqIdentity = SqfEntitySequence(
   sequenceName: 'identity',
   maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
   //modelName: 'SQEidentity', 
@@ -80,7 +80,7 @@ const seqIdentity = SqfEntitySequence(
 // STEP 3: Create your Database Model constant instanced from SqfEntityModel
 // Note: SqfEntity provides support for the use of multiple databases. So you can create many Database Models and use them in the application.
 @SqfEntityBuilder(myDbModel)
-const myDbModel = SqfEntityModel(
+const SqfEntityModel myDbModel = SqfEntityModel(
     modelName: null,
     databaseName: 'sampleORM.db',
     // put defined tables into the tables list.

@@ -20,7 +20,7 @@ class SqfEntityFormConverter {
   SqfEntityFormConverter(this.table);
   final SqfEntityTableBase table;
   String toFormWidgetsCode() {
-   // print('toFormWidgetsCode begin');
+    // print('toFormWidgetsCode begin');
     final String tablename = table.tableName.toLowerCase();
     final String modelName = table.modelName ?? toCamelCase(table.tableName);
 
@@ -148,8 +148,10 @@ class ${modelName}AddState extends State {
   String toFormSaveCodeDateTimeVariables(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 8: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    for (final field in table.fields
-        .where((f) => f.dbType == DbType.date || f.dbType == DbType.datetime|| f.dbType == DbType.datetimeUtc)) {
+    for (final field in table.fields.where((f) =>
+        f.dbType == DbType.date ||
+        f.dbType == DbType.datetime ||
+        f.dbType == DbType.datetimeUtc)) {
       final ccName = toCamelCase(field.fieldName);
       final vName = tocamelCase(field.fieldName);
       if (field.dbType == DbType.datetime) {
@@ -517,11 +519,12 @@ String getformListTitleField(SqfEntityTableBase table) {
   if (table.formListTitleField != null) {
     fieldName = table.formListTitleField;
   } else {
-    for (final field
-        in table.fields.where((f) => f is! SqfEntityFieldVirtualBase)) {
-      if (field.dbType == DbType.text) {
-        fieldName = field.fieldName;
-        break;
+    for (final field in table.fields) {
+      if (field is! SqfEntityFieldVirtualBase) {
+        if (field.dbType == DbType.text) {
+          fieldName = field.fieldName;
+          break;
+        }
       }
     }
     if (fieldName.isEmpty) {
@@ -537,12 +540,13 @@ String getformListSubTitleField(SqfEntityTableBase table) {
   if (table.formListSubTitleField != null) {
     fieldName = table.formListSubTitleField;
   } else {
-    for (final field
-        in table.fields.where((f) => f is! SqfEntityFieldVirtualBase)) {
-      if (field.dbType == DbType.text &&
-          field.fieldName != table.formListTitleField) {
-        fieldName = field.fieldName;
-        break;
+    for (final field in table.fields) {
+      if (field is! SqfEntityFieldVirtualBase) {
+        if (field.dbType == DbType.text &&
+            field.fieldName != table.formListTitleField) {
+          fieldName = field.fieldName;
+          break;
+        }
       }
     }
     if (fieldName.isEmpty) {

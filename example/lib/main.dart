@@ -42,6 +42,22 @@ void main(List<String> args) async {
 
 Future<bool> runSamples() async {
 
+// final m1 = Models1(id: 'id1')
+// ..name='model1';
+// await m1.save();
+
+final m2 = Models2(id: 'id3')
+..name='model2_2';
+await m2.save();
+
+final m1m2 = Models2Models1(models1Id: 'id1', models2Id: 'id3');
+await m1m2.save();
+
+final m1WithChildren =await Models1().getById('id1');
+print(await m1WithChildren.toMapWithChildren());
+
+return true;
+
   // add some products
   await addSomeProducts();
 

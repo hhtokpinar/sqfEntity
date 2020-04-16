@@ -10481,7 +10481,7 @@ class Playlist {
   // end FIELDS (Playlist)
 
 // COLLECTIONS & VIRTUALS (Playlist)
-  ///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  ///(RelationType.MANY_TO_MANY) (PlaylistTrack) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
   List<Track> plTracks;
 
@@ -10491,7 +10491,7 @@ class Playlist {
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .where(
-            'TrackId IN (SELECT TrackId FROM PlaylistTrack WHERE PlaylistId=?)',
+            'PlaylistId IN (SELECT TrackId FROM PlaylistTrack WHERE PlaylistId=?)',
             parameterValue: PlaylistId)
         .and;
   }
@@ -11647,7 +11647,7 @@ class Track {
         .and;
   }
 
-  ///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  ///(RelationType.MANY_TO_MANY) (PlaylistTrack) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylists', 'plField2'..]) or so on..
   List<Playlist> plPlaylists;
 
@@ -11657,7 +11657,7 @@ class Track {
     return Playlist()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .where(
-            'PlaylistId IN (SELECT PlaylistId FROM PlaylistTrack WHERE TrackId=?)',
+            'TrackId IN (SELECT PlaylistId FROM PlaylistTrack WHERE TrackId=?)',
             parameterValue: TrackId)
         .and;
   }
@@ -13290,7 +13290,7 @@ class PlaylistTrack {
 
   /// Updates if the record exists, otherwise adds a new row
 
-  /// <returns>Returns TrackId
+  /// <returns>Returns 1
   Future<int> upsert() async {
     try {
       if (await _mnPlaylistTrack.rawInsert(

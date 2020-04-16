@@ -634,7 +634,7 @@ class SqfEntityObjectBuilder {
     
     /// Updates if the record exists, otherwise adds a new row
     
-    /// <returns>Returns ${_table.primaryKeyNames[0]}
+    /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
     Future<int> upsert() async {
        try {
          if (await _mn${_table.modelName}.rawInsert( 
@@ -710,9 +710,10 @@ class SqfEntityObjectBuilder {
 
   String __createProperties() {
     final _retVal = StringBuffer();
-    if (_table.primaryKeyName.isNotEmpty)
+    if (_table.primaryKeyName.isNotEmpty) {
       _retVal.writeln(
           '${_table.primaryKeyType == PrimaryKeyType.text ? 'String' : 'int'} ${_table.primaryKeyNames[0]};');
+    }
     for (final field in _table.fields) {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.MANY_TO_MANY &&
@@ -779,10 +780,11 @@ class SqfEntityObjectBuilder {
     if (_table.useSoftDeleting != null && _table.useSoftDeleting) {
       _retVal.write(',this.isDeleted');
     }
-    if (_retVal.length > 0)
+    if (_retVal.length > 0) {
       return _retVal.toString().substring(1);
-    else
+    } else {
       return '';
+    }
   }
 
   String __createBaseConstructure() {
@@ -807,8 +809,9 @@ class SqfEntityObjectBuilder {
     }
     if (_retVal.length > 0) {
       return _retVal.toString().substring(1);
-    } else
+    } else {
       return '';
+    }
   }
 
   String __createConstructureArgs(bool withId) {
@@ -845,9 +848,10 @@ class SqfEntityObjectBuilder {
   String __toMapString() {
     final _retVal = StringBuffer();
     if (_table.relationType != RelationType.ONE_TO_ONE &&
-        _table.primaryKeyName.isNotEmpty)
+        _table.primaryKeyName.isNotEmpty) {
       _retVal.writeln(
           'if (${_table.primaryKeyNames[0]} != null) {map[\'${_table.primaryKeyNames[0]}\'] = ${_table.primaryKeyNames[0]};}');
+    }
     for (var field in _table.fields) {
       if (field is SqfEntityFieldVirtualBase ||
           (field is SqfEntityFieldRelationshipBase &&
@@ -933,13 +937,13 @@ class SqfEntityObjectBuilder {
 
   String __createObjectRelations() {
     // print('__createObjectRelations for ${_table.tableName}');
+    // iterable.whereType<MyClass>()
     var retVal = '';
     final relations = <String>[];
     for (final field
-        in _table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
+        in _table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
       print('- Recognizing RelationShip named ${field.fieldName}');
-      if (field is SqfEntityFieldRelationshipBase &&
-          field.relationType == RelationType.ONE_TO_MANY) {
+      if (field.relationType == RelationType.ONE_TO_MANY) {
         // final objName = field.relationshipName == null
         //     ? _table.modelName.toLowerCase()
         //     : field.relationshipName.toLowerCase();
@@ -994,8 +998,10 @@ class SqfEntityObjectBuilder {
     final collections = <String>[];
     for (var tableCollection in _table.collections) {
       if (_table.relationType == RelationType.MANY_TO_MANY &&
-          tableCollection.childTable.relationType == RelationType.MANY_TO_MANY)
+          tableCollection.childTable.relationType ==
+              RelationType.MANY_TO_MANY) {
         continue;
+      }
       String funcName = getFuncName(tableCollection, false, _table);
 
       if (collections.contains(funcName)) {
@@ -1014,21 +1020,24 @@ class SqfEntityObjectBuilder {
               ''');
         continue;
       }
-      final childTableFieldTablePrimaryKeyName =
+      String childTableFieldTablePrimaryKeyName =
           tableCollection.childTableField.table == null
               ? _table.primaryKeyNames[0]
               : tableCollection.childTableField.table.primaryKeyNames[0];
 
       if (tableCollection.relationType == RelationType.MANY_TO_MANY) {
+final String childTablePrimaryKeyName = tableCollection.childTableField.manyToManyTable.fields.whereType<SqfEntityFieldRelationshipBase>().firstWhere((f) => f.table==tableCollection.childTable).fieldName;
+final String childTableFieldTablePrimaryKeyName = tableCollection.childTableField.manyToManyTable.fields.whereType<SqfEntityFieldRelationshipBase>().firstWhere((f) => f.table==tableCollection.childTableField.table).fieldName;
+
         retVal.writeln(
-            '''///(RelationType.MANY_TO_MANY) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+            '''///(RelationType.MANY_TO_MANY) (${tableCollection.childTableField.manyToManyTable.tableName}) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
             /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['pl$funcName', 'plField2'..]) or so on..
             List<${tableCollection.childTable.modelName}> pl$funcName;
-            /// get ${tableCollection.childTable.modelName}(s) filtered by ${tableCollection.childTable.primaryKeyNames[0]} IN ${tableCollection.childTableField.manyToManyTableName}
+            /// get ${tableCollection.childTable.modelName}(s) filtered by $childTablePrimaryKeyName IN ${tableCollection.childTableField.manyToManyTableName}
               ${tableCollection.childTable.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){
            return ${tableCollection.childTable.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted)
-           .where('${tableCollection.childTable.primaryKeyNames[0]} IN (SELECT ${tableCollection.childTable.primaryKeyNames[0]} FROM ${tableCollection.childTableField.manyToManyTableName} WHERE $childTableFieldTablePrimaryKeyName=?)',
-            parameterValue: $childTableFieldTablePrimaryKeyName) 
+           .where('${tableCollection.childTableField.table.primaryKeyNames[0]} IN (SELECT $childTablePrimaryKeyName FROM ${tableCollection.childTableField.manyToManyTableName} WHERE $childTableFieldTablePrimaryKeyName=?)',
+            parameterValue: ${tableCollection.childTableField.table.primaryKeyNames[0]}) 
             .and;
 
 
@@ -1068,8 +1077,10 @@ class SqfEntityObjectBuilder {
 
     for (var tableCollection in _table.collections) {
       if (_table.relationType == RelationType.MANY_TO_MANY &&
-          tableCollection.childTable.relationType == RelationType.MANY_TO_MANY)
+          tableCollection.childTable.relationType ==
+              RelationType.MANY_TO_MANY) {
         continue;
+      }
       String funcName = getFuncName(tableCollection, false, _table);
       if (collections.contains(funcName)) {
         funcName = getFuncName(tableCollection, true, _table);
@@ -1098,9 +1109,8 @@ class SqfEntityObjectBuilder {
     final retVal = StringBuffer();
     final relations = <String>[];
     for (final field
-        in _table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
-      if (field is SqfEntityFieldRelationshipBase &&
-          field.relationType == RelationType.ONE_TO_MANY) {
+        in _table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
+      if (field.relationType == RelationType.ONE_TO_MANY) {
         final modelName = field.relationshipName ?? _table.modelName;
         final String mapName =
             field.fieldName.toLowerCase() == modelName.toLowerCase()
@@ -1379,7 +1389,7 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
   final retVal = StringBuffer();
   final relations = <String>[];
   for (final field
-      in _table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
+      in _table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
     if (field is SqfEntityFieldRelationshipBase &&
         field.relationType == RelationType.ONE_TO_MANY) {
       final modelName = field.relationshipName ?? _table.modelName;
@@ -2372,10 +2382,12 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
 // BEGIN ENUMS, CLASSES AND ABSTRACTS
 class TableCollectionBase {
   TableCollectionBase(this.childTable, this.childTableField,
-      {this.relationType});
+      {this.relationType, //this.many2ManyTable
+      });
   SqfEntityTableBase childTable;
   SqfEntityFieldRelationshipBase childTableField;
   RelationType relationType;
+  //SqfEntityTableBase many2ManyTable;
 }
 
 class TableField {
@@ -2974,7 +2986,8 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.formIsRequired,
       this.relationshipName,
       this.relationType,
-      this.manyToManyTableName}) {
+      this.manyToManyTableName,
+      this.manyToManyTable}) {
     init();
   }
   void init() {
@@ -2998,8 +3011,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
         //      print('$i- relationshipFields added ${relationshipFields.last} on ${table.tableName}');
       }
     } else {
-      if (fieldName != null && fieldName.isNotEmpty)
+      if (fieldName != null && fieldName.isNotEmpty) {
         relationshipFields = <String>[]..add(fieldName);
+      }
       print(
           'SqfEntityFieldRelationshipBase constructor: table = null: fieldName=$fieldName');
     }
@@ -3027,6 +3041,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
   bool formIsRequired;
   List<String> relationshipFields;
   String manyToManyTableName;
+  SqfEntityTableBase manyToManyTable;
   DeleteRule deleteRule = DeleteRule.NO_ACTION;
   RelationType relationType;
   @override
@@ -3067,10 +3082,11 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
           return '$fieldName = o[\'$fieldName\'] != null ? o[\'$fieldName\'] == 1 : null;\n';
         default:
           {
-            if (dartType[dbType.index].toString() == 'int')
+            if (dartType[dbType.index].toString() == 'int') {
               return '$fieldName = int.tryParse(o[\'$fieldName\'].toString());\n';
-            else
+            } else {
               return '$fieldName = o[\'$fieldName\'] as ${dartType[dbType.index].toString()};\n';
+            }
           }
       }
     } catch (e) {
@@ -3104,11 +3120,10 @@ abstract class SqfEntityModelBase {
       //print('CHECK AND CONFIGURE MANY_TO_MANY RELATIONS');
       // CHECK AND CONFIGURE MANY_TO_MANY RELATIONS
       for (final field
-          in table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
-        if (field is SqfEntityFieldRelationshipBase &&
-            field.relationType == RelationType.MANY_TO_MANY) {
+          in table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
+        if (field.relationType == RelationType.MANY_TO_MANY) {
           print('found RelationShip ManyToMany');
-          final manyToManyTable = field.manyToManyTableName ??
+          final many2ManyTableName = field.manyToManyTableName ??
               '${table.tableName}${toCamelCase(field.table.tableName)}';
           table.relationType = table.relationType != RelationType.ONE_TO_ONE
               ? null
@@ -3117,7 +3132,7 @@ abstract class SqfEntityModelBase {
               field.table.relationType != RelationType.ONE_TO_ONE
                   ? null
                   : field.table.relationType;
-          field.manyToManyTableName = manyToManyTable;
+          field.manyToManyTableName = many2ManyTableName;
 
           if (databaseTables.length > 1) {
             if (field.table.fields
@@ -3130,33 +3145,47 @@ abstract class SqfEntityModelBase {
                   .singleWhere((t) => t.tableName == field.table.tableName)
                     ..fields.add(SqfEntityFieldRelationshipBase(
                         table, field.deleteRule,
-                        manyToManyTableName: manyToManyTable,
+                        manyToManyTableName: many2ManyTableName,
                         relationType: RelationType.MANY_TO_MANY));
               field.table.init();
             }
           }
           if (databaseTables
               .where((t) =>
-                  t.tableName.toLowerCase() == manyToManyTable.toLowerCase())
+                  t.tableName.toLowerCase() == many2ManyTableName.toLowerCase())
               .isEmpty) {
-            manyToManyTables.add(SqfEntityTableBase()
-              ..tableName = manyToManyTable
-              ..modelName = toModelName(manyToManyTable, manyToManyTable)
+            final many2manyTable = SqfEntityTableBase()
+              ..tableName = many2ManyTableName
+              ..modelName = toModelName(many2ManyTableName, many2ManyTableName)
               ..primaryKeyName = ''
               ..primaryKeyType = null
               ..relationType = RelationType.MANY_TO_MANY
               ..useSoftDeleting = table.useSoftDeleting
               ..fields = [
                 SqfEntityFieldRelationshipBase(table, field.deleteRule,
-                    fieldName: table.primaryKeyNames[0],
+                    fieldName: table.primaryKeyNames[0] ==
+                            field.table.primaryKeyNames[0]
+                        ? '${table.tableName}${toCamelCase(table.primaryKeyNames[0])}'
+                        : table.primaryKeyNames[0],
                     isPrimaryKeyField: true,
                     relationType: RelationType.ONE_TO_MANY),
                 SqfEntityFieldRelationshipBase(field.table, field.deleteRule,
-                    fieldName: field.table.primaryKeyNames[0],
+                    fieldName: table.primaryKeyNames[0] ==
+                            field.table.primaryKeyNames[0]
+                        ? '${field.table.tableName}${toCamelCase(field.table.primaryKeyNames[0])}'
+                        : field.table.primaryKeyNames[0],
                     isPrimaryKeyField: true,
                     relationType: RelationType.ONE_TO_MANY)
               ]
-              ..init());
+              ..init();
+            manyToManyTables.add(many2manyTable);
+            field.manyToManyTable = many2manyTable;
+            field.table.fields
+                .whereType<SqfEntityFieldRelationshipBase>()
+                .firstWhere((f) =>
+                    f.relationType == RelationType.MANY_TO_MANY &&
+                    f.table == table)
+                ?.manyToManyTable = many2manyTable;
           }
         } else if (field is SqfEntityFieldRelationshipBase &&
             field.relationType == RelationType.ONE_TO_ONE) {
@@ -3179,16 +3208,14 @@ List<TableCollectionBase> _getCollections(
   for (var _table in _m.databaseTables
       .where((t) => t.relationType != RelationType.MANY_TO_MANY)) {
     for (var field
-        in _table.fields.where((f) => f is SqfEntityFieldRelationshipBase)) {
-      if (field is SqfEntityFieldRelationshipBase) {
-        if (field.table == null && _table.tableName == table.tableName) {
-          collectionList.add(TableCollectionBase(table, field,
-              relationType: field.relationType));
-        } else if (field.table != null &&
-            field.table.tableName == table.tableName) {
-          collectionList.add(TableCollectionBase(_table, field,
-              relationType: field.relationType));
-        }
+        in _table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
+      if (field.table == null && _table.tableName == table.tableName) {
+        collectionList.add(TableCollectionBase(table, field,
+            relationType: field.relationType));
+      } else if (field.table != null &&
+          field.table.tableName == table.tableName) {
+        collectionList.add(TableCollectionBase(_table, field,
+            relationType: field.relationType));
       }
     }
   }

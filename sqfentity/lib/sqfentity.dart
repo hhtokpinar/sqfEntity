@@ -219,9 +219,9 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
     final result = await db.rawQuery(pSql, arguments);
     if (result.isNotEmpty)
-      return result.first.values.first;
+    {  return result.first.values.first;}
     else
-      return null;
+    {  return null;}
   }
 
   Future<List> toList(QueryParams params) async {
@@ -652,7 +652,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     final alterTableQuery = <String>[];
     for (final table in databaseTables) {
       final rfields = table.fields
-          .where((t) => t is SqfEntityFieldRelationshipBase)
+          .whereType<SqfEntityFieldRelationshipBase>()
           .toList();
       if (rfields.isNotEmpty) {
         final fKeys =
@@ -954,10 +954,10 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
             for (final field in table.fields) {
               if (field.fieldName.toLowerCase() ==
                   fKey['from'].toString().toLowerCase())
-                relationFields.add(SqfEntityFieldRelationshipBase(
+               { relationFields.add(SqfEntityFieldRelationshipBase(
                     parentTable, getDeleteRule(fKey['on_delete'].toString()))
                   ..fieldName = field.fieldName
-                  ..dbType = field.dbType);
+                  ..dbType = field.dbType);}
             }
           }
         }
@@ -1009,7 +1009,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   for (var table in tables) {
     if (table.fields.length == 2 &&
         table.fields
-                .where((element) => element is SqfEntityFieldRelationshipBase)
+                .whereType<SqfEntityFieldRelationshipBase>()
                 .length ==
             2) {
       final ref = table.fields[0] as SqfEntityFieldRelationshipBase;

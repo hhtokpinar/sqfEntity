@@ -23,6 +23,8 @@ linter:
   # http://dart-lang.github.io/linter/lints/
 
   # === error rules ===
+  - prefer_iterable_whereType
+  - curly_braces_in_flow_control_structures
   - avoid_empty_else
   - avoid_slow_async_io
   - cancel_subscriptions

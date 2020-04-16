@@ -17,10 +17,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     //final keepFieldNamesAsOriginal = getBoolValueAnnotation(annotation,'keepFieldNamesAsOriginal');
     //print('keepFieldNamesAsOriginal: $keepFieldNamesAsOriginal');
 
-
-
     final model = annotation.read('model').objectValue;
-    
 
 // When testing, you can uncomment the test line to make sure everything's working properly
     // return '// MODEL -> ${model.toString()}';
