@@ -582,7 +582,7 @@ class Album {
         if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Artist.plArtist'))) {
+                preloadFields.contains('plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -647,7 +647,7 @@ class Album {
         if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Artist.plArtist'))) {
+                preloadFields.contains('plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -1331,7 +1331,7 @@ class AlbumFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Artist.plArtist'))) {
+                preloadFields.contains('plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -3006,7 +3006,7 @@ class Customer {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -3071,7 +3071,7 @@ class Customer {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -3826,7 +3826,7 @@ class CustomerFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -4545,7 +4545,7 @@ class Employee {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -4621,7 +4621,7 @@ class Employee {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -5422,7 +5422,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Employee.plEmployee'))) {
+                preloadFields.contains('plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -7114,7 +7114,7 @@ class Invoice {
         if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Customer.plCustomer'))) {
+                preloadFields.contains('plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -7179,7 +7179,7 @@ class Invoice {
         if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Customer.plCustomer'))) {
+                preloadFields.contains('plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -7912,7 +7912,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Customer.plCustomer'))) {
+                preloadFields.contains('plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -8379,7 +8379,7 @@ class InvoiceLine {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -8388,7 +8388,7 @@ class InvoiceLine {
         if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Invoice.plInvoice'))) {
+                preloadFields.contains('plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -8437,7 +8437,7 @@ class InvoiceLine {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -8446,7 +8446,7 @@ class InvoiceLine {
         if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Invoice.plInvoice'))) {
+                preloadFields.contains('plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -9127,7 +9127,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -9136,7 +9136,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Invoice.plInvoice'))) {
+                preloadFields.contains('plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -11888,7 +11888,7 @@ class Track {
         if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('MediaType.plMediaType'))) {
+                preloadFields.contains('plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
@@ -11897,7 +11897,7 @@ class Track {
         if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Genre.plGenre'))) {
+                preloadFields.contains('plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
@@ -11906,7 +11906,7 @@ class Track {
         if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Album.plAlbum'))) {
+                preloadFields.contains('plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -11982,7 +11982,7 @@ class Track {
         if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('MediaType.plMediaType'))) {
+                preloadFields.contains('plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
@@ -11991,7 +11991,7 @@ class Track {
         if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Genre.plGenre'))) {
+                preloadFields.contains('plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
@@ -12000,7 +12000,7 @@ class Track {
         if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Album.plAlbum'))) {
+                preloadFields.contains('plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -12739,7 +12739,7 @@ class TrackFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('MediaType.plMediaType'))) {
+                preloadFields.contains('plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
@@ -12748,7 +12748,7 @@ class TrackFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Genre.plGenre'))) {
+                preloadFields.contains('plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
@@ -12757,7 +12757,7 @@ class TrackFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Album.plAlbum'))) {
+                preloadFields.contains('plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -13187,7 +13187,7 @@ class PlaylistTrack {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -13196,7 +13196,7 @@ class PlaylistTrack {
         if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Playlist.plPlaylist'))) {
+                preloadFields.contains('plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
@@ -13245,7 +13245,7 @@ class PlaylistTrack {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -13254,7 +13254,7 @@ class PlaylistTrack {
         if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Playlist.plPlaylist'))) {
+                preloadFields.contains('plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
@@ -13921,7 +13921,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Track.plTrack'))) {
+                preloadFields.contains('plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
@@ -13930,7 +13930,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('Playlist.plPlaylist'))) {
+                preloadFields.contains('plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(

@@ -463,7 +463,7 @@ class Product {
         if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('category.plCategory'))) {
+                preloadFields.contains('plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
@@ -512,7 +512,7 @@ class Product {
         if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('category.plCategory'))) {
+                preloadFields.contains('plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
@@ -1242,7 +1242,7 @@ class ProductFilterBuilder extends SearchCriteria {
         if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('category.plCategory'))) {
+                preloadFields.contains('plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(

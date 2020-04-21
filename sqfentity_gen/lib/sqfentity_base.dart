@@ -1433,7 +1433,7 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
         if (relations.contains(funcName)) continue;
       }
       retVal.writeln(
-          'if (!_loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && (preloadFields == null || loadParents || preloadFields.contains(\'${field.table.tableName}.pl$funcName\'))) {_loadedFields.add(\'${field.table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents, loadedFields: _loadedFields);}');
+          'if (!_loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && (preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${field.table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents, loadedFields: _loadedFields);}');
       relations.add(funcName);
     }
   }
