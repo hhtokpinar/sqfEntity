@@ -70,8 +70,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
       print('SQFENTITY_GEN.DART: recognizing Tables ($dbModelName)');
 
       for (var obj in objTables) {
-        print(
-            '-------------------------------------------------------ModelBuilder: ${getStringValue(obj, 'tableName')}');
+      //  print(   '-------------------------------------------------------ModelBuilder: ${getStringValue(obj, 'tableName')}');
         retVal.add(toSqfEntityTable(
           obj, dbModelName,
           //keepFieldNamesAsOriginal: keepFieldNamesAsOriginal
@@ -188,8 +187,7 @@ SqfEntityTableBase toSqfEntityTable(DartObject obj, String dbModelName) {
 
   SqfEntityTables.add(newTable);
 
-  print(
-      'SqfEntityModelBuilder: $dbModelName/$_tableName added to SqfEntityTables');
+  //print('SqfEntityModelBuilder: $dbModelName/$_tableName added to SqfEntityTables');
   return newTable;
 }
 
@@ -241,8 +239,7 @@ List<SqfEntityFieldType> toFields(
   String dbModelName, //bool keepFieldNamesAsOriginal
 ) {
   final sqfEntityFieldList = <SqfEntityFieldType>[];
-  print(
-      '-------------------------------------------------------RECOGNIZING FIELDS:');
+  //print('-------------------------------------------------------RECOGNIZING FIELDS:');
   for (var obj in objFields) {
     sqfEntityFieldList.add(toField(
       obj, dbModelName,
@@ -594,7 +591,7 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
           //  ..printToDebug('1: ${table.tableName}')
           ..writeln(SqfEntityObjectField(table).toString())
           //  ..printToDebug('2: ${table.tableName}')
-          ..writeln(SqfEntityObjectFilterBuilder(table).toString())
+          ..writeln(SqfEntityObjectFilterBuilder(table, _m.formTables.contains(table)).toString())
           //  ..printToDebug('3: ${table.tableName}')
           ..writeln(SqfEntityFieldBuilder(table).toString())
           //  ..printToDebug('4: ${table.tableName}')

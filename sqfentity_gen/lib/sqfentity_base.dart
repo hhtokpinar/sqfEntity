@@ -137,7 +137,6 @@ class SqfEntityFieldVirtual implements SqfEntityField {
   SqfEntitySequence get sequencedBy => null;
 
   @override
-  // TODO: implement isPrimaryKeyField
   bool get isPrimaryKeyField => null;
 }
 
@@ -407,7 +406,7 @@ class SqfEntityControllerBuilder {
               //formListSubTitleField: '${getformListSubTitleField(table)}',
               filterExpression: '$filterExpression',filterParameter: id,);''');
           subMenuCodeList.writeln('''
-              menu['$objName'] = '${table.modelName} To ${collection.childTable.modelName}';''');
+              menu['$objName'] = '${table.modelName} To ${collection.childTable.modelName}(${collection.childTableField.fieldName})';''');
         }
       }
       return retVal.toString();
@@ -510,8 +509,8 @@ class SqfEntityObjectBuilder {
     ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues();}
     ${_table.modelName}.withFields($_createConstructure){ _setDefaultValues();}
     ${_table.modelName}.withId($_createConstructureWithId){ _setDefaultValues();}
-    ${_table.modelName}.fromMap(Map<String, dynamic> o) {
-      _setDefaultValues();
+    ${_table.modelName}.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
       $_toFromMapString
       }
     // FIELDS (${_table.modelName})
@@ -580,20 +579,12 @@ class SqfEntityObjectBuilder {
       return objList;
     }
   
-    /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<${_table.modelName}>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await ${_table.modelName}.fromMapList(data);
-    } 
-    */
-
-    static Future<List<${_table.modelName}>> fromMapList(List<dynamic> data,{bool preload=false, List<String> preloadFields, bool loadParents=false, List<String> loadedFields}) async{
+    static Future<List<${_table.modelName}>> fromMapList(List<dynamic> data,{bool preload=false, List<String> preloadFields, bool loadParents=false, List<String> loadedFields, bool setDefaultValues=true}) async{
       final List<${_table.modelName}> objList = <${_table.modelName}>[];
       loadedFields = loadedFields ?? [];
       for (final map in data) {
-        final obj = ${_table.modelName}.fromMap(map as Map<String, dynamic>);
-        final List<String> _loadedFields = List<String>.from(loadedFields);
+        final obj = ${_table.modelName}.fromMap(map as Map<String, dynamic>, setDefaultValues: setDefaultValues);
+        ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = List<String>.from(loadedFields);' : ''}
         $_toOnetoOneCollections
         $_toOnetoManyCollections
         $_createObjectRelationsPreLoad
@@ -616,7 +607,7 @@ class SqfEntityObjectBuilder {
       final data = await _mn${_table.modelName}.getById([$_getByIdParameters]);
       if (data.length != 0) 
           {obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-          final List<String> _loadedFields = loadedFields ?? [];
+          ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = loadedFields ?? [];' : ''}
             $_toOnetoOneCollections
             $_toOnetoManyCollections
             $_createObjectRelationsPreLoad
@@ -663,7 +654,6 @@ class SqfEntityObjectBuilder {
       $_deleteMethodSingle
     }
       $_recoverMethodSingle
-    //private ${_table.modelName}FilterBuilder _Select;
     ${_table.modelName}FilterBuilder select(
         {List<String> columnsToSelect, bool getIsDeleted}) {
       return ${_table.modelName}FilterBuilder(this)
@@ -715,17 +705,28 @@ class SqfEntityObjectBuilder {
           '${_table.primaryKeyType == PrimaryKeyType.text ? 'String' : 'int'} ${_table.primaryKeyNames[0]};');
     }
     for (final field in _table.fields) {
-      if (field is SqfEntityFieldRelationshipBase &&
-          field.relationType == RelationType.MANY_TO_MANY &&
-          _table.relationType != RelationType.MANY_TO_MANY) continue;
-      //     field.table.primaryKeyNames.isNotEmpty) {
-      //   for (int i = 0; i < field.table.primaryKeyNames.length; i++) {
-      //     _retVal.writeln(
-      //         '${field.table.primaryKeyTypes[i]} ${field.table.primaryKeyNames[i]};');
-      //   }
-      // } else {
-      //   _retVal.writeln(field.toPropertiesString());
-      // }
+      if (field is SqfEntityFieldRelationshipBase) {
+        if (field.relationType == RelationType.MANY_TO_MANY &&
+            _table.relationType != RelationType.MANY_TO_MANY) {
+          continue;
+        }
+        // if (_table.relationType != RelationType.MANY_TO_MANY) {
+        //   for (int i = 1; i < field.relationshipFields.length; i++) {
+        //     _retVal
+        //       ..write(field.relationshipFields[i].toPropertiesString())
+        //       ..writeln(
+        //           '// came from ${field.table.tableName}.relationshipFields');
+        //   }
+        // }
+        //     field.table.primaryKeyNames.isNotEmpty) {
+        //   for (int i = 0; i < field.table.primaryKeyNames.length; i++) {
+        //     _retVal.writeln(
+        //         '${field.table.primaryKeyTypes[i]} ${field.table.primaryKeyNames[i]};');
+        //   }
+        // } else {
+        //   _retVal.writeln(field.toPropertiesString());
+        // }
+      }
       _retVal.writeln(field.toPropertiesString());
     }
     if (_table.useSoftDeleting != null && _table.useSoftDeleting) {
@@ -942,7 +943,7 @@ class SqfEntityObjectBuilder {
     final relations = <String>[];
     for (final field
         in _table.fields.whereType<SqfEntityFieldRelationshipBase>()) {
-      print('- Recognizing RelationShip named ${field.fieldName}');
+     // print('- Recognizing RelationShip named ${field.fieldName}');
       if (field.relationType == RelationType.ONE_TO_MANY) {
         // final objName = field.relationshipName == null
         //     ? _table.modelName.toLowerCase()
@@ -956,8 +957,7 @@ class SqfEntityObjectBuilder {
           if (relations.contains(funcName)) continue;
         }
         if (field.relationshipFields == null) {
-          print(
-              'field.relationshipFields = null funcName:$funcName, field.fieldName: ${field.fieldName}');
+          print('field.relationshipFields = null funcName:$funcName, field.fieldName: ${field.fieldName}');
         }
         //print('funcName: $funcName');
         retVal +=
@@ -966,7 +966,7 @@ class SqfEntityObjectBuilder {
         $modelName pl$funcName;
         /// get $modelName By ${toCamelCase(field.fieldName)}
         Future<$modelName> get$funcName({bool loadParents = false, List<String> loadedFields}) async{
-            final _obj = await $modelName().getById(${field.relationshipFields.join(',')}, loadParents: loadParents, loadedFields: loadedFields);
+            final _obj = await $modelName().getById(${field.relationshipFields.map((m) => m.fieldName).join(',')}, loadParents: loadParents, loadedFields: loadedFields);
             return _obj;
           }
         ''';
@@ -993,7 +993,7 @@ class SqfEntityObjectBuilder {
   //    : '';
   String __createObjectCollections() {
     if (_table.collections == null) return '';
-    print('__createObjectCollections for ${_table.tableName}');
+    // print('__createObjectCollections for ${_table.tableName}');
     final retVal = StringBuffer();
     final collections = <String>[];
     for (var tableCollection in _table.collections) {
@@ -1020,14 +1020,24 @@ class SqfEntityObjectBuilder {
               ''');
         continue;
       }
-      String childTableFieldTablePrimaryKeyName =
-          tableCollection.childTableField.table == null
-              ? _table.primaryKeyNames[0]
-              : tableCollection.childTableField.table.primaryKeyNames[0];
+      final StringBuffer filterExpression =
+          buildFilterExpression(tableCollection);
+      // final String childTableFieldTablePrimaryKeyName =
+      //     tableCollection.childTableField.table == null
+      //         ? _table.primaryKeyNames[0]
+      //         : tableCollection.childTableField.table.primaryKeyNames[0];
 
       if (tableCollection.relationType == RelationType.MANY_TO_MANY) {
-final String childTablePrimaryKeyName = tableCollection.childTableField.manyToManyTable.fields.whereType<SqfEntityFieldRelationshipBase>().firstWhere((f) => f.table==tableCollection.childTable).fieldName;
-final String childTableFieldTablePrimaryKeyName = tableCollection.childTableField.manyToManyTable.fields.whereType<SqfEntityFieldRelationshipBase>().firstWhere((f) => f.table==tableCollection.childTableField.table).fieldName;
+        final String childTablePrimaryKeyName = tableCollection
+            .childTableField.manyToManyTable.fields
+            .whereType<SqfEntityFieldRelationshipBase>()
+            .firstWhere((f) => f.table == tableCollection.childTable)
+            .fieldName;
+        final String childTableFieldTablePrimaryKeyName = tableCollection
+            .childTableField.manyToManyTable.fields
+            .whereType<SqfEntityFieldRelationshipBase>()
+            .firstWhere((f) => f.table == tableCollection.childTableField.table)
+            .fieldName;
 
         retVal.writeln(
             '''///(RelationType.MANY_TO_MANY) (${tableCollection.childTableField.manyToManyTable.tableName}) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
@@ -1044,21 +1054,21 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
           }''');
       } else if (_table.tableName == tableCollection.childTable.tableName) {
         retVal.writeln('''
-            /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+            /// (Relationship to itself) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
             /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['pl$funcName', 'plField2'..]) or so on..
             List<${_table.modelName}> pl$funcName;
-            /// get ${_table.modelName}(s) filtered by ${_table.primaryKeyNames[0]}=${tableCollection.childTableField.fieldName}
+            /// get ${_table.modelName}(s) filtered by ${_table.primaryKeyNames.join(',')}=${tableCollection.childTableField.relationshipFields.map((e) => e.fieldName).join(',')}
               ${_table.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){
-           return ${_table.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted).${_table.primaryKeyNames[0]}.equals(${tableCollection.childTableField.fieldName}).and;
+           return ${_table.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted)${filterExpression.toString()};
           }''');
       } else {
         retVal.writeln(
             '''/// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
             /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['pl$funcName', 'plField2'..]) or so on..
             List<${tableCollection.childTable.modelName}> pl$funcName;
-            /// get ${tableCollection.childTable.modelName}(s) filtered by ${tableCollection.childTableField.fieldName}=$childTableFieldTablePrimaryKeyName
+            /// get ${tableCollection.childTable.modelName}(s) filtered by ${tableCollection.childTableField.table.primaryKeyNames.join(',')}=${tableCollection.childTableField.relationshipFields.map((e) => e.fieldName).join(',')}
               ${tableCollection.childTable.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){
-           return ${tableCollection.childTable.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted).${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).and;
+           return ${tableCollection.childTable.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted)${filterExpression.toString()};
           }''');
       }
       collections.add(funcName);
@@ -1069,9 +1079,30 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
         : '';
   }
 
+  StringBuffer buildFilterExpression(TableCollectionBase tableCollection) {
+    final filterExpression = StringBuffer();
+    if (tableCollection.childTableField.table == null ||
+        tableCollection.childTableField.table == _table) {
+      for (int i = 0;
+          i < tableCollection.childTableField.relationshipFields.length;
+          i++) {
+        filterExpression.write(
+            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${_table.primaryKeyNames[i]}).and');
+      }
+    } else {
+      for (int i = 0;
+          i < tableCollection.childTableField.relationshipFields.length;
+          i++) {
+        filterExpression.write(
+            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
+      }
+    }
+    return filterExpression;
+  }
+
   String __createObjectCollectionsToMap() {
     if (_table.collections == null) return '';
-    print('__createObjectCollectionsToMap for ${_table.tableName}');
+    //print('__createObjectCollectionsToMap for ${_table.tableName}');
     final retVal = StringBuffer();
     final collections = <String>[];
 
@@ -1105,7 +1136,7 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
   }
 
   String __createObjectRelationsFromMap() {
-    print('__createObjectRelationsFromMap for ${_table.tableName}');
+    //print('__createObjectRelationsFromMap for ${_table.tableName}');
     final retVal = StringBuffer();
     final relations = <String>[];
     for (final field
@@ -1162,26 +1193,27 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
           tableCollection.childTableField.table == null
               ? _table.primaryKeyNames[0]
               : tableCollection.childTableField.table.primaryKeyNames[0];
-
+      final StringBuffer filterExpression =
+          buildFilterExpression(tableCollection);
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).update({"${tableCollection.childTableField.fieldName}": null});}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({"${tableCollection.childTableField.fieldName}": null});}
       if (!result.success) {return result;}
       ''';
           break;
         case DeleteRule.NO_ACTION:
           retVal += '''
-      if (await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).toCount()>0) {return BoolResult(success: false,errorMessage: 'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (${tableCollection.childTable.modelName}.${tableCollection.childTableField.fieldName})');}''';
+      if (await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.toCount()>0) {return BoolResult(success: false,errorMessage: 'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (${tableCollection.childTable.modelName}.${tableCollection.childTableField.fieldName})');}''';
           break;
         case DeleteRule.CASCADE:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).delete(hardDelete);}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.delete(hardDelete);}
       if (!result.success) {return result;}''';
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).update({'${tableCollection.childTableField.fieldName}': ${tableCollection.childTableField.defaultValue}});}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({'${tableCollection.childTableField.fieldName}': ${tableCollection.childTableField.defaultValue}});}
       if (!result.success) {return result;}''';
           break;
         default:
@@ -1207,6 +1239,8 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
     final varResult = 'var result= BoolResult();';
 
     for (var tableCollection in _table.collections) {
+      final StringBuffer filterExpression =
+          buildFilterExpression(tableCollection);
       final childTableFieldTablePrimaryKeyName =
           tableCollection.childTableField.table == null
               ? _table.primaryKeyNames[0]
@@ -1218,7 +1252,7 @@ final String childTableFieldTablePrimaryKeyName = tableCollection.childTableFiel
         case DeleteRule.CASCADE:
           if (tableCollection.childTable.useSoftDeleting) {
             retVal += '''
-      if(recoverChilds) {result = await ${tableCollection.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName).update({'isDeleted': 0});}
+      if(recoverChilds) {result = await ${tableCollection.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({'isDeleted': 0});}
       if (!result.success && recoverChilds) {return result;}''';
           }
           break;
@@ -1399,7 +1433,7 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
         if (relations.contains(funcName)) continue;
       }
       retVal.writeln(
-          'if (!loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && (preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${field.table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents, loadedFields: _loadedFields);}');
+          'if (!_loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && (preloadFields == null || loadParents || preloadFields.contains(\'${field.table.tableName}.pl$funcName\'))) {_loadedFields.add(\'${field.table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents, loadedFields: _loadedFields);}');
       relations.add(funcName);
     }
   }
@@ -1494,7 +1528,7 @@ String __toOnetoManyCollections(SqfEntityTableBase _table) {
       continue;
     }
     retVal.writeln(
-        'if (!loadedFields.contains(\'${_table.tableName}.pl$funcName\') && (preloadFields == null || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${_table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false, loadedFields:_loadedFields);}');
+        'if (!_loadedFields.contains(\'${_table.tableName}.pl$funcName\') && (preloadFields == null || preloadFields.contains(\'${_table.tableName}.pl$funcName\'))) {_loadedFields.add(\'${_table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false, loadedFields:_loadedFields);}');
 
     collections.add(funcName);
   }
@@ -1813,10 +1847,9 @@ class ${_table.modelName}Field extends SearchCriteria {
 }
 
 class SqfEntityObjectFilterBuilder {
-  SqfEntityObjectFilterBuilder(SqfEntityTableBase table) {
-    _table = table;
-  }
+  SqfEntityObjectFilterBuilder(this._table, this._isFormTable);
   SqfEntityTableBase _table;
+  bool _isFormTable;
   String get _createObjectFieldProperty => __createObjectFieldProperty();
   String get _recoverMethodList => __recoverMethodList();
   String get _deleteMethodList => __deleteMethodList();
@@ -2079,7 +2112,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     final data = await objFuture;
     ${_table.modelName} obj;
     if (data.isNotEmpty) { obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-    final List<String> _loadedFields = loadedFields ?? [];
+    ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = loadedFields ?? [];' : ''}
     $_toOnetoOneCollections
     $_toOnetoManyCollections
     $_createObjectRelationsPreLoad
@@ -2107,7 +2140,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   /// <returns>List<${_table.modelName}>
   Future<List<${_table.modelName}>> toList({bool preload=false, List<String> preloadFields, bool loadParents=false, List<String> loadedFields}) async {
     final data = await toMapList();
-    final List<${_table.modelName}> ${toPluralLowerName(_table._modelLowerCase)}Data = await ${_table.modelName}.fromMapList(data,preload: preload, preloadFields: preloadFields, loadParents: loadParents, loadedFields:loadedFields);
+    final List<${_table.modelName}> ${toPluralLowerName(_table._modelLowerCase)}Data = await ${_table.modelName}.fromMapList(data,preload: preload, preloadFields: preloadFields, loadParents: loadParents, loadedFields:loadedFields, setDefaultValues: qparams.selectColumns == null);
     return ${toPluralLowerName(_table._modelLowerCase)}Data;
   }
 
@@ -2138,8 +2171,8 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     _buildParameters();
     return await _obj._mn${_table.modelName}.toList(qparams);
   } 
-
-  /// Returns List<DropdownMenuItem<${_table.modelName}>>
+ 
+  ${_isFormTable ? '''/// Returns List<DropdownMenuItem<${_table.modelName}>>
   Future<List<DropdownMenuItem<${_table.modelName}>>> toDropDownMenu(
       String displayTextColumn,
       [VoidCallback Function(List<DropdownMenuItem<${_table.modelName}>> o) dropDownMenu]) async {
@@ -2166,8 +2199,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     }
     return items;
   }
-
-  /// Returns List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>>
+    /// Returns List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>>
   Future<List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>>> toDropDownMenuInt(
       String displayTextColumn,
 	  [VoidCallback Function(List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>> o) dropDownMenu]) async {
@@ -2195,9 +2227,17 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     }
     return items;
   }
-
-
-/// This method returns Primary Key List<${_table.primaryKeyTypes[0]}>. 
+  ''' : ''}
+  ${_table.primaryKeyNames.length > 1 ? '''/// This method returns Primary Key List<${_table.primaryKeyNames.join(',')}>.
+  /// <returns>List<${_table.primaryKeyNames.join(',')}>
+  Future<List<${_table.modelName}>> toListPrimaryKey(
+      [bool buildParameters = true]) async {
+    if (buildParameters) _buildParameters();
+    qparams.selectColumns = ['${_table.primaryKeyNames.join('\',\'')}'];
+    final ${_table._modelLowerCase}Future =
+        await _obj._mn${_table.modelName}.toList(qparams);
+    return await ${_table.modelName}.fromMapList(${_table._modelLowerCase}Future);
+  }''' : '''/// This method returns Primary Key List<${_table.primaryKeyTypes[0]}>. 
 /// <returns>List<${_table.primaryKeyTypes[0]}>
 Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParameters=true]) async {
   if(buildParameters) _buildParameters();
@@ -2211,8 +2251,8 @@ Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParameter
       ${_table.primaryKeyNames[0]}Data.add(${_table.primaryKeyNames[0]}Future[i]['${_table.primaryKeyNames[0]}'] as ${_table.primaryKeyTypes[0]});
     }
     return ${_table.primaryKeyNames[0]}Data;
+}'''}
 
-}
 
 
 /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg.. 
@@ -2292,98 +2332,182 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
     if (_table.useSoftDeleting == null || !_table.useSoftDeleting) {
       return '';
     }
-    String retVal = '';
+    final StringBuffer retVal = StringBuffer();
 
     for (var tableCollection in _table.collections) {
-      final idList =
-          '${tocamelCase(tableCollection.childTable.tableName)}By${tableCollection.childTableField.fieldName}idList'
-              .replaceAll('_', '');
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
-          // IN THIS CASE YOU CAN NOT RELATE CHILD ROWS TO PREVIOUS PARENT ROW
+          // IN THIS CASE YOU CAN NOT RELATE SUB ROWS TO OLD PARENT ROW
           break;
         case DeleteRule.CASCADE:
           if (tableCollection.childTable.useSoftDeleting) {
-            retVal += '''
-      final $idList = await toListPrimaryKey(false);
-      await ${tableCollection.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and.${tableCollection.childTableField.fieldName}.inValues($idList).update({'isDeleted': 0}); 
-    ''';
+            retVal
+              ..writeln(
+                  '// Recover sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}')
+              ..writeln(_buildWhereStrForList(tableCollection))
+              ..writeln('.update({\'isDeleted\': 0}); ')
+              ..writeln(
+                  'if (!res${tableCollection.childTable.modelName}.success) return res${tableCollection.childTable.modelName};');
           }
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
-          // IN THIS CASE YOU CAN NOT RELATE CHILD ROWS TO PREVIOUS PARENT ROW
+          // IN THIS CASE YOU CAN NOT RELATE SUB ROWS TO OLD PARENT ROW
           break;
         default:
       }
     }
-
-    retVal += '''
+    retVal.writeln('''
             return _obj._mn${_table.modelName}.updateBatch(qparams,{'isDeleted':0});
-      ''';
-
+      ''');
     return '''
+    /// Recover List<${_table.modelName}> bulk by query 
   Future<BoolResult> recover() async {
   _getIsDeleted = true;
   _buildParameters();
   print('SQFENTITIY: recover ${_table.modelName} bulk invoked');
-  $retVal 
+  ${retVal.toString()} 
   }''';
   }
 
   String __deleteMethodList() {
     if (_table.collections == null) return '';
-    String retVal = '';
-    //Track().select().PlaylistPlaylistId.inValues
+    final StringBuffer retVal = StringBuffer();
     for (var tableCollection in _table.collections) {
-      // if (tableCollection.childTable._hasManyToMany == true) {
       if (tableCollection.childTableField.relationType ==
           RelationType.MANY_TO_MANY) {
         continue;
       }
-      final idList =
-          '${tocamelCase(tableCollection.childTable.tableName)}By${tableCollection.childTableField.fieldName}idList'
-              .replaceAll('_', '');
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           // IN THIS CASE YOU CAN NOT RECOVER CHILD ROWS
+          retVal
+            ..writeln(
+                '// UPDATE sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}')
+            ..writeln(_buildWhereStrForList(tableCollection))
+            ..writeln(
+                '.update({${_buildUpdateParamForList(tableCollection, DeleteRule.SET_NULL)}}); ')
+            ..writeln(
+                'if (!res${tableCollection.childTable.modelName}.success) return res${tableCollection.childTable.modelName};');
           break;
         case DeleteRule.NO_ACTION:
-          retVal += '''
-    final $idList = await toListPrimaryKey(false);
-    if (await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.inValues($idList).toCount()>0) {
+          retVal.writeln(
+              '''// Check sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}
+    ${_buildWhereStrForList(tableCollection)}.toCount();
+    if (res${tableCollection.childTable.modelName}>0) {
     return BoolResult(
     success: false,
     errorMessage: 
           'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (${tableCollection.childTable.modelName}.${tableCollection.childTableField.fieldName})');
-    }''';
+    }''');
 
           break;
         case DeleteRule.CASCADE:
-          if (tableCollection.childTable.useSoftDeleting) {
-            retVal += '''
-    final $idList = await toListPrimaryKey(false);
-    await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.inValues($idList).delete(hardDelete);
-           ''';
-          }
+          retVal
+            ..writeln(
+                '// Delete sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}')
+            ..writeln(_buildWhereStrForList(tableCollection))
+            ..writeln('.delete(hardDelete);')
+            ..writeln(
+                'if (!res${tableCollection.childTable.modelName}.success) return res${tableCollection.childTable.modelName};');
+
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
           //IN THIS CASE YOU CAN NOT RECOVER CHILD ROWS
+          retVal
+            ..writeln(
+                '// UPDATE sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}')
+            ..writeln(_buildWhereStrForList(tableCollection))
+            ..writeln(
+                '.update({${_buildUpdateParamForList(tableCollection, DeleteRule.SET_DEFAULT_VALUE)}}); ')
+            ..writeln(
+                'if (!res${tableCollection.childTable.modelName}.success) return res${tableCollection.childTable.modelName};');
+
           break;
         default:
       }
     }
 
-    return retVal;
+    return retVal.toString();
+  }
+
+  String _buildWhereStrForList(TableCollectionBase tableCollection) {
+    final idList =
+        '${tocamelCase(tableCollection.childTable.tableName)}By${tableCollection.childTableField.fieldName}idList'
+            .replaceAll('_', '');
+    String _retVal = 'final $idList = await toListPrimaryKey(false);';
+    if (tableCollection.childTableField.table.primaryKeyNames.length > 1) {
+      String queryIn =
+          '${tableCollection.childTableField.relationshipFields[0].fieldName}=\${e.${tableCollection.childTableField.table.primaryKeyNames[0]}}';
+      for (int i = 1;
+          i < tableCollection.childTableField.table.primaryKeyNames.length;
+          i++) {
+        queryIn +=
+            ' AND ${tableCollection.childTableField.relationshipFields[i].fieldName}=\${e.${tableCollection.childTableField.table.primaryKeyNames[i]}}';
+      }
+      _retVal += '''
+      final whereStr = $idList.map((e) => '($queryIn)').join(' OR ');
+      final res${tableCollection.childTable.modelName} = await ${tableCollection.childTable.modelName}()
+        .select()
+        .where(whereStr)''';
+    } else {
+      _retVal += '''
+       final res${tableCollection.childTable.modelName} = await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.inValues($idList)
+     ''';
+    }
+    return _retVal;
+  }
+}
+
+String _buildUpdateParamForList(
+    TableCollectionBase tableCollection, DeleteRule rule) {
+  final StringBuffer _retVal = StringBuffer()
+    ..write(
+        '\'${tableCollection.childTableField.relationshipFields[0].fieldName}\':${getUpdateValue(tableCollection.childTableField.relationshipFields[0].defaultValue, rule)}');
+  for (int i = 1;
+      i < tableCollection.childTableField.table.primaryKeyNames.length;
+      i++) {
+    _retVal
+      ..write(',')
+      ..write(
+          '\'${tableCollection.childTableField.relationshipFields[i].fieldName}\':${getUpdateValue(tableCollection.childTableField.relationshipFields[i].defaultValue, rule)}');
+  }
+  return _retVal.toString();
+}
+
+String getUpdateValue(dynamic val, DeleteRule rule) {
+  switch (rule) {
+    case DeleteRule.SET_DEFAULT_VALUE:
+      return getValueWithQuotes(val);
+      break;
+    case DeleteRule.SET_NULL:
+      return 'null';
+      break;
+    default:
+      return 'null';
   }
 }
 
 // END SQFENTITY BUILDERS
+String getValueWithQuotes(dynamic val) {
+  try {
+    if (val is String) {
+      return '\'$val\'';
+    } else {
+      return val.toString();
+    }
+  } catch (e) {
+    print('ERROR in getValueWithQuotes method: ${e.toString()}');
+    throw Exception(e);
+  }
+}
 
 // BEGIN ENUMS, CLASSES AND ABSTRACTS
 class TableCollectionBase {
-  TableCollectionBase(this.childTable, this.childTableField,
-      {this.relationType, //this.many2ManyTable
-      });
+  TableCollectionBase(
+    this.childTable,
+    this.childTableField, {
+    this.relationType, //this.many2ManyTable
+  });
   SqfEntityTableBase childTable;
   SqfEntityFieldRelationshipBase childTableField;
   RelationType relationType;
@@ -2626,7 +2750,8 @@ class SqfEntityTableBase {
   String formListSubTitleField;
   RelationType relationType;
   void init() {
-    print('init() -> modelname: $modelName, tableName:$tableName');
+    print(
+        'init() -> ${modelName == null ? '' : 'modelname: $modelName,'}tableName:$tableName');
 
     modelName = toModelName(modelName, tableName);
     if (relationType != RelationType.MANY_TO_MANY) {
@@ -2642,6 +2767,7 @@ class SqfEntityTableBase {
             .add(primaryKeyType == PrimaryKeyType.text ? 'String' : 'int');
       }
     }
+    final List<SqfEntityFieldType> _addRelatedFields = <SqfEntityFieldType>[];
     for (final field in fields) {
       field
         ..table = field.table ?? this
@@ -2676,6 +2802,32 @@ class SqfEntityTableBase {
                   ? field.fieldName
                   : '_${field.fieldName}';
         }
+        field.primaryKeyIndex = 0;
+        field.relationshipFields.add(field);
+        int _primaryKeyIndex = 0;
+
+        field.table.fields
+            .where((f) =>
+                f.isPrimaryKeyField == true && f.fieldName != field.fieldName)
+            .forEach((f) {
+          _primaryKeyIndex++;
+          final newField = SqfEntityFieldBase(
+              //'${tocamelCase(field.table.tableName)}${toCamelCase(f.fieldName)}',
+              tableName == field.table.tableName
+                  ? f.fieldName
+                  : '${tocamelCase(field.table.tableName)}${toCamelCase(f.fieldName)}',
+              f.dbType,
+              defaultValue: f.defaultValue,
+              primaryKeyIndex: _primaryKeyIndex,
+              minValue: f.minValue,
+              maxValue: f.maxValue);
+          field.relationshipFields.add(newField);
+          if (fields
+              .where((fi) => fi.fieldName == newField.fieldName)
+              .isEmpty) {
+            _addRelatedFields.add(newField);
+          }
+        });
       }
       if (field.isPrimaryKeyField != null && field.isPrimaryKeyField) {
         if (!primaryKeyNames.contains(field.fieldName)) {
@@ -2688,6 +2840,9 @@ class SqfEntityTableBase {
           field.dbType == DbType.datetimeUtc) {
         field.minValue = field.minValue ?? '1900-01-01';
       }
+    }
+    for (final newField in _addRelatedFields) {
+      fields.add(newField);
     }
     // print(    '>>>>>>>>>>>>>>>>>>>>>>>>>>>> SqfEntityTableBase of [$tableName](${primaryKeyNames.join(',')}) init() successfully');
   }
@@ -2793,16 +2948,15 @@ class SqfEntitySequenceBase {
 }
 
 abstract class SqfEntityFieldType {
-  SqfEntityFieldType(
-    this.fieldName,
-    this.dbType, {
-    this.defaultValue,
-    this.minValue,
-    this.maxValue,
-    this.table,
-    this.sequencedBy,
-    this.formIsRequired,
-  });
+  SqfEntityFieldType(this.fieldName, this.dbType,
+      {this.defaultValue,
+      this.minValue,
+      this.maxValue,
+      this.table,
+      this.sequencedBy,
+      this.formIsRequired,
+      this.primaryKeyIndex,
+      this.isPrimaryKeyField});
   String fieldName;
   DbType dbType;
   dynamic defaultValue;
@@ -2812,6 +2966,7 @@ abstract class SqfEntityFieldType {
   SqfEntitySequenceBase sequencedBy;
   bool formIsRequired;
   bool isPrimaryKeyField;
+  int primaryKeyIndex;
   String toSqLiteFieldString();
 
   String toPropertiesString();
@@ -2832,7 +2987,8 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       this.table,
       this.sequencedBy,
       this.formIsRequired,
-      this.isPrimaryKeyField});
+      this.isPrimaryKeyField,
+      this.primaryKeyIndex});
   @override
   String fieldName;
   @override
@@ -2917,6 +3073,9 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
 
   @override
   bool isPrimaryKeyField;
+
+  @override
+  int primaryKeyIndex;
 }
 
 class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
@@ -2973,6 +3132,9 @@ class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
 
   @override
   bool isPrimaryKeyField;
+
+  @override
+  int primaryKeyIndex;
 }
 
 class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
@@ -2987,7 +3149,8 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.relationshipName,
       this.relationType,
       this.manyToManyTableName,
-      this.manyToManyTable}) {
+      this.manyToManyTable,
+      this.primaryKeyIndex}) {
     init();
   }
   void init() {
@@ -2998,24 +3161,10 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
           : DbType.integer;
       table.relationType =
           relationType == RelationType.ONE_TO_MANY ? relationType : null;
-      fieldName = fieldName ??
-          table.tableName +
-              table.primaryKeyNames[0].substring(0, 1).toUpperCase() +
-              table.primaryKeyNames[0].substring(1);
-      relationshipFields = <String>[]..add(fieldName);
-      // print('0- relationshipFields added $fieldName on ${table.tableName}');
-      for (int i = 1; i < table.primaryKeyNames.length; i++) {
-        relationshipFields.add(table.tableName +
-            table.primaryKeyNames[0].substring(0, 1).toUpperCase() +
-            table.primaryKeyNames[0].substring(1));
-        //      print('$i- relationshipFields added ${relationshipFields.last} on ${table.tableName}');
-      }
+      fieldName =
+          fieldName ?? table.tableName + toCamelCase(table.primaryKeyNames[0]);
     } else {
-      if (fieldName != null && fieldName.isNotEmpty) {
-        relationshipFields = <String>[]..add(fieldName);
-      }
-      print(
-          'SqfEntityFieldRelationshipBase constructor: table = null: fieldName=$fieldName');
+      // print('SqfEntityFieldRelationshipBase constructor: table = null: fieldName=$fieldName');
     }
   }
 
@@ -3039,11 +3188,12 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
   SqfEntitySequenceBase sequencedBy;
   @override
   bool formIsRequired;
-  List<String> relationshipFields;
+  final List<SqfEntityFieldType> relationshipFields = <SqfEntityFieldType>[];
   String manyToManyTableName;
   SqfEntityTableBase manyToManyTable;
   DeleteRule deleteRule = DeleteRule.NO_ACTION;
   RelationType relationType;
+
   @override
   bool isPrimaryKeyField;
   @override
@@ -3095,6 +3245,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
           'ERROR when calling toFromMapString: fieldName:$fieldName dbType=${dbType.toString()}');
     }
   }
+
+  @override
+  int primaryKeyIndex;
 }
 
 abstract class SqfEntityModelBase {
@@ -3108,7 +3261,7 @@ abstract class SqfEntityModelBase {
   List<SqfEntitySequenceBase> sequences;
   void init() {
     final manyToManyTables = <SqfEntityTableBase>[];
-    print('ModelBase init() begin');
+    //print('ModelBase init() begin');
     for (final table in databaseTables) {
       if (table.dbModel == null) {
         if (instanceName == null) {

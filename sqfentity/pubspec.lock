@@ -119,7 +119,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.14.11"
+    version: "1.14.12"
   convert:
     dependency: transitive
     description:
@@ -409,7 +409,14 @@ packages:
       name: sqfentity_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2+5"
+    version: "1.3.4"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.0"
   sqflite_common:
     dependency: transitive
     description:
@@ -417,13 +424,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0+1"
-  sqflite_sqlcipher:
-    dependency: "direct main"
-    description:
-      name: sqflite_sqlcipher
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+6"
   stack_trace:
     dependency: transitive
     description:

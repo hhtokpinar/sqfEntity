@@ -51,6 +51,7 @@ const tableProduct = SqfEntityTable(
           parentTable: tableCategory,
           deleteRule: DeleteRule.CASCADE,
           defaultValue: 0,
+          
           formDropDownTextField:
               'name' // displayText of dropdownList for category. 'name' => a text field from the category table
           ),
@@ -102,7 +103,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_v1.3.2+8.db',
+    databaseName: 'sampleORM_v1.3.4.db',
     password: null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],

@@ -105,7 +105,7 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///Users/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.14.11",
+      "rootUri": "file:///Users/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.14.12",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -476,7 +476,7 @@
       "languageVersion": "2.0"
     }
   ],
-  "generated": "2020-04-13T22:25:11.568174Z",
+  "generated": "2020-04-21T15:18:40.411705Z",
   "generator": "pub",
-  "generatorVersion": "2.8.0-dev.17.0.flutter-1402e8e1a4"
+  "generatorVersion": "2.8.0-dev.20.0.flutter-89b0f67261"
 }

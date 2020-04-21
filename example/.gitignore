@@ -10,6 +10,7 @@ example/.DS_Store
 .buildlog/
 .history
 .svn/
+lib/model/test
 
 # IntelliJ related
 *.iml

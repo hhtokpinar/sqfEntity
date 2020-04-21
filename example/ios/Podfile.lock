@@ -1,36 +1,30 @@
 PODS:
   - Flutter (1.0.0)
-  - FMDB/SQLCipher (2.7.5):
-    - SQLCipher
-  - sqflite_sqlcipher (0.0.1):
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - sqflite (0.0.1):
     - Flutter
-    - FMDB/SQLCipher (~> 2.7.5)
-  - SQLCipher (4.3.0):
-    - SQLCipher/standard (= 4.3.0)
-  - SQLCipher/common (4.3.0)
-  - SQLCipher/standard (4.3.0):
-    - SQLCipher/common
+    - FMDB (~> 2.7.2)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - sqflite_sqlcipher (from `.symlinks/plugins/sqflite_sqlcipher/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
 
 SPEC REPOS:
   trunk:
     - FMDB
-    - SQLCipher
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  sqflite_sqlcipher:
-    :path: ".symlinks/plugins/sqflite_sqlcipher/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  sqflite_sqlcipher: 45e72be2f26bde6ad196ff8b084123d8634ba921
-  SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
 
 PODFILE CHECKSUM: f32fb4e7c14f8b3ca19a369d7be425dd9241af27
 

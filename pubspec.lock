@@ -126,7 +126,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.14.11"
+    version: "1.14.12"
   convert:
     dependency: transitive
     description:
@@ -409,7 +409,7 @@ packages:
       path: sqfentity_gen
       relative: true
     source: path
-    version: "1.3.2+5"
+    version: "1.3.4"
   sqflite_common:
     dependency: transitive
     description:

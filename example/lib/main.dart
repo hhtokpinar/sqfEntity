@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqfentity/sqfentity.dart';
-import 'package:sqfentity_example/model/test.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
@@ -41,22 +40,6 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
-
-// final m1 = Models1(id: 'id1')
-// ..name='model1';
-// await m1.save();
-
-final m2 = Models2(id: 'id3')
-..name='model2_2';
-await m2.save();
-
-final m1m2 = Models2Models1(models1Id: 'id1', models2Id: 'id3');
-await m1m2.save();
-
-final m1WithChildren =await Models1().getById('id1');
-print(await m1WithChildren.toMapWithChildren());
-
-return true;
 
   // add some products
   await addSomeProducts();
@@ -120,7 +103,8 @@ void printList(List<dynamic> list, {bool isMap = false, String title}) {
 }
 
 Future<void> printCategories(bool getIsDeleted) async {
-  final categoryList = await Category().select(getIsDeleted: getIsDeleted).toList();
+  final categoryList =
+      await Category().select(getIsDeleted: getIsDeleted).toList();
   print('LISTING CATEGORIES -> Category().select().toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
   print('${categoryList.length} matches found:');
@@ -390,8 +374,10 @@ Future<void> samples2() async {
   print('---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
-  productList =
-      await Product().select().where('id IN (3,6,9) OR price>?',parameterValue: 8000).toList();
+  productList = await Product()
+      .select()
+      .where('id IN (3,6,9) OR price>?', parameterValue: 8000)
+      .toList();
   print(
       'EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\'id IN (3,6,9) OR price>8000\').toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
@@ -584,12 +570,14 @@ Future<void> samples5() async {
   print(
       'EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});');
 
-  print(' List<BoolResult> result of saveAll method is following:');
-  for (var result in results) {
-    print(result.toString());
-  }
-  print('---------------------------------------------------------------');
+  if (results != null) {
+    print(' List<BoolResult> result of saveAll method is following:');
 
+    for (var result in results) {
+      print(result.toString());
+    }
+    print('---------------------------------------------------------------');
+  }
   print(
       'EXAMPLE 5.4: listing saved products (set price=i) with saveAll method;');
   for (int i = 0; i < productList.length; i++) {

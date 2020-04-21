@@ -405,8 +405,8 @@ class Album {
   Album.withId(AlbumId, this.Title, this.ArtistId) {
     _setDefaultValues();
   }
-  Album.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Album.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     AlbumId = int.tryParse(o['AlbumId'].toString());
     if (o['Title'] != null) Title = o['Title'] as String;
     ArtistId = int.tryParse(o['ArtistId'].toString());
@@ -547,30 +547,25 @@ class Album {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Album>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Album.fromMapList(data);
-    } 
-    */
-
   static Future<List<Album>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Album> objList = <Album>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Album.fromMap(map as Map<String, dynamic>);
+      final obj = Album.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Album.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Album.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Album.plTracks'))) {
           _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -584,10 +579,10 @@ class Album {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plArtist') &&
+        if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plArtist'))) {
+                preloadFields.contains('Artist.plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -633,8 +628,9 @@ class Album {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Album.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Album.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Album.plTracks'))) {
           _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -648,10 +644,10 @@ class Album {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plArtist') &&
+        if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plArtist'))) {
+                preloadFields.contains('Artist.plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -744,7 +740,12 @@ class Album {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Album invoked (AlbumId=$AlbumId)');
-    if (await Track().select().AlbumId.equals(AlbumId).toCount() > 0) {
+    if (await Track()
+            .select()
+            .AlbumId
+            .equals(AlbumId)
+            .and /*.AlbumId.equals(AlbumId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -760,7 +761,6 @@ class Album {
     }
   }
 
-  //private AlbumFilterBuilder _Select;
   AlbumFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
     return AlbumFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
@@ -1248,18 +1248,17 @@ class AlbumFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByAlbumIdidList = await toListPrimaryKey(false);
-    if (await Track()
-            .select()
-            .AlbumId
-            .inValues(trackByAlbumIdidList)
-            .toCount() >
-        0) {
+    final resTrack =
+        await Track().select().AlbumId.inValues(trackByAlbumIdidList).toCount();
+    if (resTrack > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Track.AlbumId)');
     }
+
     if (Album._softDeleteActivated && !hardDelete) {
       r = await _obj._mnAlbum.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -1313,8 +1312,9 @@ class AlbumFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Album.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Album.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Album.plTracks'))) {
           _loadedFields.add('Album.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -1328,10 +1328,10 @@ class AlbumFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plArtist') &&
+        if (!_loadedFields.contains('Artist.plArtist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plArtist'))) {
+                preloadFields.contains('Artist.plArtist'))) {
           _loadedFields.add('Artist.plArtist');
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
@@ -1383,7 +1383,8 @@ class AlbumFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return albumsData;
   }
 
@@ -1573,8 +1574,8 @@ class Artist {
   Artist.withId(ArtistId, this.Name) {
     _setDefaultValues();
   }
-  Artist.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Artist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     ArtistId = int.tryParse(o['ArtistId'].toString());
     if (o['Name'] != null) Name = o['Name'] as String;
   }
@@ -1685,30 +1686,25 @@ class Artist {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Artist>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Artist.fromMapList(data);
-    } 
-    */
-
   static Future<List<Artist>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Artist> objList = <Artist>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Artist.fromMap(map as Map<String, dynamic>);
+      final obj = Artist.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plAlbums') &&
-            (preloadFields == null || preloadFields.contains('plAlbums'))) {
+        if (!_loadedFields.contains('Artist.plAlbums') &&
+            (preloadFields == null ||
+                preloadFields.contains('Artist.plAlbums'))) {
           _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
@@ -1757,8 +1753,9 @@ class Artist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plAlbums') &&
-            (preloadFields == null || preloadFields.contains('plAlbums'))) {
+        if (!_loadedFields.contains('Artist.plAlbums') &&
+            (preloadFields == null ||
+                preloadFields.contains('Artist.plAlbums'))) {
           _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
@@ -1853,7 +1850,12 @@ class Artist {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Artist invoked (ArtistId=$ArtistId)');
-    if (await Album().select().ArtistId.equals(ArtistId).toCount() > 0) {
+    if (await Album()
+            .select()
+            .ArtistId
+            .equals(ArtistId)
+            .and /*.ArtistId.equals(ArtistId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -1869,7 +1871,6 @@ class Artist {
     }
   }
 
-  //private ArtistFilterBuilder _Select;
   ArtistFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return ArtistFilterBuilder(this)
@@ -2353,18 +2354,20 @@ class ArtistFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Album) according to DeleteRule.NO_ACTION
     final albumByArtistIdidList = await toListPrimaryKey(false);
-    if (await Album()
-            .select()
-            .ArtistId
-            .inValues(albumByArtistIdidList)
-            .toCount() >
-        0) {
+    final resAlbum = await Album()
+        .select()
+        .ArtistId
+        .inValues(albumByArtistIdidList)
+        .toCount();
+    if (resAlbum > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Album.ArtistId)');
     }
+
     if (Artist._softDeleteActivated && !hardDelete) {
       r = await _obj._mnArtist.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -2418,8 +2421,9 @@ class ArtistFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Artist.plAlbums') &&
-            (preloadFields == null || preloadFields.contains('plAlbums'))) {
+        if (!_loadedFields.contains('Artist.plAlbums') &&
+            (preloadFields == null ||
+                preloadFields.contains('Artist.plAlbums'))) {
           _loadedFields.add('Artist.plAlbums');
           obj.plAlbums = obj.plAlbums ??
               await obj.getAlbums().toList(
@@ -2474,7 +2478,8 @@ class ArtistFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return artistsData;
   }
 
@@ -2696,8 +2701,8 @@ class Customer {
       this.SupportRepId) {
     _setDefaultValues();
   }
-  Customer.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Customer.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     CustomerId = int.tryParse(o['CustomerId'].toString());
     if (o['FirstName'] != null) FirstName = o['FirstName'] as String;
     if (o['LastName'] != null) LastName = o['LastName'] as String;
@@ -2966,30 +2971,25 @@ class Customer {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Customer>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Customer.fromMapList(data);
-    } 
-    */
-
   static Future<List<Customer>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Customer> objList = <Customer>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Customer.fromMap(map as Map<String, dynamic>);
+      final obj = Customer.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plInvoices') &&
-            (preloadFields == null || preloadFields.contains('plInvoices'))) {
+        if (!_loadedFields.contains('Customer.plInvoices') &&
+            (preloadFields == null ||
+                preloadFields.contains('Customer.plInvoices'))) {
           _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
@@ -3003,10 +3003,10 @@ class Customer {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -3052,8 +3052,9 @@ class Customer {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plInvoices') &&
-            (preloadFields == null || preloadFields.contains('plInvoices'))) {
+        if (!_loadedFields.contains('Customer.plInvoices') &&
+            (preloadFields == null ||
+                preloadFields.contains('Customer.plInvoices'))) {
           _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
@@ -3067,10 +3068,10 @@ class Customer {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -3178,7 +3179,12 @@ class Customer {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Customer invoked (CustomerId=$CustomerId)');
-    if (await Invoice().select().CustomerId.equals(CustomerId).toCount() > 0) {
+    if (await Invoice()
+            .select()
+            .CustomerId
+            .equals(CustomerId)
+            .and /*.CustomerId.equals(CustomerId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -3195,7 +3201,6 @@ class Customer {
     }
   }
 
-  //private CustomerFilterBuilder _Select;
   CustomerFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return CustomerFilterBuilder(this)
@@ -3735,18 +3740,20 @@ class CustomerFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Invoice) according to DeleteRule.NO_ACTION
     final invoiceByCustomerIdidList = await toListPrimaryKey(false);
-    if (await Invoice()
-            .select()
-            .CustomerId
-            .inValues(invoiceByCustomerIdidList)
-            .toCount() >
-        0) {
+    final resInvoice = await Invoice()
+        .select()
+        .CustomerId
+        .inValues(invoiceByCustomerIdidList)
+        .toCount();
+    if (resInvoice > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Invoice.CustomerId)');
     }
+
     if (Customer._softDeleteActivated && !hardDelete) {
       r = await _obj._mnCustomer.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -3800,8 +3807,9 @@ class CustomerFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plInvoices') &&
-            (preloadFields == null || preloadFields.contains('plInvoices'))) {
+        if (!_loadedFields.contains('Customer.plInvoices') &&
+            (preloadFields == null ||
+                preloadFields.contains('Customer.plInvoices'))) {
           _loadedFields.add('Customer.plInvoices');
           obj.plInvoices = obj.plInvoices ??
               await obj.getInvoices().toList(
@@ -3815,10 +3823,10 @@ class CustomerFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -3870,7 +3878,8 @@ class CustomerFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return customersData;
   }
 
@@ -4163,8 +4172,8 @@ class Employee {
       this.ReportsTo) {
     _setDefaultValues();
   }
-  Employee.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Employee.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     EmployeeId = int.tryParse(o['EmployeeId'].toString());
     if (o['LastName'] != null) LastName = o['LastName'] as String;
     if (o['FirstName'] != null) FirstName = o['FirstName'] as String;
@@ -4234,7 +4243,7 @@ class Employee {
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plCustomers', 'plField2'..]) or so on..
   List<Customer> plCustomers;
 
-  /// get Customer(s) filtered by SupportRepId=EmployeeId
+  /// get Customer(s) filtered by EmployeeId=SupportRepId
   CustomerFilterBuilder getCustomers(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Customer()
@@ -4244,7 +4253,7 @@ class Employee {
         .and;
   }
 
-  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// (Relationship to itself) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plReportsTos', 'plField2'..]) or so on..
   List<Employee> plReportsTos;
 
@@ -4253,8 +4262,8 @@ class Employee {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Employee()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .EmployeeId
-        .equals(ReportsTo)
+        .ReportsTo
+        .equals(EmployeeId)
         .and;
   }
 
@@ -4490,30 +4499,25 @@ class Employee {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Employee>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Employee.fromMapList(data);
-    } 
-    */
-
   static Future<List<Employee>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Employee> objList = <Employee>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Employee.fromMap(map as Map<String, dynamic>);
+      final obj = Employee.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plCustomers') &&
-            (preloadFields == null || preloadFields.contains('plCustomers'))) {
+        if (!_loadedFields.contains('Employee.plCustomers') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plCustomers'))) {
           _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
@@ -4522,8 +4526,9 @@ class Employee {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Employee.plReportsTos') &&
-            (preloadFields == null || preloadFields.contains('plReportsTos'))) {
+        if (!_loadedFields.contains('Employee.plReportsTos') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plReportsTos'))) {
           _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
@@ -4537,10 +4542,10 @@ class Employee {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -4586,8 +4591,9 @@ class Employee {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plCustomers') &&
-            (preloadFields == null || preloadFields.contains('plCustomers'))) {
+        if (!_loadedFields.contains('Employee.plCustomers') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plCustomers'))) {
           _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
@@ -4596,8 +4602,9 @@ class Employee {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Employee.plReportsTos') &&
-            (preloadFields == null || preloadFields.contains('plReportsTos'))) {
+        if (!_loadedFields.contains('Employee.plReportsTos') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plReportsTos'))) {
           _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
@@ -4611,10 +4618,10 @@ class Employee {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -4724,14 +4731,23 @@ class Employee {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Employee invoked (EmployeeId=$EmployeeId)');
-    if (await Customer().select().SupportRepId.equals(EmployeeId).toCount() >
+    if (await Customer()
+            .select()
+            .SupportRepId
+            .equals(EmployeeId)
+            .and /*.SupportRepId.equals(EmployeeId)*/ .toCount() >
         0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Customer.SupportRepId)');
     }
-    if (await Employee().select().ReportsTo.equals(EmployeeId).toCount() > 0) {
+    if (await Employee()
+            .select()
+            .ReportsTo
+            .equals(EmployeeId)
+            .and /*.ReportsTo.equals(EmployeeId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -4748,7 +4764,6 @@ class Employee {
     }
   }
 
-  //private EmployeeFilterBuilder _Select;
   EmployeeFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return EmployeeFilterBuilder(this)
@@ -5297,30 +5312,33 @@ class EmployeeFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Customer) according to DeleteRule.NO_ACTION
     final customerBySupportRepIdidList = await toListPrimaryKey(false);
-    if (await Customer()
-            .select()
-            .SupportRepId
-            .inValues(customerBySupportRepIdidList)
-            .toCount() >
-        0) {
+    final resCustomer = await Customer()
+        .select()
+        .SupportRepId
+        .inValues(customerBySupportRepIdidList)
+        .toCount();
+    if (resCustomer > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Customer.SupportRepId)');
     }
+// Check sub records where in (Employee) according to DeleteRule.NO_ACTION
     final employeeByReportsToidList = await toListPrimaryKey(false);
-    if (await Employee()
-            .select()
-            .ReportsTo
-            .inValues(employeeByReportsToidList)
-            .toCount() >
-        0) {
+    final resEmployee = await Employee()
+        .select()
+        .ReportsTo
+        .inValues(employeeByReportsToidList)
+        .toCount();
+    if (resEmployee > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Employee.ReportsTo)');
     }
+
     if (Employee._softDeleteActivated && !hardDelete) {
       r = await _obj._mnEmployee.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -5374,8 +5392,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plCustomers') &&
-            (preloadFields == null || preloadFields.contains('plCustomers'))) {
+        if (!_loadedFields.contains('Employee.plCustomers') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plCustomers'))) {
           _loadedFields.add('Employee.plCustomers');
           obj.plCustomers = obj.plCustomers ??
               await obj.getCustomers().toList(
@@ -5384,8 +5403,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Employee.plReportsTos') &&
-            (preloadFields == null || preloadFields.contains('plReportsTos'))) {
+        if (!_loadedFields.contains('Employee.plReportsTos') &&
+            (preloadFields == null ||
+                preloadFields.contains('Employee.plReportsTos'))) {
           _loadedFields.add('Employee.plReportsTos');
           obj.plReportsTos = obj.plReportsTos ??
               await obj.getReportsTos().toList(
@@ -5399,10 +5419,10 @@ class EmployeeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Employee.plEmployee') &&
+        if (!_loadedFields.contains('Employee.plEmployee') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plEmployee'))) {
+                preloadFields.contains('Employee.plEmployee'))) {
           _loadedFields.add('Employee.plEmployee');
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
@@ -5454,7 +5474,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return employeesData;
   }
 
@@ -5715,8 +5736,8 @@ class Genre {
   Genre.withId(GenreId, this.Name) {
     _setDefaultValues();
   }
-  Genre.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Genre.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     GenreId = int.tryParse(o['GenreId'].toString());
     if (o['Name'] != null) Name = o['Name'] as String;
   }
@@ -5827,30 +5848,25 @@ class Genre {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Genre>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Genre.fromMapList(data);
-    } 
-    */
-
   static Future<List<Genre>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Genre> objList = <Genre>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Genre.fromMap(map as Map<String, dynamic>);
+      final obj = Genre.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Genre.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Genre.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Genre.plTracks'))) {
           _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -5899,8 +5915,9 @@ class Genre {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Genre.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Genre.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Genre.plTracks'))) {
           _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -5995,7 +6012,12 @@ class Genre {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Genre invoked (GenreId=$GenreId)');
-    if (await Track().select().GenreId.equals(GenreId).toCount() > 0) {
+    if (await Track()
+            .select()
+            .GenreId
+            .equals(GenreId)
+            .and /*.GenreId.equals(GenreId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -6011,7 +6033,6 @@ class Genre {
     }
   }
 
-  //private GenreFilterBuilder _Select;
   GenreFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
     return GenreFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
@@ -6494,18 +6515,17 @@ class GenreFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByGenreIdidList = await toListPrimaryKey(false);
-    if (await Track()
-            .select()
-            .GenreId
-            .inValues(trackByGenreIdidList)
-            .toCount() >
-        0) {
+    final resTrack =
+        await Track().select().GenreId.inValues(trackByGenreIdidList).toCount();
+    if (resTrack > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Track.GenreId)');
     }
+
     if (Genre._softDeleteActivated && !hardDelete) {
       r = await _obj._mnGenre.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -6559,8 +6579,9 @@ class GenreFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Genre.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Genre.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Genre.plTracks'))) {
           _loadedFields.add('Genre.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -6615,7 +6636,8 @@ class GenreFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return genresData;
   }
 
@@ -6824,8 +6846,8 @@ class Invoice {
       this.CustomerId) {
     _setDefaultValues();
   }
-  Invoice.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Invoice.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     InvoiceId = int.tryParse(o['InvoiceId'].toString());
     if (o['InvoiceDate'] != null)
       InvoiceDate = int.tryParse(o['InvoiceDate'].toString()) != null
@@ -7057,31 +7079,25 @@ class Invoice {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Invoice>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Invoice.fromMapList(data);
-    } 
-    */
-
   static Future<List<Invoice>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Invoice> objList = <Invoice>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Invoice.fromMap(map as Map<String, dynamic>);
+      final obj = Invoice.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Invoice.plInvoiceLines') &&
+        if (!_loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Invoice.plInvoiceLines'))) {
           _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -7095,10 +7111,10 @@ class Invoice {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plCustomer') &&
+        if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCustomer'))) {
+                preloadFields.contains('Customer.plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -7144,9 +7160,9 @@ class Invoice {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Invoice.plInvoiceLines') &&
+        if (!_loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Invoice.plInvoiceLines'))) {
           _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -7160,10 +7176,10 @@ class Invoice {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plCustomer') &&
+        if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCustomer'))) {
+                preloadFields.contains('Customer.plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -7267,7 +7283,11 @@ class Invoice {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Invoice invoked (InvoiceId=$InvoiceId)');
-    if (await InvoiceLine().select().InvoiceId.equals(InvoiceId).toCount() >
+    if (await InvoiceLine()
+            .select()
+            .InvoiceId
+            .equals(InvoiceId)
+            .and /*.InvoiceId.equals(InvoiceId)*/ .toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -7284,7 +7304,6 @@ class Invoice {
     }
   }
 
-  //private InvoiceFilterBuilder _Select;
   InvoiceFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return InvoiceFilterBuilder(this)
@@ -7807,18 +7826,20 @@ class InvoiceFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
     final invoiceLineByInvoiceIdidList = await toListPrimaryKey(false);
-    if (await InvoiceLine()
-            .select()
-            .InvoiceId
-            .inValues(invoiceLineByInvoiceIdidList)
-            .toCount() >
-        0) {
+    final resInvoiceLine = await InvoiceLine()
+        .select()
+        .InvoiceId
+        .inValues(invoiceLineByInvoiceIdidList)
+        .toCount();
+    if (resInvoiceLine > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.InvoiceId)');
     }
+
     if (Invoice._softDeleteActivated && !hardDelete) {
       r = await _obj._mnInvoice.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -7872,9 +7893,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Invoice.plInvoiceLines') &&
+        if (!_loadedFields.contains('Invoice.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Invoice.plInvoiceLines'))) {
           _loadedFields.add('Invoice.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -7888,10 +7909,10 @@ class InvoiceFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Customer.plCustomer') &&
+        if (!_loadedFields.contains('Customer.plCustomer') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCustomer'))) {
+                preloadFields.contains('Customer.plCustomer'))) {
           _loadedFields.add('Customer.plCustomer');
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
@@ -7943,7 +7964,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return invoicesData;
   }
 
@@ -8178,8 +8200,8 @@ class InvoiceLine {
       this.InvoiceId) {
     _setDefaultValues();
   }
-  InvoiceLine.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  InvoiceLine.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     InvoiceLineId = int.tryParse(o['InvoiceLineId'].toString());
     if (o['UnitPrice'] != null)
       UnitPrice = double.tryParse(o['UnitPrice'].toString());
@@ -8338,41 +8360,35 @@ class InvoiceLine {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<InvoiceLine>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await InvoiceLine.fromMapList(data);
-    } 
-    */
-
   static Future<List<InvoiceLine>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<InvoiceLine> objList = <InvoiceLine>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = InvoiceLine.fromMap(map as Map<String, dynamic>);
+      final obj = InvoiceLine.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Invoice.plInvoice') &&
+        if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plInvoice'))) {
+                preloadFields.contains('Invoice.plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -8418,19 +8434,19 @@ class InvoiceLine {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Invoice.plInvoice') &&
+        if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plInvoice'))) {
+                preloadFields.contains('Invoice.plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -8537,7 +8553,6 @@ class InvoiceLine {
     }
   }
 
-  //private InvoiceLineFilterBuilder _Select;
   InvoiceLineFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return InvoiceLineFilterBuilder(this)
@@ -9109,19 +9124,19 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Invoice.plInvoice') &&
+        if (!_loadedFields.contains('Invoice.plInvoice') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plInvoice'))) {
+                preloadFields.contains('Invoice.plInvoice'))) {
           _loadedFields.add('Invoice.plInvoice');
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
@@ -9174,7 +9189,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return invoicelinesData;
   }
 
@@ -9377,8 +9393,8 @@ class MediaType {
   MediaType.withId(MediaTypeId, this.Name) {
     _setDefaultValues();
   }
-  MediaType.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  MediaType.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
     if (o['Name'] != null) Name = o['Name'] as String;
   }
@@ -9492,30 +9508,25 @@ class MediaType {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<MediaType>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await MediaType.fromMapList(data);
-    } 
-    */
-
   static Future<List<MediaType>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<MediaType> objList = <MediaType>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = MediaType.fromMap(map as Map<String, dynamic>);
+      final obj = MediaType.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('MediaType.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('MediaType.plTracks'))) {
           _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -9564,8 +9575,9 @@ class MediaType {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('MediaType.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('MediaType.plTracks'))) {
           _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -9662,7 +9674,12 @@ class MediaType {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete MediaType invoked (MediaTypeId=$MediaTypeId)');
-    if (await Track().select().MediaTypeId.equals(MediaTypeId).toCount() > 0) {
+    if (await Track()
+            .select()
+            .MediaTypeId
+            .equals(MediaTypeId)
+            .and /*.MediaTypeId.equals(MediaTypeId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -9679,7 +9696,6 @@ class MediaType {
     }
   }
 
-  //private MediaTypeFilterBuilder _Select;
   MediaTypeFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return MediaTypeFilterBuilder(this)
@@ -10163,18 +10179,20 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByMediaTypeIdidList = await toListPrimaryKey(false);
-    if (await Track()
-            .select()
-            .MediaTypeId
-            .inValues(trackByMediaTypeIdidList)
-            .toCount() >
-        0) {
+    final resTrack = await Track()
+        .select()
+        .MediaTypeId
+        .inValues(trackByMediaTypeIdidList)
+        .toCount();
+    if (resTrack > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Track.MediaTypeId)');
     }
+
     if (MediaType._softDeleteActivated && !hardDelete) {
       r = await _obj._mnMediaType.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -10228,8 +10246,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('MediaType.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('MediaType.plTracks'))) {
           _loadedFields.add('MediaType.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -10284,7 +10303,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return mediatypesData;
   }
 
@@ -10468,8 +10488,8 @@ class Playlist {
   Playlist.withId(PlaylistId, this.Name) {
     _setDefaultValues();
   }
-  Playlist.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Playlist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     PlaylistId = int.tryParse(o['PlaylistId'].toString());
     if (o['Name'] != null) Name = o['Name'] as String;
   }
@@ -10582,30 +10602,25 @@ class Playlist {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Playlist>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Playlist.fromMapList(data);
-    } 
-    */
-
   static Future<List<Playlist>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Playlist> objList = <Playlist>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Playlist.fromMap(map as Map<String, dynamic>);
+      final obj = Playlist.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Playlist.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Playlist.plTracks'))) {
           _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -10654,8 +10669,9 @@ class Playlist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Playlist.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Playlist.plTracks'))) {
           _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -10763,7 +10779,6 @@ class Playlist {
     }
   }
 
-  //private PlaylistFilterBuilder _Select;
   PlaylistFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return PlaylistFilterBuilder(this)
@@ -11301,8 +11316,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Playlist.plTracks') &&
-            (preloadFields == null || preloadFields.contains('plTracks'))) {
+        if (!_loadedFields.contains('Playlist.plTracks') &&
+            (preloadFields == null ||
+                preloadFields.contains('Playlist.plTracks'))) {
           _loadedFields.add('Playlist.plTracks');
           obj.plTracks = obj.plTracks ??
               await obj.getTracks().toList(
@@ -11357,7 +11373,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return playlistsData;
   }
 
@@ -11552,8 +11569,8 @@ class Track {
       this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
     _setDefaultValues();
   }
-  Track.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Track.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     TrackId = int.tryParse(o['TrackId'].toString());
     if (o['Name'] != null) Name = o['Name'] as String;
     if (o['Composer'] != null) Composer = o['Composer'] as String;
@@ -11825,31 +11842,25 @@ class Track {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Track>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Track.fromMapList(data);
-    } 
-    */
-
   static Future<List<Track>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Track> objList = <Track>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Track.fromMap(map as Map<String, dynamic>);
+      final obj = Track.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
+        if (!_loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Track.plInvoiceLines'))) {
           _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -11858,8 +11869,9 @@ class Track {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+        if (!_loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null ||
+                preloadFields.contains('Track.plPlaylists'))) {
           _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
@@ -11873,28 +11885,28 @@ class Track {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
+        if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plMediaType'))) {
+                preloadFields.contains('MediaType.plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Genre.plGenre') &&
+        if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plGenre'))) {
+                preloadFields.contains('Genre.plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Album.plAlbum') &&
+        if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plAlbum'))) {
+                preloadFields.contains('Album.plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -11940,9 +11952,9 @@ class Track {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
+        if (!_loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Track.plInvoiceLines'))) {
           _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -11951,8 +11963,9 @@ class Track {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+        if (!_loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null ||
+                preloadFields.contains('Track.plPlaylists'))) {
           _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
@@ -11966,28 +11979,28 @@ class Track {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
+        if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plMediaType'))) {
+                preloadFields.contains('MediaType.plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Genre.plGenre') &&
+        if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plGenre'))) {
+                preloadFields.contains('Genre.plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Album.plAlbum') &&
+        if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plAlbum'))) {
+                preloadFields.contains('Album.plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -12090,7 +12103,12 @@ class Track {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
-    if (await InvoiceLine().select().TrackId.equals(TrackId).toCount() > 0) {
+    if (await InvoiceLine()
+            .select()
+            .TrackId
+            .equals(TrackId)
+            .and /*.TrackId.equals(TrackId)*/ .toCount() >
+        0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -12106,7 +12124,6 @@ class Track {
     }
   }
 
-  //private TrackFilterBuilder _Select;
   TrackFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
     return TrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
@@ -12625,18 +12642,20 @@ class TrackFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
     final invoiceLineByTrackIdidList = await toListPrimaryKey(false);
-    if (await InvoiceLine()
-            .select()
-            .TrackId
-            .inValues(invoiceLineByTrackIdidList)
-            .toCount() >
-        0) {
+    final resInvoiceLine = await InvoiceLine()
+        .select()
+        .TrackId
+        .inValues(invoiceLineByTrackIdidList)
+        .toCount();
+    if (resInvoiceLine > 0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (InvoiceLine.TrackId)');
     }
+
     if (Track._softDeleteActivated && !hardDelete) {
       r = await _obj._mnTrack.updateBatch(qparams, {'isDeleted': 1});
     } else {
@@ -12690,9 +12709,9 @@ class TrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plInvoiceLines') &&
+        if (!_loadedFields.contains('Track.plInvoiceLines') &&
             (preloadFields == null ||
-                preloadFields.contains('plInvoiceLines'))) {
+                preloadFields.contains('Track.plInvoiceLines'))) {
           _loadedFields.add('Track.plInvoiceLines');
           obj.plInvoiceLines = obj.plInvoiceLines ??
               await obj.getInvoiceLines().toList(
@@ -12701,8 +12720,9 @@ class TrackFilterBuilder extends SearchCriteria {
                   loadParents: false,
                   loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Track.plPlaylists') &&
-            (preloadFields == null || preloadFields.contains('plPlaylists'))) {
+        if (!_loadedFields.contains('Track.plPlaylists') &&
+            (preloadFields == null ||
+                preloadFields.contains('Track.plPlaylists'))) {
           _loadedFields.add('Track.plPlaylists');
           obj.plPlaylists = obj.plPlaylists ??
               await obj.getPlaylists().toList(
@@ -12716,28 +12736,28 @@ class TrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('MediaType.plMediaType') &&
+        if (!_loadedFields.contains('MediaType.plMediaType') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plMediaType'))) {
+                preloadFields.contains('MediaType.plMediaType'))) {
           _loadedFields.add('MediaType.plMediaType');
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Genre.plGenre') &&
+        if (!_loadedFields.contains('Genre.plGenre') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plGenre'))) {
+                preloadFields.contains('Genre.plGenre'))) {
           _loadedFields.add('Genre.plGenre');
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Album.plAlbum') &&
+        if (!_loadedFields.contains('Album.plAlbum') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plAlbum'))) {
+                preloadFields.contains('Album.plAlbum'))) {
           _loadedFields.add('Album.plAlbum');
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
@@ -12789,7 +12809,8 @@ class TrackFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return tracksData;
   }
 
@@ -13014,8 +13035,9 @@ class PlaylistTrack {
   PlaylistTrack.withId(this.TrackId, this.PlaylistId) {
     _setDefaultValues();
   }
-  PlaylistTrack.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  PlaylistTrack.fromMap(Map<String, dynamic> o,
+      {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     TrackId = int.tryParse(o['TrackId'].toString());
 
     PlaylistId = int.tryParse(o['PlaylistId'].toString());
@@ -13146,41 +13168,35 @@ class PlaylistTrack {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<PlaylistTrack>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await PlaylistTrack.fromMapList(data);
-    } 
-    */
-
   static Future<List<PlaylistTrack>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<PlaylistTrack> objList = <PlaylistTrack>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = PlaylistTrack.fromMap(map as Map<String, dynamic>);
+      final obj = PlaylistTrack.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Playlist.plPlaylist') &&
+        if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plPlaylist'))) {
+                preloadFields.contains('Playlist.plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
@@ -13226,19 +13242,19 @@ class PlaylistTrack {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Playlist.plPlaylist') &&
+        if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plPlaylist'))) {
+                preloadFields.contains('Playlist.plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
@@ -13345,7 +13361,6 @@ class PlaylistTrack {
     }
   }
 
-  //private PlaylistTrackFilterBuilder _Select;
   PlaylistTrackFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return PlaylistTrackFilterBuilder(this)
@@ -13903,19 +13918,19 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('Track.plTrack') &&
+        if (!_loadedFields.contains('Track.plTrack') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plTrack'))) {
+                preloadFields.contains('Track.plTrack'))) {
           _loadedFields.add('Track.plTrack');
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents, loadedFields: _loadedFields);
         }
-        if (!loadedFields.contains('Playlist.plPlaylist') &&
+        if (!_loadedFields.contains('Playlist.plPlaylist') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plPlaylist'))) {
+                preloadFields.contains('Playlist.plPlaylist'))) {
           _loadedFields.add('Playlist.plPlaylist');
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
@@ -13968,7 +13983,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
             preload: preload,
             preloadFields: preloadFields,
             loadParents: loadParents,
-            loadedFields: loadedFields);
+            loadedFields: loadedFields,
+            setDefaultValues: qparams.selectColumns == null);
     return playlisttracksData;
   }
 
@@ -14000,77 +14016,14 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return await _obj._mnPlaylistTrack.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<PlaylistTrack>>
-  Future<List<DropdownMenuItem<PlaylistTrack>>> toDropDownMenu(
-      String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<PlaylistTrack>> o)
-          dropDownMenu]) async {
-    _buildParameters();
-    final playlisttracksFuture = _obj._mnPlaylistTrack.toList(qparams);
-
-    final data = await playlisttracksFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<PlaylistTrack>> items = []
-      ..add(DropdownMenuItem(
-        value: PlaylistTrack(),
-        child: Text('Select PlaylistTrack'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: PlaylistTrack.fromMap(data[i] as Map<String, dynamic>),
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// Returns List<DropdownMenuItem<int>>
-  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
-      String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
-          dropDownMenu]) async {
-    _buildParameters();
-    qparams.selectColumns = ['TrackId', displayTextColumn];
-    final playlisttracksFuture = _obj._mnPlaylistTrack.toList(qparams);
-
-    final data = await playlisttracksFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
-        value: 0,
-        child: Text('Select PlaylistTrack'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: data[i]['TrackId'] as int,
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// This method returns Primary Key List<int>.
-  /// <returns>List<int>
-  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
+  /// This method returns Primary Key List<TrackId,PlaylistId>.
+  /// <returns>List<TrackId,PlaylistId>
+  Future<List<PlaylistTrack>> toListPrimaryKey(
+      [bool buildParameters = true]) async {
     if (buildParameters) _buildParameters();
-    final List<int> TrackIdData = <int>[];
-    qparams.selectColumns = ['TrackId'];
-    final TrackIdFuture = await _obj._mnPlaylistTrack.toList(qparams);
-
-    final int count = TrackIdFuture.length;
-    for (int i = 0; i < count; i++) {
-      TrackIdData.add(TrackIdFuture[i]['TrackId'] as int);
-    }
-    return TrackIdData;
+    qparams.selectColumns = ['TrackId', 'PlaylistId'];
+    final playlisttrackFuture = await _obj._mnPlaylistTrack.toList(qparams);
+    return await PlaylistTrack.fromMapList(playlisttrackFuture);
   }
 
   /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
@@ -14168,7 +14121,7 @@ class AlbumController extends Album {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['AlbumToTrack'] = 'Album To Track';
+    menu['AlbumToTrack'] = 'Album To Track(AlbumId)';
 
     return menu;
   }
@@ -14219,7 +14172,7 @@ class ArtistController extends Artist {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['ArtistToAlbum'] = 'Artist To Album';
+    menu['ArtistToAlbum'] = 'Artist To Album(ArtistId)';
 
     return menu;
   }
@@ -14270,7 +14223,7 @@ class CustomerController extends Customer {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['CustomerToInvoice'] = 'Customer To Invoice';
+    menu['CustomerToInvoice'] = 'Customer To Invoice(CustomerId)';
 
     return menu;
   }
@@ -14329,8 +14282,8 @@ class EmployeeController extends Employee {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['EmployeeToCustomer'] = 'Employee To Customer';
-    menu['EmployeeToEmployee'] = 'Employee To Employee';
+    menu['EmployeeToCustomer'] = 'Employee To Customer(SupportRepId)';
+    menu['EmployeeToEmployee'] = 'Employee To Employee(ReportsTo)';
 
     return menu;
   }
@@ -14392,7 +14345,7 @@ class GenreController extends Genre {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['GenreToTrack'] = 'Genre To Track';
+    menu['GenreToTrack'] = 'Genre To Track(GenreId)';
 
     return menu;
   }
@@ -14443,7 +14396,7 @@ class InvoiceController extends Invoice {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['InvoiceToInvoiceLine'] = 'Invoice To InvoiceLine';
+    menu['InvoiceToInvoiceLine'] = 'Invoice To InvoiceLine(InvoiceId)';
 
     return menu;
   }
@@ -14519,7 +14472,7 @@ class MediaTypeController extends MediaType {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['MediaTypeToTrack'] = 'MediaType To Track';
+    menu['MediaTypeToTrack'] = 'MediaType To Track(MediaTypeId)';
 
     return menu;
   }
@@ -14570,7 +14523,7 @@ class PlaylistController extends Playlist {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['PlaylistToTrack'] = 'Playlist To Track';
+    menu['PlaylistToTrack'] = 'Playlist To Track(PlaylistPlaylistId)';
 
     return menu;
   }
@@ -14629,8 +14582,8 @@ class TrackController extends Track {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['TrackToInvoiceLine'] = 'Track To InvoiceLine';
-    menu['TrackToPlaylist'] = 'Track To Playlist';
+    menu['TrackToInvoiceLine'] = 'Track To InvoiceLine(TrackId)';
+    menu['TrackToPlaylist'] = 'Track To Playlist(TrackTrackId)';
 
     return menu;
   }

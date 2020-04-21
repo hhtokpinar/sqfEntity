@@ -1,4 +1,13 @@
-## 1.3.3+2
+## 1.3.4+1
+   unimplemented sqlchipher due to unexpected errors in Android SDK
+
+   You can fix sqfentity version to 1.3.3+2 to use sqlchipher like below:
+
+      dependencies:
+      sqfentity: 1.3.3+2
+   
+
+## 1.3.3+6
    implemented sqlchipher to open crypted database
 
    You can set password parameter of your db model like below

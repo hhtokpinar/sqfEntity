@@ -197,8 +197,8 @@ class Product {
       this.isDeleted) {
     _setDefaultValues();
   }
-  Product.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Product.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     id = int.tryParse(o['id'].toString());
     if (o['name'] != null) name = o['name'] as String;
     if (o['description'] != null) description = o['description'] as String;
@@ -444,32 +444,26 @@ class Product {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Product>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Product.fromMapList(data);
-    } 
-    */
-
   static Future<List<Product>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Product> objList = <Product>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Product.fromMap(map as Map<String, dynamic>);
+      final obj = Product.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plCategory') &&
+        if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCategory'))) {
+                preloadFields.contains('category.plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
@@ -515,10 +509,10 @@ class Product {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plCategory') &&
+        if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCategory'))) {
+                preloadFields.contains('category.plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
@@ -649,7 +643,6 @@ class Product {
     }
   }
 
-  //private ProductFilterBuilder _Select;
   ProductFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return ProductFilterBuilder(this)
@@ -1193,6 +1186,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return r;
   }
 
+  /// Recover List<Product> bulk by query
   Future<BoolResult> recover() async {
     _getIsDeleted = true;
     _buildParameters();
@@ -1245,10 +1239,10 @@ class ProductFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plCategory') &&
+        if (!_loadedFields.contains('category.plCategory') &&
             (preloadFields == null ||
                 loadParents ||
-                preloadFields.contains('plCategory'))) {
+                preloadFields.contains('category.plCategory'))) {
           _loadedFields.add('category.plCategory');
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
@@ -1300,7 +1294,8 @@ class ProductFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return productsData;
   }
 
@@ -1536,8 +1531,8 @@ class Category {
   Category.withId(id, this.name, this.isActive) {
     _setDefaultValues();
   }
-  Category.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Category.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     id = int.tryParse(o['id'].toString());
     if (o['name'] != null) name = o['name'] as String;
     if (o['isActive'] != null)
@@ -1556,7 +1551,7 @@ class Category {
   /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plProducts', 'plField2'..]) or so on..
   List<Product> plProducts;
 
-  /// get Product(s) filtered by categoryId=id
+  /// get Product(s) filtered by id=categoryId
   ProductFilterBuilder getProducts(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Product()
@@ -1660,30 +1655,25 @@ class Category {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Category>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Category.fromMapList(data);
-    } 
-    */
-
   static Future<List<Category>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Category> objList = <Category>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Category.fromMap(map as Map<String, dynamic>);
+      final obj = Category.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
       final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
+        if (!_loadedFields.contains('category.plProducts') &&
+            (preloadFields == null ||
+                preloadFields.contains('category.plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
@@ -1732,8 +1722,9 @@ class Category {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
+        if (!_loadedFields.contains('category.plProducts') &&
+            (preloadFields == null ||
+                preloadFields.contains('category.plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
@@ -1830,8 +1821,11 @@ class Category {
     print('SQFENTITIY: delete Category invoked (id=$id)');
     var result = BoolResult();
     {
-      result =
-          await Product().select().categoryId.equals(id).delete(hardDelete);
+      result = await Product()
+          .select()
+          .categoryId
+          .equals(id)
+          .and /*.categoryId.equals(id)*/ .delete(hardDelete);
     }
     if (!result.success) {
       return result;
@@ -1846,7 +1840,6 @@ class Category {
     }
   }
 
-  //private CategoryFilterBuilder _Select;
   CategoryFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return CategoryFilterBuilder(this)
@@ -2337,12 +2330,14 @@ class CategoryFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
+    // Delete sub records where in (Product) according to DeleteRule.CASCADE
     final productBycategoryIdidList = await toListPrimaryKey(false);
-    await Product()
+    final resProduct = await Product()
         .select()
         .categoryId
         .inValues(productBycategoryIdidList)
         .delete(hardDelete);
+    if (!resProduct.success) return resProduct;
 
     if (Category._softDeleteActivated && !hardDelete) {
       r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
@@ -2397,8 +2392,9 @@ class CategoryFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
+        if (!_loadedFields.contains('category.plProducts') &&
+            (preloadFields == null ||
+                preloadFields.contains('category.plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
@@ -2453,7 +2449,8 @@ class CategoryFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return categoriesData;
   }
 
@@ -2642,8 +2639,8 @@ class Todo {
   Todo.withId(id, this.userId, this.title, this.completed) {
     _setDefaultValues();
   }
-  Todo.fromMap(Map<String, dynamic> o) {
-    _setDefaultValues();
+  Todo.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) _setDefaultValues();
     id = int.tryParse(o['id'].toString());
     if (o['userId'] != null) userId = int.tryParse(o['userId'].toString());
     if (o['title'] != null) title = o['title'] as String;
@@ -2764,24 +2761,17 @@ class Todo {
     return objList;
   }
 
-  /*
-    /// REMOVED AFTER v1.2.1+14 
-    static Future<List<Todo>> fromObjectList(Future<List<dynamic>> o) async {
-      final data = await o;
-      return await Todo.fromMapList(data);
-    } 
-    */
-
   static Future<List<Todo>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String> preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String> loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Todo> objList = <Todo>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Todo.fromMap(map as Map<String, dynamic>);
-      final List<String> _loadedFields = List<String>.from(loadedFields);
+      final obj = Todo.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
 
       objList.add(obj);
     }
@@ -2816,7 +2806,6 @@ class Todo {
     final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
     } else {
       obj = null;
     }
@@ -2902,7 +2891,6 @@ class Todo {
     }
   }
 
-  //private TodoFilterBuilder _Select;
   TodoFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
     return TodoFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
@@ -3447,7 +3435,6 @@ class TodoFilterBuilder extends SearchCriteria {
     Todo obj;
     if (data.isNotEmpty) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
     } else {
       obj = null;
     }
@@ -3492,7 +3479,8 @@ class TodoFilterBuilder extends SearchCriteria {
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
-        loadedFields: loadedFields);
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return todosData;
   }
 
@@ -3763,7 +3751,7 @@ class CategoryController extends Category {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['CategoryToProduct'] = 'Category To Product';
+    menu['CategoryToProduct'] = 'Category To Product(categoryId)';
 
     return menu;
   }

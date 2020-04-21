@@ -22,8 +22,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
-//import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 
 // BEGIN DATABASE PROVIDER
@@ -110,10 +110,13 @@ class SqfEntityProvider extends SqfEntityModelBase {
           await writeDatabase(data);
         }
       }
-      //_db = await openDatabase(path, version: 1, onCreate: _createDb);
-
-      _db = await openDatabase(path, version: 1, onCreate: _createDb, password: _dbModel.password);
-      // }
+      
+     // uncomment line below if you want to use sqlchiper
+     // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: _dbModel.password); // SQLChipher
+   
+     // uncomment line below if you want to use sqflite
+      _db = await openDatabase(path, version: 1, onCreate: _createDb); // SQFLite
+     
     });
     //}
     return _db;

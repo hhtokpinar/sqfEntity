@@ -5,6 +5,7 @@ targets:
       sqfentity_gen|property_sqfentity:
         generate_for:
           - example/lib/model/*.dart
+          - example/lib/model/test/*.dart
       #sqfentity_gen|property_sqfentity_forms:
       #  generate_for:
       #    - lib/model/*.dart

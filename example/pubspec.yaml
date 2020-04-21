@@ -17,8 +17,8 @@ dependencies:
   flutter_datetime_picker:
     git:
       url: https://github.com/derohimat/flutter_datetime_picker.git  
-  sqfentity: ^1.3.3+5
-  sqfentity_gen: ^1.3.2+13
+  sqfentity: 
+  sqfentity_gen: 
   
 dependency_overrides:
   sqfentity: 
