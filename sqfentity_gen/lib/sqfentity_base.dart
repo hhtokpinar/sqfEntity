@@ -1528,7 +1528,7 @@ String __toOnetoManyCollections(SqfEntityTableBase _table) {
       continue;
     }
     retVal.writeln(
-        'if (!_loadedFields.contains(\'${_table.tableName}.pl$funcName\') && (preloadFields == null || preloadFields.contains(\'${_table.tableName}.pl$funcName\'))) {_loadedFields.add(\'${_table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false, loadedFields:_loadedFields);}');
+        'if (!_loadedFields.contains(\'${_table.tableName}.pl$funcName\') && (preloadFields == null || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${_table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false, loadedFields:_loadedFields);}');
 
     collections.add(funcName);
   }

@@ -14,7 +14,7 @@ dependencies:
   sqflite_sqlcipher: ^1.0.0+6
   synchronized: ">=2.1.0+1 <3.0.0"
   path: ">=1.6.2 <2.0.0"
-  sqfentity_gen: ^1.3.4
+  sqfentity_gen: 
 
 dependency_overrides:
   sqfentity_gen: 

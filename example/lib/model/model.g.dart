@@ -1672,8 +1672,7 @@ class Category {
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null ||
-                preloadFields.contains('category.plProducts'))) {
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
@@ -1723,8 +1722,7 @@ class Category {
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null ||
-                preloadFields.contains('category.plProducts'))) {
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
@@ -2393,8 +2391,7 @@ class CategoryFilterBuilder extends SearchCriteria {
       if (preload) {
         loadedFields = loadedFields ?? [];
         if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null ||
-                preloadFields.contains('category.plProducts'))) {
+            (preloadFields == null || preloadFields.contains('plProducts'))) {
           _loadedFields.add('category.plProducts');
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(

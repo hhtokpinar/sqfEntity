@@ -409,7 +409,7 @@ packages:
       path: sqfentity_gen
       relative: true
     source: path
-    version: "1.3.4"
+    version: "1.3.4+1"
   sqflite_common:
     dependency: transitive
     description:
