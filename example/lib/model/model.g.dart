@@ -455,19 +455,19 @@ class Product {
     for (final map in data) {
       final obj = Product.fromMap(map as Map<String, dynamic>,
           setDefaultValues: setDefaultValues);
-      final List<String> _loadedFields = List<String>.from(loadedFields);
+      // final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plCategory') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plCategory'))) {
-          _loadedFields.add('category.plCategory');
+        if (/*!_loadedFields.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedFields.add('category.plCategory');*/
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
-                  loadParents: loadParents, loadedFields: _loadedFields);
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -504,19 +504,19 @@ class Product {
     final data = await _mnProduct.getById([id]);
     if (data.length != 0) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
+      // final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plCategory') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plCategory'))) {
-          _loadedFields.add('category.plCategory');
+        if (/*!_loadedFields.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedFields.add('category.plCategory');*/
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
-                  loadParents: loadParents, loadedFields: _loadedFields);
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -1234,19 +1234,19 @@ class ProductFilterBuilder extends SearchCriteria {
     Product obj;
     if (data.isNotEmpty) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
+      // final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plCategory') &&
-            (preloadFields == null ||
-                loadParents ||
-                preloadFields.contains('plCategory'))) {
-          _loadedFields.add('category.plCategory');
+        if (/*!_loadedFields.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedFields.add('category.plCategory');*/
           obj.plCategory = obj.plCategory ??
               await obj.getCategory(
-                  loadParents: loadParents, loadedFields: _loadedFields);
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -1666,20 +1666,20 @@ class Category {
     for (final map in data) {
       final obj = Category.fromMap(map as Map<String, dynamic>,
           setDefaultValues: setDefaultValues);
-      final List<String> _loadedFields = List<String>.from(loadedFields);
+      // final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
-          _loadedFields.add('category.plProducts');
+        if (/*!_loadedFields.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedFields.add('category.plProducts'); */
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: _loadedFields);
+                  loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1716,20 +1716,20 @@ class Category {
     final data = await _mnCategory.getById([id]);
     if (data.length != 0) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
+      // final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
-          _loadedFields.add('category.plProducts');
+        if (/*!_loadedFields.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedFields.add('category.plProducts'); */
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: _loadedFields);
+                  loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2385,20 +2385,20 @@ class CategoryFilterBuilder extends SearchCriteria {
     Category obj;
     if (data.isNotEmpty) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
-      final List<String> _loadedFields = loadedFields ?? [];
+      // final List<String> _loadedFields = loadedFields ?? [];
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (!_loadedFields.contains('category.plProducts') &&
-            (preloadFields == null || preloadFields.contains('plProducts'))) {
-          _loadedFields.add('category.plProducts');
+        if (/*!_loadedFields.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedFields.add('category.plProducts'); */
           obj.plProducts = obj.plProducts ??
               await obj.getProducts().toList(
                   preload: preload,
                   preloadFields: preloadFields,
-                  loadParents: false,
-                  loadedFields: _loadedFields);
+                  loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 

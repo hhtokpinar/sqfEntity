@@ -584,7 +584,7 @@ class SqfEntityObjectBuilder {
       loadedFields = loadedFields ?? [];
       for (final map in data) {
         final obj = ${_table.modelName}.fromMap(map as Map<String, dynamic>, setDefaultValues: setDefaultValues);
-        ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = List<String>.from(loadedFields);' : ''}
+        ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? '// final List<String> _loadedFields = List<String>.from(loadedFields);' : ''}
         $_toOnetoOneCollections
         $_toOnetoManyCollections
         $_createObjectRelationsPreLoad
@@ -607,7 +607,7 @@ class SqfEntityObjectBuilder {
       final data = await _mn${_table.modelName}.getById([$_getByIdParameters]);
       if (data.length != 0) 
           {obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-          ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = loadedFields ?? [];' : ''}
+          ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? '// final List<String> _loadedFields = loadedFields ?? [];' : ''}
             $_toOnetoOneCollections
             $_toOnetoManyCollections
             $_createObjectRelationsPreLoad
@@ -1433,12 +1433,12 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
         if (relations.contains(funcName)) continue;
       }
       retVal.writeln(
-          'if (!_loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && (preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${field.table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents, loadedFields: _loadedFields);}');
+          'if (/*!_loadedFields.contains(\'${field.table.tableName}.pl$funcName\') && */ (preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {/*_loadedFields.add(\'${field.table.tableName}.pl$funcName\');*/ obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents /*, loadedFields: _loadedFields*/);}');
       relations.add(funcName);
     }
   }
   if (retVal.isNotEmpty) {
-    return '\n      // RELATIONSHIPS PRELOAD\nif (preload || loadParents){\nloadedFields = loadedFields ?? [];\n ${retVal.toString()}\n}          // END RELATIONSHIPS PRELOAD\n';
+    return '\n      // RELATIONSHIPS PRELOAD\nif (preload || loadParents) {\nloadedFields = loadedFields ?? [];\n ${retVal.toString()}\n}          // END RELATIONSHIPS PRELOAD\n';
   }
   return '';
 }
@@ -1528,7 +1528,7 @@ String __toOnetoManyCollections(SqfEntityTableBase _table) {
       continue;
     }
     retVal.writeln(
-        'if (!_loadedFields.contains(\'${_table.tableName}.pl$funcName\') && (preloadFields == null || preloadFields.contains(\'pl$funcName\'))) {_loadedFields.add(\'${_table.tableName}.pl$funcName\'); obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false, loadedFields:_loadedFields);}');
+        'if (/*!_loadedFields.contains(\'${_table.tableName}.pl$funcName\') && */(preloadFields == null || preloadFields.contains(\'pl$funcName\'))) {/*_loadedFields.add(\'${_table.tableName}.pl$funcName\'); */ obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName().toList(preload: preload, preloadFields: preloadFields, loadParents: false /*, loadedFields:_loadedFields*/);}');
 
     collections.add(funcName);
   }
@@ -2112,7 +2112,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     final data = await objFuture;
     ${_table.modelName} obj;
     if (data.isNotEmpty) { obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-    ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? 'final List<String> _loadedFields = loadedFields ?? [];' : ''}
+    ${_table.collections.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? '// final List<String> _loadedFields = loadedFields ?? [];' : ''}
     $_toOnetoOneCollections
     $_toOnetoManyCollections
     $_createObjectRelationsPreLoad
