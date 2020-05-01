@@ -110,13 +110,13 @@ class SqfEntityProvider extends SqfEntityModelBase {
           await writeDatabase(data);
         }
       }
-      
-     // uncomment line below if you want to use sqlchiper
-     // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: _dbModel.password); // SQLChipher
-   
-     // uncomment line below if you want to use sqflite
-      _db = await openDatabase(path, version: 1, onCreate: _createDb); // SQFLite
-     
+
+      // uncomment line below if you want to use sqlchiper
+      // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: _dbModel.password); // SQLChipher
+
+      // uncomment line below if you want to use sqflite
+      _db =
+          await openDatabase(path, version: 1, onCreate: _createDb); // SQFLite
     });
     //}
     return _db;
@@ -221,10 +221,11 @@ class SqfEntityProvider extends SqfEntityModelBase {
       pSql += ' LIMIT 1';
     }
     final result = await db.rawQuery(pSql, arguments);
-    if (result.isNotEmpty)
-    {  return result.first.values.first;}
-    else
-    {  return null;}
+    if (result.isNotEmpty) {
+      return result.first.values.first;
+    } else {
+      return null;
+    }
   }
 
   Future<List> toList(QueryParams params) async {
@@ -263,7 +264,8 @@ class SqfEntityProvider extends SqfEntityModelBase {
   Future<BoolResult> delete(QueryParams params) async {
     final result = BoolResult();
 
-    if ((params.limit != null && params.limit > 0) || (params.offset != null && params.offset >0)) {
+    if ((params.limit != null && params.limit > 0) ||
+        (params.offset != null && params.offset > 0)) {
       result
         ..success = false
         ..successMessage =
@@ -396,7 +398,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
       {bool exclusive, bool noResult, bool continueOnError}) async {
     final result = BoolCommitResult(success: false);
     bool closeBatch = false;
-    
+
     // If there is no open transaction, start one
     if (openedBatch[_dbModel.databaseName] == null) {
       await batchStart();
@@ -625,7 +627,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
                 checkTableIndexes(table);
             table.initialized = true;
             print(
-                'SQFENTITIY: Table named [${table.tableName}] was initialized successfully (created table)');
+                'SQFENTITIY: Table named [${table.tableName}] has initialized successfully (created table)');
             if (checkForIsReadyDatabase(dbTables)) {
               return true;
             }
@@ -637,7 +639,8 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
             }
           } else // table can not created
           {
-            print(createTable.toString());
+            print(
+                'SQFENTITIY ERROR: Table named [${table.tableName}] could not create. Message: ${createTable.toString()}');
             return false;
           }
         }
@@ -654,9 +657,8 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     // FOREIGN KEY(column_name) REFERENCES parent_table_name(reference_to)
     final alterTableQuery = <String>[];
     for (final table in databaseTables) {
-      final rfields = table.fields
-          .whereType<SqfEntityFieldRelationshipBase>()
-          .toList();
+      final rfields =
+          table.fields.whereType<SqfEntityFieldRelationshipBase>().toList();
       if (rfields.isNotEmpty) {
         final fKeys =
             await SqfEntityProvider(this).getForeignKeys(table.tableName);
@@ -757,6 +759,9 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
     if (field is SqfEntityFieldRelationshipBase) {
       alterTableQuery.add(
           'CREATE INDEX IF NOT EXISTS IDX${field.relationshipName + field.fieldName} ON ${table.tableName} (${field.fieldName} ASC)');
+    } else if (field.isIndex ?? false){
+      alterTableQuery.add(
+          'CREATE ${field.isUnique ?? false ? 'UNIQUE ':''}INDEX IF NOT EXISTS IDX_${table.tableName}_${field.fieldName} ON ${table.tableName} (${field.fieldName} ASC)');
     }
   }
   return alterTableQuery;
@@ -783,13 +788,6 @@ List<String> checkTableColumns(
     } else {
       alterTableQuery.add(
           'ALTER TABLE ${table.tableName} ADD COLUMN ${newField.toSqLiteFieldString()}');
-      if (newField.defaultValue != null) {
-        setDefaultValue(newField);
-        if (newField.defaultValue != null) {
-          alterTableQuery.add(
-              'UPDATE ${table.tableName} set ${newField.fieldName}=${newField.defaultValue}');
-        }
-      }
       if (newField is SqfEntityFieldRelationshipBase) {
         alterTableQuery.add(
             'CREATE INDEX IF NOT EXISTS IDX${newField.relationshipName + newField.fieldName} ON ${table.tableName} (${newField.fieldName} ASC)');
@@ -799,31 +797,6 @@ List<String> checkTableColumns(
   return alterTableQuery;
 }
 
-void setDefaultValue(SqfEntityFieldType newField) {
-  switch (newField.dbType) {
-    case DbType.text:
-      newField.defaultValue = "'${newField.defaultValue}'";
-      break;
-    case DbType.bool:
-      newField.defaultValue = newField.defaultValue == true ? 1 : 0;
-      break;
-    case DbType.date:
-      newField.defaultValue =
-          newField.defaultValue.toString().contains('DateTime.now()')
-              ? 'date(\'now\')'
-              : null;
-      break;
-    case DbType.datetime:
-    case DbType.datetimeUtc:
-      newField.defaultValue =
-          newField.defaultValue.toString().contains('DateTime.now()')
-              ? 'datetime(\'now\')'
-              : null;
-      break;
-    default:
-    // return its value
-  }
-}
 
 class BundledModelBase extends SqfEntityModelProvider {}
 
@@ -956,11 +929,12 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
             }
             for (final field in table.fields) {
               if (field.fieldName.toLowerCase() ==
-                  fKey['from'].toString().toLowerCase())
-               { relationFields.add(SqfEntityFieldRelationshipBase(
+                  fKey['from'].toString().toLowerCase()) {
+                relationFields.add(SqfEntityFieldRelationshipBase(
                     parentTable, getDeleteRule(fKey['on_delete'].toString()))
                   ..fieldName = field.fieldName
-                  ..dbType = field.dbType);}
+                  ..dbType = field.dbType);
+              }
             }
           }
         }
@@ -1011,10 +985,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   final manyToManyTables = <SqfEntityTableBase>[];
   for (var table in tables) {
     if (table.fields.length == 2 &&
-        table.fields
-                .whereType<SqfEntityFieldRelationshipBase>()
-                .length ==
-            2) {
+        table.fields.whereType<SqfEntityFieldRelationshipBase>().length == 2) {
       final ref = table.fields[0] as SqfEntityFieldRelationshipBase;
       final referred = table.fields[1] as SqfEntityFieldRelationshipBase;
       ref.table.fields

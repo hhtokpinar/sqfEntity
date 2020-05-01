@@ -15,7 +15,6 @@
 ///**********************************************************************/
 
 import 'package:analyzer/dart/constant/value.dart';
-
 //import 'package:source_gen/source_gen.dart'; // throws dart:mirror exception when import here
 
 part 'sqfentity_base.dart';
@@ -191,6 +190,75 @@ SqfEntityTableBase toSqfEntityTable(DartObject obj, String dbModelName) {
   return newTable;
 }
 
+SqfEntityFieldType getFieldProperties(
+    SqfEntityFieldType field, DartObject obj) {
+  final _retVal = field
+    ..defaultValue = getDynamicValue(obj, 'defaultValue')
+    ..minValue = getDynamicValue(obj, 'minValue')
+    ..maxValue = getDynamicValue(obj, 'maxValue')
+    ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
+    ..isNotNull = getBoolValue(obj, 'isNotNull')
+    ..isUnique = getBoolValue(obj, 'isUnique')
+    ..isIndex = getBoolValue(obj, 'isIndex')
+    ..checkCondition = getStringValue(obj, 'checkCondition')
+    ..sequencedBy =
+        obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
+            ? toSequence(obj.getField('sequencedBy'))
+            : null;
+            return _retVal;
+}
+
+SqfEntityFieldType toField(
+  DartObject obj,
+  String dbModelName, //bool keepFieldNamesAsOriginal
+) {
+  final fieldName =
+      ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null;
+  final dbType = getTypeValue(obj, 'dbType') as DbType;
+  if (obj.toString().startsWith('SqfEntityFieldVirtual')) {
+    return SqfEntityFieldVirtualBase(fieldName, dbType);
+  } else if (obj.toString().startsWith('SqfEntityFieldRelationship')) {
+
+
+    final parentTable = toSqfEntityTable(
+      obj.getField('parentTable'),
+      dbModelName,
+    );
+    // final SqfEntityFieldRelationshipBase retVal = SqfEntityFieldRelationshipBase(
+    //     parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule)
+    //   ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
+    //   ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
+    //   ..relationType = getTypeValue(obj, 'relationType') as RelationType
+    //   ..init();
+    // return getFieldProperties(retVal, obj);
+
+
+    return SqfEntityFieldRelationshipBase(
+        parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule)
+      ..defaultValue = getDynamicValue(obj, 'defaultValue')
+      ..minValue = getDynamicValue(obj, 'minValue')
+      ..maxValue = getDynamicValue(obj, 'maxValue')
+      ..fieldName =
+          ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null
+      ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
+      ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
+      ..isNotNull = getBoolValue(obj, 'isNotNull')
+      ..isUnique= getBoolValue(obj, 'isUnique')
+      ..isIndex =getBoolValue(obj, 'isIndex')
+      ..checkCondition=getStringValue(obj, 'checkCondition')
+      ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
+      ..relationType = getTypeValue(obj, 'relationType') as RelationType
+      ..init();
+
+
+  } else {
+    final SqfEntityFieldType retVal = SqfEntityFieldBase(fieldName, dbType);
+    return getFieldProperties(retVal, obj);
+  }
+}
+
+
+/*
 SqfEntityFieldType toField(
   DartObject obj,
   String dbModelName, //bool keepFieldNamesAsOriginal
@@ -215,6 +283,9 @@ SqfEntityFieldType toField(
       ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
       ..formIsRequired = getBoolValue(obj, 'formIsRequired')
       ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
+      ..isNotNull = getBoolValue(obj, 'isNotNull')
+      ..isUnique= getBoolValue(obj, 'isUnique')
+      ..checkCondition=getStringValue(obj, 'checkCondition')
       ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
       ..relationType = getTypeValue(obj, 'relationType') as RelationType
       ..init();
@@ -233,7 +304,7 @@ SqfEntityFieldType toField(
               : null;
   }
 }
-
+*/
 List<SqfEntityFieldType> toFields(
   List<DartObject> objFields,
   String dbModelName, //bool keepFieldNamesAsOriginal
@@ -243,7 +314,6 @@ List<SqfEntityFieldType> toFields(
   for (var obj in objFields) {
     sqfEntityFieldList.add(toField(
       obj, dbModelName,
-      //keepFieldNamesAsOriginal
     ));
   }
   return sqfEntityFieldList;
@@ -531,21 +601,41 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
   String _createModelFields(SqfEntityTableBase table) {
     final strFields = StringBuffer();
 
-    for (final field in table.fields) {
+    // for (final field in table.fields) {
+    //   if (field is SqfEntityFieldRelationshipBase &&
+    //       field.relationType == RelationType.MANY_TO_MANY &&
+    //       table.relationType != RelationType.MANY_TO_MANY) continue;
+    //   if (field is SqfEntityFieldVirtualBase) {
+    //     strFields.writeln(
+    //         'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');
+    //   } else if (field is SqfEntityFieldRelationshipBase) {
+    //     strFields.writeln(
+    //         'SqfEntityFieldRelationshipBase(${field.table == null || field.table.tableName == table.tableName ? 'null' : 'Table${field.table.modelName}.getInstance'}, ${field.deleteRule.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.fieldName, 'fieldName')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.relationType, 'relationType')}),');
+    //   } else {
+    //     strFields.writeln(
+    //         'SqfEntityFieldBase(\'${field.fieldName}\', ${field.dbType.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}),');
+    //   }
+    // }
+
+     for (final field in table.fields) {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.MANY_TO_MANY &&
           table.relationType != RelationType.MANY_TO_MANY) continue;
+      final String commonProperties =
+          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.checkCondition, 'checkCondition')}';
       if (field is SqfEntityFieldVirtualBase) {
         strFields.writeln(
             'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');
       } else if (field is SqfEntityFieldRelationshipBase) {
         strFields.writeln(
-            'SqfEntityFieldRelationshipBase(${field.table == null || field.table.tableName == table.tableName ? 'null' : 'Table${field.table.modelName}.getInstance'}, ${field.deleteRule.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.fieldName, 'fieldName')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.relationType, 'relationType')}),');
+            'SqfEntityFieldRelationshipBase(${field.table == null || field.table.tableName == table.tableName ? 'null' : 'Table${field.table.modelName}.getInstance'}, ${field.deleteRule.toString()}${_getNullableValueField(field.relationType, 'relationType')}${_getNullableValueField(field.fieldName, 'fieldName')}$commonProperties),');
       } else {
         strFields.writeln(
-            'SqfEntityFieldBase(\'${field.fieldName}\', ${field.dbType.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}),');
+            'SqfEntityFieldBase(\'${field.fieldName}\', ${field.dbType.toString()}$commonProperties),');
       }
     }
+
+
 
     return strFields.toString();
   }

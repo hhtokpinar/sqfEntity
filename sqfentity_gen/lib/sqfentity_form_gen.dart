@@ -110,14 +110,13 @@ class ${modelName}AddState extends State {
     ${toFormSaveCodeDateTimeVariables(table).toString()}
     $tablename
       ${toFormSaveCode(table).toString()};
-    final result = await $tablename.${table.relationType == RelationType.ONE_TO_ONE ? '_' : ''}save();
-    if (result ${table.primaryKeyType == PrimaryKeyType.text ? '.success' : ' != 0'}) {
+    await $tablename.${table.relationType == RelationType.ONE_TO_ONE ? '_' : ''}save();
+    if ($tablename.saveResult.success) {
       Navigator.pop(context, true);
     } else
     {
       UITools(context).alertDialog($tablename.saveResult.toString(),
                   title: 'save ${table.modelName} Failed!', callBack: () {
-                Navigator.pop(context, true);
               });
     }
   }
@@ -371,7 +370,7 @@ class ${modelName}AddState extends State {
                 items: _dropdownMenuItemsFor$ccName,
                 onChanged: onChangeDropdownItemFor$ccName,
                 validator: (value) {
-                  if ((_selected$ccName != null && _selected$ccName.toString() != '0') ${field.formIsRequired != null && field.formIsRequired ? '' : '|| true'}) {
+                  if ((_selected$ccName != null && _selected$ccName.toString() != '0') ${field.isNotNull != null && field.isNotNull ? '' : '|| true'}) {
                     return null;
                   } else if (value == null || value == 0) {
                     return 'Please enter ${field.relationshipName}';
@@ -404,7 +403,7 @@ class ${modelName}AddState extends State {
               return 'Please Enter Maximum ${field.maxValue} (required)'; }''');
         }
 
-        if ((field.formIsRequired != null && field.formIsRequired)) {
+        if ((field.isNotNull != null && field.isNotNull)) {
           retVal.writeln('''return TextFormField(
       validator: (value) {
          if (${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) == null) 
@@ -471,7 +470,7 @@ class ${modelName}AddState extends State {
           },
               currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now(),
               locale: UITools.mainDatePickerLocaleType),
-          ${field.formIsRequired != null && field.formIsRequired ? 'validator: (value) { if (value.isEmpty) { return \'Please enter $ccName\'; } return null;},' : ''}
+          ${field.isNotNull != null && field.isNotNull ? 'validator: (value) { if (value.isEmpty) { return \'Please enter $ccName\'; } return null;},' : ''}
           controller: txt$ccName,
           decoration: InputDecoration(labelText: '$ccName'),
         ),
@@ -495,7 +494,7 @@ class ${modelName}AddState extends State {
         return retVal.toString();
         break;
       default:
-        if ((field.formIsRequired != null && field.formIsRequired)) {
+        if ((field.isNotNull != null && field.isNotNull)) {
           retVal.writeln('''return TextFormField(
      validator: (value) { if (value.isEmpty)
      { return 'Please enter $ccName'; }

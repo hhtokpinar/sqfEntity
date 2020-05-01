@@ -31,12 +31,13 @@ class TableAlbum extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Title', DbType.text),
+      SqfEntityFieldBase('Title', DbType.text, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableArtist.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'ArtistId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -58,7 +59,7 @@ class TableArtist extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
     ];
     super.init();
   }
@@ -80,22 +81,23 @@ class TableCustomer extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('FirstName', DbType.text),
-      SqfEntityFieldBase('LastName', DbType.text),
-      SqfEntityFieldBase('Company', DbType.text),
-      SqfEntityFieldBase('Address', DbType.text),
-      SqfEntityFieldBase('City', DbType.text),
-      SqfEntityFieldBase('State', DbType.text),
-      SqfEntityFieldBase('Country', DbType.text),
-      SqfEntityFieldBase('PostalCode', DbType.text),
-      SqfEntityFieldBase('Phone', DbType.text),
-      SqfEntityFieldBase('Fax', DbType.text),
-      SqfEntityFieldBase('Email', DbType.text),
+      SqfEntityFieldBase('FirstName', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('LastName', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Company', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Address', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('City', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('State', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Country', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('PostalCode', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Phone', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Fax', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Email', DbType.text, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableEmployee.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'SupportRepId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -117,23 +119,24 @@ class TableEmployee extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('LastName', DbType.text),
-      SqfEntityFieldBase('FirstName', DbType.text),
-      SqfEntityFieldBase('Title', DbType.text),
-      SqfEntityFieldBase('BirthDate', DbType.datetime),
-      SqfEntityFieldBase('HireDate', DbType.datetime),
-      SqfEntityFieldBase('Address', DbType.text),
-      SqfEntityFieldBase('City', DbType.text),
-      SqfEntityFieldBase('State', DbType.text),
-      SqfEntityFieldBase('Country', DbType.text),
-      SqfEntityFieldBase('PostalCode', DbType.text),
-      SqfEntityFieldBase('Phone', DbType.text),
-      SqfEntityFieldBase('Fax', DbType.text),
-      SqfEntityFieldBase('Email', DbType.text),
+      SqfEntityFieldBase('LastName', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('FirstName', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Title', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('BirthDate', DbType.datetime, isNotNull: false),
+      SqfEntityFieldBase('HireDate', DbType.datetime, isNotNull: false),
+      SqfEntityFieldBase('Address', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('City', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('State', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Country', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('PostalCode', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Phone', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Fax', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Email', DbType.text, isNotNull: false),
       SqfEntityFieldRelationshipBase(null, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'ReportsTo',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -155,7 +158,7 @@ class TableGenre extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
     ];
     super.init();
   }
@@ -177,18 +180,19 @@ class TableInvoice extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('InvoiceDate', DbType.datetime),
-      SqfEntityFieldBase('BillingAddress', DbType.text),
-      SqfEntityFieldBase('BillingCity', DbType.text),
-      SqfEntityFieldBase('BillingState', DbType.text),
-      SqfEntityFieldBase('BillingCountry', DbType.text),
-      SqfEntityFieldBase('BillingPostalCode', DbType.text),
-      SqfEntityFieldBase('Total', DbType.real),
+      SqfEntityFieldBase('InvoiceDate', DbType.datetime, isNotNull: false),
+      SqfEntityFieldBase('BillingAddress', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('BillingCity', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('BillingState', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('BillingCountry', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('BillingPostalCode', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Total', DbType.real, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableCustomer.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'CustomerId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -211,18 +215,20 @@ class TableInvoiceLine extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('UnitPrice', DbType.real),
-      SqfEntityFieldBase('Quantity', DbType.integer),
+      SqfEntityFieldBase('UnitPrice', DbType.real, isNotNull: false),
+      SqfEntityFieldBase('Quantity', DbType.integer, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'TrackId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableInvoice.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'InvoiceId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -244,7 +250,7 @@ class TableMediaType extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
     ];
     super.init();
   }
@@ -267,7 +273,7 @@ class TablePlaylist extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
     ];
     super.init();
   }
@@ -290,26 +296,29 @@ class TableTrack extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text),
-      SqfEntityFieldBase('Composer', DbType.text),
-      SqfEntityFieldBase('Milliseconds', DbType.integer),
-      SqfEntityFieldBase('Bytes', DbType.integer),
-      SqfEntityFieldBase('UnitPrice', DbType.real),
+      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Composer', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Milliseconds', DbType.integer, isNotNull: false),
+      SqfEntityFieldBase('Bytes', DbType.integer, isNotNull: false),
+      SqfEntityFieldBase('UnitPrice', DbType.real, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableMediaType.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'MediaTypeId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableGenre.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'GenreId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableAlbum.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'AlbumId',
           isPrimaryKeyField: false,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -334,14 +343,16 @@ class TablePlaylistTrack extends SqfEntityTableBase {
     fields = [
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'TrackId',
           isPrimaryKeyField: true,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TablePlaylist.getInstance, DeleteRule.NO_ACTION,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'PlaylistId',
           isPrimaryKeyField: true,
-          relationType: RelationType.ONE_TO_MANY),
+          isNotNull: false),
     ];
     super.init();
   }
@@ -1248,9 +1259,9 @@ class AlbumFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByAlbumIdidList = await toListPrimaryKey(false);
-    final resTrack =
+    final resTrackBYAlbumId =
         await Track().select().AlbumId.inValues(trackByAlbumIdidList).toCount();
-    if (resTrack > 0) {
+    if (resTrackBYAlbumId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -2351,12 +2362,12 @@ class ArtistFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Album) according to DeleteRule.NO_ACTION
     final albumByArtistIdidList = await toListPrimaryKey(false);
-    final resAlbum = await Album()
+    final resAlbumBYArtistId = await Album()
         .select()
         .ArtistId
         .inValues(albumByArtistIdidList)
         .toCount();
-    if (resAlbum > 0) {
+    if (resAlbumBYArtistId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -3734,12 +3745,12 @@ class CustomerFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Invoice) according to DeleteRule.NO_ACTION
     final invoiceByCustomerIdidList = await toListPrimaryKey(false);
-    final resInvoice = await Invoice()
+    final resInvoiceBYCustomerId = await Invoice()
         .select()
         .CustomerId
         .inValues(invoiceByCustomerIdidList)
         .toCount();
-    if (resInvoice > 0) {
+    if (resInvoiceBYCustomerId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -5301,12 +5312,12 @@ class EmployeeFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Customer) according to DeleteRule.NO_ACTION
     final customerBySupportRepIdidList = await toListPrimaryKey(false);
-    final resCustomer = await Customer()
+    final resCustomerBYSupportRepId = await Customer()
         .select()
         .SupportRepId
         .inValues(customerBySupportRepIdidList)
         .toCount();
-    if (resCustomer > 0) {
+    if (resCustomerBYSupportRepId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -5314,12 +5325,12 @@ class EmployeeFilterBuilder extends SearchCriteria {
     }
 // Check sub records where in (Employee) according to DeleteRule.NO_ACTION
     final employeeByReportsToidList = await toListPrimaryKey(false);
-    final resEmployee = await Employee()
+    final resEmployeeBYReportsTo = await Employee()
         .select()
         .ReportsTo
         .inValues(employeeByReportsToidList)
         .toCount();
-    if (resEmployee > 0) {
+    if (resEmployeeBYReportsTo > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -6500,9 +6511,9 @@ class GenreFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByGenreIdidList = await toListPrimaryKey(false);
-    final resTrack =
+    final resTrackBYGenreId =
         await Track().select().GenreId.inValues(trackByGenreIdidList).toCount();
-    if (resTrack > 0) {
+    if (resTrackBYGenreId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -7808,12 +7819,12 @@ class InvoiceFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
     final invoiceLineByInvoiceIdidList = await toListPrimaryKey(false);
-    final resInvoiceLine = await InvoiceLine()
+    final resInvoiceLineBYInvoiceId = await InvoiceLine()
         .select()
         .InvoiceId
         .inValues(invoiceLineByInvoiceIdidList)
         .toCount();
-    if (resInvoiceLine > 0) {
+    if (resInvoiceLineBYInvoiceId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -10158,12 +10169,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
     final trackByMediaTypeIdidList = await toListPrimaryKey(false);
-    final resTrack = await Track()
+    final resTrackBYMediaTypeId = await Track()
         .select()
         .MediaTypeId
         .inValues(trackByMediaTypeIdidList)
         .toCount();
-    if (resTrack > 0) {
+    if (resTrackBYMediaTypeId > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -12613,12 +12624,12 @@ class TrackFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
     final invoiceLineByTrackIdidList = await toListPrimaryKey(false);
-    final resInvoiceLine = await InvoiceLine()
+    final resInvoiceLineBYTrackId = await InvoiceLine()
         .select()
         .TrackId
         .inValues(invoiceLineByTrackIdidList)
         .toCount();
-    if (resInvoiceLine > 0) {
+    if (resInvoiceLineBYTrackId > 0) {
       return BoolResult(
           success: false,
           errorMessage:

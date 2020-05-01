@@ -1,3 +1,79 @@
+## 1.3.5
+   Added SQLite Constraints and Index property to fields
+
+**NOT NULL Constraint** − Ensures that a column cannot have NULL value.
+**DEFAULT Constraint** − Provides a default value for a column when none is specified.
+**UNIQUE Constraint** − Ensures that all values in a column are different.
+**CHECK Constraint** − Ensures that all values in a column satisfies certain conditions.
+**INDEXES** - Indexes are used to retrieve data from the database more quickly than otherwise.
+
+## How do I use these features?
+
+use these parameters when declaring SqfEntityField
+**isNotNull**: true,
+**defaultValue**: 0, // specify a default value according to type of the column 
+**isUnique**: true
+**checkCondition**: '(this)>0' // you can use **(this)** phrase instead of the column name
+**isIndex**: true 
+
+## To test constraints
+
+1. Define a sample table
+
+
+      const tableProduct = SqfEntityTable(
+      tableName: 'product',
+      primaryKeyName: 'id',
+      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+      fields: [
+         SqfEntityField('name',DbType.text,
+                         isUnique: true, isNotNull: true, isIndex:true),
+         SqfEntityField('price', DbType.real, 
+                         defaultValue: 1, checkCondition: '(this)>0'),
+      ]);
+
+
+2. Try to insert a row into the product table with these values:
+
+
+      Product product = Product();
+      // We didn't set any values before saving.
+      await product.save();
+      print('-----TEST: NOT NULL CONSTRAINT (name must not be null)');
+      print(product.saveResult);
+
+      product = Product()
+      ..name = 'product 1'
+      ..categoryId = 1
+      ..price=0; // the price must be greater than 0 according to the specified CHECK CONSTRAINT
+
+      await product.save();
+      print('-----TEST: CHECK CONSTRAINT (price must be greater than 0)');
+      print(product.saveResult);
+
+
+      product = Product()
+      ..name = 'product 1'
+      ..categoryId=1
+      ..price=1;
+      await product.save();
+      await product.saveAs(); // We saved the product again without changing the name
+
+      print('-----TEST: UNIQUE CONSTRAINT (name must be UNIQUE)');
+      print(product.saveResult);
+
+
+## Results:
+
+      flutter: -----TEST: NOT NULL CONSTRAINT (name isNotNull)
+      flutter: product-> Save failed. Error: "NOT NULL constraint failed: product.name"...
+
+      flutter: -----TEST: CHECK CONSTRAINT (price must be greater than 0)
+      flutter: product-> Save failed. Error:  "CHECK constraint failed: product"...
+
+      flutter: -----TEST: UNIQUE CONSTRAINT (name must be UNIQUE)
+      flutter: product-> Save failed. Error: "UNIQUE constraint failed: product.name"...
+
 ## 1.3.4+1
    unimplemented sqlchipher due to unexpected errors in Android SDK
 

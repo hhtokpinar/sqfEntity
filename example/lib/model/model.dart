@@ -25,7 +25,7 @@ const tableCategory = SqfEntityTable(
         null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
     // declare fields
     fields: [
-      SqfEntityField('name', DbType.text, formIsRequired: true),
+      SqfEntityField('name', DbType.text, isNotNull: true),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
     ],
     formListSubTitleField: '');
@@ -40,7 +40,7 @@ const tableProduct = SqfEntityTable(
       SqfEntityField(
         'name',
         DbType.text,
-        formIsRequired: true,
+        isNotNull: true,
       ),
       SqfEntityField('description', DbType.text),
       SqfEntityField('price', DbType.real, defaultValue: 0),
@@ -51,7 +51,6 @@ const tableProduct = SqfEntityTable(
           parentTable: tableCategory,
           deleteRule: DeleteRule.CASCADE,
           defaultValue: 0,
-          
           formDropDownTextField:
               'name' // displayText of dropdownList for category. 'name' => a text field from the category table
           ),
@@ -103,7 +102,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_v1.3.4.db',
+    databaseName: 'sampleORM_v1.3.5+1.db',
     password: null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],

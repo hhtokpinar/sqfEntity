@@ -146,14 +146,12 @@ class AlbumAddState extends State {
     album
       ..Title = txtTitle.text
       ..ArtistId = _selectedArtistId;
-    final result = await album.save();
-    if (result != 0) {
+    await album.save();
+    if (album.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(album.saveResult.toString(),
-          title: 'save Album Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Album Failed!', callBack: () {});
     }
   }
 }
@@ -242,14 +240,12 @@ class ArtistAddState extends State {
 
   void save() async {
     artist..Name = txtName.text;
-    final result = await artist.save();
-    if (result != 0) {
+    await artist.save();
+    if (artist.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(artist.saveResult.toString(),
-          title: 'save Artist Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Artist Failed!', callBack: () {});
     }
   }
 }
@@ -506,14 +502,12 @@ class CustomerAddState extends State {
       ..Fax = txtFax.text
       ..Email = txtEmail.text
       ..SupportRepId = _selectedSupportRepId;
-    final result = await customer.save();
-    if (result != 0) {
+    await customer.save();
+    if (customer.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(customer.saveResult.toString(),
-          title: 'save Customer Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Customer Failed!', callBack: () {});
     }
   }
 }
@@ -926,14 +920,12 @@ class EmployeeAddState extends State {
       ..Fax = txtFax.text
       ..Email = txtEmail.text
       ..ReportsTo = _selectedReportsTo;
-    final result = await employee.save();
-    if (result != 0) {
+    await employee.save();
+    if (employee.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(employee.saveResult.toString(),
-          title: 'save Employee Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Employee Failed!', callBack: () {});
     }
   }
 }
@@ -1022,14 +1014,12 @@ class GenreAddState extends State {
 
   void save() async {
     genre..Name = txtName.text;
-    final result = await genre.save();
-    if (result != 0) {
+    await genre.save();
+    if (genre.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(genre.saveResult.toString(),
-          title: 'save Genre Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Genre Failed!', callBack: () {});
     }
   }
 }
@@ -1321,14 +1311,12 @@ class InvoiceAddState extends State {
       ..BillingPostalCode = txtBillingPostalCode.text
       ..Total = double.tryParse(txtTotal.text)
       ..CustomerId = _selectedCustomerId;
-    final result = await invoice.save();
-    if (result != 0) {
+    await invoice.save();
+    if (invoice.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(invoice.saveResult.toString(),
-          title: 'save Invoice Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Invoice Failed!', callBack: () {});
     }
   }
 }
@@ -1557,14 +1545,12 @@ class InvoiceLineAddState extends State {
       ..Quantity = int.tryParse(txtQuantity.text)
       ..TrackId = _selectedTrackId
       ..InvoiceId = _selectedInvoiceId;
-    final result = await invoiceline.save();
-    if (result != 0) {
+    await invoiceline.save();
+    if (invoiceline.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(invoiceline.saveResult.toString(),
-          title: 'save InvoiceLine Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save InvoiceLine Failed!', callBack: () {});
     }
   }
 }
@@ -1654,14 +1640,12 @@ class MediaTypeAddState extends State {
 
   void save() async {
     mediatype..Name = txtName.text;
-    final result = await mediatype.save();
-    if (result != 0) {
+    await mediatype.save();
+    if (mediatype.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(mediatype.saveResult.toString(),
-          title: 'save MediaType Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save MediaType Failed!', callBack: () {});
     }
   }
 }
@@ -1751,14 +1735,12 @@ class PlaylistAddState extends State {
 
   void save() async {
     playlist..Name = txtName.text;
-    final result = await playlist.save();
-    if (result != 0) {
+    await playlist.save();
+    if (playlist.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(playlist.saveResult.toString(),
-          title: 'save Playlist Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Playlist Failed!', callBack: () {});
     }
   }
 }
@@ -2083,14 +2065,12 @@ class TrackAddState extends State {
       ..MediaTypeId = _selectedMediaTypeId
       ..GenreId = _selectedGenreId
       ..AlbumId = _selectedAlbumId;
-    final result = await track.save();
-    if (result != 0) {
+    await track.save();
+    if (track.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(track.saveResult.toString(),
-          title: 'save Track Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Track Failed!', callBack: () {});
     }
   }
 }

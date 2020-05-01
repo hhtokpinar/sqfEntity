@@ -32,20 +32,23 @@ class TableProduct extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('description', DbType.text),
-      SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
+      SqfEntityFieldBase('name', DbType.text, isNotNull: true),
+      SqfEntityFieldBase('description', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('price', DbType.real,
+          defaultValue: 0, isNotNull: false),
+      SqfEntityFieldBase('isActive', DbType.bool,
+          defaultValue: true, isNotNull: false),
       SqfEntityFieldRelationshipBase(
           TableCategory.getInstance, DeleteRule.CASCADE,
-          defaultValue: 0,
+          relationType: RelationType.ONE_TO_MANY,
           fieldName: 'categoryId',
-          relationType: RelationType.ONE_TO_MANY),
-      SqfEntityFieldBase('rownum', DbType.integer),
-      SqfEntityFieldBase('imageUrl', DbType.text),
+          defaultValue: 0,
+          isNotNull: false),
+      SqfEntityFieldBase('rownum', DbType.integer, isNotNull: false),
+      SqfEntityFieldBase('imageUrl', DbType.text, isNotNull: false),
       SqfEntityFieldBase('datetime', DbType.datetime,
-          defaultValue: DateTime.now()),
-      SqfEntityFieldBase('date', DbType.date),
+          defaultValue: DateTime.now(), isNotNull: false),
+      SqfEntityFieldBase('date', DbType.date, isNotNull: false),
     ];
     super.init();
   }
@@ -67,8 +70,9 @@ class TableCategory extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
+      SqfEntityFieldBase('name', DbType.text, isNotNull: true),
+      SqfEntityFieldBase('isActive', DbType.bool,
+          defaultValue: true, isNotNull: false),
     ];
     super.init();
   }
@@ -90,9 +94,10 @@ class TableTodo extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('userId', DbType.integer),
-      SqfEntityFieldBase('title', DbType.text),
-      SqfEntityFieldBase('completed', DbType.bool, defaultValue: false),
+      SqfEntityFieldBase('userId', DbType.integer, isNotNull: false),
+      SqfEntityFieldBase('title', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('completed', DbType.bool,
+          defaultValue: false, isNotNull: false),
     ];
     super.init();
   }
@@ -2330,12 +2335,12 @@ class CategoryFilterBuilder extends SearchCriteria {
     var r = BoolResult();
     // Delete sub records where in (Product) according to DeleteRule.CASCADE
     final productBycategoryIdidList = await toListPrimaryKey(false);
-    final resProduct = await Product()
+    final resProductBYcategoryId = await Product()
         .select()
         .categoryId
         .inValues(productBycategoryIdidList)
         .delete(hardDelete);
-    if (!resProduct.success) return resProduct;
+    if (!resProductBYcategoryId.success) return resProductBYcategoryId;
 
     if (Category._softDeleteActivated && !hardDelete) {
       r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});

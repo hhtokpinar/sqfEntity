@@ -336,14 +336,12 @@ class ProductAddState extends State {
       ..imageUrl = txtImageUrl.text
       ..datetime = _datetime
       ..date = _date;
-    final result = await product.save();
-    if (result != 0) {
+    await product.save();
+    if (product.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(product.saveResult.toString(),
-          title: 'save Product Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Product Failed!', callBack: () {});
     }
   }
 }
@@ -456,14 +454,12 @@ class CategoryAddState extends State {
 
   void save() async {
     category..name = txtName.text;
-    final result = await category.save();
-    if (result != 0) {
+    await category.save();
+    if (category.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(category.saveResult.toString(),
-          title: 'save Category Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Category Failed!', callBack: () {});
     }
   }
 }
@@ -604,14 +600,12 @@ class TodoAddState extends State {
       ..id = int.tryParse(txtId.text)
       ..userId = int.tryParse(txtUserId.text)
       ..title = txtTitle.text;
-    final result = await todos.save();
-    if (result != 0) {
+    await todos.save();
+    if (todos.saveResult.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(todos.saveResult.toString(),
-          title: 'save Todo Failed!', callBack: () {
-        Navigator.pop(context, true);
-      });
+          title: 'save Todo Failed!', callBack: () {});
     }
   }
 }
