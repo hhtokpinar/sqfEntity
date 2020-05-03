@@ -18,10 +18,8 @@ import 'package:sqfentity_gen/src/sqfentity_formgenerator.dart';
 import 'package:sqfentity_gen/src/sqfentity_generator.dart';
 
 
-
 Builder sqfentityBuilder(BuilderOptions options) =>
     SharedPartBuilder([SqfEntityGenerator()], 'sqfentity');
-
 
 Builder sqfentityFormBuilder(BuilderOptions options) =>
     LibraryBuilder(SqfEntityFormGenerator(),

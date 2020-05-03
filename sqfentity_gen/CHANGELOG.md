@@ -1,3 +1,6 @@
+## 1.3.5+1
+fixed some bugs
+
 ## 1.3.5
    Added SQLite Constraints and Index property to fields
 

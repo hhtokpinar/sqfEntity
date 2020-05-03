@@ -104,7 +104,7 @@ class SqfEntityField {
       this.isPrimaryKeyField,
       this.isNotNull,
       this.isUnique,
-      this.isIndex,
+      this.isIndex, this.isIndexGroup,
       this.checkCondition});
   final String fieldName;
   final DbType dbType;
@@ -117,6 +117,7 @@ class SqfEntityField {
   final String checkCondition;
   final bool isNotNull;
   final bool isIndex;
+  final int isIndexGroup;
   final bool isUnique;
 }
 
@@ -158,6 +159,9 @@ class SqfEntityFieldVirtual implements SqfEntityField {
 
   @override
   bool get isIndex => null;
+
+  @override
+  int get isIndexGroup => null;
 }
 
 class SqfEntityFieldPrimaryKey extends SqfEntityField {
@@ -183,7 +187,7 @@ class SqfEntityFieldRelationship implements SqfEntityField {
       this.manyToManyTableName,
       this.isNotNull,
       this.isUnique,
-      this.isIndex,
+      this.isIndex, this.isIndexGroup,
       this.checkCondition});
   @override
   final String fieldName;
@@ -214,6 +218,8 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final bool isUnique;
   @override
   final bool isIndex;
+  @override
+  final int isIndexGroup;
 }
 
 class SqfEntityModel {
@@ -314,6 +320,7 @@ class SqfEntityModelConverter {
       ..defaultValue = field.defaultValue
       ..isPrimaryKeyField = field.isPrimaryKeyField
       ..isIndex = field.isIndex
+      ..isIndexGroup = field.isIndexGroup
       ..isUnique = field.isUnique
       ..isNotNull = field.isNotNull
       ..checkCondition = field.checkCondition
@@ -2878,10 +2885,10 @@ class SqfEntityTableBase {
         if (field.relationType != RelationType.MANY_TO_MANY) {
           relationType = relationType ?? field.relationType;
         }
-        if (field.relationType == RelationType.ONE_TO_ONE) {
-          primaryKeyName = primaryKeyName != null && primaryKeyName.isNotEmpty
-              ? '_$primaryKeyName'
-              : '';
+        if (field.relationType == RelationType.ONE_TO_ONE && field.table != this) {
+          // primaryKeyName = primaryKeyName != null && primaryKeyName.isNotEmpty
+          //     ? '_$primaryKeyName'
+          //     : '';
           if (primaryKeyName.isEmpty && field.isPrimaryKeyField) {
             primaryKeyType = field.table.primaryKeyType;
           }
@@ -3048,7 +3055,7 @@ abstract class SqfEntityFieldType {
       this.isNotNull,
       this.isUnique,
       this.checkCondition,
-      this.isIndex});
+      this.isIndex,this.isIndexGroup});
   String fieldName;
   DbType dbType;
   dynamic defaultValue;
@@ -3061,7 +3068,7 @@ abstract class SqfEntityFieldType {
   int primaryKeyIndex;
   bool isNotNull;
   bool isUnique;
-  bool isIndex;
+  bool isIndex; int isIndexGroup;
   String checkCondition;
   String toSqLiteFieldString();
 
@@ -3087,7 +3094,7 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       this.primaryKeyIndex,
       this.isNotNull,
       this.isUnique,
-      this.isIndex,
+      this.isIndex, this.isIndexGroup,
       this.checkCondition});
   @override
   String fieldName;
@@ -3177,6 +3184,9 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
 
   @override
   bool isIndex;
+
+  @override
+  int isIndexGroup;
 }
 
 class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
@@ -3248,6 +3258,9 @@ class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
 
   @override
   bool isIndex;
+
+  @override
+  int isIndexGroup;
 }
 
 class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
@@ -3266,7 +3279,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.primaryKeyIndex,
       this.isNotNull,
       this.isUnique,
-      this.isIndex,
+      this.isIndex, this.isIndexGroup,
       this.checkCondition}) {
     init();
   }
@@ -3372,6 +3385,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
 
   @override
   bool isIndex;
+
+  @override
+  int isIndexGroup;
 }
 
 abstract class SqfEntityModelBase {

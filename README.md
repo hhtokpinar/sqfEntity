@@ -519,8 +519,10 @@ EXAMPLE 6.4: DELETE PRODUCT WHERE ID>17
       
 ## Syncronize data from the web
 EXAMPLE 8.2: Fill List from web with Url (JSON data) and saveAll
-Todo.fromWebUrl("URL",(todosList){}) method gets json data from the web and loads into the todosList
-and then Todo().saveAll(todosList) method saves all data in your local database
+
+Step 1: Todo.fromWebUrl("URL",(todosList){}) method gets json data from the web and loads into the todosList
+
+Step 2: Call Todo().upsertAll(todosList) method saves all data in your local database
 
      todosList = await Todo.fromWebUrl("https://jsonplaceholder.typicode.com/todos");
       final results = await Todo().upsertAll(todosList);

@@ -118,8 +118,10 @@ class TableEmployee extends SqfEntityTableBase {
       SqfEntityFieldBase('LastName', DbType.text, isNotNull: false),
       SqfEntityFieldBase('FirstName', DbType.text, isNotNull: false),
       SqfEntityFieldBase('Title', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('BirthDate', DbType.datetime, isNotNull: false),
-      SqfEntityFieldBase('HireDate', DbType.datetime, isNotNull: false),
+      SqfEntityFieldBase('BirthDate', DbType.datetime,
+          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
+      SqfEntityFieldBase('HireDate', DbType.datetime,
+          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
       SqfEntityFieldBase('Address', DbType.text, isNotNull: false),
       SqfEntityFieldBase('City', DbType.text, isNotNull: false),
       SqfEntityFieldBase('State', DbType.text, isNotNull: false),
@@ -176,7 +178,8 @@ class TableInvoice extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('InvoiceDate', DbType.datetime, isNotNull: false),
+      SqfEntityFieldBase('InvoiceDate', DbType.datetime,
+          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
       SqfEntityFieldBase('BillingAddress', DbType.text, isNotNull: false),
       SqfEntityFieldBase('BillingCity', DbType.text, isNotNull: false),
       SqfEntityFieldBase('BillingState', DbType.text, isNotNull: false),

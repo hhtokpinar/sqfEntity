@@ -200,6 +200,7 @@ SqfEntityFieldType getFieldProperties(
     ..isNotNull = getBoolValue(obj, 'isNotNull')
     ..isUnique = getBoolValue(obj, 'isUnique')
     ..isIndex = getBoolValue(obj, 'isIndex')
+    ..isIndexGroup = getIntValue(obj, 'isIndexGroup')
     ..checkCondition = getStringValue(obj, 'checkCondition')
     ..sequencedBy =
         obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
@@ -210,10 +211,14 @@ SqfEntityFieldType getFieldProperties(
 
 SqfEntityFieldType toField(
   DartObject obj,
-  String dbModelName, //bool keepFieldNamesAsOriginal
+  String dbModelName, 
 ) {
   final fieldName =
       ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null;
+      if(fieldName != null && forbiddenNames.contains(fieldName))
+      {
+        throw Exception ('SQFENTITY ERROR: fieldName: [$fieldName] IS FORBIDDEN. PLEASE CHANGE THE FIELD NAME');
+      }
   final dbType = getTypeValue(obj, 'dbType') as DbType;
   if (obj.toString().startsWith('SqfEntityFieldVirtual')) {
     return SqfEntityFieldVirtualBase(fieldName, dbType);
@@ -245,6 +250,7 @@ SqfEntityFieldType toField(
       ..isNotNull = getBoolValue(obj, 'isNotNull')
       ..isUnique= getBoolValue(obj, 'isUnique')
       ..isIndex =getBoolValue(obj, 'isIndex')
+      ..isIndexGroup =getIntValue(obj, 'isIndexGroup')
       ..checkCondition=getStringValue(obj, 'checkCondition')
       ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
       ..relationType = getTypeValue(obj, 'relationType') as RelationType
@@ -258,53 +264,6 @@ SqfEntityFieldType toField(
 }
 
 
-/*
-SqfEntityFieldType toField(
-  DartObject obj,
-  String dbModelName, //bool keepFieldNamesAsOriginal
-) {
-  if (obj.toString().startsWith('SqfEntityFieldVirtual')) {
-    final fieldName =
-        ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null;
-    return SqfEntityFieldVirtualBase(
-        fieldName, getTypeValue(obj, 'dbType') as DbType);
-  } else if (obj.toString().startsWith('SqfEntityFieldRelationship')) {
-    final table = toSqfEntityTable(
-      obj.getField('parentTable'), dbModelName,
-      //keepFieldNamesAsOriginal: keepFieldNamesAsOriginal
-    );
-    return SqfEntityFieldRelationshipBase(
-        table, getTypeValue(obj, 'deleteRule') as DeleteRule)
-      ..defaultValue = getDynamicValue(obj, 'defaultValue')
-      ..minValue = getDynamicValue(obj, 'minValue')
-      ..maxValue = getDynamicValue(obj, 'maxValue')
-      ..fieldName =
-          ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null
-      ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
-      ..formIsRequired = getBoolValue(obj, 'formIsRequired')
-      ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
-      ..isNotNull = getBoolValue(obj, 'isNotNull')
-      ..isUnique= getBoolValue(obj, 'isUnique')
-      ..checkCondition=getStringValue(obj, 'checkCondition')
-      ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
-      ..relationType = getTypeValue(obj, 'relationType') as RelationType
-      ..init();
-  } else {
-    final fieldName = getStringValue(obj, 'fieldName');
-    return SqfEntityFieldBase(fieldName, getTypeValue(obj, 'dbType') as DbType)
-      ..defaultValue = getDynamicValue(obj, 'defaultValue')
-      ..minValue = getDynamicValue(obj, 'minValue')
-      ..maxValue = getDynamicValue(obj, 'maxValue')
-      ..formIsRequired = getBoolValue(obj, 'formIsRequired')
-      ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
-      //..isDisplayTextForList = getBoolValue(obj, 'isDisplayTextForList')
-      ..sequencedBy =
-          obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
-              ? toSequence(obj.getField('sequencedBy'))
-              : null;
-  }
-}
-*/
 List<SqfEntityFieldType> toFields(
   List<DartObject> objFields,
   String dbModelName, //bool keepFieldNamesAsOriginal
@@ -622,7 +581,7 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
           field.relationType == RelationType.MANY_TO_MANY &&
           table.relationType != RelationType.MANY_TO_MANY) continue;
       final String commonProperties =
-          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.checkCondition, 'checkCondition')}';
+          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.isIndexGroup, 'isIndexGroup')}${_getNullableValueField(field.checkCondition, 'checkCondition')}${_getNullableValueField(field.minValue, 'minValue')}${_getNullableValueField(field.maxValue, 'maxValue')}';
       if (field is SqfEntityFieldVirtualBase) {
         strFields.writeln(
             'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');
@@ -767,3 +726,5 @@ class MyStringBuffer extends StringBuffer {
     print(text);
   }
 }
+
+List<String> forbiddenNames =['case','select','delete','not','extends','class','return','if','else','and','or'];

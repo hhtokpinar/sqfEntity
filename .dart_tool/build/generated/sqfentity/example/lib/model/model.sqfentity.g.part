@@ -43,8 +43,14 @@ class TableProduct extends SqfEntityTableBase {
       SqfEntityFieldBase('rownum', DbType.integer, isNotNull: false),
       SqfEntityFieldBase('imageUrl', DbType.text, isNotNull: false),
       SqfEntityFieldBase('datetime', DbType.datetime,
-          defaultValue: DateTime.now(), isNotNull: false),
-      SqfEntityFieldBase('date', DbType.date, isNotNull: false),
+          defaultValue: DateTime.now(),
+          isNotNull: false,
+          minValue: DateTime.parse('2019-01-01'),
+          maxValue: DateTime.now().add(Duration(days: 30))),
+      SqfEntityFieldBase('date', DbType.date,
+          isNotNull: false,
+          minValue: DateTime.parse('2015-01-01'),
+          maxValue: DateTime.now().add(Duration(days: 365))),
     ];
     super.init();
   }

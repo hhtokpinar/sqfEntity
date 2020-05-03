@@ -203,7 +203,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
 
   Future<List<dynamic>> getForeignKeys(String tableName) async {
     final Database db = await this.db;
-    final result = await db.rawQuery('PRAGMA foreign_key_list($tableName)');
+    final result = await db.rawQuery('PRAGMA foreign_key_list(`$tableName`)');
     return result;
   }
 
@@ -570,7 +570,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
       for (SqfEntityTableBase table in dbTables) {
         // check existing table fields in the database
         final tableFields = await SqfEntityProvider(this)
-            .execDataTable('PRAGMA table_info(${table.tableName})');
+            .execDataTable('PRAGMA table_info(`${table.tableName}`)');
         final List<TableField> existingDBfields = <TableField>[];
         if (tableFields != null && tableFields.isNotEmpty) {
           String primaryKeyName;
@@ -755,14 +755,37 @@ bool checkForIsReadyDatabase(List<SqfEntityTableBase> dbTables) {
 
 List<String> checkTableIndexes(SqfEntityTableBase table) {
   final alterTableQuery = <String>[];
+  final List<String> addedIndexes = <String>[];
+
   for (SqfEntityFieldType field in table.fields) {
-    if (field is SqfEntityFieldRelationshipBase) {
-      alterTableQuery.add(
-          'CREATE INDEX IF NOT EXISTS IDX${field.relationshipName + field.fieldName} ON ${table.tableName} (${field.fieldName} ASC)');
-    } else if (field.isIndex ?? false){
-      alterTableQuery.add(
-          'CREATE ${field.isUnique ?? false ? 'UNIQUE ':''}INDEX IF NOT EXISTS IDX_${table.tableName}_${field.fieldName} ON ${table.tableName} (${field.fieldName} ASC)');
+    if (addedIndexes.contains(field.fieldName)) continue;
+    List<String> columns;
+    bool isUnique = false;
+    String indexName;
+    if (field.isIndex ?? false) {
+      if (field.isIndexGroup != null) {
+        columns = table.fields
+            .where((f) => f.isIndexGroup == field.isIndexGroup)
+            .map((e) => e.fieldName)
+            .toList();
+        indexName = 'IDX_${table.tableName}_Group_${field.isIndexGroup}';
+      } else {
+        isUnique = field.isUnique ?? false;
+        columns = [field.fieldName];
+        indexName = 'IDX_${table.tableName}_${field.fieldName}';
+      }
+    } else if (field is SqfEntityFieldRelationshipBase) {
+      indexName = 'IDX${field.relationshipName + field.fieldName}';
+      columns = [field.fieldName];
     }
+    if (indexName != null) {
+      addedIndexes.addAll(columns);
+      alterTableQuery.add(
+          'CREATE ${isUnique ? 'UNIQUE ' : ''}INDEX IF NOT EXISTS $indexName ON ${table.tableName} (${columns.join(',')})');
+    }
+  }
+  if (alterTableQuery.isNotEmpty) {
+    print('SQFENTITY: FOUND INDEX(ES) ON TABLE ${table.tableName}: (${addedIndexes.join(',')})');
   }
   return alterTableQuery;
 }
@@ -797,7 +820,6 @@ List<String> checkTableColumns(
   return alterTableQuery;
 }
 
-
 class BundledModelBase extends SqfEntityModelProvider {}
 
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
@@ -813,7 +835,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
       .execDataTable(
-          'SELECT name,type FROM sqlite_master WHERE type=\'table\' ${databaseTables != null && databaseTables.isNotEmpty ? " AND name IN (\'${databaseTables.join('\',\'')}\')" : ""}');
+          'SELECT name,type FROM sqlite_master WHERE type=\'table\' ${databaseTables != null && databaseTables.isNotEmpty ? " AND name IN (`${databaseTables.join('`,`')}`)" : ""}');
   print(
       'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in $bundledDatabasePath database:');
   printList(tableList);
@@ -854,7 +876,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
     bool isPrimaryKeyText = false;
     // check fields in the table
     final tableFields = await SqfEntityProvider(bundledModelBase)
-        .execDataTable('PRAGMA table_info($tableName)');
+        .execDataTable('PRAGMA table_info(`$tableName`)');
     final existingDBfields = <SqfEntityFieldType>[];
     if (tableFields != null && tableFields.isNotEmpty) {
       // check primary key in the table
@@ -864,8 +886,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
           isPrimaryKeyText = row['type'].toString().toLowerCase() == 'text';
           primaryKeyNames.add(primaryKeyName);
           final isAutoIncrement = SqfEntityProvider(bundledModelBase).execScalar(
-              'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name="$tableName" AND sql LIKE "%AUTOINCREMENT%"');
-
+              'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name=`$tableName` AND sql LIKE "%AUTOINCREMENT%"');
           isIdentity = isAutoIncrement != null;
           //break;
         }
