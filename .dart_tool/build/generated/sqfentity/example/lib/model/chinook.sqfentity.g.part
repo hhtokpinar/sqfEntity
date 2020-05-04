@@ -14,6 +14,7 @@
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
+// ignore_for_file:
 // BEGIN TABLES
 // Album TABLE
 class TableAlbum extends SqfEntityTableBase {

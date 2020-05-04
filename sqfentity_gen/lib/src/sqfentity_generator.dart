@@ -18,7 +18,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     //print('keepFieldNamesAsOriginal: $keepFieldNamesAsOriginal');
 
     final model = annotation.read('model').objectValue;
-
+    
 // When testing, you can uncomment the test line to make sure everything's working properly
     // return '// MODEL -> ${model.toString()}';
 
@@ -31,6 +31,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     final dbModel = builder.toModel();
     print('${dbModel.modelName} Model recognized succesfuly');
     final modelStr = MyStringBuffer()
+
           //  ..writeln('/*') // write output as commented to see what is wrong
           ..writeln(SqfEntityConverter(dbModel).createModelDatabase())
           ..printToDebug(

@@ -34,12 +34,16 @@ class SqfEntityFormGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
 
     if (dbModel.formTables.isEmpty) return null;
 
+    final modelStr = StringBuffer();
     final String path = element.source
         .toString()
         .substring(element.source.toString().lastIndexOf('/') + 1);
-
+    if (dbModel.ignoreForFile != null && dbModel.ignoreForFile.isNotEmpty) {
+      modelStr
+          .writeln('// ignore_for_file: ${dbModel.ignoreForFile.join(', ')}');
+    }
     // print('${tables[0].modelName} Model recognized succesfuly');
-    final modelStr = StringBuffer('part of \'$path\';');
+    modelStr.writeln('part of \'$path\';');
 
     // print('before for (final table in tables), tables.length=${dbModel.formTables.length}');
     //..writeln('/*') // write output as commented to see what is wrong

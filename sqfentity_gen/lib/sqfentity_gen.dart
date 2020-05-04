@@ -43,10 +43,8 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
   SqfEntityModelBuilder(this.model, this.instancename);
   final DartObject model;
   final String instancename;
-  //final bool keepFieldNamesAsOriginal;
   String get dbModelName =>
       getStringValue(model, 'modelName') ?? toCamelCase(instancename);
-
   SqfEntityModelBase toModel() {
     final dbModel = _DbModel()
       ..instanceName = instancename
@@ -58,6 +56,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
           toTableList(getListValue(model, 'databaseTables'), dbModelName)
       ..formTables = toTableList(getListValue(model, 'formTables'), dbModelName)
       ..bundledDatabasePath = getStringValue(model, 'bundledDatabasePath')
+      ..ignoreForFile = toListString(getListValue(model, 'ignoreForFile'))
       ..init();
     return dbModel;
   }
@@ -69,7 +68,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
       print('SQFENTITY_GEN.DART: recognizing Tables ($dbModelName)');
 
       for (var obj in objTables) {
-      //  print(   '-------------------------------------------------------ModelBuilder: ${getStringValue(obj, 'tableName')}');
+        //  print(   '-------------------------------------------------------ModelBuilder: ${getStringValue(obj, 'tableName')}');
         retVal.add(toSqfEntityTable(
           obj, dbModelName,
           //keepFieldNamesAsOriginal: keepFieldNamesAsOriginal
@@ -146,7 +145,6 @@ bool ifExistTableProperty(DartObject obj, String name) =>
 bool ifExist(DartObject obj, String name) => obj.getField(name) != null;
 
 SqfEntityTableBase toSqfEntityTable(DartObject obj, String dbModelName) {
-  //keepFieldNamesAsOriginal = keepFieldNamesAsOriginal ?? false;
   final String _tableName = getStringValue(obj, 'tableName');
 
   if (_tableName == null) {
@@ -206,25 +204,23 @@ SqfEntityFieldType getFieldProperties(
         obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
             ? toSequence(obj.getField('sequencedBy'))
             : null;
-            return _retVal;
+  return _retVal;
 }
 
 SqfEntityFieldType toField(
   DartObject obj,
-  String dbModelName, 
+  String dbModelName,
 ) {
   final fieldName =
       ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null;
-      if(fieldName != null && forbiddenNames.contains(fieldName))
-      {
-        throw Exception ('SQFENTITY ERROR: fieldName: [$fieldName] IS FORBIDDEN. PLEASE CHANGE THE FIELD NAME');
-      }
+  if (fieldName != null && forbiddenNames.contains(fieldName)) {
+    throw Exception(
+        'SQFENTITY ERROR: fieldName: [$fieldName] IS FORBIDDEN. PLEASE CHANGE THE FIELD NAME');
+  }
   final dbType = getTypeValue(obj, 'dbType') as DbType;
   if (obj.toString().startsWith('SqfEntityFieldVirtual')) {
     return SqfEntityFieldVirtualBase(fieldName, dbType);
   } else if (obj.toString().startsWith('SqfEntityFieldRelationship')) {
-
-
     final parentTable = toSqfEntityTable(
       obj.getField('parentTable'),
       dbModelName,
@@ -237,7 +233,6 @@ SqfEntityFieldType toField(
     //   ..init();
     // return getFieldProperties(retVal, obj);
 
-
     return SqfEntityFieldRelationshipBase(
         parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule)
       ..defaultValue = getDynamicValue(obj, 'defaultValue')
@@ -248,21 +243,18 @@ SqfEntityFieldType toField(
       ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
       ..isPrimaryKeyField = getBoolValue(obj, 'isPrimaryKeyField')
       ..isNotNull = getBoolValue(obj, 'isNotNull')
-      ..isUnique= getBoolValue(obj, 'isUnique')
-      ..isIndex =getBoolValue(obj, 'isIndex')
-      ..isIndexGroup =getIntValue(obj, 'isIndexGroup')
-      ..checkCondition=getStringValue(obj, 'checkCondition')
+      ..isUnique = getBoolValue(obj, 'isUnique')
+      ..isIndex = getBoolValue(obj, 'isIndex')
+      ..isIndexGroup = getIntValue(obj, 'isIndexGroup')
+      ..checkCondition = getStringValue(obj, 'checkCondition')
       ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
       ..relationType = getTypeValue(obj, 'relationType') as RelationType
       ..init();
-
-
   } else {
     final SqfEntityFieldType retVal = SqfEntityFieldBase(fieldName, dbType);
     return getFieldProperties(retVal, obj);
   }
 }
-
 
 List<SqfEntityFieldType> toFields(
   List<DartObject> objFields,
@@ -272,10 +264,23 @@ List<SqfEntityFieldType> toFields(
   //print('-------------------------------------------------------RECOGNIZING FIELDS:');
   for (var obj in objFields) {
     sqfEntityFieldList.add(toField(
-      obj, dbModelName,
+      obj,
+      dbModelName,
     ));
   }
   return sqfEntityFieldList;
+}
+
+List<String> toListString(
+  List<DartObject> objList,
+) {
+  if (objList == null) return [];
+  final stringList = <String>[];
+  //print('-------------------------------------------------------RECOGNIZING FIELDS:');
+  for (var obj in objList) {
+    stringList.add(obj.toStringValue());
+  }
+  return stringList;
 }
 
 class SqfEntityTables {
@@ -405,6 +410,7 @@ class SqfEntityConverter {
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar    
 
+${_m.ignoreForFile != null ? '// ignore_for_file: ${_m.ignoreForFile.join(', ')}': ''}
 $__createModelTables
 
 $__createModelSequences
@@ -576,7 +582,7 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
     //   }
     // }
 
-     for (final field in table.fields) {
+    for (final field in table.fields) {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.MANY_TO_MANY &&
           table.relationType != RelationType.MANY_TO_MANY) continue;
@@ -593,8 +599,6 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
             'SqfEntityFieldBase(\'${field.fieldName}\', ${field.dbType.toString()}$commonProperties),');
       }
     }
-
-
 
     return strFields.toString();
   }
@@ -640,7 +644,9 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
           //  ..printToDebug('1: ${table.tableName}')
           ..writeln(SqfEntityObjectField(table).toString())
           //  ..printToDebug('2: ${table.tableName}')
-          ..writeln(SqfEntityObjectFilterBuilder(table, _m.formTables.contains(table)).toString())
+          ..writeln(
+              SqfEntityObjectFilterBuilder(table, _m.formTables.contains(table))
+                  .toString())
           //  ..printToDebug('3: ${table.tableName}')
           ..writeln(SqfEntityFieldBuilder(table).toString())
           //  ..printToDebug('4: ${table.tableName}')
@@ -727,4 +733,16 @@ class MyStringBuffer extends StringBuffer {
   }
 }
 
-List<String> forbiddenNames =['case','select','delete','not','extends','class','return','if','else','and','or'];
+List<String> forbiddenNames = [
+  'case',
+  'select',
+  'delete',
+  'not',
+  'extends',
+  'class',
+  'return',
+  'if',
+  'else',
+  'and',
+  'or'
+];

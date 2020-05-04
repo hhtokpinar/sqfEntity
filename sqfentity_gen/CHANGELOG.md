@@ -1,3 +1,20 @@
+## 1.3.5+2
+  Added a property named ignoreForFile in SqfEntityModel.
+  You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
+  
+  ## How to use?
+
+      @SqfEntityBuilder(myDbModel)
+         const myDbModel = SqfEntityModel(
+         modelName: 'MyDbModel',
+         databaseName: 'sampleORM_v1.3.5+1.db',
+         databaseTables: [tableProduct, tableCategory, tableTodo],
+         ignoreForFile: [ 'avoid_unused_constructor_parameters', 
+                                    'always_put_control_body_on_new_line', 
+                                    'prefer_final_fields']
+         );
+
+
 ## 1.3.5+1
 fixed some bugs
 

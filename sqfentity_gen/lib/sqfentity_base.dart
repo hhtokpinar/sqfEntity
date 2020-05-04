@@ -230,22 +230,25 @@ class SqfEntityModel {
       this.modelName,
       this.sequences,
       this.formTables,
-      this.password});
+      this.password,this.ignoreForFile});
   // STEPS FOR CREATE YOUR DB CONTEXT
 
-  // 1. declare your sqlite database name
+  /// 1. declare your sqlite database name
   final String databaseName;
 
-  // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
+  /// This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
   final String bundledDatabasePath;
   final String password;
-  // 2. Add the object you defined above to your list of database tables and sequences.
+  /// 2. Add the object you defined above to your list of database tables and sequences.
   final List<SqfEntityTable> databaseTables;
   final List<SqfEntityTable> formTables;
   final List<SqfEntitySequence> sequences;
 
-  // set this property to your DBModel.dart path for ex: "import 'MyDbModel.dart';"
+  /// set this property to your DBModel.dart path for ex: "import 'MyDbModel.dart';"
   final String modelName;
+
+  /// You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
+  final List<String> ignoreForFile;
   // that's all.. one more step left for create models.dart file.
   // ATTENTION: Defining the table here provides automatic processing for database configuration only.
   // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
@@ -3399,6 +3402,7 @@ abstract class SqfEntityModelBase {
   List<SqfEntityTableBase> databaseTables;
   List<SqfEntityTableBase> formTables;
   List<SqfEntitySequenceBase> sequences;
+  List<String> ignoreForFile;
   void init() {
     final manyToManyTables = <SqfEntityTableBase>[];
     //print('ModelBase init() begin');
