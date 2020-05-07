@@ -23,8 +23,8 @@ class _SlideMenuState extends State<SlideMenu>
   @override
   void dispose() {
     _controller
-    ..animateTo(.0)
-    ..dispose();
+      ..animateTo(.0)
+      ..dispose();
     super.dispose();
   }
 
@@ -42,15 +42,17 @@ class _SlideMenuState extends State<SlideMenu>
         });
       },
       onHorizontalDragEnd: (data) {
-        if (data.primaryVelocity > 2500)
+        if (data.primaryVelocity > 2500) {
           _controller
               .animateTo(.0); //close menu on fast swipe in the right direction
-        else if (_controller.value >= .5 ||
+        } else if (_controller.value >= .5 ||
             data.primaryVelocity <
                 -2500) // fully open if dragged a lot to left or on fast swipe to left
         {
           _controller.animateTo(1.0);
-          if (UITools.lastController != null) {UITools.lastController.animateTo(1.0);}
+          if (UITools.lastController != null) {
+            UITools.lastController.animateTo(1.0);
+          }
           UITools.lastController = _controller;
         } else // close if none of above
         {

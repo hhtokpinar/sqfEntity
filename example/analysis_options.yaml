@@ -23,6 +23,9 @@ linter:
   # http://dart-lang.github.io/linter/lints/
 
   # === error rules ===
+  - avoid_unused_constructor_parameters
+  - prefer_iterable_whereType
+  - curly_braces_in_flow_control_structures
   - avoid_empty_else
   - avoid_slow_async_io
   - cancel_subscriptions
@@ -44,10 +47,11 @@ linter:
 
   # === style rules ===
   - always_declare_return_types
-  #- always_put_control_body_on_new_line
+  - always_put_control_body_on_new_line
   - always_require_non_null_named_parameters
   #- always_specify_types
   - annotate_overrides
+  - use_function_type_syntax_for_parameters
   # - avoid_annotating_with_dynamic # not yet tested
   # - avoid_as # 2019-01-30 removed for no-implicit-casts
   # - avoid_catches_without_on_clauses # not yet tested
@@ -83,14 +87,14 @@ linter:
   # - parameter_assignments # we do this commonly
   - prefer_adjacent_string_concatenation
   - prefer_single_quotes
-  #- prefer_collection_literals
+  - prefer_collection_literals
   - prefer_conditional_assignment # not yet tested
   - prefer_const_constructors
   # - prefer_constructors_over_static_methods # not yet tested
   - prefer_contains
   - prefer_equal_for_default_values
   # - prefer_expression_function_bodies # conflicts with https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#consider-using--for-short-functions-and-methods
-  # - prefer_final_fields # https://github.com/dart-lang/linter/issues/506
+  - prefer_final_fields # https://github.com/dart-lang/linter/issues/506
   - prefer_final_locals
   # - prefer_foreach # not yet tested
   # - prefer_function_declarations_over_variables # not yet tested
@@ -104,7 +108,7 @@ linter:
   - sort_constructors_first
   - sort_unnamed_constructors_first
   # - super_goes_last
-  # - type_annotate_public_apis # subset of always_specify_types
+  - type_annotate_public_apis # subset of always_specify_types
   - type_init_formals
   # - unawaited_futures # https://github.com/flutter/flutter/issues/5793
   - unnecessary_brace_in_string_interps

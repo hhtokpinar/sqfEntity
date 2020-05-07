@@ -30,14 +30,10 @@ import 'package:synchronized/synchronized.dart';
 
 class SqfEntityProvider extends SqfEntityModelBase {
   SqfEntityProvider(SqfEntityModelProvider dbModel,
-      {String tableName,
-      String colId,
-      List<String> primaryKeyList,
-      String whereStr}) {
+      {String tableName, List<String> primaryKeyList, String whereStr}) {
     _dbModel = dbModel;
     _tableName = tableName;
     _whereStr = whereStr;
-    // _colId = colId; // removed after v1.3.0
     _primaryKeyList = primaryKeyList;
   }
   SqfEntityProvider._internal();
@@ -45,7 +41,6 @@ class SqfEntityProvider extends SqfEntityModelBase {
       SqfEntityProvider._internal();
   static SqfEntityProvider get = _sqfEntityProvider;
   String _tableName = '';
-  //String _colId = ''; // removed after v1.3.0
   List<String> _primaryKeyList;
   String _whereStr;
   SqfEntityModelProvider _dbModel;
@@ -758,7 +753,9 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
   final List<String> addedIndexes = <String>[];
 
   for (SqfEntityFieldType field in table.fields) {
-    if (addedIndexes.contains(field.fieldName)) continue;
+    if (addedIndexes.contains(field.fieldName)) {
+      continue;
+    }
     List<String> columns;
     bool isUnique = false;
     String indexName;
@@ -785,7 +782,8 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
     }
   }
   if (alterTableQuery.isNotEmpty) {
-    print('SQFENTITY: FOUND INDEX(ES) ON TABLE ${table.tableName}: (${addedIndexes.join(',')})');
+    print(
+        'SQFENTITY: FOUND INDEX(ES) ON TABLE ${table.tableName}: (${addedIndexes.join(',')})');
   }
   return alterTableQuery;
 }
@@ -793,6 +791,7 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
 List<String> checkTableColumns(
     SqfEntityTableBase table, List<TableField> existingDBfields) {
   final alterTableQuery = <String>[];
+  bool recreateTable = false;
   for (var newField in table.fields) {
     if (newField is SqfEntityFieldVirtualBase) {
       continue;
@@ -803,10 +802,12 @@ List<String> checkTableColumns(
       // if (newField.dbType == DbType.bool) newField.dbType = DbType.numeric;
       if (!(newField.dbType == DbType.bool &&
               eField.toList()[0].fieldType == DbType.numeric) &&
+          !(newField.dbType == DbType.datetimeUtc &&
+              eField.toList()[0].fieldType == DbType.datetime) &&
           eField.toList()[0].fieldType != newField.dbType) {
+        recreateTable = true;
         print(
-            // throw Exception(
-            'SQFENTITIY DATABASE INITIALIZE ERROR: The type of column [${newField.fieldName}(${newField.dbType.toString()})] does not match the existing column [${eField.toList()[0].fieldName}(${eField.toList()[0].fieldType.toString()})] on the table (${table.tableName})');
+            'SQFENTITIY COLUMN TYPE HAS CHANGED: The new type of the column [${newField.fieldName}(${newField.dbType.toString()})] applied to the existing column [${eField.toList()[0].fieldName}(${eField.toList()[0].fieldType.toString()})] on the table (${table.tableName})');
       }
     } else {
       alterTableQuery.add(
@@ -816,6 +817,18 @@ List<String> checkTableColumns(
             'CREATE INDEX IF NOT EXISTS IDX${newField.relationshipName + newField.fieldName} ON ${table.tableName} (${newField.fieldName} ASC)');
       }
     }
+  }
+  if (recreateTable) {
+    alterTableQuery
+      ..add('PRAGMA foreign_keys=off')
+      ..add('ALTER TABLE ${table.tableName} RENAME TO _${table.tableName}_old')
+      ..add(table.createTableSQLnoForeignKeys)
+      ..add(
+          '''INSERT INTO ${table.tableName} (${table.createConstructureWithId.replaceAll('this.', '')})
+  SELECT ${table.createConstructureWithId.replaceAll('this.', '')}
+  FROM _${table.tableName}_old''')
+      ..add('DROP TABLE _${table.tableName}_old')
+      ..add('PRAGMA foreign_keys=on');
   }
   return alterTableQuery;
 }
@@ -835,7 +848,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
       .execDataTable(
-          'SELECT name,type FROM sqlite_master WHERE type=\'table\' ${databaseTables != null && databaseTables.isNotEmpty ? " AND name IN (`${databaseTables.join('`,`')}`)" : ""}');
+          'SELECT name,type FROM sqlite_master WHERE type=\'table\' ${databaseTables != null && databaseTables.isNotEmpty ? " AND name IN ('${databaseTables.join('\',\'')}`)" : ""}');
   print(
       'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in $bundledDatabasePath database:');
   printList(tableList);
@@ -886,7 +899,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
           isPrimaryKeyText = row['type'].toString().toLowerCase() == 'text';
           primaryKeyNames.add(primaryKeyName);
           final isAutoIncrement = SqfEntityProvider(bundledModelBase).execScalar(
-              'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name=`$tableName` AND sql LIKE "%AUTOINCREMENT%"');
+              'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name LIKE \'$tableName\' AND sql LIKE "%AUTOINCREMENT%"');
           isIdentity = isAutoIncrement != null;
           //break;
         }

@@ -747,7 +747,7 @@ Future<void> samples9() async {
       'EX.9.1 Execute custom SQL command on database\n -> final sql=\'$sql_91\';\n -> MyDbModel().execSQL(sql)  \n -> print result = ${result_91.toString()}');
 
   // EX.9.2 Execute custom SQL command List on database
-  final sqlList = List<String>()
+  final sqlList = <String>[]
     ..add('UPDATE product set isActive=1 where isActive=1')
     ..add('UPDATE product set isActive=0 where isActive=0');
 

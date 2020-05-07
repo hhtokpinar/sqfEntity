@@ -32,7 +32,8 @@ class SqfEntityFormGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
         '-------------------------------------------------------FormBuilder: $instanceName');
     final dbModel = builder.toModel();
 
-    if (dbModel.formTables.isEmpty) return null;
+    if (dbModel.formTables.isEmpty) 
+    {return null;}
 
     final modelStr = StringBuffer();
     final String path = element.source

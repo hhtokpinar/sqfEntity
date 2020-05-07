@@ -15,7 +15,8 @@ Open downloaded folder named sqfentity-master in VSCode and Click "Get Packages"
 
 
 ## Before Start: You can help us build the future sooner
- If this project help you reduce time to develop, you can give me a cup of coffee to help my sleepless nights :)
+ If this project help you reduce time to develop, don't forget to click on the star on the top right of the page. 
+ Also you can give me a cup of coffee to help my sleepless nights :)
  https://www.patreon.com/hhtokpinar
 
 

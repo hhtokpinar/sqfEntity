@@ -14,7 +14,7 @@ class MainController extends StatefulWidget {
 class MainControllerState extends State {
   
 
-  Map<String, dynamic> controllers = Map<String, dynamic>();
+  Map<String, dynamic> controllers = <String, dynamic>{};
 
   @override
   Widget build(BuildContext context) {

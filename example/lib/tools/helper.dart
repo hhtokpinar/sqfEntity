@@ -24,7 +24,7 @@ class UITools {
   static const mainIconsColor = Colors.white;
   static const double mainFontSize = 24;
   static const double mainIconSize = 30;
-  static final dateFormatter =
+  static final DateFormat dateFormatter =
       DateFormat('yyyy-MM-dd', mainDatePickerLocaleType.toString());
   static const mainDatePickerLocaleType = LocaleType.tr;
   static const mainDatePickerTheme = DatePickerTheme(
@@ -159,7 +159,7 @@ class UITools {
       bool useSoftDeleting,
       bool hasSubItems,
       String formListTitleField,
-      void getData()) async {
+      void Function() getData) async {
     BoolResult result;
     bool updated = false;
     switch (choice) {
@@ -214,14 +214,17 @@ class UITools {
 
   static String convertTime(DateTime date) {
     final retVal = StringBuffer();
-    if (date.hour < 10) retVal.write('0');
+    if (date.hour < 10) 
+    {retVal.write('0');}
     retVal.write('${date.hour}:');
 
-    if (date.minute < 10) retVal.write('0');
+    if (date.minute < 10) 
+    {retVal.write('0');}
     retVal.write('${date.minute}');
     if (date.second > 0) {
       retVal.write(':');
-      if (date.second < 10) retVal.write('0');
+      if (date.second < 10)
+      { retVal.write('0');}
       retVal.write(date.second);
     }
     return retVal.toString();
@@ -230,10 +233,12 @@ class UITools {
   static String convertDate(DateTime date) {
     final retVal = StringBuffer('${date.year}-');
 
-    if (date.month < 10) retVal.write('0');
+    if (date.month < 10)
+     {retVal.write('0');}
     retVal.write('${date.month}-');
 
-    if (date.day < 10) retVal.write('0');
+    if (date.day < 10) 
+    {retVal.write('0');}
     retVal.write(date.day);
     return retVal.toString();
   }
@@ -342,7 +347,8 @@ class UITools {
                 child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  if (callBack != null) callBack();
+                  if (callBack != null) 
+                  {callBack();}
                 },
               ),
             ],
@@ -385,4 +391,4 @@ class CONSTANTS {
 
 enum Choice { Delete, Update, Recover }
 enum OrderBy { NameAsc, NameDesc, PriceAsc, PriceDesc, None }
-final priceFormat = NumberFormat('#,##0.#', 'en_US');
+final NumberFormat priceFormat = NumberFormat('#,##0.#', 'en_US');

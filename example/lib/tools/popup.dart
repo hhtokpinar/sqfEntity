@@ -11,8 +11,7 @@ Source: https://www.coderblog.in/2019/04/how-to-create-popup-window-in-flutter/
 
 class PopupLayout extends ModalRoute {
   PopupLayout(
-      {Key key,
-      this.bgColor,
+      {this.bgColor,
       @required this.child,
       this.top,
       this.bottom,

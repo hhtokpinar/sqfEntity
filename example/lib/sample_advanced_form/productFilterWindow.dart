@@ -15,17 +15,17 @@ class ProductFilterWindowState extends State {
   ProductFilterWindowState();
   
   List<DropdownMenuItem<int>> _dropdownMenuItems =
-      List<DropdownMenuItem<int>>();
+      <DropdownMenuItem<int>>[];
   int _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId ?? 0;
   int nameRadioValue = SearchFilterProduct.getValues.nameRadioValue ?? 1;
   bool isActive = SearchFilterProduct.getValues.isActive ?? false;
   bool isNotActive = SearchFilterProduct.getValues.isNotActive ?? false;
   final _formKey = GlobalKey<FormState>();
-  final txtName = TextEditingController();
-  final txtDescription = TextEditingController();
-  final txtImageUrl = TextEditingController();
-  final txtPriceMin = TextEditingController();
-  final txtPriceMax = TextEditingController();
+  final TextEditingController txtName = TextEditingController();
+  final TextEditingController txtDescription = TextEditingController();
+  final TextEditingController txtImageUrl = TextEditingController();
+  final TextEditingController txtPriceMin = TextEditingController();
+  final TextEditingController txtPriceMax = TextEditingController();
 
   String nameTitle = 'Contains';
 
@@ -48,11 +48,11 @@ class ProductFilterWindowState extends State {
     if (SearchFilterProduct.getValues.minPrice != null) {
       txtPriceMin.text = SearchFilterProduct.getValues.minPrice.toString();
     } else
-      txtPriceMin.text = '';
+      {txtPriceMin.text = '';}
     if (SearchFilterProduct.getValues.maxPrice != null) {
       txtPriceMax.text = SearchFilterProduct.getValues.maxPrice.toString();
     } else
-      txtPriceMax.text = '';
+      {txtPriceMax.text = '';}
     super.initState();
   }
 
@@ -238,7 +238,7 @@ class ProductFilterWindowState extends State {
     );
   }
 
-  Row buildRowCategory(void onChangeDropdownItem(int selectedCategoryId)) {
+  Row buildRowCategory(void Function(int selectedCategoryId) onChangeDropdownItem) {
     return Row(
       children: <Widget>[
         Expanded(

@@ -1,8 +1,12 @@
+## 1.3.5+3
+added ability to change columns type
+
+
 ## 1.3.5+2
   Added a property named ignoreForFile in SqfEntityModel.
   You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
   
-  ## How to use?
+### How to use?
 
       @SqfEntityBuilder(myDbModel)
          const myDbModel = SqfEntityModel(
@@ -16,7 +20,15 @@
 
 
 ## 1.3.5+1
-fixed some bugs
+Added multicolumn index support. For more information [click here](https://www.sqlitetutorial.net/sqlite-index/)
+
+### How to use?
+set any integer value to **isIndexGroup** parameter with isIndex: true
+example:
+
+      SqfEntityField('firtsName', DbType.text, isIndex: true, isIndexGroup: 1),
+      SqfEntityField('lastName', DbType.text, isIndex: true, isIndexGroup: 1),
+
 
 ## 1.3.5
    Added SQLite Constraints and Index property to fields

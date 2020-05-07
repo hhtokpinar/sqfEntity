@@ -18,6 +18,7 @@ part of 'model.dart';
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
+// ignore_for_file:
 // BEGIN TABLES
 // Product TABLE
 class TableProduct extends SqfEntityTableBase {
@@ -195,7 +196,7 @@ class Product {
     _setDefaultValues();
   }
   Product.withId(
-      id,
+      this.id,
       this.name,
       this.description,
       this.price,
@@ -209,27 +210,42 @@ class Product {
     _setDefaultValues();
   }
   Product.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     id = int.tryParse(o['id'].toString());
-    if (o['name'] != null) name = o['name'] as String;
-    if (o['description'] != null) description = o['description'] as String;
-    if (o['price'] != null) price = double.tryParse(o['price'].toString());
-    if (o['isActive'] != null)
+    if (o['name'] != null) {
+      name = o['name'] as String;
+    }
+    if (o['description'] != null) {
+      description = o['description'] as String;
+    }
+    if (o['price'] != null) {
+      price = double.tryParse(o['price'].toString());
+    }
+    if (o['isActive'] != null) {
       isActive = o['isActive'] == 1 || o['isActive'] == true;
+    }
     categoryId = int.tryParse(o['categoryId'].toString());
 
-    if (o['rownum'] != null) rownum = int.tryParse(o['rownum'].toString());
-    if (o['imageUrl'] != null) imageUrl = o['imageUrl'] as String;
-    if (o['datetime'] != null)
+    if (o['rownum'] != null) {
+      rownum = int.tryParse(o['rownum'].toString());
+    }
+    if (o['imageUrl'] != null) {
+      imageUrl = o['imageUrl'] as String;
+    }
+    if (o['datetime'] != null) {
       datetime = int.tryParse(o['datetime'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
               int.tryParse(o['datetime'].toString()))
           : DateTime.tryParse(o['datetime'].toString());
-    if (o['date'] != null)
+    }
+    if (o['date'] != null) {
       date = int.tryParse(o['date'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
               int.tryParse(o['date'].toString()))
           : DateTime.tryParse(o['date'].toString());
+    }
     isDeleted = o['isDeleted'] != null
         ? o['isDeleted'] == 1 || o['isDeleted'] == true
         : null;
@@ -943,7 +959,9 @@ class ProductFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -963,8 +981,12 @@ class ProductFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   ProductFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -998,7 +1020,9 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -1016,7 +1040,9 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -1034,7 +1060,9 @@ class ProductFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -1398,7 +1426,9 @@ class ProductFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnProduct.toList(qparams);
@@ -1524,10 +1554,9 @@ class ProductManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'product';
-  //static String _colId = 'id';
-  static List<String> _primaryKeyList = ['id'];
-  static String _whereStr = 'id=?';
+  static final String _tableName = 'product';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion ProductManager
@@ -1539,15 +1568,20 @@ class Category {
   Category.withFields(this.name, this.isActive) {
     _setDefaultValues();
   }
-  Category.withId(id, this.name, this.isActive) {
+  Category.withId(this.id, this.name, this.isActive) {
     _setDefaultValues();
   }
   Category.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     id = int.tryParse(o['id'].toString());
-    if (o['name'] != null) name = o['name'] as String;
-    if (o['isActive'] != null)
+    if (o['name'] != null) {
+      name = o['name'] as String;
+    }
+    if (o['isActive'] != null) {
       isActive = o['isActive'] == 1 || o['isActive'] == true;
+    }
   }
   // FIELDS (Category)
   int id;
@@ -2134,7 +2168,9 @@ class CategoryFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -2154,8 +2190,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   CategoryFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -2189,7 +2229,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -2207,7 +2249,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -2225,7 +2269,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -2346,7 +2392,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         .categoryId
         .inValues(productBycategoryIdidList)
         .delete(hardDelete);
-    if (!resProductBYcategoryId.success) return resProductBYcategoryId;
+    if (!resProductBYcategoryId.success) {
+      return resProductBYcategoryId;
+    }
 
     if (Category._softDeleteActivated && !hardDelete) {
       r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
@@ -2550,7 +2598,9 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnCategory.toList(qparams);
@@ -2629,10 +2679,9 @@ class CategoryManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'category';
-  //static String _colId = 'id';
-  static List<String> _primaryKeyList = ['id'];
-  static String _whereStr = 'id=?';
+  static final String _tableName = 'category';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion CategoryManager
@@ -2641,19 +2690,26 @@ class Todo {
   Todo({this.id, this.userId, this.title, this.completed}) {
     _setDefaultValues();
   }
-  Todo.withFields(id, this.userId, this.title, this.completed) {
+  Todo.withFields(this.id, this.userId, this.title, this.completed) {
     _setDefaultValues();
   }
-  Todo.withId(id, this.userId, this.title, this.completed) {
+  Todo.withId(this.id, this.userId, this.title, this.completed) {
     _setDefaultValues();
   }
   Todo.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     id = int.tryParse(o['id'].toString());
-    if (o['userId'] != null) userId = int.tryParse(o['userId'].toString());
-    if (o['title'] != null) title = o['title'] as String;
-    if (o['completed'] != null)
+    if (o['userId'] != null) {
+      userId = int.tryParse(o['userId'].toString());
+    }
+    if (o['title'] != null) {
+      title = o['title'] as String;
+    }
+    if (o['completed'] != null) {
       completed = o['completed'] == 1 || o['completed'] == true;
+    }
 
     isSaved = true;
   }
@@ -2826,7 +2882,9 @@ class Todo {
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
       await _mnTodo.insert(this);
-      if (saveResult != null && saveResult.success) isSaved = true;
+      if (saveResult != null && saveResult.success) {
+        isSaved = true;
+      }
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnTodo.update(this);
@@ -3184,7 +3242,9 @@ class TodoFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -3204,8 +3264,12 @@ class TodoFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   TodoFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -3239,7 +3303,9 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -3257,7 +3323,9 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -3275,7 +3343,9 @@ class TodoFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -3579,7 +3649,9 @@ class TodoFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnTodo.toList(qparams);
@@ -3665,10 +3737,9 @@ class TodoManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'todos';
-  //static String _colId = 'id';
-  static List<String> _primaryKeyList = ['id'];
-  static String _whereStr = 'id=?';
+  static final String _tableName = 'todos';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion TodoManager

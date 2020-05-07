@@ -87,7 +87,7 @@ class ProductListState extends State {
     }
 
     if (products == null) {
-      products = List<Product>();
+      products = <Product>[];
       getData();
     }
     void goToDetail(Product product) async {

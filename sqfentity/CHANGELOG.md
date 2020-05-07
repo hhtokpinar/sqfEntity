@@ -1,3 +1,6 @@
+## 1.3.5+2
+added ability to change columns type
+
 ## 1.3.5+1
 fixed some bugs
 

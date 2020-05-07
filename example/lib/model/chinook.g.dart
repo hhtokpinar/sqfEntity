@@ -18,6 +18,7 @@ part of 'chinook.dart';
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
+// ignore_for_file:
 // BEGIN TABLES
 // Album TABLE
 class TableAlbum extends SqfEntityTableBase {
@@ -416,13 +417,17 @@ class Album {
   Album.withFields(this.Title, this.ArtistId) {
     _setDefaultValues();
   }
-  Album.withId(AlbumId, this.Title, this.ArtistId) {
+  Album.withId(this.AlbumId, this.Title, this.ArtistId) {
     _setDefaultValues();
   }
   Album.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     AlbumId = int.tryParse(o['AlbumId'].toString());
-    if (o['Title'] != null) Title = o['Title'] as String;
+    if (o['Title'] != null) {
+      Title = o['Title'] as String;
+    }
     ArtistId = int.tryParse(o['ArtistId'].toString());
 
     // RELATIONSHIPS FromMAP
@@ -1055,7 +1060,9 @@ class AlbumFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -1075,8 +1082,12 @@ class AlbumFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   AlbumFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -1110,7 +1121,9 @@ class AlbumFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -1128,7 +1141,9 @@ class AlbumFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -1146,7 +1161,9 @@ class AlbumFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -1486,7 +1503,9 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> AlbumIdData = <int>[];
     qparams.selectColumns = ['AlbumId'];
     final AlbumIdFuture = await _obj._mnAlbum.toList(qparams);
@@ -1567,10 +1586,9 @@ class AlbumManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Album';
-  //static String _colId = 'AlbumId';
-  static List<String> _primaryKeyList = ['AlbumId'];
-  static String _whereStr = 'AlbumId=?';
+  static final String _tableName = 'Album';
+  static final List<String> _primaryKeyList = ['AlbumId'];
+  static final String _whereStr = 'AlbumId=?';
 }
 
 //endregion AlbumManager
@@ -1582,13 +1600,17 @@ class Artist {
   Artist.withFields(this.Name) {
     _setDefaultValues();
   }
-  Artist.withId(ArtistId, this.Name) {
+  Artist.withId(this.ArtistId, this.Name) {
     _setDefaultValues();
   }
   Artist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     ArtistId = int.tryParse(o['ArtistId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
+    if (o['Name'] != null) {
+      Name = o['Name'] as String;
+    }
   }
   // FIELDS (Artist)
   int ArtistId;
@@ -2163,7 +2185,9 @@ class ArtistFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -2183,8 +2207,12 @@ class ArtistFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   ArtistFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -2218,7 +2246,9 @@ class ArtistFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -2236,7 +2266,9 @@ class ArtistFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -2254,7 +2286,9 @@ class ArtistFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -2579,7 +2613,9 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> ArtistIdData = <int>[];
     qparams.selectColumns = ['ArtistId'];
     final ArtistIdFuture = await _obj._mnArtist.toList(qparams);
@@ -2653,10 +2689,9 @@ class ArtistManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Artist';
-  //static String _colId = 'ArtistId';
-  static List<String> _primaryKeyList = ['ArtistId'];
-  static String _whereStr = 'ArtistId=?';
+  static final String _tableName = 'Artist';
+  static final List<String> _primaryKeyList = ['ArtistId'];
+  static final String _whereStr = 'ArtistId=?';
 }
 
 //endregion ArtistManager
@@ -2694,7 +2729,7 @@ class Customer {
     _setDefaultValues();
   }
   Customer.withId(
-      CustomerId,
+      this.CustomerId,
       this.FirstName,
       this.LastName,
       this.Company,
@@ -2710,19 +2745,43 @@ class Customer {
     _setDefaultValues();
   }
   Customer.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     CustomerId = int.tryParse(o['CustomerId'].toString());
-    if (o['FirstName'] != null) FirstName = o['FirstName'] as String;
-    if (o['LastName'] != null) LastName = o['LastName'] as String;
-    if (o['Company'] != null) Company = o['Company'] as String;
-    if (o['Address'] != null) Address = o['Address'] as String;
-    if (o['City'] != null) City = o['City'] as String;
-    if (o['State'] != null) State = o['State'] as String;
-    if (o['Country'] != null) Country = o['Country'] as String;
-    if (o['PostalCode'] != null) PostalCode = o['PostalCode'] as String;
-    if (o['Phone'] != null) Phone = o['Phone'] as String;
-    if (o['Fax'] != null) Fax = o['Fax'] as String;
-    if (o['Email'] != null) Email = o['Email'] as String;
+    if (o['FirstName'] != null) {
+      FirstName = o['FirstName'] as String;
+    }
+    if (o['LastName'] != null) {
+      LastName = o['LastName'] as String;
+    }
+    if (o['Company'] != null) {
+      Company = o['Company'] as String;
+    }
+    if (o['Address'] != null) {
+      Address = o['Address'] as String;
+    }
+    if (o['City'] != null) {
+      City = o['City'] as String;
+    }
+    if (o['State'] != null) {
+      State = o['State'] as String;
+    }
+    if (o['Country'] != null) {
+      Country = o['Country'] as String;
+    }
+    if (o['PostalCode'] != null) {
+      PostalCode = o['PostalCode'] as String;
+    }
+    if (o['Phone'] != null) {
+      Phone = o['Phone'] as String;
+    }
+    if (o['Fax'] != null) {
+      Fax = o['Fax'] as String;
+    }
+    if (o['Email'] != null) {
+      Email = o['Email'] as String;
+    }
     SupportRepId = int.tryParse(o['SupportRepId'].toString());
 
     // RELATIONSHIPS FromMAP
@@ -3490,7 +3549,9 @@ class CustomerFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -3510,8 +3571,12 @@ class CustomerFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   CustomerFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -3545,7 +3610,9 @@ class CustomerFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -3563,7 +3630,9 @@ class CustomerFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -3581,7 +3650,9 @@ class CustomerFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -3976,7 +4047,9 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> CustomerIdData = <int>[];
     qparams.selectColumns = ['CustomerId'];
     final CustomerIdFuture = await _obj._mnCustomer.toList(qparams);
@@ -4115,10 +4188,9 @@ class CustomerManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Customer';
-  //static String _colId = 'CustomerId';
-  static List<String> _primaryKeyList = ['CustomerId'];
-  static String _whereStr = 'CustomerId=?';
+  static final String _tableName = 'Customer';
+  static final List<String> _primaryKeyList = ['CustomerId'];
+  static final String _whereStr = 'CustomerId=?';
 }
 
 //endregion CustomerManager
@@ -4160,7 +4232,7 @@ class Employee {
     _setDefaultValues();
   }
   Employee.withId(
-      EmployeeId,
+      this.EmployeeId,
       this.LastName,
       this.FirstName,
       this.Title,
@@ -4178,29 +4250,55 @@ class Employee {
     _setDefaultValues();
   }
   Employee.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     EmployeeId = int.tryParse(o['EmployeeId'].toString());
-    if (o['LastName'] != null) LastName = o['LastName'] as String;
-    if (o['FirstName'] != null) FirstName = o['FirstName'] as String;
-    if (o['Title'] != null) Title = o['Title'] as String;
-    if (o['BirthDate'] != null)
+    if (o['LastName'] != null) {
+      LastName = o['LastName'] as String;
+    }
+    if (o['FirstName'] != null) {
+      FirstName = o['FirstName'] as String;
+    }
+    if (o['Title'] != null) {
+      Title = o['Title'] as String;
+    }
+    if (o['BirthDate'] != null) {
       BirthDate = int.tryParse(o['BirthDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
               int.tryParse(o['BirthDate'].toString()))
           : DateTime.tryParse(o['BirthDate'].toString());
-    if (o['HireDate'] != null)
+    }
+    if (o['HireDate'] != null) {
       HireDate = int.tryParse(o['HireDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
               int.tryParse(o['HireDate'].toString()))
           : DateTime.tryParse(o['HireDate'].toString());
-    if (o['Address'] != null) Address = o['Address'] as String;
-    if (o['City'] != null) City = o['City'] as String;
-    if (o['State'] != null) State = o['State'] as String;
-    if (o['Country'] != null) Country = o['Country'] as String;
-    if (o['PostalCode'] != null) PostalCode = o['PostalCode'] as String;
-    if (o['Phone'] != null) Phone = o['Phone'] as String;
-    if (o['Fax'] != null) Fax = o['Fax'] as String;
-    if (o['Email'] != null) Email = o['Email'] as String;
+    }
+    if (o['Address'] != null) {
+      Address = o['Address'] as String;
+    }
+    if (o['City'] != null) {
+      City = o['City'] as String;
+    }
+    if (o['State'] != null) {
+      State = o['State'] as String;
+    }
+    if (o['Country'] != null) {
+      Country = o['Country'] as String;
+    }
+    if (o['PostalCode'] != null) {
+      PostalCode = o['PostalCode'] as String;
+    }
+    if (o['Phone'] != null) {
+      Phone = o['Phone'] as String;
+    }
+    if (o['Fax'] != null) {
+      Fax = o['Fax'] as String;
+    }
+    if (o['Email'] != null) {
+      Email = o['Email'] as String;
+    }
     ReportsTo = int.tryParse(o['ReportsTo'].toString());
 
     // RELATIONSHIPS FromMAP
@@ -5048,7 +5146,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -5068,8 +5168,12 @@ class EmployeeFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   EmployeeFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -5103,7 +5207,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -5121,7 +5227,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -5139,7 +5247,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -5566,7 +5676,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> EmployeeIdData = <int>[];
     qparams.selectColumns = ['EmployeeId'];
     final EmployeeIdFuture = await _obj._mnEmployee.toList(qparams);
@@ -5717,10 +5829,9 @@ class EmployeeManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Employee';
-  //static String _colId = 'EmployeeId';
-  static List<String> _primaryKeyList = ['EmployeeId'];
-  static String _whereStr = 'EmployeeId=?';
+  static final String _tableName = 'Employee';
+  static final List<String> _primaryKeyList = ['EmployeeId'];
+  static final String _whereStr = 'EmployeeId=?';
 }
 
 //endregion EmployeeManager
@@ -5732,13 +5843,17 @@ class Genre {
   Genre.withFields(this.Name) {
     _setDefaultValues();
   }
-  Genre.withId(GenreId, this.Name) {
+  Genre.withId(this.GenreId, this.Name) {
     _setDefaultValues();
   }
   Genre.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     GenreId = int.tryParse(o['GenreId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
+    if (o['Name'] != null) {
+      Name = o['Name'] as String;
+    }
   }
   // FIELDS (Genre)
   int GenreId;
@@ -6312,7 +6427,9 @@ class GenreFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -6332,8 +6449,12 @@ class GenreFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   GenreFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -6367,7 +6488,9 @@ class GenreFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -6385,7 +6508,9 @@ class GenreFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -6403,7 +6528,9 @@ class GenreFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -6724,7 +6851,9 @@ class GenreFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> GenreIdData = <int>[];
     qparams.selectColumns = ['GenreId'];
     final GenreIdFuture = await _obj._mnGenre.toList(qparams);
@@ -6798,10 +6927,9 @@ class GenreManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Genre';
-  //static String _colId = 'GenreId';
-  static List<String> _primaryKeyList = ['GenreId'];
-  static String _whereStr = 'GenreId=?';
+  static final String _tableName = 'Genre';
+  static final List<String> _primaryKeyList = ['GenreId'];
+  static final String _whereStr = 'GenreId=?';
 }
 
 //endregion GenreManager
@@ -6831,7 +6959,7 @@ class Invoice {
     _setDefaultValues();
   }
   Invoice.withId(
-      InvoiceId,
+      this.InvoiceId,
       this.InvoiceDate,
       this.BillingAddress,
       this.BillingCity,
@@ -6843,22 +6971,34 @@ class Invoice {
     _setDefaultValues();
   }
   Invoice.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     InvoiceId = int.tryParse(o['InvoiceId'].toString());
-    if (o['InvoiceDate'] != null)
+    if (o['InvoiceDate'] != null) {
       InvoiceDate = int.tryParse(o['InvoiceDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
               int.tryParse(o['InvoiceDate'].toString()))
           : DateTime.tryParse(o['InvoiceDate'].toString());
-    if (o['BillingAddress'] != null)
+    }
+    if (o['BillingAddress'] != null) {
       BillingAddress = o['BillingAddress'] as String;
-    if (o['BillingCity'] != null) BillingCity = o['BillingCity'] as String;
-    if (o['BillingState'] != null) BillingState = o['BillingState'] as String;
-    if (o['BillingCountry'] != null)
+    }
+    if (o['BillingCity'] != null) {
+      BillingCity = o['BillingCity'] as String;
+    }
+    if (o['BillingState'] != null) {
+      BillingState = o['BillingState'] as String;
+    }
+    if (o['BillingCountry'] != null) {
       BillingCountry = o['BillingCountry'] as String;
-    if (o['BillingPostalCode'] != null)
+    }
+    if (o['BillingPostalCode'] != null) {
       BillingPostalCode = o['BillingPostalCode'] as String;
-    if (o['Total'] != null) Total = double.tryParse(o['Total'].toString());
+    }
+    if (o['Total'] != null) {
+      Total = double.tryParse(o['Total'].toString());
+    }
     CustomerId = int.tryParse(o['CustomerId'].toString());
 
     // RELATIONSHIPS FromMAP
@@ -7581,7 +7721,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -7601,8 +7743,12 @@ class InvoiceFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   InvoiceFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -7636,7 +7782,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -7654,7 +7802,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -7672,7 +7822,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -8050,7 +8202,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> InvoiceIdData = <int>[];
     qparams.selectColumns = ['InvoiceId'];
     final InvoiceIdFuture = await _obj._mnInvoice.toList(qparams);
@@ -8168,10 +8322,9 @@ class InvoiceManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Invoice';
-  //static String _colId = 'InvoiceId';
-  static List<String> _primaryKeyList = ['InvoiceId'];
-  static String _whereStr = 'InvoiceId=?';
+  static final String _tableName = 'Invoice';
+  static final List<String> _primaryKeyList = ['InvoiceId'];
+  static final String _whereStr = 'InvoiceId=?';
 }
 
 //endregion InvoiceManager
@@ -8189,17 +8342,21 @@ class InvoiceLine {
       this.UnitPrice, this.Quantity, this.TrackId, this.InvoiceId) {
     _setDefaultValues();
   }
-  InvoiceLine.withId(InvoiceLineId, this.UnitPrice, this.Quantity, this.TrackId,
-      this.InvoiceId) {
+  InvoiceLine.withId(this.InvoiceLineId, this.UnitPrice, this.Quantity,
+      this.TrackId, this.InvoiceId) {
     _setDefaultValues();
   }
   InvoiceLine.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     InvoiceLineId = int.tryParse(o['InvoiceLineId'].toString());
-    if (o['UnitPrice'] != null)
+    if (o['UnitPrice'] != null) {
       UnitPrice = double.tryParse(o['UnitPrice'].toString());
-    if (o['Quantity'] != null)
+    }
+    if (o['Quantity'] != null) {
       Quantity = int.tryParse(o['Quantity'].toString());
+    }
     TrackId = int.tryParse(o['TrackId'].toString());
 
     InvoiceId = int.tryParse(o['InvoiceId'].toString());
@@ -8845,7 +9002,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -8866,8 +9025,12 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   InvoiceLineFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -8901,7 +9064,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -8919,7 +9084,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -8937,7 +9104,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -9275,7 +9444,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> InvoiceLineIdData = <int>[];
     qparams.selectColumns = ['InvoiceLineId'];
     final InvoiceLineIdFuture = await _obj._mnInvoiceLine.toList(qparams);
@@ -9368,10 +9539,9 @@ class InvoiceLineManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'InvoiceLine';
-  //static String _colId = 'InvoiceLineId';
-  static List<String> _primaryKeyList = ['InvoiceLineId'];
-  static String _whereStr = 'InvoiceLineId=?';
+  static final String _tableName = 'InvoiceLine';
+  static final List<String> _primaryKeyList = ['InvoiceLineId'];
+  static final String _whereStr = 'InvoiceLineId=?';
 }
 
 //endregion InvoiceLineManager
@@ -9383,13 +9553,17 @@ class MediaType {
   MediaType.withFields(this.Name) {
     _setDefaultValues();
   }
-  MediaType.withId(MediaTypeId, this.Name) {
+  MediaType.withId(this.MediaTypeId, this.Name) {
     _setDefaultValues();
   }
   MediaType.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
+    if (o['Name'] != null) {
+      Name = o['Name'] as String;
+    }
   }
   // FIELDS (MediaType)
   int MediaTypeId;
@@ -9970,7 +10144,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -9990,8 +10166,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   MediaTypeFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -10025,7 +10205,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -10043,7 +10225,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -10061,7 +10245,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -10386,7 +10572,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> MediaTypeIdData = <int>[];
     qparams.selectColumns = ['MediaTypeId'];
     final MediaTypeIdFuture = await _obj._mnMediaType.toList(qparams);
@@ -10460,10 +10648,9 @@ class MediaTypeManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'MediaType';
-  //static String _colId = 'MediaTypeId';
-  static List<String> _primaryKeyList = ['MediaTypeId'];
-  static String _whereStr = 'MediaTypeId=?';
+  static final String _tableName = 'MediaType';
+  static final List<String> _primaryKeyList = ['MediaTypeId'];
+  static final String _whereStr = 'MediaTypeId=?';
 }
 
 //endregion MediaTypeManager
@@ -10475,13 +10662,17 @@ class Playlist {
   Playlist.withFields(this.Name) {
     _setDefaultValues();
   }
-  Playlist.withId(PlaylistId, this.Name) {
+  Playlist.withId(this.PlaylistId, this.Name) {
     _setDefaultValues();
   }
   Playlist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     PlaylistId = int.tryParse(o['PlaylistId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
+    if (o['Name'] != null) {
+      Name = o['Name'] as String;
+    }
   }
   // FIELDS (Playlist)
   int PlaylistId;
@@ -11050,7 +11241,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -11070,8 +11263,12 @@ class PlaylistFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   PlaylistFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -11105,7 +11302,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -11123,7 +11322,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -11141,7 +11342,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -11453,7 +11656,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> PlaylistIdData = <int>[];
     qparams.selectColumns = ['PlaylistId'];
     final PlaylistIdFuture = await _obj._mnPlaylist.toList(qparams);
@@ -11527,10 +11732,9 @@ class PlaylistManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Playlist';
-  //static String _colId = 'PlaylistId';
-  static List<String> _primaryKeyList = ['PlaylistId'];
-  static String _whereStr = 'PlaylistId=?';
+  static final String _tableName = 'Playlist';
+  static final List<String> _primaryKeyList = ['PlaylistId'];
+  static final String _whereStr = 'PlaylistId=?';
 }
 
 //endregion PlaylistManager
@@ -11552,20 +11756,38 @@ class Track {
       this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
     _setDefaultValues();
   }
-  Track.withId(TrackId, this.Name, this.Composer, this.Milliseconds, this.Bytes,
-      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
+  Track.withId(
+      this.TrackId,
+      this.Name,
+      this.Composer,
+      this.Milliseconds,
+      this.Bytes,
+      this.UnitPrice,
+      this.MediaTypeId,
+      this.GenreId,
+      this.AlbumId) {
     _setDefaultValues();
   }
   Track.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     TrackId = int.tryParse(o['TrackId'].toString());
-    if (o['Name'] != null) Name = o['Name'] as String;
-    if (o['Composer'] != null) Composer = o['Composer'] as String;
-    if (o['Milliseconds'] != null)
+    if (o['Name'] != null) {
+      Name = o['Name'] as String;
+    }
+    if (o['Composer'] != null) {
+      Composer = o['Composer'] as String;
+    }
+    if (o['Milliseconds'] != null) {
       Milliseconds = int.tryParse(o['Milliseconds'].toString());
-    if (o['Bytes'] != null) Bytes = int.tryParse(o['Bytes'].toString());
-    if (o['UnitPrice'] != null)
+    }
+    if (o['Bytes'] != null) {
+      Bytes = int.tryParse(o['Bytes'].toString());
+    }
+    if (o['UnitPrice'] != null) {
       UnitPrice = double.tryParse(o['UnitPrice'].toString());
+    }
     MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
 
     GenreId = int.tryParse(o['GenreId'].toString());
@@ -12389,7 +12611,9 @@ class TrackFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -12409,8 +12633,12 @@ class TrackFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   TrackFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -12444,7 +12672,9 @@ class TrackFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -12462,7 +12692,9 @@ class TrackFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -12480,7 +12712,9 @@ class TrackFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -12882,7 +13116,9 @@ class TrackFilterBuilder extends SearchCriteria {
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> TrackIdData = <int>[];
     qparams.selectColumns = ['TrackId'];
     final TrackIdFuture = await _obj._mnTrack.toList(qparams);
@@ -12998,10 +13234,9 @@ class TrackManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'Track';
-  //static String _colId = 'TrackId';
-  static List<String> _primaryKeyList = ['TrackId'];
-  static String _whereStr = 'TrackId=?';
+  static final String _tableName = 'Track';
+  static final List<String> _primaryKeyList = ['TrackId'];
+  static final String _whereStr = 'TrackId=?';
 }
 
 //endregion TrackManager
@@ -13018,7 +13253,9 @@ class PlaylistTrack {
   }
   PlaylistTrack.fromMap(Map<String, dynamic> o,
       {bool setDefaultValues = true}) {
-    if (setDefaultValues) _setDefaultValues();
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
     TrackId = int.tryParse(o['TrackId'].toString());
 
     PlaylistId = int.tryParse(o['PlaylistId'].toString());
@@ -13643,7 +13880,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -13664,8 +13903,12 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   PlaylistTrackFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -13699,7 +13942,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -13717,7 +13962,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -13735,7 +13982,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -14001,7 +14250,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// <returns>List<TrackId,PlaylistId>
   Future<List<PlaylistTrack>> toListPrimaryKey(
       [bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) {
+      _buildParameters();
+    }
     qparams.selectColumns = ['TrackId', 'PlaylistId'];
     final playlisttrackFuture = await _obj._mnPlaylistTrack.toList(qparams);
     return await PlaylistTrack.fromMapList(playlisttrackFuture);
@@ -14070,10 +14321,9 @@ class PlaylistTrackManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static String _tableName = 'PlaylistTrack';
-  //static String _colId = 'TrackId';
-  static List<String> _primaryKeyList = ['TrackId', 'PlaylistId'];
-  static String _whereStr = 'TrackId=? AND PlaylistId=?';
+  static final String _tableName = 'PlaylistTrack';
+  static final List<String> _primaryKeyList = ['TrackId', 'PlaylistId'];
+  static final String _whereStr = 'TrackId=? AND PlaylistId=?';
 }
 
 //endregion PlaylistTrackManager
