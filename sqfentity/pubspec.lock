@@ -409,7 +409,7 @@ packages:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "1.3.6"
+    version: "1.3.5+4"
   sqflite:
     dependency: "direct main"
     description:

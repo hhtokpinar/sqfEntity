@@ -1,10 +1,21 @@
+## 1.3.5+4
+Added Support Collating Sequences
+
+How to use?
+Set collate parameter when declaring columns like below:
+
+
+      SqfEntityField('name', DbType.text, collate: Collate.NOCASE)
+
+
 ## 1.3.5+3
-added ability to change columns type
+Added ability to change columns type
 
 
 ## 1.3.5+2
-  Added a property named ignoreForFile in SqfEntityModel.
-  You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
+
+Added a property named ignoreForFile in SqfEntityModel.
+You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
   
 ### How to use?
 

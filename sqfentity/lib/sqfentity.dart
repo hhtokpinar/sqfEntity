@@ -768,13 +768,14 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
         indexName = 'IDX_${table.tableName}_Group_${field.isIndexGroup}';
       } else {
         isUnique = field.isUnique ?? false;
-        columns = [field.fieldName];
+        columns = ['${field.fieldName}${field.collate != null ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}':''}'];
         indexName = 'IDX_${table.tableName}_${field.fieldName}';
       }
     } else if (field is SqfEntityFieldRelationshipBase) {
       indexName = 'IDX${field.relationshipName + field.fieldName}';
       columns = [field.fieldName];
     }
+
     if (indexName != null) {
       addedIndexes.addAll(columns);
       alterTableQuery.add(

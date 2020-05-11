@@ -920,7 +920,8 @@ class ProductFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) 
+    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
     return this;
   }
 
@@ -939,8 +940,10 @@ class ProductFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   ProductFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) 
+    {_page = page;}
+    if (pagesize > 0)
+    { _pagesize = pagesize;}
     return this;
   }
 
@@ -974,7 +977,8 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') 
+          {orderByList.add(' $s ');}
         }
       }
     }
@@ -992,7 +996,8 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '')
+          { orderByList.add(' $s desc ');}
         }
       }
     }
@@ -1010,7 +1015,8 @@ class ProductFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '')
+          { groupByList.add(' $s ');}
         }
       }
     }
@@ -1231,7 +1237,8 @@ class ProductFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Product> o) productList]) async {
     final data = await toMapList();
     final List<Product> productsData = await Product.fromMapList(data);
-    if (productList != null) productList(productsData);
+    if (productList != null) 
+    {productList(productsData);}
     return productsData;
   }
 
@@ -1323,7 +1330,8 @@ class ProductFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) 
+    {_buildParameters();}
     final List<int> productIdData = <int>[];
     qparams.selectColumns = ['productId'];
     final productIdFuture = await _obj._mnProduct.toList(qparams);
@@ -1450,8 +1458,8 @@ class ProductFields {
 //region ProductManager
 class ProductManager extends SqfEntityProvider {
   ProductManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
-  static String _tableName = 'product';
-  static String _colId = 'productId';
+  static final String _tableName = 'product';
+  static final String _colId = 'productId';
 }
 
 //endregion ProductManager
@@ -1983,7 +1991,8 @@ class CategoryFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) 
+    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
     return this;
   }
 
@@ -2002,8 +2011,10 @@ class CategoryFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   CategoryFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0)
+    { _page = page;}
+    if (pagesize > 0) 
+    {_pagesize = pagesize;}
     return this;
   }
 
@@ -2037,7 +2048,8 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') 
+          {orderByList.add(' $s ');}
         }
       }
     }
@@ -2055,7 +2067,8 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') 
+          {orderByList.add(' $s desc ');}
         }
       }
     }
@@ -2073,7 +2086,8 @@ class CategoryFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '') 
+          {groupByList.add(' $s ');}
         }
       }
     }
@@ -2255,7 +2269,8 @@ class CategoryFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Category> o) categoryList]) async {
     final data = await toMapList();
     final List<Category> categoriesData = await Category.fromMapList(data);
-    if (categoryList != null) categoryList(categoriesData);
+    if (categoryList != null) 
+    {categoryList(categoriesData);}
     return categoriesData;
   }
 
@@ -2347,7 +2362,8 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) 
+    {_buildParameters();}
     final List<int> categoryIdData = <int>[];
     qparams.selectColumns = ['categoryId'];
     final categoryIdFuture = await _obj._mnCategory.toList(qparams);
@@ -2427,8 +2443,8 @@ class CategoryFields {
 //region CategoryManager
 class CategoryManager extends SqfEntityProvider {
   CategoryManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
-  static String _tableName = 'category';
-  static String _colId = 'categoryId';
+  static final String _tableName = 'category';
+  static final String _colId = 'categoryId';
 }
 
 //endregion CategoryManager
@@ -2949,7 +2965,8 @@ class TodoFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    if (_blockIndex > 1) 
+    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
     return this;
   }
 
@@ -2968,8 +2985,10 @@ class TodoFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   TodoFilterBuilder page(int page, int pagesize) {
-    if (page > 0) _page = page;
-    if (pagesize > 0) _pagesize = pagesize;
+    if (page > 0) 
+    {_page = page;}
+    if (pagesize > 0)
+    { _pagesize = pagesize;}
     return this;
   }
 
@@ -3003,7 +3022,8 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s ');
+          if (s != null && s != '') 
+          {orderByList.add(' $s ');}
         }
       }
     }
@@ -3021,7 +3041,8 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') orderByList.add(' $s desc ');
+          if (s != null && s != '') 
+          {orderByList.add(' $s desc ');}
         }
       }
     }
@@ -3039,7 +3060,8 @@ class TodoFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') groupByList.add(' $s ');
+          if (s != null && s != '')
+          { groupByList.add(' $s ');}
         }
       }
     }
@@ -3218,7 +3240,8 @@ class TodoFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Todo> o) todoList]) async {
     final data = await toMapList();
     final List<Todo> todosData = await Todo.fromMapList(data);
-    if (todoList != null) todoList(todosData);
+    if (todoList != null) 
+    {todoList(todosData);}
     return todosData;
   }
 
@@ -3309,7 +3332,8 @@ class TodoFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) _buildParameters();
+    if (buildParameters) 
+    {_buildParameters();}
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnTodo.toList(qparams);
@@ -3395,8 +3419,8 @@ class TodoFields {
 //region TodoManager
 class TodoManager extends SqfEntityProvider {
   TodoManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
-  static String _tableName = 'todos';
-  static String _colId = 'id';
+  static final String _tableName = 'todos';
+  static final String _colId = 'id';
 }
 
 //endregion TodoManager

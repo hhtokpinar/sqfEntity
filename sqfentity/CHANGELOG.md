@@ -1,3 +1,12 @@
+## 1.3.5+3
+Added Support Collating Sequences
+
+How to use?
+Set collate parameter when declaring columns like below:
+
+
+      SqfEntityField('name', DbType.text, collate: Collate.NOCASE)
+
 ## 1.3.5+2
 added ability to change columns type
 

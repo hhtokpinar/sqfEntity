@@ -106,7 +106,7 @@ class SqfEntityField {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition});
+      this.checkCondition,this.collate});
   final String fieldName;
   final DbType dbType;
   final dynamic defaultValue;
@@ -120,6 +120,7 @@ class SqfEntityField {
   final bool isIndex;
   final int isIndexGroup;
   final bool isUnique;
+  final Collate collate;
 }
 
 class SqfEntityFieldVirtual implements SqfEntityField {
@@ -163,6 +164,10 @@ class SqfEntityFieldVirtual implements SqfEntityField {
 
   @override
   int get isIndexGroup => null;
+
+  @override
+  // TODO: implement collate
+  Collate get collate => null;
 }
 
 class SqfEntityFieldPrimaryKey extends SqfEntityField {
@@ -190,7 +195,7 @@ class SqfEntityFieldRelationship implements SqfEntityField {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition});
+      this.checkCondition,this.collate,});
   @override
   final String fieldName;
   @override
@@ -222,6 +227,8 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final bool isIndex;
   @override
   final int isIndexGroup;
+  @override
+  final Collate collate ;
 }
 
 class SqfEntityModel {
@@ -335,6 +342,7 @@ class SqfEntityModelConverter {
       ..isUnique = field.isUnique
       ..isNotNull = field.isNotNull
       ..checkCondition = field.checkCondition
+      ..collate = field.collate
       ..sequencedBy =
           field.sequencedBy == null ? null : toSequence(field.sequencedBy);
   }
@@ -2610,6 +2618,7 @@ String toSqliteAddColumnString(SqfEntityFieldType field) {
   final StringBuffer retVal = StringBuffer('${field.fieldName} $_dbType')
     ..write(field.isNotNull ?? false ? ' NOT NULL' : '')
     ..write(field.isUnique ?? false ? ' UNIQUE' : '')
+    ..write(field.collate != null  ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}' : '')
     ..write(field.checkCondition != null && field.checkCondition.isNotEmpty
         ? ' CHECK(${field.checkCondition.replaceAll('(this)', field.fieldName)})'
         : '')
@@ -3133,7 +3142,7 @@ abstract class SqfEntityFieldType {
       this.isUnique,
       this.checkCondition,
       this.isIndex,
-      this.isIndexGroup});
+      this.isIndexGroup,this.collate});
   String fieldName;
   DbType dbType;
   dynamic defaultValue;
@@ -3149,6 +3158,7 @@ abstract class SqfEntityFieldType {
   bool isIndex;
   int isIndexGroup;
   String checkCondition;
+  Collate collate;
   String toSqLiteFieldString();
 
   String toPropertiesString();
@@ -3175,7 +3185,7 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition});
+      this.checkCondition,this.collate});
   @override
   String fieldName;
   @override
@@ -3267,6 +3277,9 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
 
   @override
   int isIndexGroup;
+
+  @override
+  Collate collate;
 }
 
 class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
@@ -3341,6 +3354,9 @@ class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
 
   @override
   int isIndexGroup;
+
+  @override
+  Collate collate;
 }
 
 class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
@@ -3361,7 +3377,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition}) {
+      this.checkCondition,this.collate}) {
     init();
   }
   SqfEntityFieldRelationshipBase init() {
@@ -3469,6 +3485,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
 
   @override
   int isIndexGroup;
+
+  @override
+  Collate collate;
 }
 
 abstract class SqfEntityModelBase {
@@ -3710,6 +3729,7 @@ const List<String> sqLiteType = [
   'datetimeutc',
 ];
 enum DeleteRule { CASCADE, SET_DEFAULT_VALUE, SET_NULL, NO_ACTION }
+enum Collate {BINARY,NOCASE,RTRIM}
 enum RelationType { ONE_TO_ONE, ONE_TO_MANY, MANY_TO_MANY }
 enum PrimaryKeyType { integer_auto_incremental, text, integer_unique }
 //enum DefaultValues { date_now, datetime_now }

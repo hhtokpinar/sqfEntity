@@ -200,6 +200,7 @@ SqfEntityFieldType getFieldProperties(
     ..isIndex = getBoolValue(obj, 'isIndex')
     ..isIndexGroup = getIntValue(obj, 'isIndexGroup')
     ..checkCondition = getStringValue(obj, 'checkCondition')
+    ..collate = getTypeValue(obj, 'collate') as Collate
     ..sequencedBy =
         obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
             ? toSequence(obj.getField('sequencedBy'))
@@ -249,6 +250,7 @@ SqfEntityFieldType toField(
       ..checkCondition = getStringValue(obj, 'checkCondition')
       ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
       ..relationType = getTypeValue(obj, 'relationType') as RelationType
+      ..collate = getTypeValue(obj, 'collate') as Collate
       ..init();
   } else {
     final SqfEntityFieldType retVal = SqfEntityFieldBase(fieldName, dbType);
@@ -274,8 +276,9 @@ List<SqfEntityFieldType> toFields(
 List<String> toListString(
   List<DartObject> objList,
 ) {
-  if (objList == null) 
-  {return [];}
+  if (objList == null) {
+    return [];
+  }
   final stringList = <String>[];
   //print('-------------------------------------------------------RECOGNIZING FIELDS:');
   for (var obj in objList) {
@@ -306,6 +309,8 @@ dynamic convertType(dynamic T) {
     types = deleteRuleTypes();
   } else if (type.toString() == 'RelationType') {
     types = relationTypes();
+  } else if (type.toString() == 'Collate') {
+    types = collateTypes();
   }
   for (var typ in types.entries) {
     if (T.toString().contains('${typ.key} ')) {
@@ -338,6 +343,15 @@ Map<String, dynamic> deleteRuleTypes() {
   final types = <String, dynamic>{};
   types['default'] = DeleteRule.NO_ACTION;
   for (var typ in DeleteRule.values) {
+    types[typ.toString().substring(typ.toString().indexOf('.') + 1)] = typ;
+  }
+  return types;
+}
+
+Map<String, dynamic> collateTypes() {
+  final types = <String, dynamic>{};
+  types['default'] = Collate.BINARY;
+  for (var typ in Collate.values) {
     types[typ.toString().substring(typ.toString().indexOf('.') + 1)] = typ;
   }
   return types;
@@ -379,8 +393,9 @@ class SqfEntityConverter {
   }
 
   String _sequenceList() {
-    if (_m.sequences == null || _m.sequences.isEmpty) 
-    {return '';}
+    if (_m.sequences == null || _m.sequences.isEmpty) {
+      return '';
+    }
     final list = StringBuffer()..writeln('sequences = [');
 
     for (final seq in _m.sequences) {
@@ -412,7 +427,7 @@ class SqfEntityConverter {
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar    
 
-${_m.ignoreForFile != null ? '// ignore_for_file: ${_m.ignoreForFile.join(', ')}': ''}
+${_m.ignoreForFile != null ? '// ignore_for_file: ${_m.ignoreForFile.join(', ')}' : ''}
 $__createModelTables
 
 $__createModelSequences
@@ -440,8 +455,9 @@ class ${_m.modelName} extends SqfEntityModelProvider {
   }
 
   String controllers() {
-    if (_m.formTables == null) 
-    {return '';}
+    if (_m.formTables == null) {
+      return '';
+    }
     final retVal = StringBuffer();
     for (final table in _m.formTables) {
       retVal.writeln(
@@ -486,8 +502,9 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
   }
 
   String _createModelTables() {
-    if (_m.databaseTables == null)
-    { return '';}
+    if (_m.databaseTables == null) {
+      return '';
+    }
 
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
 
@@ -542,8 +559,9 @@ const table${toCamelCase(table.tableName)} = SqfEntityTable(
 
   String _createModelSequences() {
     final strSequences = StringBuffer();
-    if (_m.sequences == null) 
-    {return '';}
+    if (_m.sequences == null) {
+      return '';
+    }
     strSequences.writeln('// BEGIN SEQUENCES');
     for (var seq in _m.sequences) {
       strSequences.writeln('''
@@ -590,10 +608,11 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
     for (final field in table.fields) {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.MANY_TO_MANY &&
-          table.relationType != RelationType.MANY_TO_MANY)
-          { continue;}
+          table.relationType != RelationType.MANY_TO_MANY) {
+        continue;
+      }
       final String commonProperties =
-          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.isIndexGroup, 'isIndexGroup')}${_getNullableValueField(field.checkCondition, 'checkCondition')}${_getNullableValueField(field.minValue, 'minValue')}${_getNullableValueField(field.maxValue, 'maxValue')}';
+          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.isIndexGroup, 'isIndexGroup')}${_getNullableValueField(field.checkCondition, 'checkCondition')}${_getNullableValueField(field.minValue, 'minValue')}${_getNullableValueField(field.maxValue, 'maxValue')}${_getNullableValueField(field.collate, 'collate')}';
       if (field is SqfEntityFieldVirtualBase) {
         strFields.writeln(
             'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');
@@ -678,8 +697,9 @@ ${_m.modelName}SequenceManager() : super(${_m.modelName}());
 
   /// Creates model of tables
   String createControllers() {
-    if (_m.formTables.isEmpty)
-    { return '';}
+    if (_m.formTables.isEmpty) {
+      return '';
+    }
     // print('createControllers() started');
     final modelString = MyStringBuffer()..writeln('// BEGIN CONTROLLERS');
     for (var table in _m.formTables) {
