@@ -1132,14 +1132,14 @@ class SqfEntityObjectBuilder {
           i < tableCollection.childTableField.relationshipFields.length;
           i++) {
         filterExpression.write(
-            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${_table.primaryKeyNames[i]}).and');
+          '.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${_table.primaryKeyNames[i]}).and');
       }
     } else {
       for (int i = 0;
           i < tableCollection.childTableField.relationshipFields.length;
           i++) {
         filterExpression.write(
-            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
+           '.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
       }
     }
     return filterExpression;

@@ -1,3 +1,6 @@
+## 1.3.5+5
+fixed [issue #115](https://github.com/hhtokpinar/sqfEntity/issues/115) 
+
 ## 1.3.5+4
 Added Support Collating Sequences
 

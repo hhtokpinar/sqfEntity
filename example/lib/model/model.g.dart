@@ -1601,8 +1601,7 @@ class Category {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Product()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .categoryId
-        .equals(id)
+        .where('categoryId=?', parameterValue: id)
         .and;
   }
 
@@ -1866,8 +1865,7 @@ class Category {
     {
       result = await Product()
           .select()
-          .categoryId
-          .equals(id)
+          .where('categoryId=?', parameterValue: id)
           .and /*.categoryId.equals(id)*/ .delete(hardDelete);
     }
     if (!result.success) {

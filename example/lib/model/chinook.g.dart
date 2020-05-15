@@ -468,8 +468,7 @@ class Album {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .AlbumId
-        .equals(AlbumId)
+        .where('AlbumId=?', parameterValue: AlbumId)
         .and;
   }
 
@@ -759,8 +758,7 @@ class Album {
     print('SQFENTITIY: delete Album invoked (AlbumId=$AlbumId)');
     if (await Track()
             .select()
-            .AlbumId
-            .equals(AlbumId)
+            .where('AlbumId=?', parameterValue: AlbumId)
             .and /*.AlbumId.equals(AlbumId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -1629,8 +1627,7 @@ class Artist {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Album()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .ArtistId
-        .equals(ArtistId)
+        .where('ArtistId=?', parameterValue: ArtistId)
         .and;
   }
 
@@ -1883,8 +1880,7 @@ class Artist {
     print('SQFENTITIY: delete Artist invoked (ArtistId=$ArtistId)');
     if (await Album()
             .select()
-            .ArtistId
-            .equals(ArtistId)
+            .where('ArtistId=?', parameterValue: ArtistId)
             .and /*.ArtistId.equals(ArtistId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -2832,8 +2828,7 @@ class Customer {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Invoice()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .CustomerId
-        .equals(CustomerId)
+        .where('CustomerId=?', parameterValue: CustomerId)
         .and;
   }
 
@@ -3246,8 +3241,7 @@ class Customer {
     print('SQFENTITIY: delete Customer invoked (CustomerId=$CustomerId)');
     if (await Invoice()
             .select()
-            .CustomerId
-            .equals(CustomerId)
+            .where('CustomerId=?', parameterValue: CustomerId)
             .and /*.CustomerId.equals(CustomerId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -4351,8 +4345,7 @@ class Employee {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Customer()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .SupportRepId
-        .equals(EmployeeId)
+        .where('SupportRepId=?', parameterValue: EmployeeId)
         .and;
   }
 
@@ -4365,8 +4358,7 @@ class Employee {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Employee()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .ReportsTo
-        .equals(EmployeeId)
+        .where('ReportsTo=?', parameterValue: EmployeeId)
         .and;
   }
 
@@ -4832,8 +4824,7 @@ class Employee {
     print('SQFENTITIY: delete Employee invoked (EmployeeId=$EmployeeId)');
     if (await Customer()
             .select()
-            .SupportRepId
-            .equals(EmployeeId)
+            .where('SupportRepId=?', parameterValue: EmployeeId)
             .and /*.SupportRepId.equals(EmployeeId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -4843,8 +4834,7 @@ class Employee {
     }
     if (await Employee()
             .select()
-            .ReportsTo
-            .equals(EmployeeId)
+            .where('ReportsTo=?', parameterValue: EmployeeId)
             .and /*.ReportsTo.equals(EmployeeId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -5872,8 +5862,7 @@ class Genre {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .GenreId
-        .equals(GenreId)
+        .where('GenreId=?', parameterValue: GenreId)
         .and;
   }
 
@@ -6126,8 +6115,7 @@ class Genre {
     print('SQFENTITIY: delete Genre invoked (GenreId=$GenreId)');
     if (await Track()
             .select()
-            .GenreId
-            .equals(GenreId)
+            .where('GenreId=?', parameterValue: GenreId)
             .and /*.GenreId.equals(GenreId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -7045,8 +7033,7 @@ class Invoice {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return InvoiceLine()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .InvoiceId
-        .equals(InvoiceId)
+        .where('InvoiceId=?', parameterValue: InvoiceId)
         .and;
   }
 
@@ -7419,8 +7406,7 @@ class Invoice {
     print('SQFENTITIY: delete Invoice invoked (InvoiceId=$InvoiceId)');
     if (await InvoiceLine()
             .select()
-            .InvoiceId
-            .equals(InvoiceId)
+            .where('InvoiceId=?', parameterValue: InvoiceId)
             .and /*.InvoiceId.equals(InvoiceId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -9582,8 +9568,7 @@ class MediaType {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .MediaTypeId
-        .equals(MediaTypeId)
+        .where('MediaTypeId=?', parameterValue: MediaTypeId)
         .and;
   }
 
@@ -9841,8 +9826,7 @@ class MediaType {
     print('SQFENTITIY: delete MediaType invoked (MediaTypeId=$MediaTypeId)');
     if (await Track()
             .select()
-            .MediaTypeId
-            .equals(MediaTypeId)
+            .where('MediaTypeId=?', parameterValue: MediaTypeId)
             .and /*.MediaTypeId.equals(MediaTypeId)*/ .toCount() >
         0) {
       return BoolResult(
@@ -11868,8 +11852,7 @@ class Track {
       {List<String> columnsToSelect, bool getIsDeleted}) {
     return InvoiceLine()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .TrackId
-        .equals(TrackId)
+        .where('TrackId=?', parameterValue: TrackId)
         .and;
   }
 
@@ -12310,8 +12293,7 @@ class Track {
     print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
     if (await InvoiceLine()
             .select()
-            .TrackId
-            .equals(TrackId)
+            .where('TrackId=?', parameterValue: TrackId)
             .and /*.TrackId.equals(TrackId)*/ .toCount() >
         0) {
       return BoolResult(
