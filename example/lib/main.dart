@@ -450,6 +450,20 @@ Future<void> samples2() async {
     print(prod.toMap());
   }
   print('---------------------------------------------------------------\n\n');
+
+    // EXAMPLE 1.16: Select products between datetimes
+  productList = await Product()
+      .select()
+      .datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15))
+      .toList();
+  print(
+      'EXAMPLE 1.16: Select products between datetimes \n -> Product().select().datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15)).toList()');
+  // PRINT RESULTS TO DEBUG CONSOLE
+  print('${productList.length} matches found:');
+  for (var prod in productList) {
+    print(prod.toMap());
+  }
+  print('---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples3() async {
@@ -841,59 +855,77 @@ Future<bool> addProducts() async {
     await Product(
             name: 'Notebook 12"',
             description: '128 GB SSD i7',
-            price: 6899,
-            categoryId: 1)
+            price: 6899,categoryId: 1,  
+            date: DateTime(2020, 01, 01),
+            datetime: DateTime(2020,01,01,12),
+            )
         .save();
 
     await Product(
             name: 'Notebook 12"',
             description: '256 GB SSD i7',
             price: 8244,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 02),
+            datetime: DateTime(2020,01,02,13))
         .save();
     await Product(
             name: 'Notebook 12"',
             description: '512 GB SSD i7',
             price: 9214,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 03),
+            datetime: DateTime(2020,01,03,14))
         .save();
 
     await Product(
             name: 'Notebook 13"',
             description: '128 GB SSD',
             price: 8500,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 04),
+            datetime: DateTime(2020,01,04,15))
         .save();
     await Product(
             name: 'Notebook 13"',
             description: '256 GB SSD',
             price: 9900,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 05),
+            datetime: DateTime(2020,01,05,16))
         .save();
     await Product(
             name: 'Notebook 13"',
             description: '512 GB SSD',
             price: 11000,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 06),
+            datetime: DateTime(2020,01,06,17))
         .save();
 
     await Product(
             name: 'Notebook 15"',
             description: '128 GB SSD',
             price: 8999,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 07),
+            datetime: DateTime(2020,01,07,18))
         .save();
     await Product(
             name: 'Notebook 15"',
             description: '256 GB SSD',
             price: 10499,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 08),
+            datetime: DateTime(2020,01,08,19))
         .save();
     await Product(
             name: 'Notebook 15"',
             description: '512 GB SSD',
             price: 11999,
-            categoryId: 1)
+            categoryId: 1,
+              date: DateTime(2020, 01, 09),
+            datetime: DateTime(2020,01,09,20))
         .save();
 
     await Product(
