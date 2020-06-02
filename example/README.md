@@ -1,4 +1,4 @@
-# example
+# example_ffi
 
 A new Flutter project.
 

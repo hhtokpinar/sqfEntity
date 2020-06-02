@@ -51,6 +51,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
       ..modelName = dbModelName
       ..databaseName = getStringValue(model, 'databaseName')
       ..password = getStringValue(model, 'password')
+      ..dbVersion = getIntValue(model, 'dbVersion')
       ..sequences = toSequenceList(getListValue(model, 'sequences'))
       ..databaseTables =
           toTableList(getListValue(model, 'databaseTables'), dbModelName)
@@ -374,7 +375,7 @@ class SqfEntityConverter {
       return '';
     }
     final list = StringBuffer()..writeln('databaseTables = [');
-    for (final table in _m.databaseTables) {
+    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       list.writeln('Table${table.modelName}.getInstance,');
     }
     list.writeln('];');
@@ -386,7 +387,7 @@ class SqfEntityConverter {
       return '';
     }
     final list = StringBuffer();
-    for (final table in _m.databaseTables) {
+    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       list.writeln('table${table.modelName},');
     }
     return list.toString();
@@ -436,8 +437,7 @@ $__createModelSequences
 class ${_m.modelName} extends SqfEntityModelProvider {
   ${_m.modelName}() {
     databaseName = $_dbName;
-    password = $_dbPassword;
-    ${_getNullableValueTable(_m.password, 'password')}
+    $_dbPassword $_dbVersion
     $__tableList
     $__sequenceList
     bundledDatabasePath =
@@ -470,8 +470,11 @@ class ${_m.modelName} extends SqfEntityModelProvider {
       ? '${_m.instanceName}.databaseName'
       : '\'${_m.databaseName}\'';
   String get _dbPassword => _m.instanceName != null
-      ? '${_m.instanceName}.password'
-      : '\'${_m.databaseName}\'';
+      ? 'password = ${_m.instanceName}.password;'
+      : 'password = \'${_m.password}\';';
+      String get _dbVersion => _m.instanceName != null
+      ? 'dbVersion = ${_m.instanceName}.dbVersion;'
+      : 'dbVersion = \'${_m.dbVersion ?? 1}\';';
   String get _bundledDbName => _m.instanceName != null
       ? '${_m.instanceName}.bundledDatabasePath'
       : _m.bundledDatabasePath == null
@@ -492,10 +495,8 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
     modelName: '${_m.modelName}',
     databaseName: '${_m.databaseName}',
     databaseTables: [$__tableListConst],
-    formTables: [$__tableListConst],
-    // put defined sequences into the sequences list.
-    bundledDatabasePath:
-        '${_m.bundledDatabasePath}' 
+    formTables: [$__tableListConst]
+    ${_getNullableValueField(_m.bundledDatabasePath, 'bundledDatabasePath')} 
 );
 // END ${_m.databaseName} MODEL
 ''';
@@ -541,7 +542,7 @@ class Table${table.modelName} extends SqfEntityTableBase {
       return '';
     }
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
-    for (final table in _m.databaseTables) {
+    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       strTables.writeln('''
 
 const table${toCamelCase(table.tableName)} = SqfEntityTable(
@@ -588,22 +589,6 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
 
   String _createModelFields(SqfEntityTableBase table) {
     final strFields = StringBuffer();
-
-    // for (final field in table.fields) {
-    //   if (field is SqfEntityFieldRelationshipBase &&
-    //       field.relationType == RelationType.MANY_TO_MANY &&
-    //       table.relationType != RelationType.MANY_TO_MANY) continue;
-    //   if (field is SqfEntityFieldVirtualBase) {
-    //     strFields.writeln(
-    //         'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');
-    //   } else if (field is SqfEntityFieldRelationshipBase) {
-    //     strFields.writeln(
-    //         'SqfEntityFieldRelationshipBase(${field.table == null || field.table.tableName == table.tableName ? 'null' : 'Table${field.table.modelName}.getInstance'}, ${field.deleteRule.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.fieldName, 'fieldName')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}${_getNullableValueField(field.relationType, 'relationType')}),');
-    //   } else {
-    //     strFields.writeln(
-    //         'SqfEntityFieldBase(\'${field.fieldName}\', ${field.dbType.toString()}${_getNullableValueField(field.defaultValue, 'defaultValue')}${_getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField')}),');
-    //   }
-    // }
 
     for (final field in table.fields) {
       if (field is SqfEntityFieldRelationshipBase &&

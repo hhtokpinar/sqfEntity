@@ -1,4 +1,45 @@
-## 1.3.5+5
+## 1.4.0
+1. Added Desktop support [issue #59](https://github.com/hhtokpinar/sqfEntity/issues/59)
+
+2. Added support for sending header to the fromWebUrl() method to able using Authentication Credentials or Token [issue #122](https://github.com/hhtokpinar/sqfEntity/issues/122)
+
+3. Added a new method named post() and postUrl() to post json to specified url with headers
+
+## How to use?
+
+First  Define the 'Todo' constant as SqfEntityTable and generate your model
+
+
+   const tableTodo = SqfEntityTable(
+    tableName: 'todos',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_unique,
+    defaultJsonUrl:
+        'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
+    fields: [
+      SqfEntityField('userId', DbType.integer),
+      SqfEntityField('title', DbType.text),
+      SqfEntityField('completed', DbType.bool, defaultValue: false),
+    ]);
+
+
+using:
+
+      final todo = Todo()
+      ..title='test'
+      ..userId=1
+      ..completed = true;
+
+      final res = await todo.post(headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization' : 'Basic your_api_token_here'
+            });
+
+
+## 1.3.5+7
+fixed [issue #121](https://github.com/hhtokpinar/sqfEntity/issues/121) 
+
+## 1.3.5+6
 fixed [issue #115](https://github.com/hhtokpinar/sqfEntity/issues/115) 
 
 ## 1.3.5+4

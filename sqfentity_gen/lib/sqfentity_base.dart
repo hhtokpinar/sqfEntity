@@ -106,7 +106,8 @@ class SqfEntityField {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition,this.collate});
+      this.checkCondition,
+      this.collate});
   final String fieldName;
   final DbType dbType;
   final dynamic defaultValue;
@@ -179,23 +180,25 @@ class SqfEntityFieldPrimaryKey extends SqfEntityField {
 }
 
 class SqfEntityFieldRelationship implements SqfEntityField {
-  const SqfEntityFieldRelationship(
-      {this.parentTable,
-      this.deleteRule,
-      this.fieldName,
-      this.isPrimaryKeyField,
-      this.defaultValue,
-      this.minValue,
-      this.maxValue,
-      this.formDropDownTextField,
-      this.formIsRequired,
-      this.relationType,
-      this.manyToManyTableName,
-      this.isNotNull,
-      this.isUnique,
-      this.isIndex,
-      this.isIndexGroup,
-      this.checkCondition,this.collate,});
+  const SqfEntityFieldRelationship({
+    this.parentTable,
+    this.deleteRule,
+    this.fieldName,
+    this.isPrimaryKeyField,
+    this.defaultValue,
+    this.minValue,
+    this.maxValue,
+    this.formDropDownTextField,
+    this.formIsRequired,
+    this.relationType,
+    this.manyToManyTableName,
+    this.isNotNull,
+    this.isUnique,
+    this.isIndex,
+    this.isIndexGroup,
+    this.checkCondition,
+    this.collate,
+  });
   @override
   final String fieldName;
   @override
@@ -228,7 +231,7 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   @override
   final int isIndexGroup;
   @override
-  final Collate collate ;
+  final Collate collate;
 }
 
 class SqfEntityModel {
@@ -240,7 +243,8 @@ class SqfEntityModel {
       this.sequences,
       this.formTables,
       this.password,
-      this.ignoreForFile});
+      this.ignoreForFile,
+      this.dbVersion});
   // STEPS FOR CREATE YOUR DB CONTEXT
 
   /// 1. declare your sqlite database name
@@ -260,6 +264,10 @@ class SqfEntityModel {
 
   /// You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
   final List<String> ignoreForFile;
+
+  /// You can specify the version of the database
+  final int dbVersion;
+
   // that's all.. one more step left for create models.dart file.
   // ATTENTION: Defining the table here provides automatic processing for database configuration only.
   // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
@@ -276,7 +284,7 @@ class SqfEntityModelConverter {
 
   SqfEntityModelBase toModelBase() {
     return ConvertedModel()
-      ..databaseName = model.databaseName
+      //..databaseName = model.databaseName
       ..modelName = model.modelName
       ..databaseTables = toTables()
       ..sequences = toSequences()
@@ -612,12 +620,12 @@ class SqfEntityObjectBuilder {
       return map;
       }
   
-    /// This method returns Json String
+    /// This method returns Json String [${_table.modelName}]
     String toJson() {
       return json.encode(toMap(forJson: true));
     }
     
-    /// This method returns Json String
+    /// This method returns Json String [${_table.modelName}]
     Future<String> toJsonWithChilds() async {
       return json.encode(await toMapWithChildren(false,true));
     }
@@ -631,16 +639,19 @@ class SqfEntityObjectBuilder {
     }  
   
     $_fromWebUrl  
-    static Future<List<${_table.modelName}>> fromWebUrl(String url) async {
+    static Future<List<${_table.modelName}>> fromWebUrl(String url,{Map<String, String> headers}) async {
       try {
-        final response = await http.get(url);
+        final response = await http.get(url, headers:headers);
         return await fromJson(response.body);
       } catch (e) {
         print('SQFENTITY ERROR ${_table.modelName}.fromWebUrl: ErrorMessage: \${e.toString()}');
         return null;
       }
     }
-  
+    Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url,
+        headers: headers, body: toJson());
+    }
     static Future<List<${_table.modelName}>> fromJson(String jsonBody) async{
       final Iterable list = await json.decode(jsonBody) as Iterable;
       var objList = <${_table.modelName}>[];
@@ -1067,10 +1078,10 @@ class SqfEntityObjectBuilder {
       }
       final StringBuffer filterExpression =
           buildFilterExpression(tableCollection);
-      // final String childTableFieldTablePrimaryKeyName =
-      //     tableCollection.childTableField.table == null
-      //         ? _table.primaryKeyNames[0]
-      //         : tableCollection.childTableField.table.primaryKeyNames[0];
+      String childTableFieldTablePrimaryKeyName =
+          tableCollection.childTableField.table == null
+              ? _table.primaryKeyNames[0]
+              : tableCollection.childTableField.table.primaryKeyNames[0];
 
       if (tableCollection.relationType == RelationType.MANY_TO_MANY) {
         final String childTablePrimaryKeyName = tableCollection
@@ -1078,7 +1089,7 @@ class SqfEntityObjectBuilder {
             .whereType<SqfEntityFieldRelationshipBase>()
             .firstWhere((f) => f.table == tableCollection.childTable)
             .fieldName;
-        final String childTableFieldTablePrimaryKeyName = tableCollection
+        childTableFieldTablePrimaryKeyName = tableCollection
             .childTableField.manyToManyTable.fields
             .whereType<SqfEntityFieldRelationshipBase>()
             .firstWhere((f) => f.table == tableCollection.childTableField.table)
@@ -1103,7 +1114,7 @@ class SqfEntityObjectBuilder {
             /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['pl$funcName', 'plField2'..]) or so on..
             List<${_table.modelName}> pl$funcName;
             /// get ${_table.modelName}(s) filtered by ${_table.primaryKeyNames.join(',')}=${tableCollection.childTableField.relationshipFields.map((e) => e.fieldName).join(',')}
-              ${_table.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){
+              ${_table.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){ if ($childTableFieldTablePrimaryKeyName == null) {return null;}
            return ${_table.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted)${filterExpression.toString()};
           }''');
       } else {
@@ -1112,7 +1123,7 @@ class SqfEntityObjectBuilder {
             /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['pl$funcName', 'plField2'..]) or so on..
             List<${tableCollection.childTable.modelName}> pl$funcName;
             /// get ${tableCollection.childTable.modelName}(s) filtered by ${tableCollection.childTableField.table.primaryKeyNames.join(',')}=${tableCollection.childTableField.relationshipFields.map((e) => e.fieldName).join(',')}
-              ${tableCollection.childTable.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){
+              ${tableCollection.childTable.modelName}FilterBuilder get$funcName({List<String> columnsToSelect, bool getIsDeleted}){ if ($childTableFieldTablePrimaryKeyName == null) {return null;}
            return ${tableCollection.childTable.modelName}().select(columnsToSelect: columnsToSelect,getIsDeleted: getIsDeleted)${filterExpression.toString()};
           }''');
       }
@@ -1131,15 +1142,17 @@ class SqfEntityObjectBuilder {
       for (int i = 0;
           i < tableCollection.childTableField.relationshipFields.length;
           i++) {
+        //  filterExpression.write('.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${_table.primaryKeyNames[i]}).and');
         filterExpression.write(
-          '.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${_table.primaryKeyNames[i]}).and');
+            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${_table.primaryKeyNames[i]}).and');
       }
     } else {
       for (int i = 0;
           i < tableCollection.childTableField.relationshipFields.length;
           i++) {
+        //  filterExpression.write('.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
         filterExpression.write(
-           '.where(\'${tableCollection.childTableField.relationshipFields[i].fieldName}=?\', parameterValue: ${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
+            '.${tableCollection.childTableField.relationshipFields[i].fieldName}.equals(${tableCollection.childTableField.table.primaryKeyNames[i]}).and');
       }
     }
     return filterExpression;
@@ -1218,10 +1231,13 @@ class SqfEntityObjectBuilder {
   String __fromWebUrl() {
     if (_table.defaultJsonUrl != null && _table.defaultJsonUrl.isNotEmpty) {
       return '''
-         static Future<List<${_table.modelName}>> fromWeb([VoidCallback Function(List<${_table.modelName}> o) ${_table._modelLowerCase}List]) async {
-              final objList = await fromWebUrl('${_table.defaultJsonUrl}');
-              if (${_table._modelLowerCase}List != null) {${_table._modelLowerCase}List (objList); } 
+         static Future<List<${_table.modelName}>> fromWeb({Map<String, String> headers}) async {
+              final objList = await fromWebUrl('${_table.defaultJsonUrl}', headers:headers);
               return objList;
+          }
+          Future<http.Response> post({Map<String, String> headers}) async {
+              final res = await postUrl('${_table.defaultJsonUrl}', headers:headers);
+              return res;
           }
               ''';
     } else {
@@ -1242,31 +1258,28 @@ class SqfEntityObjectBuilder {
           RelationType.MANY_TO_MANY) {
         continue;
       }
-      final childTableFieldTablePrimaryKeyName =
-          tableCollection.childTableField.table == null
-              ? _table.primaryKeyNames[0]
-              : tableCollection.childTableField.table.primaryKeyNames[0];
+
       final StringBuffer filterExpression =
           buildFilterExpression(tableCollection);
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({"${tableCollection.childTableField.fieldName}": null});}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.update({"${tableCollection.childTableField.fieldName}": null});}
       if (!result.success) {return result;}
       ''';
           break;
         case DeleteRule.NO_ACTION:
           retVal += '''
-      if (await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.toCount()>0) {return BoolResult(success: false,errorMessage: 'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (${tableCollection.childTable.modelName}.${tableCollection.childTableField.fieldName})');}''';
+      if (await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.toCount()>0) {return BoolResult(success: false,errorMessage: 'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (${tableCollection.childTable.modelName}.${tableCollection.childTableField.fieldName})');}''';
           break;
         case DeleteRule.CASCADE:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.delete(hardDelete);}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.delete(hardDelete);}
       if (!result.success) {return result;}''';
           break;
         case DeleteRule.SET_DEFAULT_VALUE:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({'${tableCollection.childTableField.fieldName}': ${tableCollection.childTableField.defaultValue}});}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.update({'${tableCollection.childTableField.fieldName}': ${tableCollection.childTableField.defaultValue}});}
       if (!result.success) {return result;}''';
           break;
         default:
@@ -1296,10 +1309,6 @@ class SqfEntityObjectBuilder {
     for (var tableCollection in _table.collections) {
       final StringBuffer filterExpression =
           buildFilterExpression(tableCollection);
-      final childTableFieldTablePrimaryKeyName =
-          tableCollection.childTableField.table == null
-              ? _table.primaryKeyNames[0]
-              : tableCollection.childTableField.table.primaryKeyNames[0];
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           // IN THIS CASE YOU CAN NOT RECOVER CHILD ROWS
@@ -1307,7 +1316,7 @@ class SqfEntityObjectBuilder {
         case DeleteRule.CASCADE:
           if (tableCollection.childTable.useSoftDeleting) {
             retVal += '''
-      if(recoverChilds) {result = await ${tableCollection.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and${filterExpression.toString()}/*.${tableCollection.childTableField.fieldName}.equals($childTableFieldTablePrimaryKeyName)*/.update({'isDeleted': 0});}
+      if(recoverChilds) {result = await ${tableCollection.childTable.modelName}().select(getIsDeleted: true).isDeleted.equals(true).and${filterExpression.toString()}.update({'isDeleted': 0});}
       if (!result.success && recoverChilds) {return result;}''';
           }
           break;
@@ -1980,7 +1989,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   ${_table.modelName}FilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(columnName: parameterValue == null ? null : '', hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(
           parameterValue ?? 0, parameters, param, '(\$whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -2096,7 +2105,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -2104,7 +2113,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll('?', param.value is String ? '\\'\${param.value.toString()}\\'' :  param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -2124,7 +2133,13 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
               break;
             default:
           }
-        if (param.value != null) {whereArguments.add(param.value);}
+        if (param.value != null) {if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }}
         if (param.value2 != null) {whereArguments.add(param.value2);}
         }
       } else {
@@ -2195,7 +2210,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
   
 
-  /// This method returns int.
+  /// This method returns int. [${_table.modelName}]
   /// 
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) ${_table._modelLowerCase}Count]) async {
@@ -2207,7 +2222,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return count;
   }
   
-  /// This method returns List<${_table.modelName}>. 
+  /// This method returns List<${_table.modelName}> [${_table.modelName}] 
   /// 
   ${commentPreload.replaceAll('methodname', 'toList')}
   /// 
@@ -2218,7 +2233,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return ${toPluralLowerName(_table._modelLowerCase)}Data;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [${_table.modelName}]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2228,7 +2243,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [${_table.modelName}]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2238,7 +2253,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [${_table.modelName}]
   /// 
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -2302,7 +2317,21 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return items;
   }
   ''' : ''}
-  ${_table.primaryKeyNames.length > 1 ? '''/// This method returns Primary Key List<${_table.primaryKeyNames.join(',')}>.
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [${_table.modelName}]
+  /// 
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  /// 
+  /// <returns>List<String>
+  Map<String,dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+   final Map<String,dynamic> _retVal = <String,dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `${_table.primaryKeyNames.join('`')}` FROM ${_table.tableName} WHERE \${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+  ${_table.primaryKeyNames.length > 1 ? '''/// This method returns Primary Key List<${_table.primaryKeyNames.join(',')}> [${_table.modelName}]
   /// <returns>List<${_table.primaryKeyNames.join(',')}>
   Future<List<${_table.modelName}>> toListPrimaryKey(
       [bool buildParameters = true]) async {
@@ -2331,7 +2360,7 @@ Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParameter
 
 
 
-/// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg.. 
+/// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [${_table.modelName}]
 /// 
 /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)  
 Future<List<dynamic>> toListObject() async {
@@ -2474,6 +2503,7 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
         case DeleteRule.NO_ACTION:
           retVal.writeln(
               '''// Check sub records where in (${tableCollection.childTable.modelName}) according to ${tableCollection.childTableField.deleteRule.toString()}
+    
     ${_buildWhereStrForList(tableCollection)}.toCount();
     if (res${tableCollection.childTable.modelName}BY${tableCollection.childTableField.fieldName}>0) {
     return BoolResult(
@@ -2513,11 +2543,12 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
   }
 
   String _buildWhereStrForList(TableCollectionBase tableCollection) {
-    final idList =
-        '${tocamelCase(tableCollection.childTable.tableName)}By${tableCollection.childTableField.fieldName}idList'
-            .replaceAll('_', '');
-    String _retVal = 'final $idList = await toListPrimaryKey(false);';
+    final StringBuffer _retVal = StringBuffer();
     if (tableCollection.childTableField.table.primaryKeyNames.length > 1) {
+      final idList =
+          '${tocamelCase(tableCollection.childTable.tableName)}By${tableCollection.childTableField.fieldName}idList'
+              .replaceAll('_', '');
+              _retVal.writeln('final $idList = await toListPrimaryKey(false);');
       String queryIn =
           '${tableCollection.childTableField.relationshipFields[0].fieldName}=\${e.${tableCollection.childTableField.table.primaryKeyNames[0]}}';
       for (int i = 1;
@@ -2526,17 +2557,19 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
         queryIn +=
             ' AND ${tableCollection.childTableField.relationshipFields[i].fieldName}=\${e.${tableCollection.childTableField.table.primaryKeyNames[i]}}';
       }
-      _retVal += '''
+      _retVal.writeln('''
       final whereStr = $idList.map((e) => '($queryIn)').join(' OR ');
       final res${tableCollection.childTable.modelName}BY${tableCollection.childTableField.fieldName} = await ${tableCollection.childTable.modelName}()
         .select()
-        .where(whereStr)''';
+        .where(whereStr)''');
     } else {
-      _retVal += '''
-       final res${tableCollection.childTable.modelName}BY${tableCollection.childTableField.fieldName} = await ${tableCollection.childTable.modelName}().select().${tableCollection.childTableField.fieldName}.inValues($idList)
-     ''';
+      final idListName = 'idList${tableCollection.childTable.modelName}BY${tableCollection.childTableField.fieldName}';
+      _retVal.writeln('''
+          final $idListName = toListPrimaryKeySQL(false);
+       final res${tableCollection.childTable.modelName}BY${tableCollection.childTableField.fieldName} = await ${tableCollection.childTable.modelName}().select().where('${tableCollection.childTableField.fieldName} IN (\${$idListName['sql']})', parameterValue: $idListName['args'])
+     ''');
     }
-    return _retVal;
+    return _retVal.toString();
   }
 }
 
@@ -2618,7 +2651,9 @@ String toSqliteAddColumnString(SqfEntityFieldType field) {
   final StringBuffer retVal = StringBuffer('${field.fieldName} $_dbType')
     ..write(field.isNotNull ?? false ? ' NOT NULL' : '')
     ..write(field.isUnique ?? false ? ' UNIQUE' : '')
-    ..write(field.collate != null  ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}' : '')
+    ..write(field.collate != null
+        ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}'
+        : '')
     ..write(field.checkCondition != null && field.checkCondition.isNotEmpty
         ? ' CHECK(${field.checkCondition.replaceAll('(this)', field.fieldName)})'
         : '')
@@ -2847,7 +2882,7 @@ class DbParameter {
       this.value2,
       this.whereString = '',
       this.wOperator = '',
-      this.wStartBlock = false});
+      this.wStartBlock = false, this.hasParameter=false});
   String columnName;
   DbType dbType;
   dynamic value;
@@ -2856,6 +2891,7 @@ class DbParameter {
   bool wStartBlock;
   String wOperator;
   String expression;
+  bool hasParameter;
 }
 
 class SqfEntityTableBase {
@@ -3005,7 +3041,7 @@ class SqfEntityTableBase {
     }
 
     if (useSoftDeleting) {
-      _createTableSQL.write(', isDeleted numeric');
+      _createTableSQL.write(', isDeleted numeric NOT NULL DEFAULT 0');
     }
 
     final List<String> primaryKeys = <String>[];
@@ -3142,7 +3178,8 @@ abstract class SqfEntityFieldType {
       this.isUnique,
       this.checkCondition,
       this.isIndex,
-      this.isIndexGroup,this.collate});
+      this.isIndexGroup,
+      this.collate});
   String fieldName;
   DbType dbType;
   dynamic defaultValue;
@@ -3185,7 +3222,8 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition,this.collate});
+      this.checkCondition,
+      this.collate});
   @override
   String fieldName;
   @override
@@ -3377,7 +3415,8 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.isUnique,
       this.isIndex,
       this.isIndexGroup,
-      this.checkCondition,this.collate}) {
+      this.checkCondition,
+      this.collate}) {
     init();
   }
   SqfEntityFieldRelationshipBase init() {
@@ -3496,6 +3535,7 @@ abstract class SqfEntityModelBase {
   String bundledDatabasePath;
   String instanceName;
   String password;
+  int dbVersion;
   List<SqfEntityTableBase> databaseTables;
   List<SqfEntityTableBase> formTables;
   List<SqfEntitySequenceBase> sequences;
@@ -3729,7 +3769,7 @@ const List<String> sqLiteType = [
   'datetimeutc',
 ];
 enum DeleteRule { CASCADE, SET_DEFAULT_VALUE, SET_NULL, NO_ACTION }
-enum Collate {BINARY,NOCASE,RTRIM}
+enum Collate { BINARY, NOCASE, RTRIM }
 enum RelationType { ONE_TO_ONE, ONE_TO_MANY, MANY_TO_MANY }
 enum PrimaryKeyType { integer_auto_incremental, text, integer_unique }
 //enum DefaultValues { date_now, datetime_now }

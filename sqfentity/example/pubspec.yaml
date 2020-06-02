@@ -25,6 +25,15 @@ dependencies:
   pedantic: ^1.8.0+1
   http: ^0.12.0+1
 
+
+dependency_overrides:
+  sqfentity: 
+    path: ../../sqfentity
+  sqfentity_gen: 
+    path: ../../sqfentity_gen      
+
+    
+
 dev_dependencies:
   build_runner: ^1.6.5
   build_verify: ^1.1.0

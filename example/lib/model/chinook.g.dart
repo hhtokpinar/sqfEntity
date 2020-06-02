@@ -372,7 +372,7 @@ class Chinookdb extends SqfEntityModelProvider {
   Chinookdb() {
     databaseName = chinookdb.databaseName;
     password = chinookdb.password;
-
+    dbVersion = chinookdb.dbVersion;
     databaseTables = [
       TableAlbum.getInstance,
       TableArtist.getInstance,
@@ -384,7 +384,6 @@ class Chinookdb extends SqfEntityModelProvider {
       TableMediaType.getInstance,
       TablePlaylist.getInstance,
       TableTrack.getInstance,
-      TablePlaylistTrack.getInstance,
     ];
 
     bundledDatabasePath = chinookdb
@@ -466,9 +465,13 @@ class Album {
   /// get Track(s) filtered by AlbumId=AlbumId
   TrackFilterBuilder getTracks(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (AlbumId == null) {
+      return null;
+    }
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('AlbumId=?', parameterValue: AlbumId)
+        .AlbumId
+        .equals(AlbumId)
         .and;
   }
 
@@ -524,12 +527,12 @@ class Album {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Album]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Album]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -542,14 +545,19 @@ class Album {
     return [AlbumId, Title, ArtistId];
   }
 
-  static Future<List<Album>> fromWebUrl(String url) async {
+  static Future<List<Album>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Album.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Album>> fromJson(String jsonBody) async {
@@ -756,11 +764,7 @@ class Album {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Album invoked (AlbumId=$AlbumId)');
-    if (await Track()
-            .select()
-            .where('AlbumId=?', parameterValue: AlbumId)
-            .and /*.AlbumId.equals(AlbumId)*/ .toCount() >
-        0) {
+    if (await Track().select().AlbumId.equals(AlbumId).and.toCount() > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -1067,8 +1071,9 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   AlbumFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -1205,7 +1210,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -1213,7 +1218,11 @@ class AlbumFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -1241,7 +1250,13 @@ class AlbumFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -1276,9 +1291,13 @@ class AlbumFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
-    final trackByAlbumIdidList = await toListPrimaryKey(false);
-    final resTrackBYAlbumId =
-        await Track().select().AlbumId.inValues(trackByAlbumIdidList).toCount();
+
+    final idListTrackBYAlbumId = toListPrimaryKeySQL(false);
+    final resTrackBYAlbumId = await Track()
+        .select()
+        .where('AlbumId IN (${idListTrackBYAlbumId['sql']})',
+            parameterValue: idListTrackBYAlbumId['args'])
+        .toCount();
     if (resTrackBYAlbumId > 0) {
       return BoolResult(
           success: false,
@@ -1371,7 +1390,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Album]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) albumCount]) async {
@@ -1385,7 +1404,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Album>.
+  /// This method returns List<Album> [Album]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -1414,7 +1433,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return albumsData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Album]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -1424,7 +1443,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Album]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -1434,7 +1453,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Album]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -1498,6 +1517,21 @@ class AlbumFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Album]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `AlbumId` FROM Album WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -1515,7 +1549,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return AlbumIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Album]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -1625,9 +1659,13 @@ class Artist {
   /// get Album(s) filtered by ArtistId=ArtistId
   AlbumFilterBuilder getAlbums(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (ArtistId == null) {
+      return null;
+    }
     return Album()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('ArtistId=?', parameterValue: ArtistId)
+        .ArtistId
+        .equals(ArtistId)
         .and;
   }
 
@@ -1675,12 +1713,12 @@ class Artist {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Artist]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Artist]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -1693,14 +1731,19 @@ class Artist {
     return [ArtistId, Name];
   }
 
-  static Future<List<Artist>> fromWebUrl(String url) async {
+  static Future<List<Artist>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Artist.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Artist>> fromJson(String jsonBody) async {
@@ -1878,11 +1921,7 @@ class Artist {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Artist invoked (ArtistId=$ArtistId)');
-    if (await Album()
-            .select()
-            .where('ArtistId=?', parameterValue: ArtistId)
-            .and /*.ArtistId.equals(ArtistId)*/ .toCount() >
-        0) {
+    if (await Album().select().ArtistId.equals(ArtistId).and.toCount() > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -2190,8 +2229,9 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   ArtistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -2323,7 +2363,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -2331,7 +2371,11 @@ class ArtistFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -2359,7 +2403,13 @@ class ArtistFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -2394,11 +2444,12 @@ class ArtistFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Album) according to DeleteRule.NO_ACTION
-    final albumByArtistIdidList = await toListPrimaryKey(false);
+
+    final idListAlbumBYArtistId = toListPrimaryKeySQL(false);
     final resAlbumBYArtistId = await Album()
         .select()
-        .ArtistId
-        .inValues(albumByArtistIdidList)
+        .where('ArtistId IN (${idListAlbumBYArtistId['sql']})',
+            parameterValue: idListAlbumBYArtistId['args'])
         .toCount();
     if (resAlbumBYArtistId > 0) {
       return BoolResult(
@@ -2478,7 +2529,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Artist]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) artistCount]) async {
@@ -2492,7 +2543,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Artist>.
+  /// This method returns List<Artist> [Artist]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -2521,7 +2572,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return artistsData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Artist]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2531,7 +2582,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Artist]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2541,7 +2592,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Artist]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -2606,6 +2657,22 @@ class ArtistFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Artist]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `ArtistId` FROM Artist WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -2623,7 +2690,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return ArtistIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Artist]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -2826,9 +2893,13 @@ class Customer {
   /// get Invoice(s) filtered by CustomerId=CustomerId
   InvoiceFilterBuilder getInvoices(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (CustomerId == null) {
+      return null;
+    }
     return Invoice()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('CustomerId=?', parameterValue: CustomerId)
+        .CustomerId
+        .equals(CustomerId)
         .and;
   }
 
@@ -2964,12 +3035,12 @@ class Customer {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Customer]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Customer]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -3009,15 +3080,20 @@ class Customer {
     ];
   }
 
-  static Future<List<Customer>> fromWebUrl(String url) async {
+  static Future<List<Customer>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR Customer.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Customer>> fromJson(String jsonBody) async {
@@ -3239,10 +3315,7 @@ class Customer {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Customer invoked (CustomerId=$CustomerId)');
-    if (await Invoice()
-            .select()
-            .where('CustomerId=?', parameterValue: CustomerId)
-            .and /*.CustomerId.equals(CustomerId)*/ .toCount() >
+    if (await Invoice().select().CustomerId.equals(CustomerId).and.toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -3552,8 +3625,9 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   CustomerFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -3741,7 +3815,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -3749,7 +3823,11 @@ class CustomerFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -3777,7 +3855,13 @@ class CustomerFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -3812,11 +3896,12 @@ class CustomerFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Invoice) according to DeleteRule.NO_ACTION
-    final invoiceByCustomerIdidList = await toListPrimaryKey(false);
+
+    final idListInvoiceBYCustomerId = toListPrimaryKeySQL(false);
     final resInvoiceBYCustomerId = await Invoice()
         .select()
-        .CustomerId
-        .inValues(invoiceByCustomerIdidList)
+        .where('CustomerId IN (${idListInvoiceBYCustomerId['sql']})',
+            parameterValue: idListInvoiceBYCustomerId['args'])
         .toCount();
     if (resInvoiceBYCustomerId > 0) {
       return BoolResult(
@@ -3910,7 +3995,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Customer]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) customerCount]) async {
@@ -3924,7 +4009,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Customer>.
+  /// This method returns List<Customer> [Customer]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -3953,7 +4038,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return customersData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Customer]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -3963,7 +4048,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Customer]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -3973,7 +4058,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Customer]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -4038,6 +4123,22 @@ class CustomerFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Customer]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `CustomerId` FROM Customer WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -4055,7 +4156,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return CustomerIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Customer]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -4343,9 +4444,13 @@ class Employee {
   /// get Customer(s) filtered by EmployeeId=SupportRepId
   CustomerFilterBuilder getCustomers(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (EmployeeId == null) {
+      return null;
+    }
     return Customer()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('SupportRepId=?', parameterValue: EmployeeId)
+        .SupportRepId
+        .equals(EmployeeId)
         .and;
   }
 
@@ -4356,9 +4461,13 @@ class Employee {
   /// get Employee(s) filtered by EmployeeId=ReportsTo
   EmployeeFilterBuilder getReportsTos(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (EmployeeId == null) {
+      return null;
+    }
     return Employee()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('ReportsTo=?', parameterValue: EmployeeId)
+        .ReportsTo
+        .equals(EmployeeId)
         .and;
   }
 
@@ -4521,12 +4630,12 @@ class Employee {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Employee]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Employee]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -4570,15 +4679,20 @@ class Employee {
     ];
   }
 
-  static Future<List<Employee>> fromWebUrl(String url) async {
+  static Future<List<Employee>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR Employee.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Employee>> fromJson(String jsonBody) async {
@@ -4824,18 +4938,17 @@ class Employee {
     print('SQFENTITIY: delete Employee invoked (EmployeeId=$EmployeeId)');
     if (await Customer()
             .select()
-            .where('SupportRepId=?', parameterValue: EmployeeId)
-            .and /*.SupportRepId.equals(EmployeeId)*/ .toCount() >
+            .SupportRepId
+            .equals(EmployeeId)
+            .and
+            .toCount() >
         0) {
       return BoolResult(
           success: false,
           errorMessage:
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Customer.SupportRepId)');
     }
-    if (await Employee()
-            .select()
-            .where('ReportsTo=?', parameterValue: EmployeeId)
-            .and /*.ReportsTo.equals(EmployeeId)*/ .toCount() >
+    if (await Employee().select().ReportsTo.equals(EmployeeId).and.toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -5145,8 +5258,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   EmployeeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -5343,7 +5457,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -5351,7 +5465,11 @@ class EmployeeFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -5379,7 +5497,13 @@ class EmployeeFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -5414,11 +5538,12 @@ class EmployeeFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Customer) according to DeleteRule.NO_ACTION
-    final customerBySupportRepIdidList = await toListPrimaryKey(false);
+
+    final idListCustomerBYSupportRepId = toListPrimaryKeySQL(false);
     final resCustomerBYSupportRepId = await Customer()
         .select()
-        .SupportRepId
-        .inValues(customerBySupportRepIdidList)
+        .where('SupportRepId IN (${idListCustomerBYSupportRepId['sql']})',
+            parameterValue: idListCustomerBYSupportRepId['args'])
         .toCount();
     if (resCustomerBYSupportRepId > 0) {
       return BoolResult(
@@ -5427,11 +5552,12 @@ class EmployeeFilterBuilder extends SearchCriteria {
               'SQFENTITY ERROR: The DELETE statement conflicted with the REFERENCE RELATIONSHIP (Customer.SupportRepId)');
     }
 // Check sub records where in (Employee) according to DeleteRule.NO_ACTION
-    final employeeByReportsToidList = await toListPrimaryKey(false);
+
+    final idListEmployeeBYReportsTo = toListPrimaryKeySQL(false);
     final resEmployeeBYReportsTo = await Employee()
         .select()
-        .ReportsTo
-        .inValues(employeeByReportsToidList)
+        .where('ReportsTo IN (${idListEmployeeBYReportsTo['sql']})',
+            parameterValue: idListEmployeeBYReportsTo['args'])
         .toCount();
     if (resEmployeeBYReportsTo > 0) {
       return BoolResult(
@@ -5535,7 +5661,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Employee]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) employeeCount]) async {
@@ -5549,7 +5675,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Employee>.
+  /// This method returns List<Employee> [Employee]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -5578,7 +5704,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return employeesData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Employee]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -5588,7 +5714,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Employee]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -5598,7 +5724,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Employee]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -5663,6 +5789,22 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Employee]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `EmployeeId` FROM Employee WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -5680,7 +5822,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return EmployeeIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Employee]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -5860,9 +6002,13 @@ class Genre {
   /// get Track(s) filtered by GenreId=GenreId
   TrackFilterBuilder getTracks(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (GenreId == null) {
+      return null;
+    }
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('GenreId=?', parameterValue: GenreId)
+        .GenreId
+        .equals(GenreId)
         .and;
   }
 
@@ -5910,12 +6056,12 @@ class Genre {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Genre]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Genre]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -5928,14 +6074,19 @@ class Genre {
     return [GenreId, Name];
   }
 
-  static Future<List<Genre>> fromWebUrl(String url) async {
+  static Future<List<Genre>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Genre.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Genre>> fromJson(String jsonBody) async {
@@ -6113,11 +6264,7 @@ class Genre {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Genre invoked (GenreId=$GenreId)');
-    if (await Track()
-            .select()
-            .where('GenreId=?', parameterValue: GenreId)
-            .and /*.GenreId.equals(GenreId)*/ .toCount() >
-        0) {
+    if (await Track().select().GenreId.equals(GenreId).and.toCount() > 0) {
       return BoolResult(
           success: false,
           errorMessage:
@@ -6424,8 +6571,9 @@ class GenreFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   GenreFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -6557,7 +6705,7 @@ class GenreFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -6565,7 +6713,11 @@ class GenreFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -6593,7 +6745,13 @@ class GenreFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -6628,9 +6786,13 @@ class GenreFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
-    final trackByGenreIdidList = await toListPrimaryKey(false);
-    final resTrackBYGenreId =
-        await Track().select().GenreId.inValues(trackByGenreIdidList).toCount();
+
+    final idListTrackBYGenreId = toListPrimaryKeySQL(false);
+    final resTrackBYGenreId = await Track()
+        .select()
+        .where('GenreId IN (${idListTrackBYGenreId['sql']})',
+            parameterValue: idListTrackBYGenreId['args'])
+        .toCount();
     if (resTrackBYGenreId > 0) {
       return BoolResult(
           success: false,
@@ -6709,7 +6871,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Genre]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) genreCount]) async {
@@ -6723,7 +6885,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Genre>.
+  /// This method returns List<Genre> [Genre]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -6752,7 +6914,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return genresData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Genre]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -6762,7 +6924,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Genre]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -6772,7 +6934,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Genre]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -6836,6 +6998,21 @@ class GenreFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Genre]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `GenreId` FROM Genre WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -6853,7 +7030,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return GenreIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Genre]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -7031,9 +7208,13 @@ class Invoice {
   /// get InvoiceLine(s) filtered by InvoiceId=InvoiceId
   InvoiceLineFilterBuilder getInvoiceLines(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (InvoiceId == null) {
+      return null;
+    }
     return InvoiceLine()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('InvoiceId=?', parameterValue: InvoiceId)
+        .InvoiceId
+        .equals(InvoiceId)
         .and;
   }
 
@@ -7141,12 +7322,12 @@ class Invoice {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Invoice]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Invoice]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -7178,15 +7359,20 @@ class Invoice {
     ];
   }
 
-  static Future<List<Invoice>> fromWebUrl(String url) async {
+  static Future<List<Invoice>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR Invoice.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Invoice>> fromJson(String jsonBody) async {
@@ -7404,10 +7590,7 @@ class Invoice {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Invoice invoked (InvoiceId=$InvoiceId)');
-    if (await InvoiceLine()
-            .select()
-            .where('InvoiceId=?', parameterValue: InvoiceId)
-            .and /*.InvoiceId.equals(InvoiceId)*/ .toCount() >
+    if (await InvoiceLine().select().InvoiceId.equals(InvoiceId).and.toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -7716,8 +7899,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   InvoiceFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -7888,7 +8072,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -7896,7 +8080,11 @@ class InvoiceFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -7924,7 +8112,13 @@ class InvoiceFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -7959,11 +8153,12 @@ class InvoiceFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
-    final invoiceLineByInvoiceIdidList = await toListPrimaryKey(false);
+
+    final idListInvoiceLineBYInvoiceId = toListPrimaryKeySQL(false);
     final resInvoiceLineBYInvoiceId = await InvoiceLine()
         .select()
-        .InvoiceId
-        .inValues(invoiceLineByInvoiceIdidList)
+        .where('InvoiceId IN (${idListInvoiceLineBYInvoiceId['sql']})',
+            parameterValue: idListInvoiceLineBYInvoiceId['args'])
         .toCount();
     if (resInvoiceLineBYInvoiceId > 0) {
       return BoolResult(
@@ -8057,7 +8252,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Invoice]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) invoiceCount]) async {
@@ -8071,7 +8266,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Invoice>.
+  /// This method returns List<Invoice> [Invoice]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -8100,7 +8295,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return invoicesData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Invoice]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -8110,7 +8305,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Invoice]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -8120,7 +8315,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Invoice]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -8185,6 +8380,22 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Invoice]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `InvoiceId` FROM Invoice WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -8202,7 +8413,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return InvoiceIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Invoice]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -8452,12 +8663,12 @@ class InvoiceLine {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [InvoiceLine]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [InvoiceLine]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -8470,15 +8681,20 @@ class InvoiceLine {
     return [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId];
   }
 
-  static Future<List<InvoiceLine>> fromWebUrl(String url) async {
+  static Future<List<InvoiceLine>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR InvoiceLine.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<InvoiceLine>> fromJson(String jsonBody) async {
@@ -8998,8 +9214,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   InvoiceLineFilterBuilder where(String whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -9148,7 +9365,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -9156,7 +9373,11 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -9184,7 +9405,13 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -9298,7 +9525,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [InvoiceLine]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) invoicelineCount]) async {
@@ -9312,7 +9539,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<InvoiceLine>.
+  /// This method returns List<InvoiceLine> [InvoiceLine]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -9342,7 +9569,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return invoicelinesData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [InvoiceLine]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -9352,7 +9579,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [InvoiceLine]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -9362,7 +9589,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [InvoiceLine]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -9427,6 +9654,22 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [InvoiceLine]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `InvoiceLineId` FROM InvoiceLine WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -9444,7 +9687,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return InvoiceLineIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [InvoiceLine]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -9566,9 +9809,13 @@ class MediaType {
   /// get Track(s) filtered by MediaTypeId=MediaTypeId
   TrackFilterBuilder getTracks(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (MediaTypeId == null) {
+      return null;
+    }
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('MediaTypeId=?', parameterValue: MediaTypeId)
+        .MediaTypeId
+        .equals(MediaTypeId)
         .and;
   }
 
@@ -9616,12 +9863,12 @@ class MediaType {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [MediaType]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [MediaType]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -9634,15 +9881,20 @@ class MediaType {
     return [MediaTypeId, Name];
   }
 
-  static Future<List<MediaType>> fromWebUrl(String url) async {
+  static Future<List<MediaType>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR MediaType.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<MediaType>> fromJson(String jsonBody) async {
@@ -9824,10 +10076,7 @@ class MediaType {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete MediaType invoked (MediaTypeId=$MediaTypeId)');
-    if (await Track()
-            .select()
-            .where('MediaTypeId=?', parameterValue: MediaTypeId)
-            .and /*.MediaTypeId.equals(MediaTypeId)*/ .toCount() >
+    if (await Track().select().MediaTypeId.equals(MediaTypeId).and.toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -10137,8 +10386,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   MediaTypeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -10270,7 +10520,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -10278,7 +10528,11 @@ class MediaTypeFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -10306,7 +10560,13 @@ class MediaTypeFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -10341,11 +10601,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
-    final trackByMediaTypeIdidList = await toListPrimaryKey(false);
+
+    final idListTrackBYMediaTypeId = toListPrimaryKeySQL(false);
     final resTrackBYMediaTypeId = await Track()
         .select()
-        .MediaTypeId
-        .inValues(trackByMediaTypeIdidList)
+        .where('MediaTypeId IN (${idListTrackBYMediaTypeId['sql']})',
+            parameterValue: idListTrackBYMediaTypeId['args'])
         .toCount();
     if (resTrackBYMediaTypeId > 0) {
       return BoolResult(
@@ -10425,7 +10686,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [MediaType]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) mediatypeCount]) async {
@@ -10439,7 +10700,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<MediaType>.
+  /// This method returns List<MediaType> [MediaType]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -10468,7 +10729,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return mediatypesData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [MediaType]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -10478,7 +10739,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [MediaType]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -10488,7 +10749,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [MediaType]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -10553,6 +10814,22 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [MediaType]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `MediaTypeId` FROM MediaType WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -10570,7 +10847,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return MediaTypeIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [MediaType]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -10725,12 +11002,12 @@ class Playlist {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Playlist]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Playlist]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -10743,15 +11020,20 @@ class Playlist {
     return [PlaylistId, Name];
   }
 
-  static Future<List<Playlist>> fromWebUrl(String url) async {
+  static Future<List<Playlist>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR Playlist.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Playlist>> fromJson(String jsonBody) async {
@@ -11234,8 +11516,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   PlaylistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -11367,7 +11650,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -11375,7 +11658,11 @@ class PlaylistFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -11403,7 +11690,13 @@ class PlaylistFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -11509,7 +11802,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Playlist]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) playlistCount]) async {
@@ -11523,7 +11816,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Playlist>.
+  /// This method returns List<Playlist> [Playlist]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -11552,7 +11845,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return playlistsData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Playlist]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -11562,7 +11855,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Playlist]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -11572,7 +11865,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Playlist]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -11637,6 +11930,22 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Playlist]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `PlaylistId` FROM Playlist WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -11654,7 +11963,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return PlaylistIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Playlist]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -11850,9 +12159,13 @@ class Track {
   /// get InvoiceLine(s) filtered by TrackId=TrackId
   InvoiceLineFilterBuilder getInvoiceLines(
       {List<String> columnsToSelect, bool getIsDeleted}) {
+    if (TrackId == null) {
+      return null;
+    }
     return InvoiceLine()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .where('TrackId=?', parameterValue: TrackId)
+        .TrackId
+        .equals(TrackId)
         .and;
   }
 
@@ -11974,12 +12287,12 @@ class Track {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Track]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Track]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -12011,14 +12324,19 @@ class Track {
     ];
   }
 
-  static Future<List<Track>> fromWebUrl(String url) async {
+  static Future<List<Track>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Track.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<Track>> fromJson(String jsonBody) async {
@@ -12291,10 +12609,7 @@ class Track {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
-    if (await InvoiceLine()
-            .select()
-            .where('TrackId=?', parameterValue: TrackId)
-            .and /*.TrackId.equals(TrackId)*/ .toCount() >
+    if (await InvoiceLine().select().TrackId.equals(TrackId).and.toCount() >
         0) {
       return BoolResult(
           success: false,
@@ -12602,8 +12917,9 @@ class TrackFilterBuilder extends SearchCriteria {
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   TrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -12771,7 +13087,7 @@ class TrackFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -12779,7 +13095,11 @@ class TrackFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -12807,7 +13127,13 @@ class TrackFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -12842,11 +13168,12 @@ class TrackFilterBuilder extends SearchCriteria {
     _buildParameters();
     var r = BoolResult();
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
-    final invoiceLineByTrackIdidList = await toListPrimaryKey(false);
+
+    final idListInvoiceLineBYTrackId = toListPrimaryKeySQL(false);
     final resInvoiceLineBYTrackId = await InvoiceLine()
         .select()
-        .TrackId
-        .inValues(invoiceLineByTrackIdidList)
+        .where('TrackId IN (${idListInvoiceLineBYTrackId['sql']})',
+            parameterValue: idListInvoiceLineBYTrackId['args'])
         .toCount();
     if (resInvoiceLineBYTrackId > 0) {
       return BoolResult(
@@ -12968,7 +13295,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [Track]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) trackCount]) async {
@@ -12982,7 +13309,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<Track>.
+  /// This method returns List<Track> [Track]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -13011,7 +13338,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return tracksData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [Track]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -13021,7 +13348,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [Track]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -13031,7 +13358,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [Track]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -13095,6 +13422,21 @@ class TrackFilterBuilder extends SearchCriteria {
     return items;
   }
 
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Track]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `TrackId` FROM Track WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
   /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
@@ -13112,7 +13454,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return TrackIdData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Track]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -13324,12 +13666,12 @@ class PlaylistTrack {
     return map;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [PlaylistTrack]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [PlaylistTrack]
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
   }
@@ -13342,15 +13684,20 @@ class PlaylistTrack {
     return [TrackId, PlaylistId];
   }
 
-  static Future<List<PlaylistTrack>> fromWebUrl(String url) async {
+  static Future<List<PlaylistTrack>> fromWebUrl(String url,
+      {Map<String, String> headers}) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR PlaylistTrack.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
+    return http.post(url, headers: headers, body: toJson());
   }
 
   static Future<List<PlaylistTrack>> fromJson(String jsonBody) async {
@@ -13872,8 +14219,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   PlaylistTrackFilterBuilder where(String whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param =
-          DbParameter(columnName: parameterValue == null ? null : '');
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
       _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
@@ -14006,7 +14354,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
+        if (param.value is List && !param.hasParameter) {
           param.value = param.value
               .toString()
               .replaceAll('[', '')
@@ -14014,7 +14362,11 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
               .toString();
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll('?', param.value.toString());
+              .replaceAll(
+                  '?',
+                  param.value is String
+                      ? '\'${param.value.toString()}\''
+                      : param.value.toString());
           param.value = null;
         } else {
           whereString +=
@@ -14042,7 +14394,13 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -14156,7 +14514,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return obj;
   }
 
-  /// This method returns int.
+  /// This method returns int. [PlaylistTrack]
   ///
   /// <returns>int
   Future<int> toCount([VoidCallback Function(int c) playlisttrackCount]) async {
@@ -14170,7 +14528,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method returns List<PlaylistTrack>.
+  /// This method returns List<PlaylistTrack> [PlaylistTrack]
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -14200,7 +14558,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return playlisttracksData;
   }
 
-  /// This method returns Json String
+  /// This method returns Json String [PlaylistTrack]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -14210,7 +14568,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns Json String.
+  /// This method returns Json String. [PlaylistTrack]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -14220,7 +14578,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>.
+  /// This method returns List<dynamic>. [PlaylistTrack]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
@@ -14228,7 +14586,23 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return await _obj._mnPlaylistTrack.toList(qparams);
   }
 
-  /// This method returns Primary Key List<TrackId,PlaylistId>.
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [PlaylistTrack]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] =
+        'SELECT `TrackId`PlaylistId` FROM PlaylistTrack WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
+  /// This method returns Primary Key List<TrackId,PlaylistId> [PlaylistTrack]
   /// <returns>List<TrackId,PlaylistId>
   Future<List<PlaylistTrack>> toListPrimaryKey(
       [bool buildParameters = true]) async {
@@ -14240,7 +14614,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return await PlaylistTrack.fromMapList(playlisttrackFuture);
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [PlaylistTrack]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   Future<List<dynamic>> toListObject() async {
@@ -14719,7 +15093,7 @@ class MediaTypeController extends MediaType {
 
 // BEGIN CONTROLLER (Playlist)
 class PlaylistToTrackControllerSub extends TrackController {
-  static String relationshipFieldName = 'PlaylistPlaylistId';
+  static String relationshipFieldName = 'mPlaylistTrack';
   static String primaryKeyName = 'TrackId';
   static bool useSoftDeleting = false;
   //static String formListTitleField = 'Name';
@@ -14736,7 +15110,7 @@ class PlaylistController extends Playlist {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['PlaylistToTrack'] = 'Playlist To Track(PlaylistPlaylistId)';
+    menu['PlaylistToTrack'] = 'Playlist To Track(mPlaylistTrack)';
 
     return menu;
   }

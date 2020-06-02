@@ -37,11 +37,9 @@ void main(List<String> args) async {
 
   await runSamples();
   runApp(MyApp());
-
 }
 
 Future<bool> runSamples() async {
-
   // add some products
   await addSomeProducts();
 
@@ -50,6 +48,8 @@ Future<bool> runSamples() async {
 
   // SELECT AND ORDER PRODUCTS BY FIELDS
   await samples1();
+
+  //return true;
 
   // FILTERS: SOME FILTERS ON PRODUCTS
   await samples2();
@@ -115,6 +115,8 @@ Future<void> printCategories(bool getIsDeleted) async {
   print('---------------------------------------------------------------\n\n');
 }
 
+class BundledDbModel extends SqfEntityModelProvider {}
+
 Future<String> createModelFromDatabaseSample() async {
 /* STEP 1
 
@@ -131,8 +133,9 @@ flutter:
 // Run this script with this parameters.
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
-  final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'chinook.db', bundledDatabasePath: 'assets/chinook.sqlite');
+  final bundledDbModel = await convertDatabaseToModelBase(BundledDbModel()
+    ..databaseName = 'chinook.db'
+    ..bundledDatabasePath = 'assets/chinook.sqlite');
 
 // STEP 3
 // Run this function to convert the model to annotation
@@ -451,10 +454,12 @@ Future<void> samples2() async {
   }
   print('---------------------------------------------------------------\n\n');
 
-    // EXAMPLE 1.16: Select products between datetimes
+  // EXAMPLE 1.16: Select products between datetimes
   productList = await Product()
       .select()
-      .datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15))
+      //.datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15))
+      .where(
+          'datetime BETWEEN \'${DateTime(2020, 1, 1, 14)}\' AND \'${DateTime(2020, 1, 1, 14).millisecondsSinceEpoch}\'')
       .toList();
   print(
       'EXAMPLE 1.16: Select products between datetimes \n -> Product().select().datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15)).toList()');
@@ -853,29 +858,29 @@ Future<bool> addProducts() async {
   if (productList.length < 15) {
     // some dummy rows for select (id:1- to 15)
     await Product(
-            name: 'Notebook 12"',
-            description: '128 GB SSD i7',
-            price: 6899,categoryId: 1,  
-            date: DateTime(2020, 01, 01),
-            datetime: DateTime(2020,01,01,12),
-            )
-        .save();
+      name: 'Notebook 12"',
+      description: '128 GB SSD i7',
+      price: 6899,
+      categoryId: 1,
+      date: DateTime(2020, 01, 01),
+      datetime: DateTime(2020, 01, 01, 12),
+    ).save();
 
     await Product(
             name: 'Notebook 12"',
             description: '256 GB SSD i7',
             price: 8244,
             categoryId: 1,
-              date: DateTime(2020, 01, 02),
-            datetime: DateTime(2020,01,02,13))
+            date: DateTime(2020, 01, 02),
+            datetime: DateTime(2020, 01, 02, 13))
         .save();
     await Product(
             name: 'Notebook 12"',
             description: '512 GB SSD i7',
             price: 9214,
             categoryId: 1,
-              date: DateTime(2020, 01, 03),
-            datetime: DateTime(2020,01,03,14))
+            date: DateTime(2020, 01, 03),
+            datetime: DateTime(2020, 01, 03, 14))
         .save();
 
     await Product(
@@ -883,24 +888,24 @@ Future<bool> addProducts() async {
             description: '128 GB SSD',
             price: 8500,
             categoryId: 1,
-              date: DateTime(2020, 01, 04),
-            datetime: DateTime(2020,01,04,15))
+            date: DateTime(2020, 01, 04),
+            datetime: DateTime(2020, 01, 04, 15))
         .save();
     await Product(
             name: 'Notebook 13"',
             description: '256 GB SSD',
             price: 9900,
             categoryId: 1,
-              date: DateTime(2020, 01, 05),
-            datetime: DateTime(2020,01,05,16))
+            date: DateTime(2020, 01, 05),
+            datetime: DateTime(2020, 01, 05, 16))
         .save();
     await Product(
             name: 'Notebook 13"',
             description: '512 GB SSD',
             price: 11000,
             categoryId: 1,
-              date: DateTime(2020, 01, 06),
-            datetime: DateTime(2020,01,06,17))
+            date: DateTime(2020, 01, 06),
+            datetime: DateTime(2020, 01, 06, 17))
         .save();
 
     await Product(
@@ -908,24 +913,24 @@ Future<bool> addProducts() async {
             description: '128 GB SSD',
             price: 8999,
             categoryId: 1,
-              date: DateTime(2020, 01, 07),
-            datetime: DateTime(2020,01,07,18))
+            date: DateTime(2020, 01, 07),
+            datetime: DateTime(2020, 01, 07, 18))
         .save();
     await Product(
             name: 'Notebook 15"',
             description: '256 GB SSD',
             price: 10499,
             categoryId: 1,
-              date: DateTime(2020, 01, 08),
-            datetime: DateTime(2020,01,08,19))
+            date: DateTime(2020, 01, 08),
+            datetime: DateTime(2020, 01, 08, 19))
         .save();
     await Product(
             name: 'Notebook 15"',
             description: '512 GB SSD',
             price: 11999,
             categoryId: 1,
-              date: DateTime(2020, 01, 09),
-            datetime: DateTime(2020,01,09,20))
+            date: DateTime(2020, 01, 09),
+            datetime: DateTime(2020, 01, 09, 20))
         .save();
 
     await Product(

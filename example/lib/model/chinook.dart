@@ -12,8 +12,6 @@ part 'chinook.g.dart';
 part 'chinook.g.view.dart';
 
 //  BEGIN chinook.db MODEL
-//  Paste the following code into your model.dart
-//  Enjoy.. Huseyin Tokpunar
 
 // BEGIN TABLES
 
@@ -148,8 +146,6 @@ const tablePlaylist = SqfEntityTable(
       SqfEntityField('Name', DbType.text),
     ]);
 
-
-
 const tableTrack = SqfEntityTable(
     tableName: 'Track',
     primaryKeyName: 'TrackId',
@@ -178,7 +174,7 @@ const tableTrack = SqfEntityTable(
       SqfEntityFieldRelationship(
           parentTable: tablePlaylist,
           deleteRule: DeleteRule.NO_ACTION,
-          
+          fieldName: 'mPlaylistTrack',
           relationType: RelationType.MANY_TO_MANY,
           manyToManyTableName: 'PlaylistTrack'),
     ]);
@@ -188,7 +184,8 @@ const tableTrack = SqfEntityTable(
 @SqfEntityBuilder(chinookdb)
 const chinookdb = SqfEntityModel(
     modelName: 'Chinookdb',
-    databaseName: 'chinook.db',
+    databaseName: 'chinook_v1.4.0+1.db',
+    bundledDatabasePath: 'assets/chinook.sqlite',
     databaseTables: [
       tableAlbum,
       tableArtist,
@@ -212,7 +209,5 @@ const chinookdb = SqfEntityModel(
       tableMediaType,
       tablePlaylist,
       tableTrack,
-    ],
-    // put defined sequences into the sequences list.
-    bundledDatabasePath: 'null');
+    ]);
 // END chinook.db MODEL

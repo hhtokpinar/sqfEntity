@@ -1457,9 +1457,8 @@ class ProductFields {
 
 //region ProductManager
 class ProductManager extends SqfEntityProvider {
-  ProductManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  ProductManager() : super(MyDbModel(), tableName: _tableName);
   static final String _tableName = 'product';
-  static final String _colId = 'productId';
 }
 
 //endregion ProductManager
@@ -2442,9 +2441,8 @@ class CategoryFields {
 
 //region CategoryManager
 class CategoryManager extends SqfEntityProvider {
-  CategoryManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  CategoryManager() : super(MyDbModel(), tableName: _tableName);
   static final String _tableName = 'category';
-  static final String _colId = 'categoryId';
 }
 
 //endregion CategoryManager
@@ -3418,9 +3416,8 @@ class TodoFields {
 
 //region TodoManager
 class TodoManager extends SqfEntityProvider {
-  TodoManager() : super(MyDbModel(), tableName: _tableName, colId: _colId);
+  TodoManager() : super(MyDbModel(), tableName: _tableName);
   static final String _tableName = 'todos';
-  static final String _colId = 'id';
 }
 
 //endregion TodoManager

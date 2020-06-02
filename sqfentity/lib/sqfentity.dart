@@ -20,21 +20,59 @@ import 'dart:async' show Future;
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart';
+import 'package:sqfentity/sqfentity_connection.dart';
+import 'package:sqfentity/sqfentity_connection_base.dart';
+import 'package:sqfentity/sqfentity_connection_ffi.dart';
+
 import 'package:sqfentity_gen/sqfentity_gen.dart';
-//import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:synchronized/synchronized.dart';
 
 // BEGIN DATABASE PROVIDER
+// class SqfEntityConnectionProvider implements SqfEntityConnectionBase {
+//   SqfEntityConnectionProvider(this.connection) {
+//     if (!Platform.isWindows && !Platform.isLinux) {
+//       connectionProvider = SqfEntityConnectionMobile(connection);
+//     } else {
+//       connectionProvider = SqfEntityConnectionFfi(connection);
+//     }
+//   }
+
+//   @override
+//   SqfEntityConnection connection;
+//   SqfEntityConnectionBase connectionProvider;
+//   @override
+//   void createDb(Database db, int version) {
+//     connectionProvider.createDb(db, version);
+//   }
+
+//   @override
+//   Future<Database> openDb() async {
+//     return await connectionProvider.openDb();
+//   }
+
+//   @override
+//   Future<void> writeDatabase(ByteData data) async {
+//     await connectionProvider.writeDatabase(data);
+//   }
+// }
 
 class SqfEntityProvider extends SqfEntityModelBase {
   SqfEntityProvider(SqfEntityModelProvider dbModel,
-      {String tableName, List<String> primaryKeyList, String whereStr}) {
+      {String tableName,
+      List<String> primaryKeyList,
+      String whereStr,
+      SqfEntityConnection connection
+      }) {
     _dbModel = dbModel;
     _tableName = tableName;
     _whereStr = whereStr;
     _primaryKeyList = primaryKeyList;
+    _connection = connection ?? SqfEntityConnection(_dbModel.databaseName,bundledDatabasePath: _dbModel.bundledDatabasePath, dbVersion: _dbModel.dbVersion, password: _dbModel.password);
+    if (!Platform.isWindows && !Platform.isLinux) {
+      _connectionBase = SqfEntityConnectionMobile(_connection);
+    } else {
+      _connectionBase = SqfEntityConnectionFfi(_connection);
+    }
   }
   SqfEntityProvider._internal();
   static final SqfEntityProvider _sqfEntityProvider =
@@ -44,6 +82,8 @@ class SqfEntityProvider extends SqfEntityModelBase {
   List<String> _primaryKeyList;
   String _whereStr;
   SqfEntityModelProvider _dbModel;
+  SqfEntityConnection _connection;
+  SqfEntityConnectionBase _connectionBase;
   static Map<String, Database> _dbMap;
   static Map<String, Batch> _openedBatch;
 
@@ -54,7 +94,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
   Future<Database> get db async {
     _dbMap = _dbMap ?? <String, Database>{};
     if (_dbMap[_dbModel.databaseName] == null) {
-      _dbMap[_dbModel.databaseName] = await openDb();
+      _dbMap[_dbModel.databaseName] = await _connectionBase.openDb();
       await _dbModel.initializeDB();
       // if (!await _dbModel.initializeDB()) {
       //   _dbMap[_dbModel.databaseName] = null;
@@ -67,63 +107,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
 
   Future<void> writeDatabase(ByteData data) async {
     _dbMap[_dbModel.databaseName] = null;
-    final List<int> bytes =
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    try {
-      final dbpath = await _dbModel.getDatabasePath();
-      final path = '$dbpath/${_dbModel.databaseName}';
-      if (File(path).existsSync()) {
-        await deleteDatabase(path);
-        if (File('$path-wal').existsSync()) {
-          File('$path-wal').deleteSync();
-        }
-      }
-      File(path).writeAsBytesSync(bytes, mode: FileMode.write);
-      print('The database has been written to $path successfully');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  /// When the software/app is started, sqfentity checks the database was it initialized. If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
-  Future<Database> openDb() async {
-    final lock = Lock();
-    Database _db;
-    await lock.synchronized(() async {
-      final databasesPath = await getDatabasesPath();
-      final path = join(databasesPath, _dbModel.databaseName);
-      final file = File(path);
-
-      // check if file exists
-      if (!file.existsSync()) {
-        // Copy from asset if MyDbModel.bundledDatabasePath is not empty
-        if (_dbModel.bundledDatabasePath != null &&
-            _dbModel.bundledDatabasePath != '' &&
-            _dbModel.bundledDatabasePath != 'null') {
-          final ByteData data =
-              await rootBundle.load(_dbModel.bundledDatabasePath);
-          await writeDatabase(data);
-        }
-      }
-
-      // uncomment line below if you want to use sqlchiper
-      // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: _dbModel.password); // SQLChipher
-
-      // uncomment line below if you want to use sqflite
-      _db =
-          await openDatabase(path, version: 1, onCreate: _createDb); // SQFLite
-    });
-    //}
-    return _db;
-  }
-
-  /// Creates db if not exist
-  void _createDb(Database db, int version) async {
-    await db.execute(
-        'Create table sqfentitytables (id integer primary key, tablename text, version int, properties text)');
-    await db.execute(
-        'Create table sqfentitysequences (id text UNIQUE, value integer)');
-    print('${_dbModel.databaseName} created successfully');
+    await _connectionBase.writeDatabase(data);
   }
 
   Future<dynamic> getById(List<dynamic> ids) async {
@@ -199,6 +183,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
   Future<List<dynamic>> getForeignKeys(String tableName) async {
     final Database db = await this.db;
     final result = await db.rawQuery('PRAGMA foreign_key_list(`$tableName`)');
+
     return result;
   }
 
@@ -206,6 +191,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
   Future<List> execDataTable(String pSql, [List<dynamic> arguments]) async {
     final Database db = await this.db;
     final result = await db.rawQuery(pSql, arguments);
+
     return result;
   }
 
@@ -216,6 +202,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
       pSql += ' LIMIT 1';
     }
     final result = await db.rawQuery(pSql, arguments);
+
     if (result.isNotEmpty) {
       return result.first.values.first;
     } else {
@@ -253,6 +240,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
         (params.groupBy != '' ? params.groupBy : 'null') +
         ')');
         */
+
     return result;
   }
 
@@ -335,6 +323,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
             success: true,
             successMessage:
                 '$_tableName-> ${_primaryKeyList[0]} = ${o[_primaryKeyList[0]]} saved successfully');
+
         return result;
       } else {
         openedBatch[_dbModel.databaseName].update(
@@ -533,6 +522,9 @@ class SqfEntityProvider extends SqfEntityModelBase {
 // END DATABASE PROVIDER
 
 abstract class SqfEntityModelProvider extends SqfEntityModelBase {
+   SqfEntityModelProvider({this.connection});
+   SqfEntityConnection connection;
+
   /// initializeDB is performed automatically in this version. You no longer need to call this method
   Future<bool> initializeDB() async {
     databaseTables = databaseTables ?? [];
@@ -703,7 +695,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
 
   /// Write database on existing db (path=your new database path, byte= your new database's ByteData)
   Future<void> writeDatabase(ByteData data) async {
-    return SqfEntityProvider(this).writeDatabase(data);
+    return SqfEntityProvider(this)._connectionBase.writeDatabase(data);
   }
 
   /// Run sql command List
@@ -768,7 +760,9 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
         indexName = 'IDX_${table.tableName}_Group_${field.isIndexGroup}';
       } else {
         isUnique = field.isUnique ?? false;
-        columns = ['${field.fieldName}${field.collate != null ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}':''}'];
+        columns = [
+          '${field.fieldName}${field.collate != null ? ' COLLATE ${field.collate.toString().replaceAll('Collate.', '')}' : ''}'
+        ];
         indexName = 'IDX_${table.tableName}_${field.fieldName}';
       }
     } else if (field is SqfEntityFieldRelationshipBase) {
@@ -793,6 +787,13 @@ List<String> checkTableColumns(
     SqfEntityTableBase table, List<TableField> existingDBfields) {
   final alterTableQuery = <String>[];
   bool recreateTable = false;
+  if (table.useSoftDeleting &&
+      existingDBfields
+          .where((x) => x.fieldName.toLowerCase() == 'isdeleted')
+          .isEmpty) {
+    alterTableQuery.add(
+        'ALTER TABLE ${table.tableName} ADD COLUMN isDeleted numeric NOT NULL DEFAULT 0');
+  }
   for (var newField in table.fields) {
     if (newField is SqfEntityFieldVirtualBase) {
       continue;
@@ -834,24 +835,20 @@ List<String> checkTableColumns(
   return alterTableQuery;
 }
 
-class BundledModelBase extends SqfEntityModelProvider {}
+class BundledModelBase extends SqfEntityModelProvider {
+  BundledModelBase();
+}
 
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
-    {String databaseName,
-    String bundledDatabasePath,
-    List<String> databaseTables}) async {
-  final bundledModelBase = BundledModelBase()
-    ..bundledDatabasePath = bundledDatabasePath
-    ..databaseName = databaseName;
-
-  final bundledDbModel = SqfEntityProvider(bundledModelBase);
+    SqfEntityModelProvider model) async {
+  final bundledDbModel = SqfEntityProvider(model);
 
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
       .execDataTable(
-          'SELECT name,type FROM sqlite_master WHERE type=\'table\' ${databaseTables != null && databaseTables.isNotEmpty ? " AND name IN ('${databaseTables.join('\',\'')}`)" : ""}');
+          '''SELECT name,type FROM sqlite_master WHERE type='table' ${model.databaseTables != null && model.databaseTables.isNotEmpty ? " AND name IN ('${model.databaseTables.join('\',\'')}')" : ""}''');
   print(
-      'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in $bundledDatabasePath database:');
+      'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in ${model.bundledDatabasePath} database:');
   printList(tableList);
 
   DeleteRule getDeleteRule(String rule) {
@@ -889,8 +886,8 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
     bool isIdentity = false;
     bool isPrimaryKeyText = false;
     // check fields in the table
-    final tableFields = await SqfEntityProvider(bundledModelBase)
-        .execDataTable('PRAGMA table_info(`$tableName`)');
+    final tableFields =
+        await bundledDbModel.execDataTable('PRAGMA table_info(`$tableName`)');
     final existingDBfields = <SqfEntityFieldType>[];
     if (tableFields != null && tableFields.isNotEmpty) {
       // check primary key in the table
@@ -899,7 +896,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
           primaryKeyName = row['name'].toString();
           isPrimaryKeyText = row['type'].toString().toLowerCase() == 'text';
           primaryKeyNames.add(primaryKeyName);
-          final isAutoIncrement = SqfEntityProvider(bundledModelBase).execScalar(
+          final isAutoIncrement = bundledDbModel.execScalar(
               'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name LIKE \'$tableName\' AND sql LIKE "%AUTOINCREMENT%"');
           isIdentity = isAutoIncrement != null;
           //break;
@@ -938,7 +935,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
     final foreignKeys = await bundledDbModel.getForeignKeys(table.tableName);
     if (foreignKeys.isNotEmpty) {
       print(
-          'SQFENTITY.convertDatabaseToModelBase---------------${foreignKeys.length} foreign keys found in $bundledDatabasePath/${table.tableName}:');
+          'SQFENTITY.convertDatabaseToModelBase---------------${foreignKeys.length} foreign keys found in ${model.bundledDatabasePath}/${table.tableName}:');
       printList(foreignKeys);
       // Customer:
       // {id: 0, seq: 0, table: Employee, from: SupportRepId, to: EmployeeId, on_update: NO ACTION, on_delete: NO ACTION, match: NONE}
@@ -1038,8 +1035,9 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   //}
 
   return ConvertedModel()
-    ..databaseName = databaseName
-    ..modelName = toModelName(databaseName.replaceAll('.', ''), null)
+    ..databaseName = model.databaseName
+    ..modelName =
+        toModelName(model.databaseName.replaceAll('.', ''), null)
     ..databaseTables = tables
     ..bundledDatabasePath = null; //bundledDatabasePath;
 }

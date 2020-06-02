@@ -6,12 +6,11 @@ description: SqfEntity ORM for Flutter/Dart lets you build and execute SQL comma
 version: 1.3.3+2
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  sqflite_sqlcipher: ^1.0.0+6
   synchronized: ">=2.1.0+1 <3.0.0"
   path: ">=1.6.2 <2.0.0"
   sqfentity_gen: 

@@ -178,7 +178,7 @@ Future<void> printCategories(bool getIsDeleted) async {
   }
   print('---------------------------------------------------------------\n\n');
 }
-
+class BundledDbModel extends SqfEntityModelProvider {}
 Future<String> createModelFromDatabaseSample() async {
 /* STEP 1
 
@@ -195,8 +195,10 @@ flutter:
 // Run this script with this parameters.
 // databaseName: Specify a name for your database to use for the database connection
 // bundledDatabasePath: File path of your copied database
-  final bundledDbModel = await convertDatabaseToModelBase(
-      databaseName: 'mynewdb.db', bundledDatabasePath: 'assets/sampleORM.db');
+  final bundledDbModel = await convertDatabaseToModelBase(BundledDbModel()
+    ..databaseName = 'chinook.db'
+    ..bundledDatabasePath = 'assets/chinook.sqlite');
+
 
 // STEP 3
 // Run this function to convert the model to annotation
