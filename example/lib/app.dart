@@ -119,7 +119,8 @@ class HomeState extends State<Home> {
         showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
         break;
       case 1:
-        txtModel.text = await createSqfEntityModelString();
+      final String modelString =  await createSqfEntityModelString(false);
+        txtModel.text = modelString;
         showPopup(context, _generetedModelWindow(),
             'Model Entities was created\nsuccessfully');
 

@@ -4,6 +4,8 @@ import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
+import 'model/test/entity.dart';
+import 'model/test/model.dart';
 
 /*
 
@@ -40,6 +42,7 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
+
   // add some products
   await addSomeProducts();
 
@@ -173,18 +176,20 @@ flutter:
   return modelConstString;
 }
 
-Future<String> createSqfEntityModelString() async {
+Future<String> createSqfEntityModelString([bool setClipboard = true]) async {
   // To get the class from the clipboard, run it separately for each object
   // Create Entity Model String of model from file at '/lib/model/model.dart'
   /// and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard into `model.g.dart`)
 
-  final model = SqfEntityModelConverter(myDbModel).toModelBase();
+  final model = SqfEntityModelConverter(splayDbModel).toModelBase();
   final strModel = StringBuffer()
     ..writeln('part of \'model.dart\';')
     ..writeln(SqfEntityConverter(model).createModelDatabase())
     ..writeln(SqfEntityConverter(model).createEntites());
 
-  await Clipboard.setData(ClipboardData(text: strModel.toString()));
+  if (setClipboard) {
+    await Clipboard.setData(ClipboardData(text: strModel.toString()));
+  }
 
   return strModel.toString();
 

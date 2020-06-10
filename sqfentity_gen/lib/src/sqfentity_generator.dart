@@ -29,6 +29,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     print(
         'SQFENTITY GENERATOR: builder initialized (${builder.instancename})...');
     final dbModel = builder.toModel();
+    
     print('${dbModel.modelName} Model recognized succesfuly');
     final modelStr = MyStringBuffer()
 

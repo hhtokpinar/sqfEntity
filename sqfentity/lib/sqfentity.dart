@@ -218,6 +218,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
         whereArgs: params.whereArguments,
         orderBy: params.orderBy == '' ? null : params.orderBy,
         groupBy: params.groupBy == '' ? null : params.groupBy,
+        having: params.having == '' ? null : params.having,
         limit: params.limit == 0 ? null : params.limit,
         offset: params.offset == 0 ? null : params.offset,
         distinct: params.distinct);

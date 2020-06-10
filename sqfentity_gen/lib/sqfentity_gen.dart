@@ -70,10 +70,13 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
 
       for (var obj in objTables) {
         //  print(   '-------------------------------------------------------ModelBuilder: ${getStringValue(obj, 'tableName')}');
-        retVal.add(toSqfEntityTable(
-          obj, dbModelName,
-          //keepFieldNamesAsOriginal: keepFieldNamesAsOriginal
-        ));
+        final table = toSqfEntityTable(
+          obj,
+          dbModelName,
+        );
+        if (retVal.where((t) => t.tableName == table.tableName).isEmpty) {
+          retVal.add(table);
+        }
       }
     }
     return retVal;
@@ -375,7 +378,8 @@ class SqfEntityConverter {
       return '';
     }
     final list = StringBuffer()..writeln('databaseTables = [');
-    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
+    for (final table in _m.databaseTables
+        .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       list.writeln('Table${table.modelName}.getInstance,');
     }
     list.writeln('];');
@@ -387,7 +391,8 @@ class SqfEntityConverter {
       return '';
     }
     final list = StringBuffer();
-    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
+    for (final table in _m.databaseTables
+        .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       list.writeln('table${table.modelName},');
     }
     return list.toString();
@@ -472,7 +477,7 @@ class ${_m.modelName} extends SqfEntityModelProvider {
   String get _dbPassword => _m.instanceName != null
       ? 'password = ${_m.instanceName}.password;'
       : 'password = \'${_m.password}\';';
-      String get _dbVersion => _m.instanceName != null
+  String get _dbVersion => _m.instanceName != null
       ? 'dbVersion = ${_m.instanceName}.dbVersion;'
       : 'dbVersion = \'${_m.dbVersion ?? 1}\';';
   String get _bundledDbName => _m.instanceName != null
@@ -509,7 +514,14 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
 
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
 
+    final List<String> addedTables = <String>[];
+    final List<SqfEntityTableBase> removeTables = <SqfEntityTableBase>[];
     for (final table in _m.databaseTables) {
+      if (addedTables.contains(table.modelName)) {
+        removeTables.add(table);
+        continue;
+      }
+      addedTables.add(table.modelName);
       strTables.writeln('''
 // ${table.modelName} TABLE      
 class Table${table.modelName} extends SqfEntityTableBase {
@@ -533,6 +545,10 @@ class Table${table.modelName} extends SqfEntityTableBase {
   }
 }''');
     }
+    print('${addedTables.length} tables found in ${_m.modelName}');
+    for (final table in removeTables) {
+      _m.databaseTables.remove(table);
+    }
     strTables.writeln('// END TABLES');
     return strTables.toString();
   }
@@ -542,7 +558,8 @@ class Table${table.modelName} extends SqfEntityTableBase {
       return '';
     }
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
-    for (final table in _m.databaseTables.where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
+    for (final table in _m.databaseTables
+        .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
       strTables.writeln('''
 
 const table${toCamelCase(table.tableName)} = SqfEntityTable(

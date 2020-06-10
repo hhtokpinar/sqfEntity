@@ -1124,7 +1124,7 @@ class AlbumFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -1144,7 +1144,7 @@ class AlbumFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -1164,8 +1164,28 @@ class AlbumFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  AlbumFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -1211,20 +1231,22 @@ class AlbumFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -1281,7 +1303,8 @@ class AlbumFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Album> bulk by query
@@ -2282,7 +2305,7 @@ class ArtistFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -2302,7 +2325,7 @@ class ArtistFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -2322,8 +2345,28 @@ class ArtistFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  ArtistFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -2364,20 +2407,22 @@ class ArtistFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -2434,7 +2479,8 @@ class ArtistFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Artist> bulk by query
@@ -3678,7 +3724,7 @@ class CustomerFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -3698,7 +3744,7 @@ class CustomerFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -3718,8 +3764,28 @@ class CustomerFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  CustomerFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -3816,20 +3882,22 @@ class CustomerFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -3886,7 +3954,8 @@ class CustomerFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Customer> bulk by query
@@ -5311,7 +5380,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -5331,7 +5400,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -5351,8 +5420,28 @@ class EmployeeFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  EmployeeFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -5458,20 +5547,22 @@ class EmployeeFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -5528,7 +5619,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Employee> bulk by query
@@ -6624,7 +6716,7 @@ class GenreFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -6644,7 +6736,7 @@ class GenreFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -6664,8 +6756,28 @@ class GenreFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  GenreFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -6706,20 +6818,22 @@ class GenreFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -6776,7 +6890,8 @@ class GenreFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Genre> bulk by query
@@ -7952,7 +8067,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -7972,7 +8087,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -7992,8 +8107,28 @@ class InvoiceFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  InvoiceFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -8073,20 +8208,22 @@ class InvoiceFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -8143,7 +8280,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Invoice> bulk by query
@@ -9267,7 +9405,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -9287,7 +9425,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -9307,8 +9445,28 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  InvoiceLineFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -9366,20 +9524,22 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -9436,7 +9596,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<InvoiceLine> bulk by query
@@ -10439,7 +10600,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -10459,7 +10620,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -10479,8 +10640,28 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  MediaTypeFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -10521,20 +10702,22 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -10591,7 +10774,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<MediaType> bulk by query
@@ -11569,7 +11753,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -11589,7 +11773,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -11609,8 +11793,28 @@ class PlaylistFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  PlaylistFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -11651,20 +11855,22 @@ class PlaylistFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -11721,7 +11927,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Playlist> bulk by query
@@ -12970,7 +13177,7 @@ class TrackFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -12990,7 +13197,7 @@ class TrackFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -13010,8 +13217,28 @@ class TrackFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  TrackFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -13088,20 +13315,22 @@ class TrackFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -13158,7 +13387,8 @@ class TrackFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Track> bulk by query
@@ -14272,7 +14502,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -14292,7 +14522,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -14312,8 +14542,28 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+          if (s != null && s.isNotEmpty) {
             groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  PlaylistTrackFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String s in argFields as List<String>) {
+          if (s != null && s.isNotEmpty) {
+            havingList.add(' $s ');
           }
         }
       }
@@ -14355,20 +14605,22 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+          param.value = param.dbType == DbType.text
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
               .replaceAll('{field}', param.columnName)
-              .replaceAll(
-                  '?',
-                  param.value is String
-                      ? '\'${param.value.toString()}\''
-                      : param.value.toString());
+              .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
               param.whereString.replaceAll('{field}', param.columnName);
         }
@@ -14425,7 +14677,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<PlaylistTrack> bulk by query
