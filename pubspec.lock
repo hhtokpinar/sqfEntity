@@ -409,7 +409,7 @@ packages:
       path: sqfentity_gen
       relative: true
     source: path
-    version: "1.3.5+5"
+    version: "1.4.0-dev.1.3"
   stack_trace:
     dependency: transitive
     description:

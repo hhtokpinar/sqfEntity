@@ -453,14 +453,14 @@ packages:
       path: "../sqfentity"
       relative: true
     source: path
-    version: "1.3.5+3"
+    version: "1.4.0-dev.1.3"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "1.3.5+7"
+    version: "1.4.0-dev.1.3"
   sqflite:
     dependency: transitive
     description:

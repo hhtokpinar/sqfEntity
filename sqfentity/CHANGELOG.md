@@ -1,4 +1,7 @@
 ## 1.4.0
+
+*Not: Plese use pre-release version  1.4.0-dev.1.4 until release this version*
+
 1. Added Desktop support [issue #59](https://github.com/hhtokpinar/sqfEntity/issues/59)
 
 2. Added support for sending header to the fromWebUrl() method to able using Authentication Credentials or Token [issue #122](https://github.com/hhtokpinar/sqfEntity/issues/122)

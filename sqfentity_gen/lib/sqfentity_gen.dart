@@ -476,10 +476,10 @@ class ${_m.modelName} extends SqfEntityModelProvider {
       : '\'${_m.databaseName}\'';
   String get _dbPassword => _m.instanceName != null
       ? 'password = ${_m.instanceName}.password;'
-      : 'password = \'${_m.password}\';';
+      : 'password = ${getValueWithQuotes(_m.password)};';
   String get _dbVersion => _m.instanceName != null
       ? 'dbVersion = ${_m.instanceName}.dbVersion;'
-      : 'dbVersion = \'${_m.dbVersion ?? 1}\';';
+      : 'dbVersion = ${_m.dbVersion ?? 1};';
   String get _bundledDbName => _m.instanceName != null
       ? '${_m.instanceName}.bundledDatabasePath'
       : _m.bundledDatabasePath == null
@@ -666,13 +666,13 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
             '>>> Table ${table.tableName}(${fieldNames.toString()}) converting to entity');
         table.dbModel = _m.modelName;
         modelString
-          //  ..printToDebug('0: ${table.tableName}')
+           // ..printToDebug('0: ${table.tableName}')
           ..writeln(SqfEntityObjectBuilder(table).toString())
-          //  ..printToDebug('1: ${table.tableName}')
+           // ..printToDebug('1: ${table.tableName}')
           ..writeln(SqfEntityObjectField(table).toString())
           //  ..printToDebug('2: ${table.tableName}')
           ..writeln(
-              SqfEntityObjectFilterBuilder(table, _m.formTables.contains(table))
+              SqfEntityObjectFilterBuilder(table, _m.formTables != null && _m.formTables.contains(table))
                   .toString())
           //  ..printToDebug('3: ${table.tableName}')
           ..writeln(SqfEntityFieldBuilder(table).toString())

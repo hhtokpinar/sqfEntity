@@ -288,7 +288,6 @@ class TableTrack extends SqfEntityTableBase {
   TableTrack() {
     // declare properties of EntityTable
     tableName = 'Track';
-    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'TrackId';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;

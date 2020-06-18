@@ -4,8 +4,6 @@ import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
 import 'model/model.dart';
-import 'model/test/entity.dart';
-import 'model/test/model.dart';
 
 /*
 
@@ -181,7 +179,7 @@ Future<String> createSqfEntityModelString([bool setClipboard = true]) async {
   // Create Entity Model String of model from file at '/lib/model/model.dart'
   /// and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard into `model.g.dart`)
 
-  final model = SqfEntityModelConverter(splayDbModel).toModelBase();
+  final model = SqfEntityModelConverter(myDbModel).toModelBase();
   final strModel = StringBuffer()
     ..writeln('part of \'model.dart\';')
     ..writeln(SqfEntityConverter(model).createModelDatabase())
