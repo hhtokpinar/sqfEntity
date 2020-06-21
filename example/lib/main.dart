@@ -588,7 +588,7 @@ Future<void> samples5() async {
     i = i + 10;
     product.price = i;
   }
-  final results = await Product().saveAll(productList);
+  final results = await Product.saveAll(productList);
   productList = await Product().select().toList();
   print(
       'EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});');

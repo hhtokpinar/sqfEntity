@@ -710,14 +710,22 @@ class Album {
   /// saveAll method saves the sent List<Album> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Album> albums) async {
+  static Future<List<dynamic>> saveAll(List<Album> albums) async {
     // final results = _mnAlbum.saveAll('INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',albums);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in albums) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < albums.length; i++) {
+      if (albums[i].AlbumId == null) {
+        albums[i].AlbumId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -1891,14 +1899,22 @@ class Artist {
   /// saveAll method saves the sent List<Artist> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Artist> artists) async {
+  static Future<List<dynamic>> saveAll(List<Artist> artists) async {
     // final results = _mnArtist.saveAll('INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',artists);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in artists) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < artists.length; i++) {
+      if (artists[i].ArtistId == null) {
+        artists[i].ArtistId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -3292,14 +3308,22 @@ class Customer {
   /// saveAll method saves the sent List<Customer> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Customer> customers) async {
+  static Future<List<dynamic>> saveAll(List<Customer> customers) async {
     // final results = _mnCustomer.saveAll('INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',customers);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in customers) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < customers.length; i++) {
+      if (customers[i].CustomerId == null) {
+        customers[i].CustomerId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -4934,14 +4958,22 @@ class Employee {
   /// saveAll method saves the sent List<Employee> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Employee> employees) async {
+  static Future<List<dynamic>> saveAll(List<Employee> employees) async {
     // final results = _mnEmployee.saveAll('INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',employees);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in employees) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < employees.length; i++) {
+      if (employees[i].EmployeeId == null) {
+        employees[i].EmployeeId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -6303,14 +6335,22 @@ class Genre {
   /// saveAll method saves the sent List<Genre> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Genre> genres) async {
+  static Future<List<dynamic>> saveAll(List<Genre> genres) async {
     // final results = _mnGenre.saveAll('INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',genres);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in genres) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < genres.length; i++) {
+      if (genres[i].GenreId == null) {
+        genres[i].GenreId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -7640,14 +7680,22 @@ class Invoice {
   /// saveAll method saves the sent List<Invoice> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Invoice> invoices) async {
+  static Future<List<dynamic>> saveAll(List<Invoice> invoices) async {
     // final results = _mnInvoice.saveAll('INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',invoices);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in invoices) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < invoices.length; i++) {
+      if (invoices[i].InvoiceId == null) {
+        invoices[i].InvoiceId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -8975,14 +9023,22 @@ class InvoiceLine {
   /// saveAll method saves the sent List<InvoiceLine> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines) async {
+  static Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines) async {
     // final results = _mnInvoiceLine.saveAll('INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',invoicelines);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in invoicelines) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < invoicelines.length; i++) {
+      if (invoicelines[i].InvoiceLineId == null) {
+        invoicelines[i].InvoiceLineId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -10182,14 +10238,22 @@ class MediaType {
   /// saveAll method saves the sent List<MediaType> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<MediaType> mediatypes) async {
+  static Future<List<dynamic>> saveAll(List<MediaType> mediatypes) async {
     // final results = _mnMediaType.saveAll('INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',mediatypes);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in mediatypes) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < mediatypes.length; i++) {
+      if (mediatypes[i].MediaTypeId == null) {
+        mediatypes[i].MediaTypeId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -11342,14 +11406,22 @@ class Playlist {
   /// saveAll method saves the sent List<Playlist> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Playlist> playlists) async {
+  static Future<List<dynamic>> saveAll(List<Playlist> playlists) async {
     // final results = _mnPlaylist.saveAll('INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',playlists);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in playlists) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < playlists.length; i++) {
+      if (playlists[i].PlaylistId == null) {
+        playlists[i].PlaylistId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -12752,14 +12824,22 @@ class Track {
   /// saveAll method saves the sent List<Track> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Track> tracks) async {
+  static Future<List<dynamic>> saveAll(List<Track> tracks) async {
     // final results = _mnTrack.saveAll('INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',tracks);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in tracks) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < tracks.length; i++) {
+      if (tracks[i].TrackId == null) {
+        tracks[i].TrackId = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -14070,14 +14150,18 @@ class PlaylistTrack {
   /// saveAll method saves the sent List<PlaylistTrack> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<PlaylistTrack> playlisttracks) async {
+  static Future<List<dynamic>> saveAll(
+      List<PlaylistTrack> playlisttracks) async {
     // final results = _mnPlaylistTrack.saveAll('INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',playlisttracks);
     // return results; removed in sqfentity_gen 1.3.0+6
-    Chinookdb().batchStart();
+    await Chinookdb().batchStart();
     for (final obj in playlisttracks) {
       await obj.save();
     }
-    return Chinookdb().batchCommit();
+    //    return Chinookdb().batchCommit();
+    final result = await Chinookdb().batchCommit();
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row

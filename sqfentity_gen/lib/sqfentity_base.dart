@@ -56,6 +56,34 @@ class SqfEntityTable {
   final String formListSubTitleField;
 }
 
+class SqfEntityView {
+  const SqfEntityView(
+      {this.tableName,
+      this.primaryKeyName,
+      this.fields,
+      //this.primaryKeyfields,
+      this.useSoftDeleting,
+      this.primaryKeyType,
+      this.defaultJsonUrl,
+      this.modelName,
+      this.customCode,
+      this.relationType,
+      this.formListTitleField,
+      this.formListSubTitleField});
+  final String tableName;
+  final String primaryKeyName;
+  final List<SqfEntityField> fields;
+  // final List<String> primaryKeyfields;
+  final bool useSoftDeleting;
+  final PrimaryKeyType primaryKeyType;
+  final String modelName;
+  final String defaultJsonUrl;
+  final String customCode;
+  final RelationType relationType;
+  final String formListTitleField;
+  final String formListSubTitleField;
+}
+
 class TableCollection {
   const TableCollection(this.childTable, this.childTableField);
   final SqfEntityTable childTable;
@@ -1362,13 +1390,24 @@ class SqfEntityObjectBuilder {
     /// saveAll method saves the sent List<${_table.modelName}> as a bulk in one transaction 
     /// 
     /// Returns a <List<BoolResult>>
-    Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
+    static Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
       // final results = _mn${_table.modelName}.saveAll('INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)',${toPluralName(_table._modelLowerCase)});
       // return results; removed in sqfentity_gen 1.3.0+6
-      ${_table.dbModel}().batchStart();
+      await ${_table.dbModel}().batchStart();
           for(final obj in ${toPluralName(_table._modelLowerCase)})
           { await obj.save(); }
-          return ${_table.dbModel}().batchCommit();
+      //    return ${_table.dbModel}().batchCommit();
+    final result =await ${_table.dbModel}().batchCommit();
+    ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '''
+    for (int i = 0; i < ${toPluralName(_table._modelLowerCase)}.length; i++) {
+      if(${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} == null) { 
+        ${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} = result[i] as int; 
+        }
+    }
+    ''' : ''}
+    
+    return result;
+
       }''';
   }
 
@@ -1392,7 +1431,7 @@ class SqfEntityObjectBuilder {
     for (var sequencedField
         in _table.fields.where((i) => i.sequencedBy != null)) {
       seq.writeln(
-          'if (${_table.primaryKeyNames[0]} != null) { ${sequencedField.fieldName} = await ${sequencedField.sequencedBy.modelName}().nextVal(); ${_hiddenMethod}save();}');
+          '${sequencedField.fieldName} = await ${sequencedField.sequencedBy.modelName}().nextVal();');
     }
     final retVal = StringBuffer();
     if (_table.primaryKeyTypes[0].startsWith('int') &&
@@ -1404,9 +1443,9 @@ class SqfEntityObjectBuilder {
     /// <returns>Returns ${_table.primaryKeyNames[0]}
     Future<int> ${_hiddenMethod}save() async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '|| !isSaved' : ''}) {
+        ${seq.toString()}
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName.isEmpty ? 'if (saveResult != null && saveResult.success) {isSaved = true;}' : ''}
-        ${seq.toString()}
           }
       else {
         // ${_table.primaryKeyNames[0]}= await _upsert(); // removed in sqfentity_gen 1.3.0+6

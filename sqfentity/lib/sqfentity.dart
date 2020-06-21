@@ -718,8 +718,8 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     return await getDatabasesPath();
   }
 
-  void batchStart() {
-    SqfEntityProvider(this).batchStart();
+  Future<void> batchStart() async{
+    await SqfEntityProvider(this).batchStart();
   }
 
   Future<List<dynamic>> batchCommit() async {
@@ -847,30 +847,27 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
       .execDataTable(
-          '''SELECT name,type FROM sqlite_master WHERE type='table' ${model.databaseTables != null && model.databaseTables.isNotEmpty ? " AND name IN ('${model.databaseTables.join('\',\'')}')" : ""}''');
+          '''SELECT name,type FROM sqlite_master WHERE type='view' ${model.databaseTables != null && model.databaseTables.isNotEmpty ? " AND name IN ('${model.databaseTables.join('\',\'')}')" : ""}''');
   print(
       'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in ${model.bundledDatabasePath} database:');
   printList(tableList);
 
-  DeleteRule getDeleteRule(String rule) {
-    switch (rule) {
-      case 'NO ACTION':
-        return DeleteRule.NO_ACTION;
-        break;
-      case 'CASCADE':
-        return DeleteRule.CASCADE;
-        break;
-      case 'SET DEFAULT VALUE':
-        return DeleteRule.SET_DEFAULT_VALUE;
-        break;
-      case 'SET NULL':
-        return DeleteRule.SET_NULL;
-        break;
-      default:
-        return DeleteRule.NO_ACTION;
-    }
-  }
+  
 
+  final List<SqfEntityTableBase> tables = await getTables(tableList, bundledDbModel, model);
+  //for (var table in manyToManyTables) {
+  //  tables.remove(table);
+  //}
+
+  return ConvertedModel()
+    ..databaseName = model.databaseName
+    ..modelName =
+        toModelName(model.databaseName.replaceAll('.', ''), null)
+    ..databaseTables = tables
+    ..bundledDatabasePath = null; //bundledDatabasePath;
+}
+
+Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bundledDbModel, SqfEntityModelProvider model) async {
   final tables = <SqfEntityTableBase>[];
   for (final table in tableList) {
     if ([
@@ -905,7 +902,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       }
       primaryKeyName = primaryKeyName ?? tableFields[0]['name'].toString();
       // convert table fields to SqfEntityField
-
+  
       for (int i = 0; i < tableFields.length; i++) {
         if (tableFields[i]['name'].toString() != primaryKeyName) {
           existingDBfields.add(SqfEntityFieldBase(
@@ -929,7 +926,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       ..primaryKeyNames.add(primaryKeyName)
       ..primaryKeyTypes.add('int'));
   }
-
+  
   // set RelationShips
   for (var table in tables) {
     final relationFields = <SqfEntityFieldRelationshipBase>[];
@@ -972,7 +969,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
           }
         }
         //print(fKey.toString());
-
+  
       }
     } else {
       for (final field in table.fields) {
@@ -1013,7 +1010,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       }
     }
   }
-
+  
   // SET MANY TO MANY RELATIONS
   final manyToManyTables = <SqfEntityTableBase>[];
   for (var table in tables) {
@@ -1031,18 +1028,27 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       manyToManyTables.add(table);
     }
   }
-  //for (var table in manyToManyTables) {
-  //  tables.remove(table);
-  //}
-
-  return ConvertedModel()
-    ..databaseName = model.databaseName
-    ..modelName =
-        toModelName(model.databaseName.replaceAll('.', ''), null)
-    ..databaseTables = tables
-    ..bundledDatabasePath = null; //bundledDatabasePath;
+  return tables;
 }
 
+DeleteRule getDeleteRule(String rule) {
+    switch (rule) {
+      case 'NO ACTION':
+        return DeleteRule.NO_ACTION;
+        break;
+      case 'CASCADE':
+        return DeleteRule.CASCADE;
+        break;
+      case 'SET DEFAULT VALUE':
+        return DeleteRule.SET_DEFAULT_VALUE;
+        break;
+      case 'SET NULL':
+        return DeleteRule.SET_NULL;
+        break;
+      default:
+        return DeleteRule.NO_ACTION;
+    }
+  }
 void printList(List<dynamic> list) {
   for (final o in list) {
     print(o.toString());

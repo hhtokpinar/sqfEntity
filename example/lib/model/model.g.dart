@@ -563,12 +563,9 @@ class Product {
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
-      id = await _mnProduct.insert(this);
+      rownum = await IdentitySequence().nextVal();
 
-      if (id != null) {
-        rownum = await IdentitySequence().nextVal();
-        save();
-      }
+      id = await _mnProduct.insert(this);
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnProduct.update(this);
@@ -589,14 +586,22 @@ class Product {
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Product> products) async {
+  static Future<List<dynamic>> saveAll(List<Product> products) async {
     // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',products);
     // return results; removed in sqfentity_gen 1.3.0+6
-    MyDbModel().batchStart();
+    await MyDbModel().batchStart();
     for (final obj in products) {
       await obj.save();
     }
-    return MyDbModel().batchCommit();
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+    for (int i = 0; i < products.length; i++) {
+      if (products[i].id == null) {
+        products[i].id = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -1872,14 +1877,22 @@ class Category {
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Category> categories) async {
+  static Future<List<dynamic>> saveAll(List<Category> categories) async {
     // final results = _mnCategory.saveAll('INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',categories);
     // return results; removed in sqfentity_gen 1.3.0+6
-    MyDbModel().batchStart();
+    await MyDbModel().batchStart();
     for (final obj in categories) {
       await obj.save();
     }
-    return MyDbModel().batchCommit();
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+    for (int i = 0; i < categories.length; i++) {
+      if (categories[i].id == null) {
+        categories[i].id = result[i] as int;
+      }
+    }
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -3012,14 +3025,17 @@ class Todo {
   /// saveAll method saves the sent List<Todo> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
-  Future<List<dynamic>> saveAll(List<Todo> todos) async {
+  static Future<List<dynamic>> saveAll(List<Todo> todos) async {
     // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',todos);
     // return results; removed in sqfentity_gen 1.3.0+6
-    MyDbModel().batchStart();
+    await MyDbModel().batchStart();
     for (final obj in todos) {
       await obj.save();
     }
-    return MyDbModel().batchCommit();
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+
+    return result;
   }
 
   /// Updates if the record exists, otherwise adds a new row
