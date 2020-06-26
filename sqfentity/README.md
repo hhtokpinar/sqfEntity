@@ -182,6 +182,35 @@ This table is for creating a synchronization with json data from the web url
       // startWith = 0;   /* optional. default is 0 */
     );
 
+*And add a View for samples*
+
+        const tableV_tracks = SqfEntityTable(
+            tableName: 'VTracks',
+            objectType: ObjectType.view,
+            fields: [
+            SqfEntityField('Name', DbType.text),
+            SqfEntityField('album', DbType.text),
+            SqfEntityField('media', DbType.text),
+            SqfEntityField('genres', DbType.text),
+            SqfEntityFieldRelationship(
+                parentTable: tableTrack,
+                deleteRule: DeleteRule.NO_ACTION,
+                fieldName: 'TrackId',
+                isPrimaryKeyField: false),
+            ],
+            sqlStatement: '''SELECT
+            trackid,
+            track.name,
+            album.Title AS album,
+            mediatype.Name AS media,
+            genre.Name AS genres
+        FROM
+            track
+        INNER JOIN album ON Album.AlbumId = track.AlbumId
+        INNER JOIN mediatype ON mediatype.MediaTypeId = track.MediaTypeId
+        INNER JOIN genre ON genre.GenreId = track.GenreId''',
+        );
+
 ### 2. Add your table objects you defined above to your dbModel
 
 **STEP 2**: Create your Database Model to be instanced from SqfEntityModel
@@ -627,6 +656,20 @@ result is:
     
   
 }
+
+### GET SOME DATA FROM THE VIEW
+
+
+      final vtracs = await VTrack().select().top(5).toList(); 
+
+Result:
+
+      flutter: 5 matches found
+      flutter: {Name: For Those About To Rock (We Salute You), album: For Those About To Rock We Salute You, media: MPEG audio file, genres: Rock, TrackId: 1}
+      flutter: {Name: Balls to the Wall, album: Balls to the Wall, media: Protected AAC audio file, genres: Rock, TrackId: 2}
+      flutter: {Name: Fast As a Shark, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 3}
+      flutter: {Name: Restless and Wild, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 4}
+      flutter: {Name: Princess of the Dawn, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 5}
 
 
 ### See the following examples in main.dart for sample model use

@@ -178,6 +178,34 @@ const tableTrack = SqfEntityTable(
           relationType: RelationType.MANY_TO_MANY,
           manyToManyTableName: 'PlaylistTrack'),
     ]);
+
+const tableV_tracks = SqfEntityTable(
+  tableName: 'VTracks',
+  objectType: ObjectType.view,
+  fields: [
+    SqfEntityField('Name', DbType.text),
+    SqfEntityField('album', DbType.text),
+    SqfEntityField('media', DbType.text),
+    SqfEntityField('genres', DbType.text),
+    SqfEntityFieldRelationship(
+        parentTable: tableTrack,
+        deleteRule: DeleteRule.NO_ACTION,
+        fieldName: 'TrackId',
+        isPrimaryKeyField: false),
+  ],
+  sqlStatement: '''SELECT
+	trackid,
+	track.name,
+	album.Title AS album,
+	mediatype.Name AS media,
+	genre.Name AS genres
+FROM
+	track
+INNER JOIN album ON Album.AlbumId = track.AlbumId
+INNER JOIN mediatype ON mediatype.MediaTypeId = track.MediaTypeId
+INNER JOIN genre ON genre.GenreId = track.GenreId''',
+);
+
 // END TABLES
 
 // BEGIN DATABASE MODEL
@@ -197,6 +225,7 @@ const chinookdb = SqfEntityModel(
       tableMediaType,
       tablePlaylist,
       tableTrack,
+      tableV_tracks
     ],
     formTables: [
       tableAlbum,

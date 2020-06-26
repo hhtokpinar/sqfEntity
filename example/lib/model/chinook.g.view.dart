@@ -17,6 +17,7 @@ class AlbumAddState extends State {
   AlbumAddState(this.album);
   Album album;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtAlbumId = TextEditingController();
   final TextEditingController txtTitle = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForArtistId =
       <DropdownMenuItem<int>>[];
@@ -67,6 +68,7 @@ class AlbumAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowAlbumId(),
                     buildRowTitle(),
                     buildRowArtistId(onChangeDropdownItemForArtistId),
                     FlatButton(
@@ -87,6 +89,20 @@ class AlbumAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowAlbumId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtAlbumId,
+      decoration: InputDecoration(labelText: 'AlbumId'),
     );
   }
 
@@ -144,6 +160,7 @@ class AlbumAddState extends State {
 
   void save() async {
     album
+      ..AlbumId = int.tryParse(txtAlbumId.text)
       ..Title = txtTitle.text
       ..ArtistId = _selectedArtistId;
     await album.save();
@@ -167,6 +184,7 @@ class ArtistAddState extends State {
   ArtistAddState(this.artist);
   Artist artist;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtArtistId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
@@ -195,6 +213,7 @@ class ArtistAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowArtistId(),
                     buildRowName(),
                     FlatButton(
                       child: saveButton(),
@@ -214,6 +233,20 @@ class ArtistAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowArtistId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtArtistId,
+      decoration: InputDecoration(labelText: 'ArtistId'),
     );
   }
 
@@ -239,7 +272,9 @@ class ArtistAddState extends State {
   }
 
   void save() async {
-    artist..Name = txtName.text;
+    artist
+      ..ArtistId = int.tryParse(txtArtistId.text)
+      ..Name = txtName.text;
     await artist.save();
     if (artist.saveResult.success) {
       Navigator.pop(context, true);
@@ -262,6 +297,7 @@ class CustomerAddState extends State {
   CustomerAddState(this.customer);
   Customer customer;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtCustomerId = TextEditingController();
   final TextEditingController txtFirstName = TextEditingController();
   final TextEditingController txtLastName = TextEditingController();
   final TextEditingController txtCompany = TextEditingController();
@@ -332,6 +368,7 @@ class CustomerAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowCustomerId(),
                     buildRowFirstName(),
                     buildRowLastName(),
                     buildRowCompany(),
@@ -362,6 +399,20 @@ class CustomerAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowCustomerId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtCustomerId,
+      decoration: InputDecoration(labelText: 'CustomerId'),
     );
   }
 
@@ -490,6 +541,7 @@ class CustomerAddState extends State {
 
   void save() async {
     customer
+      ..CustomerId = int.tryParse(txtCustomerId.text)
       ..FirstName = txtFirstName.text
       ..LastName = txtLastName.text
       ..Company = txtCompany.text
@@ -524,6 +576,7 @@ class EmployeeAddState extends State {
   EmployeeAddState(this.employee);
   Employee employee;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtEmployeeId = TextEditingController();
   final TextEditingController txtLastName = TextEditingController();
   final TextEditingController txtFirstName = TextEditingController();
   final TextEditingController txtTitle = TextEditingController();
@@ -610,6 +663,7 @@ class EmployeeAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowEmployeeId(),
                     buildRowLastName(),
                     buildRowFirstName(),
                     buildRowTitle(),
@@ -642,6 +696,20 @@ class EmployeeAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowEmployeeId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtEmployeeId,
+      decoration: InputDecoration(labelText: 'EmployeeId'),
     );
   }
 
@@ -906,6 +974,7 @@ class EmployeeAddState extends State {
     }
 
     employee
+      ..EmployeeId = int.tryParse(txtEmployeeId.text)
       ..LastName = txtLastName.text
       ..FirstName = txtFirstName.text
       ..Title = txtTitle.text
@@ -941,6 +1010,7 @@ class GenreAddState extends State {
   GenreAddState(this.genre);
   Genre genre;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtGenreId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
@@ -969,6 +1039,7 @@ class GenreAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowGenreId(),
                     buildRowName(),
                     FlatButton(
                       child: saveButton(),
@@ -988,6 +1059,20 @@ class GenreAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowGenreId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtGenreId,
+      decoration: InputDecoration(labelText: 'GenreId'),
     );
   }
 
@@ -1013,7 +1098,9 @@ class GenreAddState extends State {
   }
 
   void save() async {
-    genre..Name = txtName.text;
+    genre
+      ..GenreId = int.tryParse(txtGenreId.text)
+      ..Name = txtName.text;
     await genre.save();
     if (genre.saveResult.success) {
       Navigator.pop(context, true);
@@ -1035,6 +1122,7 @@ class InvoiceAddState extends State {
   InvoiceAddState(this.invoice);
   Invoice invoice;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtInvoiceId = TextEditingController();
   final TextEditingController txtInvoiceDate = TextEditingController();
   final TextEditingController txtTimeForInvoiceDate = TextEditingController();
   final TextEditingController txtBillingAddress = TextEditingController();
@@ -1109,6 +1197,7 @@ class InvoiceAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowInvoiceId(),
                     buildRowInvoiceDate(),
                     buildRowBillingAddress(),
                     buildRowBillingCity(),
@@ -1135,6 +1224,20 @@ class InvoiceAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowInvoiceId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtInvoiceId,
+      decoration: InputDecoration(labelText: 'InvoiceId'),
     );
   }
 
@@ -1303,6 +1406,7 @@ class InvoiceAddState extends State {
     }
 
     invoice
+      ..InvoiceId = int.tryParse(txtInvoiceId.text)
       ..InvoiceDate = _invoiceDate
       ..BillingAddress = txtBillingAddress.text
       ..BillingCity = txtBillingCity.text
@@ -1333,6 +1437,7 @@ class InvoiceLineAddState extends State {
   InvoiceLineAddState(this.invoiceline);
   InvoiceLine invoiceline;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtInvoiceLineId = TextEditingController();
   final TextEditingController txtUnitPrice = TextEditingController();
   final TextEditingController txtQuantity = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForTrackId =
@@ -1410,6 +1515,7 @@ class InvoiceLineAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowInvoiceLineId(),
                     buildRowUnitPrice(),
                     buildRowQuantity(),
                     buildRowTrackId(onChangeDropdownItemForTrackId),
@@ -1432,6 +1538,20 @@ class InvoiceLineAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowInvoiceLineId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtInvoiceLineId,
+      decoration: InputDecoration(labelText: 'InvoiceLineId'),
     );
   }
 
@@ -1541,6 +1661,7 @@ class InvoiceLineAddState extends State {
 
   void save() async {
     invoiceline
+      ..InvoiceLineId = int.tryParse(txtInvoiceLineId.text)
       ..UnitPrice = double.tryParse(txtUnitPrice.text)
       ..Quantity = int.tryParse(txtQuantity.text)
       ..TrackId = _selectedTrackId
@@ -1567,6 +1688,7 @@ class MediaTypeAddState extends State {
   MediaTypeAddState(this.mediatype);
   MediaType mediatype;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtMediaTypeId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
@@ -1595,6 +1717,7 @@ class MediaTypeAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowMediaTypeId(),
                     buildRowName(),
                     FlatButton(
                       child: saveButton(),
@@ -1614,6 +1737,20 @@ class MediaTypeAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowMediaTypeId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtMediaTypeId,
+      decoration: InputDecoration(labelText: 'MediaTypeId'),
     );
   }
 
@@ -1639,7 +1776,9 @@ class MediaTypeAddState extends State {
   }
 
   void save() async {
-    mediatype..Name = txtName.text;
+    mediatype
+      ..MediaTypeId = int.tryParse(txtMediaTypeId.text)
+      ..Name = txtName.text;
     await mediatype.save();
     if (mediatype.saveResult.success) {
       Navigator.pop(context, true);
@@ -1662,6 +1801,7 @@ class PlaylistAddState extends State {
   PlaylistAddState(this.playlist);
   Playlist playlist;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtPlaylistId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
@@ -1690,6 +1830,7 @@ class PlaylistAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowPlaylistId(),
                     buildRowName(),
                     FlatButton(
                       child: saveButton(),
@@ -1709,6 +1850,20 @@ class PlaylistAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowPlaylistId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtPlaylistId,
+      decoration: InputDecoration(labelText: 'PlaylistId'),
     );
   }
 
@@ -1734,7 +1889,9 @@ class PlaylistAddState extends State {
   }
 
   void save() async {
-    playlist..Name = txtName.text;
+    playlist
+      ..PlaylistId = int.tryParse(txtPlaylistId.text)
+      ..Name = txtName.text;
     await playlist.save();
     if (playlist.saveResult.success) {
       Navigator.pop(context, true);
@@ -1756,6 +1913,7 @@ class TrackAddState extends State {
   TrackAddState(this.track);
   Track track;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController txtTrackId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtComposer = TextEditingController();
   final TextEditingController txtMilliseconds = TextEditingController();
@@ -1862,6 +2020,7 @@ class TrackAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    buildRowTrackId(),
                     buildRowName(),
                     buildRowComposer(),
                     buildRowMilliseconds(),
@@ -1888,6 +2047,20 @@ class TrackAddState extends State {
               )),
         ),
       ),
+    );
+  }
+
+  Widget buildRowTrackId() {
+    return TextFormField(
+      validator: (value) {
+        if (value.isNotEmpty && int.tryParse(value) == null) {
+          return 'Please Enter valid number';
+        }
+
+        return null;
+      },
+      controller: txtTrackId,
+      decoration: InputDecoration(labelText: 'TrackId'),
     );
   }
 
@@ -2057,6 +2230,7 @@ class TrackAddState extends State {
 
   void save() async {
     track
+      ..TrackId = int.tryParse(txtTrackId.text)
       ..Name = txtName.text
       ..Composer = txtComposer.text
       ..Milliseconds = int.tryParse(txtMilliseconds.text)

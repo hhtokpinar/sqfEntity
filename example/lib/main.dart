@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'app.dart';
+import 'model/chinook.dart';
 import 'model/model.dart';
 
 /*
@@ -40,7 +41,6 @@ void main(List<String> args) async {
 }
 
 Future<bool> runSamples() async {
-
   // add some products
   await addSomeProducts();
 
@@ -82,6 +82,8 @@ Future<bool> runSamples() async {
   // toJson samples
   await samples11();
 
+  // get data from view sample
+  await samples12();
   // create model from existing database sample
   await createModelFromDatabaseSample();
 
@@ -179,7 +181,7 @@ Future<String> createSqfEntityModelString([bool setClipboard = true]) async {
   // Create Entity Model String of model from file at '/lib/model/model.dart'
   /// and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard into `model.g.dart`)
 
-  final model = SqfEntityModelConverter(myDbModel).toModelBase();
+  final model = SqfEntityModelConverter(chinookdb).toModelBase();
   final strModel = StringBuffer()
     ..writeln('part of \'model.dart\';')
     ..writeln(SqfEntityConverter(model).createModelDatabase())
@@ -829,6 +831,14 @@ Future<void> samples11() async {
       await Category().select().toJsonWithChilds(); // all categories selected
   print(
       'EXAMPLE 11.2 object list with nested objects to Json\n categories jsonStringWithChilds is: $jsonStringWithChilds');
+}
+
+Future<void> samples12() async {
+  print('EXAMPLE 12 SqfEntity VIEW SAMPLES-----------');
+  print(
+      'EXAMPLE 12.1 Get some data from Vtracks -> final vtracs = await VTrack().select().top(5).toList();');
+  final vtracs = await VTrack().select().top(5).toList();
+  printList(vtracs, isMap: true, title: '${vtracs.length} matches found');
 }
 
 /// add new categories if not any Category

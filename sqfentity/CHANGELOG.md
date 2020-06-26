@@ -1,19 +1,19 @@
 ## 1.4.0
 
-*Not: Plese use pre-release version  1.4.0-dev.1.4 until release this version*
-
 1. Added Desktop support [issue #59](https://github.com/hhtokpinar/sqfEntity/issues/59)
 
 2. Added support for sending header to the fromWebUrl() method to able using Authentication Credentials or Token [issue #122](https://github.com/hhtokpinar/sqfEntity/issues/122)
 
 3. Added a new method named post() and postUrl() to post json to specified url with headers
 
-## How to use?
+4. Added VIEW support
+
+### How to use method post() ?
 
 First  Define the 'Todo' constant as SqfEntityTable and generate your model
 
 
-   const tableTodo = SqfEntityTable(
+    const tableTodo = SqfEntityTable(
     tableName: 'todos',
     primaryKeyName: 'id',
     primaryKeyType: PrimaryKeyType.integer_unique,
@@ -37,6 +37,52 @@ using:
             'Content-Type': 'application/json; charset=UTF-8',
             'Authorization' : 'Basic your_api_token_here'
             });
+
+### How to define a VIEW?
+
+You can define views like below:
+
+
+        const tableV_tracks = SqfEntityTable(
+            tableName: 'VTracks',
+            objectType: ObjectType.view,
+            fields: [
+            SqfEntityField('Name', DbType.text),
+            SqfEntityField('album', DbType.text),
+            SqfEntityField('media', DbType.text),
+            SqfEntityField('genres', DbType.text),
+            SqfEntityFieldRelationship(
+                parentTable: tableTrack,
+                deleteRule: DeleteRule.NO_ACTION,
+                fieldName: 'TrackId',
+                isPrimaryKeyField: false),
+            ],
+            sqlStatement: '''SELECT
+            trackid,
+            track.name,
+            album.Title AS album,
+            mediatype.Name AS media,
+            genre.Name AS genres
+        FROM
+            track
+        INNER JOIN album ON Album.AlbumId = track.AlbumId
+        INNER JOIN mediatype ON mediatype.MediaTypeId = track.MediaTypeId
+        INNER JOIN genre ON genre.GenreId = track.GenreId''',
+        );
+
+Get some data from the view:
+
+      final vtracs = await VTrack().select().top(5).toList(); 
+
+Result:
+
+      flutter: 5 matches found
+      flutter: {Name: For Those About To Rock (We Salute You), album: For Those About To Rock We Salute You, media: MPEG audio file, genres: Rock, TrackId: 1}
+      flutter: {Name: Balls to the Wall, album: Balls to the Wall, media: Protected AAC audio file, genres: Rock, TrackId: 2}
+      flutter: {Name: Fast As a Shark, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 3}
+      flutter: {Name: Restless and Wild, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 4}
+      flutter: {Name: Princess of the Dawn, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 5}
+
 
 ## 1.3.5+3
 Added Support Collating Sequences

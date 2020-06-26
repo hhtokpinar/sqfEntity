@@ -25,7 +25,6 @@ class TableProduct extends SqfEntityTableBase {
   TableProduct() {
     // declare properties of EntityTable
     tableName = 'product';
-    relationType = RelationType.ONE_TO_MANY;
     primaryKeyName = 'id';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = true;

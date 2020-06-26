@@ -61,13 +61,16 @@ class SqfEntityProvider extends SqfEntityModelBase {
       {String tableName,
       List<String> primaryKeyList,
       String whereStr,
-      SqfEntityConnection connection
-      }) {
+      SqfEntityConnection connection}) {
     _dbModel = dbModel;
     _tableName = tableName;
     _whereStr = whereStr;
     _primaryKeyList = primaryKeyList;
-    _connection = connection ?? SqfEntityConnection(_dbModel.databaseName,bundledDatabasePath: _dbModel.bundledDatabasePath, dbVersion: _dbModel.dbVersion, password: _dbModel.password);
+    _connection = connection ??
+        SqfEntityConnection(_dbModel.databaseName,
+            bundledDatabasePath: _dbModel.bundledDatabasePath,
+            dbVersion: _dbModel.dbVersion,
+            password: _dbModel.password);
     if (!Platform.isWindows && !Platform.isLinux) {
       _connectionBase = SqfEntityConnectionMobile(_connection);
     } else {
@@ -523,8 +526,8 @@ class SqfEntityProvider extends SqfEntityModelBase {
 // END DATABASE PROVIDER
 
 abstract class SqfEntityModelProvider extends SqfEntityModelBase {
-   SqfEntityModelProvider({this.connection});
-   SqfEntityConnection connection;
+  SqfEntityModelProvider({this.connection});
+  SqfEntityConnection connection;
 
   /// initializeDB is performed automatically in this version. You no longer need to call this method
   Future<bool> initializeDB() async {
@@ -556,81 +559,98 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     if (dbTables.isNotEmpty) {
       //List<String> updateQueryList = <String>[];
       for (SqfEntityTableBase table in dbTables) {
-        // check existing table fields in the database
-        final tableFields = await SqfEntityProvider(this)
-            .execDataTable('PRAGMA table_info(`${table.tableName}`)');
-        final List<TableField> existingDBfields = <TableField>[];
-        if (tableFields != null && tableFields.isNotEmpty) {
-          String primaryKeyName;
-          for (final row in tableFields) {
-            if (row['pk'].toString() == '1') {
-              primaryKeyName = row['name'].toString();
-              break;
-            }
-          }
-          primaryKeyName = primaryKeyName ?? tableFields[0]['name'].toString();
-          if (!table.primaryKeyNames.contains(primaryKeyName)) {
-            throw Exception(
-                'SQFENTITIY: DATABASE INITIALIZE ERROR The primary key name \'$primaryKeyName\' for table named [${table.tableName}] must be in [${table.primaryKeyNames.join(',')}]');
-          }
-          final startIndex =
-              table.primaryKeyName != null && table.primaryKeyName.isNotEmpty
+        switch (table.objectType) {
+          case ObjectType.view:
+            await SqfEntityProvider(this).execSQLList([
+              'DROP VIEW IF EXISTS ${table.tableName};',
+              '''CREATE VIEW ${table.tableName} 
+AS 
+${table.sqlStatement}'''
+            ]);
+            break;
+          case ObjectType.table:
+            // check existing table fields in the database
+            final tableFields = await SqfEntityProvider(this)
+                .execDataTable('PRAGMA table_info(`${table.tableName}`)');
+            final List<TableField> existingDBfields = <TableField>[];
+            if (tableFields != null && tableFields.isNotEmpty) {
+              String primaryKeyName;
+              for (final row in tableFields) {
+                if (row['pk'].toString() == '1') {
+                  primaryKeyName = row['name'].toString();
+                  break;
+                }
+              }
+              primaryKeyName =
+                  primaryKeyName ?? tableFields[0]['name'].toString();
+              if (!table.primaryKeyNames.contains(primaryKeyName)) {
+                throw Exception(
+                    'SQFENTITIY: DATABASE INITIALIZE ERROR The primary key name \'$primaryKeyName\' for table named [${table.tableName}] must be in [${table.primaryKeyNames.join(',')}]');
+              }
+              final startIndex = table.primaryKeyName != null &&
+                      table.primaryKeyName.isNotEmpty
                   ? 1
                   : 0;
-          for (int i = startIndex; i < tableFields.length; i++) {
-            existingDBfields.add(TableField(tableFields[i]['name'].toString(),
-                parseDbType(tableFields[i]['type'].toString())));
-          }
-          // create SQL Command for new columns
-          final List<String> alterTableColsQuery =
-              checkTableColumns(table, existingDBfields);
+              for (int i = startIndex; i < tableFields.length; i++) {
+                existingDBfields.add(TableField(
+                    tableFields[i]['name'].toString(),
+                    parseDbType(tableFields[i]['type'].toString())));
+              }
+              // create SQL Command for new columns
+              final List<String> alterTableColsQuery =
+                  checkTableColumns(table, existingDBfields);
 
-          if (alterTableColsQuery.isNotEmpty) {
-            print('SQFENTITIY: alterTableQuery => $alterTableColsQuery');
+              if (alterTableColsQuery.isNotEmpty) {
+                print('SQFENTITIY: alterTableQuery => $alterTableColsQuery');
 
-            final result =
-                await SqfEntityProvider(this).execSQLList(alterTableColsQuery);
-            if (result.success) {
-              table.initialized = true;
-              print(
-                  'SQFENTITIY: Table named [${table.tableName}] was initialized successfully (Added new columns)');
-              if (checkForIsReadyDatabase(dbTables)) {
-                return true;
+                final result = await SqfEntityProvider(this)
+                    .execSQLList(alterTableColsQuery);
+                if (result.success) {
+                  table.initialized = true;
+                  print(
+                      'SQFENTITIY: Table named [${table.tableName}] was initialized successfully (Added new columns)');
+                  if (checkForIsReadyDatabase(dbTables)) {
+                    return true;
+                  }
+                }
+              } else {
+                table.initialized = true;
+                print(
+                    'SQFENTITIY: Table named [${table.tableName}] was initialized successfully (No added new columns)');
+                if (checkForIsReadyDatabase(dbTables)) {
+                  return true;
+                }
+              }
+            } else // The table if not exist
+            {
+              final createTable =
+                  await SqfEntityProvider(this).execSQL(table.createTableSQL);
+              if (createTable.success) {
+                final List<String> alterTableIndexesQuery =
+                    checkTableIndexes(table);
+                table.initialized = true;
+                print(
+                    'SQFENTITIY: Table named [${table.tableName}] has initialized successfully (created table)');
+                if (checkForIsReadyDatabase(dbTables)) {
+                  return true;
+                }
+                if (alterTableIndexesQuery.isNotEmpty) {
+                  await SqfEntityProvider(this)
+                      .execSQLList(alterTableIndexesQuery);
+                  print(
+                      'SQFENTITIY: alterTableIndexesQuery => $alterTableIndexesQuery');
+                  await SqfEntityProvider(this)
+                      .execSQLList(alterTableIndexesQuery);
+                }
+              } else // table can not created
+              {
+                print(
+                    'SQFENTITIY ERROR: Table named [${table.tableName}] could not create. Message: ${createTable.toString()}');
+                return false;
               }
             }
-          } else {
-            table.initialized = true;
-            print(
-                'SQFENTITIY: Table named [${table.tableName}] was initialized successfully (No added new columns)');
-            if (checkForIsReadyDatabase(dbTables)) {
-              return true;
-            }
-          }
-        } else // The table if not exist
-        {
-          final createTable =
-              await SqfEntityProvider(this).execSQL(table.createTableSQL);
-          if (createTable.success) {
-            final List<String> alterTableIndexesQuery =
-                checkTableIndexes(table);
-            table.initialized = true;
-            print(
-                'SQFENTITIY: Table named [${table.tableName}] has initialized successfully (created table)');
-            if (checkForIsReadyDatabase(dbTables)) {
-              return true;
-            }
-            if (alterTableIndexesQuery.isNotEmpty) {
-              await SqfEntityProvider(this).execSQLList(alterTableIndexesQuery);
-              print(
-                  'SQFENTITIY: alterTableIndexesQuery => $alterTableIndexesQuery');
-              await SqfEntityProvider(this).execSQLList(alterTableIndexesQuery);
-            }
-          } else // table can not created
-          {
-            print(
-                'SQFENTITIY ERROR: Table named [${table.tableName}] could not create. Message: ${createTable.toString()}');
-            return false;
-          }
+            break;
+          default:
         }
       }
     }
@@ -718,7 +738,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     return await getDatabasesPath();
   }
 
-  Future<void> batchStart() async{
+  Future<void> batchStart() async {
     await SqfEntityProvider(this).batchStart();
   }
 
@@ -843,33 +863,31 @@ class BundledModelBase extends SqfEntityModelProvider {
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
     SqfEntityModelProvider model) async {
   final bundledDbModel = SqfEntityProvider(model);
-
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
       .execDataTable(
-          '''SELECT name,type FROM sqlite_master WHERE type='view' ${model.databaseTables != null && model.databaseTables.isNotEmpty ? " AND name IN ('${model.databaseTables.join('\',\'')}')" : ""}''');
+          '''SELECT name,type FROM sqlite_master WHERE type IN ('table','view') ${model.databaseTables != null && model.databaseTables.isNotEmpty ? " AND name IN ('${model.databaseTables.join('\',\'')}')" : ""}''');
   print(
       'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in ${model.bundledDatabasePath} database:');
   printList(tableList);
 
-  
-
-  final List<SqfEntityTableBase> tables = await getTables(tableList, bundledDbModel, model);
+  final List<SqfEntityTableBase> tables =
+      await getObjects(tableList, bundledDbModel, model);
   //for (var table in manyToManyTables) {
   //  tables.remove(table);
   //}
 
   return ConvertedModel()
     ..databaseName = model.databaseName
-    ..modelName =
-        toModelName(model.databaseName.replaceAll('.', ''), null)
+    ..modelName = toModelName(model.databaseName.replaceAll('.', ''), null)
     ..databaseTables = tables
     ..bundledDatabasePath = null; //bundledDatabasePath;
 }
 
-Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bundledDbModel, SqfEntityModelProvider model) async {
+Future<List<SqfEntityTableBase>> getObjects(List objectList,
+    SqfEntityProvider bundledDbModel, SqfEntityModelProvider model) async {
   final tables = <SqfEntityTableBase>[];
-  for (final table in tableList) {
+  for (final table in objectList) {
     if ([
       'android_metadata',
       'sqfentitytables',
@@ -879,10 +897,13 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
       continue;
     }
     final tableName = table['name'].toString();
+    final objectType =
+        table['type'].toString() == 'view' ? ObjectType.view : ObjectType.table;
     String primaryKeyName;
     final List<String> primaryKeyNames = <String>[];
     bool isIdentity = false;
     bool isPrimaryKeyText = false;
+    String sqlStatement;
     // check fields in the table
     final tableFields =
         await bundledDbModel.execDataTable('PRAGMA table_info(`$tableName`)');
@@ -894,15 +915,22 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
           primaryKeyName = row['name'].toString();
           isPrimaryKeyText = row['type'].toString().toLowerCase() == 'text';
           primaryKeyNames.add(primaryKeyName);
-          final isAutoIncrement = bundledDbModel.execScalar(
+          final isAutoIncrement = await bundledDbModel.execScalar(
               'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name LIKE \'$tableName\' AND sql LIKE "%AUTOINCREMENT%"');
           isIdentity = isAutoIncrement != null;
           //break;
         }
       }
-      primaryKeyName = primaryKeyName ?? tableFields[0]['name'].toString();
+      if (objectType == ObjectType.table) {
+        primaryKeyName = primaryKeyName ?? tableFields[0]['name'].toString();
+      } else {
+        sqlStatement = (await bundledDbModel.execScalar(
+                'SELECT sql FROM sqlite_master WHERE tbl_name LIKE \'$tableName\''))
+            .toString();
+        sqlStatement = sqlStatement.substring(sqlStatement.indexOf('SELECT'));
+      }
       // convert table fields to SqfEntityField
-  
+
       for (int i = 0; i < tableFields.length; i++) {
         if (tableFields[i]['name'].toString() != primaryKeyName) {
           existingDBfields.add(SqfEntityFieldBase(
@@ -915,6 +943,8 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
     }
     tables.add(SqfEntityTableBase()
       ..tableName = tableName
+      ..objectType = objectType
+      ..sqlStatement = sqlStatement
       ..modelName = toCamelCase(tableName)
       ..primaryKeyName = primaryKeyName
       ..primaryKeyType = isPrimaryKeyText
@@ -922,11 +952,14 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
           : isIdentity
               ? PrimaryKeyType.integer_auto_incremental
               : PrimaryKeyType.integer_unique
-      ..fields = existingDBfields
-      ..primaryKeyNames.add(primaryKeyName)
-      ..primaryKeyTypes.add('int'));
+      ..fields = existingDBfields);
+    if (objectType == ObjectType.table) {
+      tables.last
+        ..primaryKeyNames.add(primaryKeyName)
+        ..primaryKeyTypes.add('int');
+    }
   }
-  
+
   // set RelationShips
   for (var table in tables) {
     final relationFields = <SqfEntityFieldRelationshipBase>[];
@@ -969,14 +1002,14 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
           }
         }
         //print(fKey.toString());
-  
+
       }
-    } else {
+    } else { // if foreignKeys.isEmpty 
       for (final field in table.fields) {
         if (field.fieldName.toLowerCase() != 'id' &&
             (field.dbType == DbType.integer ||
                 field.dbType == DbType.numeric)) {
-          for (final parentTable in tables) {
+          for (final parentTable in tables.where((t) => t.objectType== ObjectType.table)){
             if (parentTable.tableName != table.tableName &&
                 ((parentTable.primaryKeyName.toLowerCase() ==
                         field.fieldName.toLowerCase()) ||
@@ -984,7 +1017,7 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
                             .toLowerCase() ==
                         field.fieldName.toLowerCase()))) {
               print(
-                  'relationship column (${field.fieldName}) found on the table s${parentTable.tableName}');
+                  'relationship column (${field.fieldName}) found on the table ${parentTable.tableName}');
               //table.fields.add(
               relationFields.add(SqfEntityFieldRelationshipBase(
                   parentTable, DeleteRule.NO_ACTION)
@@ -1010,7 +1043,7 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
       }
     }
   }
-  
+
   // SET MANY TO MANY RELATIONS
   final manyToManyTables = <SqfEntityTableBase>[];
   for (var table in tables) {
@@ -1032,23 +1065,24 @@ Future<List<SqfEntityTableBase>> getTables(List tableList, SqfEntityProvider bun
 }
 
 DeleteRule getDeleteRule(String rule) {
-    switch (rule) {
-      case 'NO ACTION':
-        return DeleteRule.NO_ACTION;
-        break;
-      case 'CASCADE':
-        return DeleteRule.CASCADE;
-        break;
-      case 'SET DEFAULT VALUE':
-        return DeleteRule.SET_DEFAULT_VALUE;
-        break;
-      case 'SET NULL':
-        return DeleteRule.SET_NULL;
-        break;
-      default:
-        return DeleteRule.NO_ACTION;
-    }
+  switch (rule) {
+    case 'NO ACTION':
+      return DeleteRule.NO_ACTION;
+      break;
+    case 'CASCADE':
+      return DeleteRule.CASCADE;
+      break;
+    case 'SET DEFAULT VALUE':
+      return DeleteRule.SET_DEFAULT_VALUE;
+      break;
+    case 'SET NULL':
+      return DeleteRule.SET_NULL;
+      break;
+    default:
+      return DeleteRule.NO_ACTION;
   }
+}
+
 void printList(List<dynamic> list) {
   for (final o in list) {
     print(o.toString());

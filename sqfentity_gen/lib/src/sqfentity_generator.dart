@@ -20,7 +20,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     final model = annotation.read('model').objectValue;
     
 // When testing, you can uncomment the test line to make sure everything's working properly
-    // return '// MODEL -> ${model.toString()}';
+   //  return '''/* MODEL -> ${model.toString()} */''';
 
     final instanceName =
         element.toString().replaceAll('SqfEntityModel', '').trim();
