@@ -716,7 +716,7 @@ ${table.sqlStatement}'''
 
   /// Write database on existing db (path=your new database path, byte= your new database's ByteData)
   Future<void> writeDatabase(ByteData data) async {
-    return SqfEntityProvider(this)._connectionBase.writeDatabase(data);
+    return SqfEntityProvider(this).writeDatabase(data);
   }
 
   /// Run sql command List
