@@ -472,7 +472,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.4.0"
+    version: "1.4.0+1"
   sqfentity_gen:
     dependency: "direct main"
     description:
