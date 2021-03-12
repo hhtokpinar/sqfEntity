@@ -6,8 +6,8 @@ class SQFViewDetail extends StatefulWidget {
       this.useSoftDeleting, this.primaryKeyName);
   final dynamic data;
   final dynamic T;
-  final String formListTitleField;
-  final String primaryKeyName;
+  final String? formListTitleField;
+  final String? primaryKeyName;
   final bool useSoftDeleting;
   @override
   State<StatefulWidget> createState() => SQFViewDetailState(
@@ -18,13 +18,13 @@ class SQFViewDetailState extends State {
   SQFViewDetailState(this.data, this.formListTitleField, this.T,
       this.useSoftDeleting, this.primaryKeyName);
   dynamic data;
-  Map<String, dynamic> objData;
-  Map<String, String> objMenu;
-  List<String> objDataKeys;
-  List<String> objMenuKeys;
+  Map<String, dynamic>? objData;
+  Map<String, String>? objMenu;
+  List<String?>? objDataKeys;
+  List<String>? objMenuKeys;
   final dynamic T;
-  final String formListTitleField;
-  final String primaryKeyName;
+  final String? formListTitleField;
+  final String? primaryKeyName;
   final bool useSoftDeleting;
   bool isItemUpdated = false;
   dynamic obj;
@@ -35,7 +35,7 @@ class SQFViewDetailState extends State {
   }
 
   Future<void> getData() async {
-    obj = await T.getById(data[primaryKeyName],loadParents : true);
+    obj = await T.getById(data[primaryKeyName], loadParents: true);
     if (obj == null) {
       Navigator.pop(context, true);
       return;
@@ -43,9 +43,9 @@ class SQFViewDetailState extends State {
     objData = await obj.toMap(forView: true) as Map<String, dynamic>;
     setState(() {
       data = objData;
-      objDataKeys = objData.keys.toList();
+      objDataKeys = objData!.keys.toList();
       objMenu = T.subMenu() as Map<String, String>;
-      objMenuKeys = objMenu.keys.toList();
+      objMenuKeys = objMenu!.keys.toList();
     });
   }
 
@@ -56,19 +56,19 @@ class SQFViewDetailState extends State {
               context: this.context,
               tiles: objData == null
                   ? []
-                  : List.generate(objData.length, (index) {
+                  : List.generate(objData!.length, (index) {
                       return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ListTile(
                             title: Text(
-                              objDataKeys[index] != null
-                                  ? objDataKeys[index].toString()
+                              objDataKeys![index] != null
+                                  ? objDataKeys![index].toString()
                                   : '',
                               style: TextStyle(
                                   color: UITools.mainTextColorAlternative),
                             ),
                             subtitle: Text(
-                              objData[objDataKeys[index]].toString(),
+                              objData![objDataKeys![index]].toString(),
                               style: TextStyle(
                                   color: UITools.mainTextColor,
                                   fontSize: UITools(context).scaleWidth(18)),
@@ -80,7 +80,7 @@ class SQFViewDetailState extends State {
 
     Future<void> goToUpdate(dynamic data) async {
       final editWidget = await T.gotoEdit(data) as Widget;
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context, MaterialPageRoute(builder: (context) => editWidget));
       if (result != null) {
         if (result) {
@@ -91,7 +91,7 @@ class SQFViewDetailState extends State {
     }
 
     void getSubList(String controllerName) async {
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => Scaffold(
@@ -115,12 +115,9 @@ class SQFViewDetailState extends State {
       }
     }
 
-    FlatButton buildFlatButton(
+    TextButton buildTextButton(
         Color buttonColor, String text, Function onpressed) {
-      return FlatButton(
-        color: buttonColor,
-      
-        textColor: UITools.mainTextColor,
+      return TextButton(
         clipBehavior: Clip.hardEdge,
         child: Text(
           text,
@@ -138,12 +135,12 @@ class SQFViewDetailState extends State {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          buildFlatButton(
+          buildTextButton(
               UITools.mainAlertColor, 'Edit', () => goToUpdate(data)),
           SizedBox(
             width: 20,
           ),
-          buildFlatButton(
+          buildTextButton(
               UITools.mainItemDeletedBgColor,
               '${(!useSoftDeleting ? '' : data['isDeleted'] == true ? 'Hard ' : '')}Delete',
               () async => SessionDetail.updatedItem = await UITools(context)
@@ -153,10 +150,8 @@ class SQFViewDetailState extends State {
             width: 10,
           ),
           useSoftDeleting && data['isDeleted'] == true
-              ? FlatButton(
-                  color: Colors.blueGrey,
-                 
-                  textColor: UITools.mainTextColor,
+              ? TextButton(
+               
                   clipBehavior: Clip.hardEdge,
                   child: Text(
                     'Recover',
@@ -170,7 +165,7 @@ class SQFViewDetailState extends State {
                             obj,
                             useSoftDeleting,
                             false,
-                            formListTitleField,
+                            formListTitleField!,
                             getData);
                   },
                 )
@@ -178,7 +173,7 @@ class SQFViewDetailState extends State {
         ],
       ),
       Row(
-        children: objMenu == null || objMenu.isEmpty
+        children: objMenu == null || objMenu!.isEmpty
             ? <Widget>[Text('')]
             : <Widget>[
                 PopupMenuButton<String>(
@@ -206,10 +201,11 @@ class SQFViewDetailState extends State {
                     ),
                     onSelected: getSubList,
                     itemBuilder: (BuildContext context) =>
-                        List.generate(objMenu.length, (index) {
+                        List.generate(objMenu!.length, (index) {
                           return PopupMenuItem<String>(
-                            child: Text(objMenu[objMenuKeys[index]].toString()),
-                            value: objMenuKeys[index],
+                            child:
+                                Text(objMenu![objMenuKeys![index]].toString()),
+                            value: objMenuKeys![index],
                           );
                         })),
               ],

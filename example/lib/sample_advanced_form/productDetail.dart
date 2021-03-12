@@ -26,7 +26,7 @@ class ProductDetailState extends State {
       decoration: BoxDecoration(
           border: Border.all(color:  Color.fromRGBO(195, 166, 219, .9)),
           borderRadius: BorderRadius.circular(5.0)),
-      child: Text( product.isActive ?
+      child: Text( product.isActive! ?
         '\$ ${product.price != null ? priceFormat.format(product.price):'-'}': 'NOT ON SALE' ,
         style: TextStyle(
             fontSize: UITools(context).scaleWidth(20.0), color: Colors.white),
@@ -38,7 +38,7 @@ class ProductDetailState extends State {
       children: <Widget>[
         SizedBox(height: UITools(context).scaleHeight(10.0)),
         Text(
-          product.name,
+          product.name!,
           style: TextStyle(
               color: Colors.white,
               fontSize: UITools(context).scaleWidth(24.0)),
@@ -48,7 +48,7 @@ class ProductDetailState extends State {
           child: Divider(color: Colors.white30),
         ),
           Text(
-          product.description,
+          product.description!,
           style: TextStyle(
               color: Color.fromRGBO(195, 166, 219, 1),
               fontSize: UITools(context).scaleHeight(20.0)),
@@ -85,7 +85,7 @@ class ProductDetailState extends State {
                   flex: 1,
                   child: Container(
                     width: UITools(context).scaleWidth(200),
-                    child: UITools.imageFromNetwork(product.imageUrl),
+                    child: UITools.imageFromNetwork(product.imageUrl!),
                   )),
               Expanded(
                 flex: 1,
@@ -129,7 +129,7 @@ class ProductDetailState extends State {
         PopupMenuButton<Choice>(
           onSelected: select,
           itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
-                         product.isDeleted ? 
+                         product.isDeleted! ? 
             PopupMenuItem<Choice>(
               child:  Text('Recover product'),
               value: Choice.Recover,
@@ -138,7 +138,7 @@ class ProductDetailState extends State {
               value: Choice.Update,
             ),
             PopupMenuItem<Choice>(
-              child: product.isDeleted ? Text('Hard delete product'): Text('Delete product'),
+              child: product.isDeleted! ? Text('Hard delete product'): Text('Delete product'),
               value:  Choice.Delete,
             ), 
           ],
@@ -158,12 +158,12 @@ class ProductDetailState extends State {
     switch (choice) {
       case Choice.Delete:
         final confirm = await UITools(context)
-            .confirmDialog('Delete \'${product.name}\'?', '${(product.isDeleted ? 'Hard ' : '')}Delete Product');
-        if (confirm) {
+            .confirmDialog('Delete \'${product.name}\'?', '${(product.isDeleted! ? 'Hard ' : '')}Delete Product');
+        if (confirm!) {
           result = await product.delete();
           if (result.success) {
             UITools(context).alertDialog('${product.name} deleted',
-                title: '${(product.isDeleted ? 'Hard ' : '')}Delete Product', callBack: () {
+                title: '${(product.isDeleted! ? 'Hard ' : '')}Delete Product', callBack: () {
               Navigator.pop(context, true);
             });
           }
@@ -172,7 +172,7 @@ class ProductDetailState extends State {
         case Choice.Recover:
         final confirm = await UITools(context)
             .confirmDialog('Recover \'${product.name}\'?', 'Recover Product');
-        if (confirm) {
+        if (confirm!) {
           result = await product.recover();
           if (result.success) {
             UITools(context).alertDialog('${product.name} recovered',
@@ -190,7 +190,7 @@ class ProductDetailState extends State {
   }
 
   void gotoDetail(Product product) async {
-    final bool result = await Navigator.push(
+    final bool? result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => 
         ProductAdd(product)
         ));

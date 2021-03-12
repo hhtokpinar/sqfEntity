@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import '../model/model.dart';
 import 'searchFilters.dart';
 
-
 class ProductFilterWindow extends StatefulWidget {
   ProductFilterWindow();
-  
+
   @override
-  State<StatefulWidget> createState() =>
-      ProductFilterWindowState();
+  State<StatefulWidget> createState() => ProductFilterWindowState();
 }
 
 class ProductFilterWindowState extends State {
   ProductFilterWindowState();
-  
-  List<DropdownMenuItem<int>> _dropdownMenuItems =
-      <DropdownMenuItem<int>>[];
-  int _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId ?? 0;
+
+  List<DropdownMenuItem<int>> _dropdownMenuItems = <DropdownMenuItem<int>>[];
+  int? _selectedCategoryId =
+      SearchFilterProduct.getValues.selectedCategoryId ?? 0;
   int nameRadioValue = SearchFilterProduct.getValues.nameRadioValue ?? 1;
-  bool isActive = SearchFilterProduct.getValues.isActive ?? false;
-  bool isNotActive = SearchFilterProduct.getValues.isNotActive ?? false;
+  bool? isActive = SearchFilterProduct.getValues.isActive ?? false;
+  bool? isNotActive = SearchFilterProduct.getValues.isNotActive ?? false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtDescription = TextEditingController();
@@ -43,16 +41,19 @@ class ProductFilterWindowState extends State {
     _selectedCategory = _dropdownMenuItems[0].value;
 */
 
-    txtName.text = SearchFilterProduct.getValues.txtNameText;
-    txtDescription.text = SearchFilterProduct.getValues.descriptionContains;
+    txtName.text = SearchFilterProduct.getValues.txtNameText ?? '';
+    txtDescription.text =
+        SearchFilterProduct.getValues.descriptionContains ?? '';
     if (SearchFilterProduct.getValues.minPrice != null) {
       txtPriceMin.text = SearchFilterProduct.getValues.minPrice.toString();
-    } else
-      {txtPriceMin.text = '';}
+    } else {
+      txtPriceMin.text = '';
+    }
     if (SearchFilterProduct.getValues.maxPrice != null) {
       txtPriceMax.text = SearchFilterProduct.getValues.maxPrice.toString();
-    } else
-      {txtPriceMax.text = '';}
+    } else {
+      txtPriceMax.text = '';
+    }
     super.initState();
   }
 
@@ -63,15 +64,15 @@ class ProductFilterWindowState extends State {
           await Category().select().toDropDownMenuInt('name');
       setState(() {
         _dropdownMenuItems = dropdownMenuItems;
-        _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
+        _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId!;
       });
     }
 
-    if (_dropdownMenuItems == null || _dropdownMenuItems.isEmpty) {
+    if (_dropdownMenuItems.isEmpty) {
       buildDropDownMenu();
     }
 
-    void onChangeDropdownItem(int selectedCategoryId) {
+    void onChangeDropdownItem(int? selectedCategoryId) {
       setState(() {
         _selectedCategoryId = selectedCategoryId;
       });
@@ -94,9 +95,7 @@ class ProductFilterWindowState extends State {
                     buildRowName(),
                     buildRowDescription(),
                     buildRowPrice(),
-                    
-                        buildRowCategory(onChangeDropdownItem)
-                        ,
+                    buildRowCategory(onChangeDropdownItem),
                     buildIsActiveRow(),
                     SizedBox(
                       height: 20,
@@ -104,13 +103,13 @@ class ProductFilterWindowState extends State {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: applyButton('Clear Filter'),
                           onPressed: () {
                             clearFilter();
                           },
                         ),
-                        FlatButton(
+                        TextButton(
                           child: applyButton('Apply'),
                           onPressed: () {
                             applyFilter();
@@ -216,9 +215,9 @@ class ProductFilterWindowState extends State {
           Checkbox(
             value: isActive ?? false,
             activeColor: Color.fromRGBO(95, 66, 119, 1),
-            onChanged: (bool value) {
+            onChanged: (bool? value) {
               setState(() {
-                isActive = value;
+                isActive = value!;
               });
             },
           ),
@@ -226,7 +225,7 @@ class ProductFilterWindowState extends State {
           Checkbox(
             value: isNotActive ?? false,
             activeColor: Color.fromRGBO(95, 66, 119, 1),
-            onChanged: (bool value) {
+            onChanged: (bool? value) {
               setState(() {
                 isNotActive = value;
               });
@@ -238,7 +237,8 @@ class ProductFilterWindowState extends State {
     );
   }
 
-  Row buildRowCategory(void Function(int selectedCategoryId) onChangeDropdownItem) {
+  Row buildRowCategory(
+      void Function(int? selectedCategoryId) onChangeDropdownItem) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -272,9 +272,9 @@ class ProductFilterWindowState extends State {
     );
   }
 
-  void _handleRadioValueChange(int value) {
+  void _handleRadioValueChange(int? value) {
     setState(() {
-      nameRadioValue = value;
+      nameRadioValue = value!;
 
       switch (nameRadioValue) {
         case 0:
@@ -338,7 +338,7 @@ class ProductFilterWindowState extends State {
     }
     SearchFilterProduct.getValues.selectedCategoryId =
         _selectedCategoryId != 0 ? _selectedCategoryId : null;
-    if ((isActive && isNotActive) || (!isActive && !isNotActive)) {
+    if ((isActive! && isNotActive!) || (!isActive! && !isNotActive!)) {
       isActive = null;
       SearchFilterProduct.getValues.isNotActive = false;
     }

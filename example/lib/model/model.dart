@@ -44,13 +44,13 @@ const tableProduct = SqfEntityTable(
       SqfEntityField('description', DbType.text),
       SqfEntityField('price', DbType.real, defaultValue: 0),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
- //SqfEntityField('isActive2', DbType.bool, defaultValue: true),
+      //SqfEntityField('isActive2', DbType.bool, defaultValue: true),
 
       /// Relationship column for CategoryId of Product
       SqfEntityFieldRelationship(
           parentTable: tableCategory,
           deleteRule: DeleteRule.CASCADE,
-          defaultValue: 0,
+          defaultValue: 1,
           formDropDownTextField:
               'name' // displayText of dropdownList for category. 'name' => a text field from the category table
           ),
@@ -103,7 +103,8 @@ const seqIdentity = SqfEntitySequence(
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
     databaseName: 'sampleORM_v1.4.0+3.db',
-    password: null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
+    password:
+        null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property

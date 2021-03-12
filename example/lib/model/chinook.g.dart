@@ -18,7 +18,6 @@ part of 'chinook.dart';
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
-// ignore_for_file:
 // BEGIN TABLES
 // Album TABLE
 class TableAlbum extends SqfEntityTableBase {
@@ -26,22 +25,25 @@ class TableAlbum extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Album';
     primaryKeyName = 'AlbumId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Title', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Title', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableArtist.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'ArtistId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableAlbum();
   }
@@ -53,17 +55,18 @@ class TableArtist extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Artist';
     primaryKeyName = 'ArtistId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableArtist();
   }
@@ -75,32 +78,45 @@ class TableCustomer extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Customer';
     primaryKeyName = 'CustomerId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('FirstName', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('LastName', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Company', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Address', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('City', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('State', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Country', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('PostalCode', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Phone', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Fax', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Email', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('FirstName', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('LastName', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Company', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Address', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('City', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('State', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Country', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('PostalCode', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Phone', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Fax', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Email', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableEmployee.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'SupportRepId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableCustomer();
   }
@@ -112,35 +128,54 @@ class TableEmployee extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Employee';
     primaryKeyName = 'EmployeeId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('LastName', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('FirstName', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Title', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('LastName', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('FirstName', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Title', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldBase('BirthDate', DbType.datetime,
-          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
       SqfEntityFieldBase('HireDate', DbType.datetime,
-          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
-      SqfEntityFieldBase('Address', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('City', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('State', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Country', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('PostalCode', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Phone', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Fax', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Email', DbType.text, isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
+      SqfEntityFieldBase('Address', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('City', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('State', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Country', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('PostalCode', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Phone', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Fax', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Email', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(null, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'ReportsTo',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableEmployee();
   }
@@ -152,17 +187,18 @@ class TableGenre extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Genre';
     primaryKeyName = 'GenreId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableGenre();
   }
@@ -174,29 +210,40 @@ class TableInvoice extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Invoice';
     primaryKeyName = 'InvoiceId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
       SqfEntityFieldBase('InvoiceDate', DbType.datetime,
-          isNotNull: false, minValue: DateTime.parse('1900-01-01')),
-      SqfEntityFieldBase('BillingAddress', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('BillingCity', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('BillingState', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('BillingCountry', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('BillingPostalCode', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Total', DbType.real, isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
+      SqfEntityFieldBase('BillingAddress', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('BillingCity', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('BillingState', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('BillingCountry', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('BillingPostalCode', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Total', DbType.real,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableCustomer.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'CustomerId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableInvoice();
   }
@@ -208,28 +255,34 @@ class TableInvoiceLine extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'InvoiceLine';
     primaryKeyName = 'InvoiceLineId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('UnitPrice', DbType.real, isNotNull: false),
-      SqfEntityFieldBase('Quantity', DbType.integer, isNotNull: false),
+      SqfEntityFieldBase('UnitPrice', DbType.real,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Quantity', DbType.integer,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'TrackId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableInvoice.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'InvoiceId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableInvoiceLine();
   }
@@ -241,17 +294,18 @@ class TableMediaType extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'MediaType';
     primaryKeyName = 'MediaTypeId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableMediaType();
   }
@@ -263,17 +317,18 @@ class TablePlaylist extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Playlist';
     primaryKeyName = 'PlaylistId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TablePlaylist();
   }
@@ -285,36 +340,47 @@ class TableTrack extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'Track';
     primaryKeyName = 'TrackId';
-    primaryKeyType = PrimaryKeyType.integer_unique;
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Composer', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('Milliseconds', DbType.integer, isNotNull: false),
-      SqfEntityFieldBase('Bytes', DbType.integer, isNotNull: false),
-      SqfEntityFieldBase('UnitPrice', DbType.real, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Composer', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Milliseconds', DbType.integer,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Bytes', DbType.integer,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('UnitPrice', DbType.real,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableMediaType.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'MediaTypeId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableGenre.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'GenreId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableAlbum.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'AlbumId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableTrack();
   }
@@ -326,25 +392,31 @@ class TableVTrack extends SqfEntityTableBase {
     // declare properties of EntityTable
     tableName = 'VTracks';
     objectType = ObjectType.view;
-    sqlStatement = chinookdb.databaseTables[10].sqlStatement;
+    sqlStatement = chinookdb.databaseTables![10].sqlStatement;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('album', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('media', DbType.text, isNotNull: false),
-      SqfEntityFieldBase('genres', DbType.text, isNotNull: false),
+      SqfEntityFieldBase('Name', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('album', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('media', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('genres', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'TrackId',
-          isNotNull: false),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableVTrack();
   }
@@ -378,7 +450,7 @@ class TablePlaylistTrack extends SqfEntityTableBase {
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TablePlaylistTrack();
   }
@@ -432,7 +504,7 @@ class Album {
   Album({this.AlbumId, this.Title, this.ArtistId}) {
     _setDefaultValues();
   }
-  Album.withFields(this.AlbumId, this.Title, this.ArtistId) {
+  Album.withFields(this.Title, this.ArtistId) {
     _setDefaultValues();
   }
   Album.withId(this.AlbumId, this.Title, this.ArtistId) {
@@ -453,25 +525,23 @@ class Album {
         ? Artist.fromMap(o['artist'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Album)
-  int AlbumId;
-  String Title;
-  int ArtistId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? AlbumId;
+  String? Title;
+  int? ArtistId;
+
+  BoolResult? saveResult;
   // end FIELDS (Album)
 
 // RELATIONSHIPS (Album)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plArtist', 'plField2'..]) or so on..
-  Artist plArtist;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plArtist', 'plField2'..]) or so on..
+  Artist? plArtist;
 
   /// get Artist By ArtistId
-  Future<Artist> getArtist(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Artist?> getArtist(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Artist().getById(ArtistId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -480,12 +550,12 @@ class Album {
 
 // COLLECTIONS & VIRTUALS (Album)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
-  List<Track> plTracks;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
+  List<Track>? plTracks;
 
   /// get Track(s) filtered by AlbumId=AlbumId
-  TrackFilterBuilder getTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  TrackFilterBuilder? getTracks(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (AlbumId == null) {
       return null;
     }
@@ -499,7 +569,7 @@ class Album {
 // END COLLECTIONS & VIRTUALS (Album)
 
   static const bool _softDeleteActivated = false;
-  AlbumManager __mnAlbum;
+  AlbumManager? __mnAlbum;
 
   AlbumManager get _mnAlbum {
     return __mnAlbum = __mnAlbum ?? AlbumManager();
@@ -517,7 +587,11 @@ class Album {
     }
 
     if (ArtistId != null) {
-      map['ArtistId'] = forView ? plArtist.Name : ArtistId;
+      map['ArtistId'] = forView
+          ? plArtist == null
+              ? ArtistId
+              : plArtist!.Name
+          : ArtistId;
     }
 
     return map;
@@ -536,12 +610,16 @@ class Album {
     }
 
     if (ArtistId != null) {
-      map['ArtistId'] = forView ? plArtist.Name : ArtistId;
+      map['ArtistId'] = forView
+          ? plArtist == null
+              ? ArtistId
+              : plArtist!.Name
+          : ArtistId;
     }
 
 // COLLECTIONS (Album)
     if (!forQuery) {
-      map['Tracks'] = await getTracks().toMapList();
+      map['Tracks'] = await getTracks()!.toMapList();
     }
 // END COLLECTIONS (Album)
 
@@ -559,17 +637,17 @@ class Album {
   }
 
   List<dynamic> toArgs() {
-    return [AlbumId, Title, ArtistId];
+    return [Title, ArtistId];
   }
 
   List<dynamic> toArgsWithIds() {
     return [AlbumId, Title, ArtistId];
   }
 
-  static Future<List<Album>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Album>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Album.fromWebUrl: ErrorMessage: ${e.toString()}');
@@ -577,8 +655,8 @@ class Album {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Album>> fromJson(String jsonBody) async {
@@ -596,9 +674,9 @@ class Album {
 
   static Future<List<Album>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Album> objList = <Album>[];
     loadedFields = loadedFields ?? [];
@@ -610,12 +688,12 @@ class Album {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Album.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Album.plTracks'); */
+          /*_loadedfields!.add('Album.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -625,11 +703,11 @@ class Album {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plArtist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plArtist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedFields.add('Artist.plArtist');*/
+          /*_loadedfields!.add('Artist.plArtist');*/
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -643,7 +721,7 @@ class Album {
 
   /// returns Album by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int AlbumId
+  /// Primary Keys: int? AlbumId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -657,15 +735,15 @@ class Album {
 
   ///
   /// <returns>returns Album if exist, otherwise returns null
-  Future<Album> getById(int AlbumId,
+  Future<Album?> getById(int? AlbumId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (AlbumId == null) {
       return null;
     }
-    Album obj;
+    Album? obj;
     final data = await _mnAlbum.getById([AlbumId]);
     if (data.length != 0) {
       obj = Album.fromMap(data[0] as Map<String, dynamic>);
@@ -674,12 +752,12 @@ class Album {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Album.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Album.plTracks'); */
+          /*_loadedfields!.add('Album.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -689,11 +767,11 @@ class Album {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plArtist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plArtist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedFields.add('Artist.plArtist');*/
+          /*_loadedfields!.add('Artist.plArtist');*/
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -709,18 +787,24 @@ class Album {
   /// Saves the (Album) object. If the AlbumId field is null, saves as a new record and returns new AlbumId, if AlbumId is not null then updates record
 
   /// <returns>Returns AlbumId
-  Future<int> save() async {
-    if (AlbumId == null || AlbumId == 0 || !isSaved) {
-      await _mnAlbum.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (AlbumId == null || AlbumId == 0) {
+      AlbumId = await _mnAlbum.insert(this);
     } else {
       // AlbumId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnAlbum.update(this);
     }
 
     return AlbumId;
+  }
+
+  /// saveAs Album. Returns a new Primary Key value of Album
+
+  /// <returns>Returns a new Primary Key value of Album
+  Future<int?> saveAs() async {
+    AlbumId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Album> as a bulk in one transaction
@@ -735,14 +819,19 @@ class Album {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < albums.length; i++) {
+      if (albums[i].AlbumId == null) {
+        albums[i].AlbumId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns AlbumId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnAlbum.rawInsert(
               'INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',
@@ -798,23 +887,22 @@ class Album {
     }
   }
 
-  AlbumFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+  AlbumFilterBuilder select(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return AlbumFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   AlbumFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return AlbumFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -840,10 +928,9 @@ class Album {
 
 // region AlbumField
 class AlbumField extends SearchCriteria {
-  AlbumField(this.albumFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  AlbumField(this.albumFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   AlbumFilterBuilder albumFB;
 
@@ -860,7 +947,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param, SqlSyntax.NotEQuals,
             albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -873,7 +960,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -886,7 +973,7 @@ class AlbumField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -900,7 +987,7 @@ class AlbumField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           albumFB._addedBlocks);
       _waitingNot = '';
-      albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+      albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
           albumFB._addedBlocks.retVal;
     }
     return albumFB;
@@ -915,9 +1002,9 @@ class AlbumField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           albumFB._addedBlocks);
       _waitingNot = '';
-      albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+      albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
           albumFB._addedBlocks.retVal;
-      albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+      albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
           albumFB._addedBlocks.retVal;
     }
     return albumFB;
@@ -932,7 +1019,7 @@ class AlbumField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           albumFB._addedBlocks);
       _waitingNot = '';
-      albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+      albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
           albumFB._addedBlocks.retVal;
     }
     return albumFB;
@@ -965,7 +1052,7 @@ class AlbumField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -978,7 +1065,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param,
             SqlSyntax.LessThanOrEquals, albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -991,7 +1078,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -1004,7 +1091,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param, SqlSyntax.LessThan,
             albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -1017,7 +1104,7 @@ class AlbumField extends SearchCriteria {
         : setCriteria(pValue, albumFB.parameters, param, SqlSyntax.GreaterThan,
             albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -1030,7 +1117,7 @@ class AlbumField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         albumFB._addedBlocks);
     _waitingNot = '';
-    albumFB._addedBlocks.needEndBlock[albumFB._blockIndex] =
+    albumFB._addedBlocks.needEndBlock![albumFB._blockIndex] =
         albumFB._addedBlocks.retVal;
     return albumFB;
   }
@@ -1041,25 +1128,19 @@ class AlbumField extends SearchCriteria {
 class AlbumFilterBuilder extends SearchCriteria {
   AlbumFilterBuilder(Album obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Album _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Album? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   AlbumFilterBuilder get and {
@@ -1079,24 +1160,24 @@ class AlbumFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   AlbumFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  AlbumFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  AlbumFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -1124,11 +1205,11 @@ class AlbumFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   AlbumFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -1143,8 +1224,8 @@ class AlbumFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -1163,8 +1244,8 @@ class AlbumFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -1183,8 +1264,8 @@ class AlbumFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -1203,8 +1284,8 @@ class AlbumFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -1213,30 +1294,30 @@ class AlbumFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  AlbumField setField(AlbumField field, String colName, DbType dbtype) {
+  AlbumField setField(AlbumField? field, String colName, DbType dbtype) {
     return AlbumField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  AlbumField _AlbumId;
+  AlbumField? _AlbumId;
   AlbumField get AlbumId {
     return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
   }
 
-  AlbumField _Title;
+  AlbumField? _Title;
   AlbumField get Title {
     return _Title = setField(_Title, 'Title', DbType.text);
   }
 
-  AlbumField _ArtistId;
+  AlbumField? _ArtistId;
   AlbumField get ArtistId {
     return _ArtistId = setField(_ArtistId, 'ArtistId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -1255,7 +1336,7 @@ class AlbumFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -1268,16 +1349,22 @@ class AlbumFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -1332,7 +1419,7 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
 
     final idListTrackBYAlbumId = toListPrimaryKeySQL(false);
@@ -1349,9 +1436,9 @@ class AlbumFilterBuilder extends SearchCriteria {
     }
 
     if (Album._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnAlbum.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnAlbum.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnAlbum.delete(qparams);
+      r = await _obj!._mnAlbum.delete(qparams);
     }
     return r;
   }
@@ -1363,11 +1450,11 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'AlbumId IN (SELECT AlbumId from Album ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'AlbumId IN (SELECT AlbumId from Album ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnAlbum.updateBatch(qparams, values);
+    return _obj!._mnAlbum.updateBatch(qparams, values);
   }
 
   /// This method always returns Album Obj if exist, otherwise returns null
@@ -1384,16 +1471,16 @@ class AlbumFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Album>
-  Future<Album> toSingle(
+  Future<Album?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnAlbum.toList(qparams);
+    final objFuture = _obj!._mnAlbum.toList(qparams);
     final data = await objFuture;
-    Album obj;
+    Album? obj;
     if (data.isNotEmpty) {
       obj = Album.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -1401,12 +1488,12 @@ class AlbumFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Album.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Album.plTracks'); */
+          /*_loadedfields!.add('Album.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1416,11 +1503,11 @@ class AlbumFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plArtist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plArtist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedFields.add('Artist.plArtist');*/
+          /*_loadedfields!.add('Artist.plArtist');*/
           obj.plArtist = obj.plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -1436,10 +1523,10 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// This method returns int. [Album]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) albumCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? albumCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final albumsFuture = await _obj._mnAlbum.toList(qparams);
+    final albumsFuture = await _obj!._mnAlbum.toList(qparams);
     final int count = albumsFuture[0]['CNT'] as int;
     if (albumCount != null) {
       albumCount(count);
@@ -1463,9 +1550,9 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// <returns>List<Album>
   Future<List<Album>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Album> albumsData = await Album.fromMapList(data,
         preload: preload,
@@ -1501,15 +1588,15 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnAlbum.toList(qparams);
+    return await _obj!._mnAlbum.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Album>>
   Future<List<DropdownMenuItem<Album>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Album>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Album>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final albumsFuture = _obj._mnAlbum.toList(qparams);
+    final albumsFuture = _obj!._mnAlbum.toList(qparams);
 
     final data = await albumsFuture;
     final int count = data.length;
@@ -1534,11 +1621,11 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['AlbumId', displayTextColumn];
-    final albumsFuture = _obj._mnAlbum.toList(qparams);
+    final albumsFuture = _obj!._mnAlbum.toList(qparams);
 
     final data = await albumsFuture;
     final int count = data.length;
@@ -1583,7 +1670,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     }
     final List<int> AlbumIdData = <int>[];
     qparams.selectColumns = ['AlbumId'];
-    final AlbumIdFuture = await _obj._mnAlbum.toList(qparams);
+    final AlbumIdFuture = await _obj!._mnAlbum.toList(qparams);
 
     final int count = AlbumIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -1598,7 +1685,7 @@ class AlbumFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnAlbum.toList(qparams);
+    final objectFuture = _obj!._mnAlbum.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -1613,16 +1700,16 @@ class AlbumFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Album.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnAlbum.toList(qparams);
+    final objectFuture = _obj!._mnAlbum.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -1634,19 +1721,19 @@ class AlbumFilterBuilder extends SearchCriteria {
 
 // region AlbumFields
 class AlbumFields {
-  static TableField _fAlbumId;
+  static TableField? _fAlbumId;
   static TableField get AlbumId {
     return _fAlbumId =
         _fAlbumId ?? SqlSyntax.setField(_fAlbumId, 'albumid', DbType.integer);
   }
 
-  static TableField _fTitle;
+  static TableField? _fTitle;
   static TableField get Title {
     return _fTitle =
         _fTitle ?? SqlSyntax.setField(_fTitle, 'Title', DbType.text);
   }
 
-  static TableField _fArtistId;
+  static TableField? _fArtistId;
   static TableField get ArtistId {
     return _fArtistId = _fArtistId ??
         SqlSyntax.setField(_fArtistId, 'ArtistId', DbType.integer);
@@ -1672,7 +1759,7 @@ class Artist {
   Artist({this.ArtistId, this.Name}) {
     _setDefaultValues();
   }
-  Artist.withFields(this.ArtistId, this.Name) {
+  Artist.withFields(this.Name) {
     _setDefaultValues();
   }
   Artist.withId(this.ArtistId, this.Name) {
@@ -1686,24 +1773,22 @@ class Artist {
     if (o['Name'] != null) {
       Name = o['Name'] as String;
     }
-
-    isSaved = true;
   }
   // FIELDS (Artist)
-  int ArtistId;
-  String Name;
-  bool isSaved;
-  BoolResult saveResult;
+  int? ArtistId;
+  String? Name;
+
+  BoolResult? saveResult;
   // end FIELDS (Artist)
 
 // COLLECTIONS & VIRTUALS (Artist)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plAlbums', 'plField2'..]) or so on..
-  List<Album> plAlbums;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plAlbums', 'plField2'..]) or so on..
+  List<Album>? plAlbums;
 
   /// get Album(s) filtered by ArtistId=ArtistId
-  AlbumFilterBuilder getAlbums(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  AlbumFilterBuilder? getAlbums(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (ArtistId == null) {
       return null;
     }
@@ -1717,7 +1802,7 @@ class Artist {
 // END COLLECTIONS & VIRTUALS (Artist)
 
   static const bool _softDeleteActivated = false;
-  ArtistManager __mnArtist;
+  ArtistManager? __mnArtist;
 
   ArtistManager get _mnArtist {
     return __mnArtist = __mnArtist ?? ArtistManager();
@@ -1751,7 +1836,7 @@ class Artist {
 
 // COLLECTIONS (Artist)
     if (!forQuery) {
-      map['Albums'] = await getAlbums().toMapList();
+      map['Albums'] = await getAlbums()!.toMapList();
     }
 // END COLLECTIONS (Artist)
 
@@ -1769,17 +1854,17 @@ class Artist {
   }
 
   List<dynamic> toArgs() {
-    return [ArtistId, Name];
+    return [Name];
   }
 
   List<dynamic> toArgsWithIds() {
     return [ArtistId, Name];
   }
 
-  static Future<List<Artist>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Artist>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Artist.fromWebUrl: ErrorMessage: ${e.toString()}');
@@ -1787,8 +1872,8 @@ class Artist {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Artist>> fromJson(String jsonBody) async {
@@ -1806,9 +1891,9 @@ class Artist {
 
   static Future<List<Artist>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Artist> objList = <Artist>[];
     loadedFields = loadedFields ?? [];
@@ -1820,12 +1905,12 @@ class Artist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plAlbums') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedFields.add('Artist.plAlbums'); */
+          /*_loadedfields!.add('Artist.plAlbums'); */
           obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums().toList(
+              await obj.getAlbums()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1839,7 +1924,7 @@ class Artist {
 
   /// returns Artist by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int ArtistId
+  /// Primary Keys: int? ArtistId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -1853,15 +1938,15 @@ class Artist {
 
   ///
   /// <returns>returns Artist if exist, otherwise returns null
-  Future<Artist> getById(int ArtistId,
+  Future<Artist?> getById(int? ArtistId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (ArtistId == null) {
       return null;
     }
-    Artist obj;
+    Artist? obj;
     final data = await _mnArtist.getById([ArtistId]);
     if (data.length != 0) {
       obj = Artist.fromMap(data[0] as Map<String, dynamic>);
@@ -1870,12 +1955,12 @@ class Artist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plAlbums') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedFields.add('Artist.plAlbums'); */
+          /*_loadedfields!.add('Artist.plAlbums'); */
           obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums().toList(
+              await obj.getAlbums()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1891,18 +1976,24 @@ class Artist {
   /// Saves the (Artist) object. If the ArtistId field is null, saves as a new record and returns new ArtistId, if ArtistId is not null then updates record
 
   /// <returns>Returns ArtistId
-  Future<int> save() async {
-    if (ArtistId == null || ArtistId == 0 || !isSaved) {
-      await _mnArtist.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (ArtistId == null || ArtistId == 0) {
+      ArtistId = await _mnArtist.insert(this);
     } else {
       // ArtistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnArtist.update(this);
     }
 
     return ArtistId;
+  }
+
+  /// saveAs Artist. Returns a new Primary Key value of Artist
+
+  /// <returns>Returns a new Primary Key value of Artist
+  Future<int?> saveAs() async {
+    ArtistId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Artist> as a bulk in one transaction
@@ -1917,14 +2008,19 @@ class Artist {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < artists.length; i++) {
+      if (artists[i].ArtistId == null) {
+        artists[i].ArtistId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns ArtistId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnArtist.rawInsert(
               'INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',
@@ -1980,23 +2076,21 @@ class Artist {
   }
 
   ArtistFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return ArtistFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   ArtistFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return ArtistFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -2022,10 +2116,9 @@ class Artist {
 
 // region ArtistField
 class ArtistField extends SearchCriteria {
-  ArtistField(this.artistFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  ArtistField(this.artistFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   ArtistFilterBuilder artistFB;
 
@@ -2042,7 +2135,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param, SqlSyntax.NotEQuals,
             artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2055,7 +2148,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2068,7 +2161,7 @@ class ArtistField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2082,7 +2175,7 @@ class ArtistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           artistFB._addedBlocks);
       _waitingNot = '';
-      artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+      artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
           artistFB._addedBlocks.retVal;
     }
     return artistFB;
@@ -2097,9 +2190,9 @@ class ArtistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           artistFB._addedBlocks);
       _waitingNot = '';
-      artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+      artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
           artistFB._addedBlocks.retVal;
-      artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+      artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
           artistFB._addedBlocks.retVal;
     }
     return artistFB;
@@ -2114,7 +2207,7 @@ class ArtistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           artistFB._addedBlocks);
       _waitingNot = '';
-      artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+      artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
           artistFB._addedBlocks.retVal;
     }
     return artistFB;
@@ -2147,7 +2240,7 @@ class ArtistField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2160,7 +2253,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param,
             SqlSyntax.LessThanOrEquals, artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2173,7 +2266,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2186,7 +2279,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param, SqlSyntax.LessThan,
             artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2199,7 +2292,7 @@ class ArtistField extends SearchCriteria {
         : setCriteria(pValue, artistFB.parameters, param, SqlSyntax.GreaterThan,
             artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2212,7 +2305,7 @@ class ArtistField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         artistFB._addedBlocks);
     _waitingNot = '';
-    artistFB._addedBlocks.needEndBlock[artistFB._blockIndex] =
+    artistFB._addedBlocks.needEndBlock![artistFB._blockIndex] =
         artistFB._addedBlocks.retVal;
     return artistFB;
   }
@@ -2223,25 +2316,19 @@ class ArtistField extends SearchCriteria {
 class ArtistFilterBuilder extends SearchCriteria {
   ArtistFilterBuilder(Artist obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Artist _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Artist? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   ArtistFilterBuilder get and {
@@ -2261,24 +2348,24 @@ class ArtistFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   ArtistFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  ArtistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  ArtistFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -2306,11 +2393,11 @@ class ArtistFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   ArtistFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -2325,8 +2412,8 @@ class ArtistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -2345,8 +2432,8 @@ class ArtistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -2365,8 +2452,8 @@ class ArtistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -2385,8 +2472,8 @@ class ArtistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -2395,25 +2482,25 @@ class ArtistFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  ArtistField setField(ArtistField field, String colName, DbType dbtype) {
+  ArtistField setField(ArtistField? field, String colName, DbType dbtype) {
     return ArtistField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  ArtistField _ArtistId;
+  ArtistField? _ArtistId;
   ArtistField get ArtistId {
     return _ArtistId = setField(_ArtistId, 'ArtistId', DbType.integer);
   }
 
-  ArtistField _Name;
+  ArtistField? _Name;
   ArtistField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -2432,7 +2519,7 @@ class ArtistFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -2445,16 +2532,22 @@ class ArtistFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -2509,7 +2602,7 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Album) according to DeleteRule.NO_ACTION
 
     final idListAlbumBYArtistId = toListPrimaryKeySQL(false);
@@ -2526,9 +2619,9 @@ class ArtistFilterBuilder extends SearchCriteria {
     }
 
     if (Artist._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnArtist.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnArtist.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnArtist.delete(qparams);
+      r = await _obj!._mnArtist.delete(qparams);
     }
     return r;
   }
@@ -2540,11 +2633,11 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'ArtistId IN (SELECT ArtistId from Artist ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'ArtistId IN (SELECT ArtistId from Artist ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnArtist.updateBatch(qparams, values);
+    return _obj!._mnArtist.updateBatch(qparams, values);
   }
 
   /// This method always returns Artist Obj if exist, otherwise returns null
@@ -2561,16 +2654,16 @@ class ArtistFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Artist>
-  Future<Artist> toSingle(
+  Future<Artist?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnArtist.toList(qparams);
+    final objFuture = _obj!._mnArtist.toList(qparams);
     final data = await objFuture;
-    Artist obj;
+    Artist? obj;
     if (data.isNotEmpty) {
       obj = Artist.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -2578,12 +2671,12 @@ class ArtistFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Artist.plAlbums') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedFields.add('Artist.plAlbums'); */
+          /*_loadedfields!.add('Artist.plAlbums'); */
           obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums().toList(
+              await obj.getAlbums()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -2599,10 +2692,10 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// This method returns int. [Artist]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) artistCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? artistCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final artistsFuture = await _obj._mnArtist.toList(qparams);
+    final artistsFuture = await _obj!._mnArtist.toList(qparams);
     final int count = artistsFuture[0]['CNT'] as int;
     if (artistCount != null) {
       artistCount(count);
@@ -2626,9 +2719,9 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// <returns>List<Artist>
   Future<List<Artist>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Artist> artistsData = await Artist.fromMapList(data,
         preload: preload,
@@ -2664,16 +2757,16 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnArtist.toList(qparams);
+    return await _obj!._mnArtist.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Artist>>
   Future<List<DropdownMenuItem<Artist>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Artist>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Artist>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final artistsFuture = _obj._mnArtist.toList(qparams);
+    final artistsFuture = _obj!._mnArtist.toList(qparams);
 
     final data = await artistsFuture;
     final int count = data.length;
@@ -2698,11 +2791,11 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['ArtistId', displayTextColumn];
-    final artistsFuture = _obj._mnArtist.toList(qparams);
+    final artistsFuture = _obj!._mnArtist.toList(qparams);
 
     final data = await artistsFuture;
     final int count = data.length;
@@ -2748,7 +2841,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     }
     final List<int> ArtistIdData = <int>[];
     qparams.selectColumns = ['ArtistId'];
-    final ArtistIdFuture = await _obj._mnArtist.toList(qparams);
+    final ArtistIdFuture = await _obj!._mnArtist.toList(qparams);
 
     final int count = ArtistIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -2763,7 +2856,7 @@ class ArtistFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnArtist.toList(qparams);
+    final objectFuture = _obj!._mnArtist.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -2778,16 +2871,16 @@ class ArtistFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Artist.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnArtist.toList(qparams);
+    final objectFuture = _obj!._mnArtist.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -2799,13 +2892,13 @@ class ArtistFilterBuilder extends SearchCriteria {
 
 // region ArtistFields
 class ArtistFields {
-  static TableField _fArtistId;
+  static TableField? _fArtistId;
   static TableField get ArtistId {
     return _fArtistId = _fArtistId ??
         SqlSyntax.setField(_fArtistId, 'artistid', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
@@ -2844,7 +2937,6 @@ class Customer {
     _setDefaultValues();
   }
   Customer.withFields(
-      this.CustomerId,
       this.FirstName,
       this.LastName,
       this.Company,
@@ -2920,35 +3012,33 @@ class Customer {
         ? Employee.fromMap(o['employee'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Customer)
-  int CustomerId;
-  String FirstName;
-  String LastName;
-  String Company;
-  String Address;
-  String City;
-  String State;
-  String Country;
-  String PostalCode;
-  String Phone;
-  String Fax;
-  String Email;
-  int SupportRepId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? CustomerId;
+  String? FirstName;
+  String? LastName;
+  String? Company;
+  String? Address;
+  String? City;
+  String? State;
+  String? Country;
+  String? PostalCode;
+  String? Phone;
+  String? Fax;
+  String? Email;
+  int? SupportRepId;
+
+  BoolResult? saveResult;
   // end FIELDS (Customer)
 
 // RELATIONSHIPS (Customer)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plEmployee', 'plField2'..]) or so on..
-  Employee plEmployee;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plEmployee', 'plField2'..]) or so on..
+  Employee? plEmployee;
 
   /// get Employee By SupportRepId
-  Future<Employee> getEmployee(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Employee?> getEmployee(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Employee().getById(SupportRepId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -2957,12 +3047,12 @@ class Customer {
 
 // COLLECTIONS & VIRTUALS (Customer)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoices', 'plField2'..]) or so on..
-  List<Invoice> plInvoices;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plInvoices', 'plField2'..]) or so on..
+  List<Invoice>? plInvoices;
 
   /// get Invoice(s) filtered by CustomerId=CustomerId
-  InvoiceFilterBuilder getInvoices(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  InvoiceFilterBuilder? getInvoices(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (CustomerId == null) {
       return null;
     }
@@ -2976,7 +3066,7 @@ class Customer {
 // END COLLECTIONS & VIRTUALS (Customer)
 
   static const bool _softDeleteActivated = false;
-  CustomerManager __mnCustomer;
+  CustomerManager? __mnCustomer;
 
   CustomerManager get _mnCustomer {
     return __mnCustomer = __mnCustomer ?? CustomerManager();
@@ -3034,7 +3124,11 @@ class Customer {
     }
 
     if (SupportRepId != null) {
-      map['SupportRepId'] = forView ? plEmployee.LastName : SupportRepId;
+      map['SupportRepId'] = forView
+          ? plEmployee == null
+              ? SupportRepId
+              : plEmployee!.LastName
+          : SupportRepId;
     }
 
     return map;
@@ -3093,12 +3187,16 @@ class Customer {
     }
 
     if (SupportRepId != null) {
-      map['SupportRepId'] = forView ? plEmployee.LastName : SupportRepId;
+      map['SupportRepId'] = forView
+          ? plEmployee == null
+              ? SupportRepId
+              : plEmployee!.LastName
+          : SupportRepId;
     }
 
 // COLLECTIONS (Customer)
     if (!forQuery) {
-      map['Invoices'] = await getInvoices().toMapList();
+      map['Invoices'] = await getInvoices()!.toMapList();
     }
 // END COLLECTIONS (Customer)
 
@@ -3117,7 +3215,6 @@ class Customer {
 
   List<dynamic> toArgs() {
     return [
-      CustomerId,
       FirstName,
       LastName,
       Company,
@@ -3151,10 +3248,10 @@ class Customer {
     ];
   }
 
-  static Future<List<Customer>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Customer>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -3163,8 +3260,8 @@ class Customer {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Customer>> fromJson(String jsonBody) async {
@@ -3182,9 +3279,9 @@ class Customer {
 
   static Future<List<Customer>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Customer> objList = <Customer>[];
     loadedFields = loadedFields ?? [];
@@ -3196,12 +3293,12 @@ class Customer {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plInvoices') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedFields.add('Customer.plInvoices'); */
+          /*_loadedfields!.add('Customer.plInvoices'); */
           obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices().toList(
+              await obj.getInvoices()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -3211,11 +3308,11 @@ class Customer {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -3229,7 +3326,7 @@ class Customer {
 
   /// returns Customer by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int CustomerId
+  /// Primary Keys: int? CustomerId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -3243,15 +3340,15 @@ class Customer {
 
   ///
   /// <returns>returns Customer if exist, otherwise returns null
-  Future<Customer> getById(int CustomerId,
+  Future<Customer?> getById(int? CustomerId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (CustomerId == null) {
       return null;
     }
-    Customer obj;
+    Customer? obj;
     final data = await _mnCustomer.getById([CustomerId]);
     if (data.length != 0) {
       obj = Customer.fromMap(data[0] as Map<String, dynamic>);
@@ -3260,12 +3357,12 @@ class Customer {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plInvoices') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedFields.add('Customer.plInvoices'); */
+          /*_loadedfields!.add('Customer.plInvoices'); */
           obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices().toList(
+              await obj.getInvoices()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -3275,11 +3372,11 @@ class Customer {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -3295,18 +3392,24 @@ class Customer {
   /// Saves the (Customer) object. If the CustomerId field is null, saves as a new record and returns new CustomerId, if CustomerId is not null then updates record
 
   /// <returns>Returns CustomerId
-  Future<int> save() async {
-    if (CustomerId == null || CustomerId == 0 || !isSaved) {
-      await _mnCustomer.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (CustomerId == null || CustomerId == 0) {
+      CustomerId = await _mnCustomer.insert(this);
     } else {
       // CustomerId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnCustomer.update(this);
     }
 
     return CustomerId;
+  }
+
+  /// saveAs Customer. Returns a new Primary Key value of Customer
+
+  /// <returns>Returns a new Primary Key value of Customer
+  Future<int?> saveAs() async {
+    CustomerId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Customer> as a bulk in one transaction
@@ -3321,14 +3424,19 @@ class Customer {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < customers.length; i++) {
+      if (customers[i].CustomerId == null) {
+        customers[i].CustomerId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns CustomerId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnCustomer.rawInsert(
               'INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -3402,23 +3510,21 @@ class Customer {
   }
 
   CustomerFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return CustomerFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   CustomerFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return CustomerFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -3444,10 +3550,9 @@ class Customer {
 
 // region CustomerField
 class CustomerField extends SearchCriteria {
-  CustomerField(this.customerFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  CustomerField(this.customerFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   CustomerFilterBuilder customerFB;
 
@@ -3464,7 +3569,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param, SqlSyntax.NotEQuals,
             customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3477,7 +3582,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3490,7 +3595,7 @@ class CustomerField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3504,7 +3609,7 @@ class CustomerField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           customerFB._addedBlocks);
       _waitingNot = '';
-      customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+      customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
           customerFB._addedBlocks.retVal;
     }
     return customerFB;
@@ -3519,9 +3624,9 @@ class CustomerField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           customerFB._addedBlocks);
       _waitingNot = '';
-      customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+      customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
           customerFB._addedBlocks.retVal;
-      customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+      customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
           customerFB._addedBlocks.retVal;
     }
     return customerFB;
@@ -3536,7 +3641,7 @@ class CustomerField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           customerFB._addedBlocks);
       _waitingNot = '';
-      customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+      customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
           customerFB._addedBlocks.retVal;
     }
     return customerFB;
@@ -3569,7 +3674,7 @@ class CustomerField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3582,7 +3687,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param,
             SqlSyntax.LessThanOrEquals, customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3595,7 +3700,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3608,7 +3713,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param, SqlSyntax.LessThan,
             customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3621,7 +3726,7 @@ class CustomerField extends SearchCriteria {
         : setCriteria(pValue, customerFB.parameters, param,
             SqlSyntax.GreaterThan, customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3634,7 +3739,7 @@ class CustomerField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         customerFB._addedBlocks);
     _waitingNot = '';
-    customerFB._addedBlocks.needEndBlock[customerFB._blockIndex] =
+    customerFB._addedBlocks.needEndBlock![customerFB._blockIndex] =
         customerFB._addedBlocks.retVal;
     return customerFB;
   }
@@ -3645,25 +3750,19 @@ class CustomerField extends SearchCriteria {
 class CustomerFilterBuilder extends SearchCriteria {
   CustomerFilterBuilder(Customer obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Customer _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Customer? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   CustomerFilterBuilder get and {
@@ -3683,24 +3782,24 @@ class CustomerFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   CustomerFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  CustomerFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  CustomerFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -3728,11 +3827,11 @@ class CustomerFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   CustomerFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -3747,8 +3846,8 @@ class CustomerFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -3767,8 +3866,8 @@ class CustomerFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -3787,8 +3886,8 @@ class CustomerFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -3807,8 +3906,8 @@ class CustomerFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -3817,81 +3916,81 @@ class CustomerFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  CustomerField setField(CustomerField field, String colName, DbType dbtype) {
+  CustomerField setField(CustomerField? field, String colName, DbType dbtype) {
     return CustomerField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  CustomerField _CustomerId;
+  CustomerField? _CustomerId;
   CustomerField get CustomerId {
     return _CustomerId = setField(_CustomerId, 'CustomerId', DbType.integer);
   }
 
-  CustomerField _FirstName;
+  CustomerField? _FirstName;
   CustomerField get FirstName {
     return _FirstName = setField(_FirstName, 'FirstName', DbType.text);
   }
 
-  CustomerField _LastName;
+  CustomerField? _LastName;
   CustomerField get LastName {
     return _LastName = setField(_LastName, 'LastName', DbType.text);
   }
 
-  CustomerField _Company;
+  CustomerField? _Company;
   CustomerField get Company {
     return _Company = setField(_Company, 'Company', DbType.text);
   }
 
-  CustomerField _Address;
+  CustomerField? _Address;
   CustomerField get Address {
     return _Address = setField(_Address, 'Address', DbType.text);
   }
 
-  CustomerField _City;
+  CustomerField? _City;
   CustomerField get City {
     return _City = setField(_City, 'City', DbType.text);
   }
 
-  CustomerField _State;
+  CustomerField? _State;
   CustomerField get State {
     return _State = setField(_State, 'State', DbType.text);
   }
 
-  CustomerField _Country;
+  CustomerField? _Country;
   CustomerField get Country {
     return _Country = setField(_Country, 'Country', DbType.text);
   }
 
-  CustomerField _PostalCode;
+  CustomerField? _PostalCode;
   CustomerField get PostalCode {
     return _PostalCode = setField(_PostalCode, 'PostalCode', DbType.text);
   }
 
-  CustomerField _Phone;
+  CustomerField? _Phone;
   CustomerField get Phone {
     return _Phone = setField(_Phone, 'Phone', DbType.text);
   }
 
-  CustomerField _Fax;
+  CustomerField? _Fax;
   CustomerField get Fax {
     return _Fax = setField(_Fax, 'Fax', DbType.text);
   }
 
-  CustomerField _Email;
+  CustomerField? _Email;
   CustomerField get Email {
     return _Email = setField(_Email, 'Email', DbType.text);
   }
 
-  CustomerField _SupportRepId;
+  CustomerField? _SupportRepId;
   CustomerField get SupportRepId {
     return _SupportRepId =
         setField(_SupportRepId, 'SupportRepId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -3910,7 +4009,7 @@ class CustomerFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -3923,16 +4022,22 @@ class CustomerFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -3987,7 +4092,7 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Invoice) according to DeleteRule.NO_ACTION
 
     final idListInvoiceBYCustomerId = toListPrimaryKeySQL(false);
@@ -4004,9 +4109,9 @@ class CustomerFilterBuilder extends SearchCriteria {
     }
 
     if (Customer._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnCustomer.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnCustomer.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnCustomer.delete(qparams);
+      r = await _obj!._mnCustomer.delete(qparams);
     }
     return r;
   }
@@ -4018,11 +4123,11 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'CustomerId IN (SELECT CustomerId from Customer ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'CustomerId IN (SELECT CustomerId from Customer ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnCustomer.updateBatch(qparams, values);
+    return _obj!._mnCustomer.updateBatch(qparams, values);
   }
 
   /// This method always returns Customer Obj if exist, otherwise returns null
@@ -4039,16 +4144,16 @@ class CustomerFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Customer>
-  Future<Customer> toSingle(
+  Future<Customer?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnCustomer.toList(qparams);
+    final objFuture = _obj!._mnCustomer.toList(qparams);
     final data = await objFuture;
-    Customer obj;
+    Customer? obj;
     if (data.isNotEmpty) {
       obj = Customer.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -4056,12 +4161,12 @@ class CustomerFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plInvoices') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedFields.add('Customer.plInvoices'); */
+          /*_loadedfields!.add('Customer.plInvoices'); */
           obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices().toList(
+              await obj.getInvoices()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -4071,11 +4176,11 @@ class CustomerFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -4091,10 +4196,10 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// This method returns int. [Customer]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) customerCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? customerCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final customersFuture = await _obj._mnCustomer.toList(qparams);
+    final customersFuture = await _obj!._mnCustomer.toList(qparams);
     final int count = customersFuture[0]['CNT'] as int;
     if (customerCount != null) {
       customerCount(count);
@@ -4118,9 +4223,9 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// <returns>List<Customer>
   Future<List<Customer>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Customer> customersData = await Customer.fromMapList(data,
         preload: preload,
@@ -4156,16 +4261,16 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnCustomer.toList(qparams);
+    return await _obj!._mnCustomer.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Customer>>
   Future<List<DropdownMenuItem<Customer>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Customer>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Customer>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final customersFuture = _obj._mnCustomer.toList(qparams);
+    final customersFuture = _obj!._mnCustomer.toList(qparams);
 
     final data = await customersFuture;
     final int count = data.length;
@@ -4190,11 +4295,11 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['CustomerId', displayTextColumn];
-    final customersFuture = _obj._mnCustomer.toList(qparams);
+    final customersFuture = _obj!._mnCustomer.toList(qparams);
 
     final data = await customersFuture;
     final int count = data.length;
@@ -4240,7 +4345,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     }
     final List<int> CustomerIdData = <int>[];
     qparams.selectColumns = ['CustomerId'];
-    final CustomerIdFuture = await _obj._mnCustomer.toList(qparams);
+    final CustomerIdFuture = await _obj!._mnCustomer.toList(qparams);
 
     final int count = CustomerIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -4255,7 +4360,7 @@ class CustomerFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnCustomer.toList(qparams);
+    final objectFuture = _obj!._mnCustomer.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -4270,16 +4375,16 @@ class CustomerFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Customer.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnCustomer.toList(qparams);
+    final objectFuture = _obj!._mnCustomer.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -4291,77 +4396,77 @@ class CustomerFilterBuilder extends SearchCriteria {
 
 // region CustomerFields
 class CustomerFields {
-  static TableField _fCustomerId;
+  static TableField? _fCustomerId;
   static TableField get CustomerId {
     return _fCustomerId = _fCustomerId ??
         SqlSyntax.setField(_fCustomerId, 'customerid', DbType.integer);
   }
 
-  static TableField _fFirstName;
+  static TableField? _fFirstName;
   static TableField get FirstName {
     return _fFirstName = _fFirstName ??
         SqlSyntax.setField(_fFirstName, 'FirstName', DbType.text);
   }
 
-  static TableField _fLastName;
+  static TableField? _fLastName;
   static TableField get LastName {
     return _fLastName =
         _fLastName ?? SqlSyntax.setField(_fLastName, 'LastName', DbType.text);
   }
 
-  static TableField _fCompany;
+  static TableField? _fCompany;
   static TableField get Company {
     return _fCompany =
         _fCompany ?? SqlSyntax.setField(_fCompany, 'Company', DbType.text);
   }
 
-  static TableField _fAddress;
+  static TableField? _fAddress;
   static TableField get Address {
     return _fAddress =
         _fAddress ?? SqlSyntax.setField(_fAddress, 'Address', DbType.text);
   }
 
-  static TableField _fCity;
+  static TableField? _fCity;
   static TableField get City {
     return _fCity = _fCity ?? SqlSyntax.setField(_fCity, 'City', DbType.text);
   }
 
-  static TableField _fState;
+  static TableField? _fState;
   static TableField get State {
     return _fState =
         _fState ?? SqlSyntax.setField(_fState, 'State', DbType.text);
   }
 
-  static TableField _fCountry;
+  static TableField? _fCountry;
   static TableField get Country {
     return _fCountry =
         _fCountry ?? SqlSyntax.setField(_fCountry, 'Country', DbType.text);
   }
 
-  static TableField _fPostalCode;
+  static TableField? _fPostalCode;
   static TableField get PostalCode {
     return _fPostalCode = _fPostalCode ??
         SqlSyntax.setField(_fPostalCode, 'PostalCode', DbType.text);
   }
 
-  static TableField _fPhone;
+  static TableField? _fPhone;
   static TableField get Phone {
     return _fPhone =
         _fPhone ?? SqlSyntax.setField(_fPhone, 'Phone', DbType.text);
   }
 
-  static TableField _fFax;
+  static TableField? _fFax;
   static TableField get Fax {
     return _fFax = _fFax ?? SqlSyntax.setField(_fFax, 'Fax', DbType.text);
   }
 
-  static TableField _fEmail;
+  static TableField? _fEmail;
   static TableField get Email {
     return _fEmail =
         _fEmail ?? SqlSyntax.setField(_fEmail, 'Email', DbType.text);
   }
 
-  static TableField _fSupportRepId;
+  static TableField? _fSupportRepId;
   static TableField get SupportRepId {
     return _fSupportRepId = _fSupportRepId ??
         SqlSyntax.setField(_fSupportRepId, 'SupportRepId', DbType.integer);
@@ -4403,7 +4508,6 @@ class Employee {
     _setDefaultValues();
   }
   Employee.withFields(
-      this.EmployeeId,
       this.LastName,
       this.FirstName,
       this.Title,
@@ -4455,13 +4559,13 @@ class Employee {
     if (o['BirthDate'] != null) {
       BirthDate = int.tryParse(o['BirthDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['BirthDate'].toString()))
+              int.tryParse(o['BirthDate'].toString())!)
           : DateTime.tryParse(o['BirthDate'].toString());
     }
     if (o['HireDate'] != null) {
       HireDate = int.tryParse(o['HireDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['HireDate'].toString()))
+              int.tryParse(o['HireDate'].toString())!)
           : DateTime.tryParse(o['HireDate'].toString());
     }
     if (o['Address'] != null) {
@@ -4495,37 +4599,35 @@ class Employee {
         ? Employee.fromMap(o['employee'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Employee)
-  int EmployeeId;
-  String LastName;
-  String FirstName;
-  String Title;
-  DateTime BirthDate;
-  DateTime HireDate;
-  String Address;
-  String City;
-  String State;
-  String Country;
-  String PostalCode;
-  String Phone;
-  String Fax;
-  String Email;
-  int ReportsTo;
-  bool isSaved;
-  BoolResult saveResult;
+  int? EmployeeId;
+  String? LastName;
+  String? FirstName;
+  String? Title;
+  DateTime? BirthDate;
+  DateTime? HireDate;
+  String? Address;
+  String? City;
+  String? State;
+  String? Country;
+  String? PostalCode;
+  String? Phone;
+  String? Fax;
+  String? Email;
+  int? ReportsTo;
+
+  BoolResult? saveResult;
   // end FIELDS (Employee)
 
 // RELATIONSHIPS (Employee)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plEmployee', 'plField2'..]) or so on..
-  Employee plEmployee;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plEmployee', 'plField2'..]) or so on..
+  Employee? plEmployee;
 
   /// get Employee By ReportsTo
-  Future<Employee> getEmployee(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Employee?> getEmployee(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Employee().getById(ReportsTo,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -4534,12 +4636,12 @@ class Employee {
 
 // COLLECTIONS & VIRTUALS (Employee)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plCustomers', 'plField2'..]) or so on..
-  List<Customer> plCustomers;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plCustomers', 'plField2'..]) or so on..
+  List<Customer>? plCustomers;
 
   /// get Customer(s) filtered by EmployeeId=SupportRepId
-  CustomerFilterBuilder getCustomers(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  CustomerFilterBuilder? getCustomers(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (EmployeeId == null) {
       return null;
     }
@@ -4551,12 +4653,12 @@ class Employee {
   }
 
   /// (Relationship to itself) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plReportsTos', 'plField2'..]) or so on..
-  List<Employee> plReportsTos;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plReportsTos', 'plField2'..]) or so on..
+  List<Employee>? plReportsTos;
 
   /// get Employee(s) filtered by EmployeeId=ReportsTo
-  EmployeeFilterBuilder getReportsTos(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  EmployeeFilterBuilder? getReportsTos(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (EmployeeId == null) {
       return null;
     }
@@ -4570,7 +4672,7 @@ class Employee {
 // END COLLECTIONS & VIRTUALS (Employee)
 
   static const bool _softDeleteActivated = false;
-  EmployeeManager __mnEmployee;
+  EmployeeManager? __mnEmployee;
 
   EmployeeManager get _mnEmployee {
     return __mnEmployee = __mnEmployee ?? EmployeeManager();
@@ -4597,14 +4699,18 @@ class Employee {
 
     if (BirthDate != null) {
       map['BirthDate'] = forJson
-          ? BirthDate.toString()
-          : forQuery ? BirthDate.millisecondsSinceEpoch : BirthDate;
+          ? BirthDate!.toString()
+          : forQuery
+              ? BirthDate!.millisecondsSinceEpoch
+              : BirthDate;
     }
 
     if (HireDate != null) {
       map['HireDate'] = forJson
-          ? HireDate.toString()
-          : forQuery ? HireDate.millisecondsSinceEpoch : HireDate;
+          ? HireDate!.toString()
+          : forQuery
+              ? HireDate!.millisecondsSinceEpoch
+              : HireDate;
     }
 
     if (Address != null) {
@@ -4640,7 +4746,11 @@ class Employee {
     }
 
     if (ReportsTo != null) {
-      map['ReportsTo'] = forView ? plEmployee.LastName : ReportsTo;
+      map['ReportsTo'] = forView
+          ? plEmployee == null
+              ? ReportsTo
+              : plEmployee!.LastName
+          : ReportsTo;
     }
 
     return map;
@@ -4668,14 +4778,18 @@ class Employee {
 
     if (BirthDate != null) {
       map['BirthDate'] = forJson
-          ? BirthDate.toString()
-          : forQuery ? BirthDate.millisecondsSinceEpoch : BirthDate;
+          ? BirthDate!.toString()
+          : forQuery
+              ? BirthDate!.millisecondsSinceEpoch
+              : BirthDate;
     }
 
     if (HireDate != null) {
       map['HireDate'] = forJson
-          ? HireDate.toString()
-          : forQuery ? HireDate.millisecondsSinceEpoch : HireDate;
+          ? HireDate!.toString()
+          : forQuery
+              ? HireDate!.millisecondsSinceEpoch
+              : HireDate;
     }
 
     if (Address != null) {
@@ -4711,15 +4825,19 @@ class Employee {
     }
 
     if (ReportsTo != null) {
-      map['ReportsTo'] = forView ? plEmployee.LastName : ReportsTo;
+      map['ReportsTo'] = forView
+          ? plEmployee == null
+              ? ReportsTo
+              : plEmployee!.LastName
+          : ReportsTo;
     }
 
 // COLLECTIONS (Employee)
     if (!forQuery) {
-      map['Customers'] = await getCustomers().toMapList();
+      map['Customers'] = await getCustomers()!.toMapList();
     }
     if (!forQuery) {
-      map['ReportsTos'] = await getReportsTos().toMapList();
+      map['ReportsTos'] = await getReportsTos()!.toMapList();
     }
 // END COLLECTIONS (Employee)
 
@@ -4738,12 +4856,11 @@ class Employee {
 
   List<dynamic> toArgs() {
     return [
-      EmployeeId,
       LastName,
       FirstName,
       Title,
-      BirthDate != null ? BirthDate.millisecondsSinceEpoch : null,
-      HireDate != null ? HireDate.millisecondsSinceEpoch : null,
+      BirthDate != null ? BirthDate!.millisecondsSinceEpoch : null,
+      HireDate != null ? HireDate!.millisecondsSinceEpoch : null,
       Address,
       City,
       State,
@@ -4762,8 +4879,8 @@ class Employee {
       LastName,
       FirstName,
       Title,
-      BirthDate != null ? BirthDate.millisecondsSinceEpoch : null,
-      HireDate != null ? HireDate.millisecondsSinceEpoch : null,
+      BirthDate != null ? BirthDate!.millisecondsSinceEpoch : null,
+      HireDate != null ? HireDate!.millisecondsSinceEpoch : null,
       Address,
       City,
       State,
@@ -4776,10 +4893,10 @@ class Employee {
     ];
   }
 
-  static Future<List<Employee>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Employee>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -4788,8 +4905,8 @@ class Employee {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Employee>> fromJson(String jsonBody) async {
@@ -4807,9 +4924,9 @@ class Employee {
 
   static Future<List<Employee>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Employee> objList = <Employee>[];
     loadedFields = loadedFields ?? [];
@@ -4821,22 +4938,22 @@ class Employee {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plCustomers') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedFields.add('Employee.plCustomers'); */
+          /*_loadedfields!.add('Employee.plCustomers'); */
           obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers().toList(
+              await obj.getCustomers()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Employee.plReportsTos') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedFields.add('Employee.plReportsTos'); */
+          /*_loadedfields!.add('Employee.plReportsTos'); */
           obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos().toList(
+              await obj.getReportsTos()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -4846,11 +4963,11 @@ class Employee {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -4864,7 +4981,7 @@ class Employee {
 
   /// returns Employee by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int EmployeeId
+  /// Primary Keys: int? EmployeeId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -4878,15 +4995,15 @@ class Employee {
 
   ///
   /// <returns>returns Employee if exist, otherwise returns null
-  Future<Employee> getById(int EmployeeId,
+  Future<Employee?> getById(int? EmployeeId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (EmployeeId == null) {
       return null;
     }
-    Employee obj;
+    Employee? obj;
     final data = await _mnEmployee.getById([EmployeeId]);
     if (data.length != 0) {
       obj = Employee.fromMap(data[0] as Map<String, dynamic>);
@@ -4895,22 +5012,22 @@ class Employee {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plCustomers') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedFields.add('Employee.plCustomers'); */
+          /*_loadedfields!.add('Employee.plCustomers'); */
           obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers().toList(
+              await obj.getCustomers()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Employee.plReportsTos') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedFields.add('Employee.plReportsTos'); */
+          /*_loadedfields!.add('Employee.plReportsTos'); */
           obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos().toList(
+              await obj.getReportsTos()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -4920,11 +5037,11 @@ class Employee {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -4940,18 +5057,24 @@ class Employee {
   /// Saves the (Employee) object. If the EmployeeId field is null, saves as a new record and returns new EmployeeId, if EmployeeId is not null then updates record
 
   /// <returns>Returns EmployeeId
-  Future<int> save() async {
-    if (EmployeeId == null || EmployeeId == 0 || !isSaved) {
-      await _mnEmployee.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (EmployeeId == null || EmployeeId == 0) {
+      EmployeeId = await _mnEmployee.insert(this);
     } else {
       // EmployeeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnEmployee.update(this);
     }
 
     return EmployeeId;
+  }
+
+  /// saveAs Employee. Returns a new Primary Key value of Employee
+
+  /// <returns>Returns a new Primary Key value of Employee
+  Future<int?> saveAs() async {
+    EmployeeId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Employee> as a bulk in one transaction
@@ -4966,14 +5089,19 @@ class Employee {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < employees.length; i++) {
+      if (employees[i].EmployeeId == null) {
+        employees[i].EmployeeId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns EmployeeId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnEmployee.rawInsert(
               'INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -4982,8 +5110,8 @@ class Employee {
                 LastName,
                 FirstName,
                 Title,
-                BirthDate != null ? BirthDate.millisecondsSinceEpoch : null,
-                HireDate != null ? HireDate.millisecondsSinceEpoch : null,
+                BirthDate != null ? BirthDate!.millisecondsSinceEpoch : null,
+                HireDate != null ? HireDate!.millisecondsSinceEpoch : null,
                 Address,
                 City,
                 State,
@@ -5061,23 +5189,21 @@ class Employee {
   }
 
   EmployeeFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return EmployeeFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   EmployeeFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return EmployeeFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -5103,10 +5229,9 @@ class Employee {
 
 // region EmployeeField
 class EmployeeField extends SearchCriteria {
-  EmployeeField(this.employeeFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  EmployeeField(this.employeeFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   EmployeeFilterBuilder employeeFB;
 
@@ -5123,7 +5248,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param, SqlSyntax.NotEQuals,
             employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5136,7 +5261,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5149,7 +5274,7 @@ class EmployeeField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5163,7 +5288,7 @@ class EmployeeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           employeeFB._addedBlocks);
       _waitingNot = '';
-      employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+      employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
           employeeFB._addedBlocks.retVal;
     }
     return employeeFB;
@@ -5178,9 +5303,9 @@ class EmployeeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           employeeFB._addedBlocks);
       _waitingNot = '';
-      employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+      employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
           employeeFB._addedBlocks.retVal;
-      employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+      employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
           employeeFB._addedBlocks.retVal;
     }
     return employeeFB;
@@ -5195,7 +5320,7 @@ class EmployeeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           employeeFB._addedBlocks);
       _waitingNot = '';
-      employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+      employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
           employeeFB._addedBlocks.retVal;
     }
     return employeeFB;
@@ -5228,7 +5353,7 @@ class EmployeeField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5241,7 +5366,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param,
             SqlSyntax.LessThanOrEquals, employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5254,7 +5379,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5267,7 +5392,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param, SqlSyntax.LessThan,
             employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5280,7 +5405,7 @@ class EmployeeField extends SearchCriteria {
         : setCriteria(pValue, employeeFB.parameters, param,
             SqlSyntax.GreaterThan, employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5293,7 +5418,7 @@ class EmployeeField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         employeeFB._addedBlocks);
     _waitingNot = '';
-    employeeFB._addedBlocks.needEndBlock[employeeFB._blockIndex] =
+    employeeFB._addedBlocks.needEndBlock![employeeFB._blockIndex] =
         employeeFB._addedBlocks.retVal;
     return employeeFB;
   }
@@ -5304,25 +5429,19 @@ class EmployeeField extends SearchCriteria {
 class EmployeeFilterBuilder extends SearchCriteria {
   EmployeeFilterBuilder(Employee obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Employee _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Employee? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   EmployeeFilterBuilder get and {
@@ -5342,24 +5461,24 @@ class EmployeeFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   EmployeeFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  EmployeeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  EmployeeFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -5387,11 +5506,11 @@ class EmployeeFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   EmployeeFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -5406,8 +5525,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -5426,8 +5545,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -5446,8 +5565,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -5466,8 +5585,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -5476,90 +5595,90 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  EmployeeField setField(EmployeeField field, String colName, DbType dbtype) {
+  EmployeeField setField(EmployeeField? field, String colName, DbType dbtype) {
     return EmployeeField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  EmployeeField _EmployeeId;
+  EmployeeField? _EmployeeId;
   EmployeeField get EmployeeId {
     return _EmployeeId = setField(_EmployeeId, 'EmployeeId', DbType.integer);
   }
 
-  EmployeeField _LastName;
+  EmployeeField? _LastName;
   EmployeeField get LastName {
     return _LastName = setField(_LastName, 'LastName', DbType.text);
   }
 
-  EmployeeField _FirstName;
+  EmployeeField? _FirstName;
   EmployeeField get FirstName {
     return _FirstName = setField(_FirstName, 'FirstName', DbType.text);
   }
 
-  EmployeeField _Title;
+  EmployeeField? _Title;
   EmployeeField get Title {
     return _Title = setField(_Title, 'Title', DbType.text);
   }
 
-  EmployeeField _BirthDate;
+  EmployeeField? _BirthDate;
   EmployeeField get BirthDate {
     return _BirthDate = setField(_BirthDate, 'BirthDate', DbType.datetime);
   }
 
-  EmployeeField _HireDate;
+  EmployeeField? _HireDate;
   EmployeeField get HireDate {
     return _HireDate = setField(_HireDate, 'HireDate', DbType.datetime);
   }
 
-  EmployeeField _Address;
+  EmployeeField? _Address;
   EmployeeField get Address {
     return _Address = setField(_Address, 'Address', DbType.text);
   }
 
-  EmployeeField _City;
+  EmployeeField? _City;
   EmployeeField get City {
     return _City = setField(_City, 'City', DbType.text);
   }
 
-  EmployeeField _State;
+  EmployeeField? _State;
   EmployeeField get State {
     return _State = setField(_State, 'State', DbType.text);
   }
 
-  EmployeeField _Country;
+  EmployeeField? _Country;
   EmployeeField get Country {
     return _Country = setField(_Country, 'Country', DbType.text);
   }
 
-  EmployeeField _PostalCode;
+  EmployeeField? _PostalCode;
   EmployeeField get PostalCode {
     return _PostalCode = setField(_PostalCode, 'PostalCode', DbType.text);
   }
 
-  EmployeeField _Phone;
+  EmployeeField? _Phone;
   EmployeeField get Phone {
     return _Phone = setField(_Phone, 'Phone', DbType.text);
   }
 
-  EmployeeField _Fax;
+  EmployeeField? _Fax;
   EmployeeField get Fax {
     return _Fax = setField(_Fax, 'Fax', DbType.text);
   }
 
-  EmployeeField _Email;
+  EmployeeField? _Email;
   EmployeeField get Email {
     return _Email = setField(_Email, 'Email', DbType.text);
   }
 
-  EmployeeField _ReportsTo;
+  EmployeeField? _ReportsTo;
   EmployeeField get ReportsTo {
     return _ReportsTo = setField(_ReportsTo, 'ReportsTo', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -5578,7 +5697,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -5591,16 +5710,22 @@ class EmployeeFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -5655,7 +5780,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Customer) according to DeleteRule.NO_ACTION
 
     final idListCustomerBYSupportRepId = toListPrimaryKeySQL(false);
@@ -5686,9 +5811,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
     }
 
     if (Employee._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnEmployee.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnEmployee.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnEmployee.delete(qparams);
+      r = await _obj!._mnEmployee.delete(qparams);
     }
     return r;
   }
@@ -5700,11 +5825,11 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'EmployeeId IN (SELECT EmployeeId from Employee ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'EmployeeId IN (SELECT EmployeeId from Employee ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnEmployee.updateBatch(qparams, values);
+    return _obj!._mnEmployee.updateBatch(qparams, values);
   }
 
   /// This method always returns Employee Obj if exist, otherwise returns null
@@ -5721,16 +5846,16 @@ class EmployeeFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Employee>
-  Future<Employee> toSingle(
+  Future<Employee?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnEmployee.toList(qparams);
+    final objFuture = _obj!._mnEmployee.toList(qparams);
     final data = await objFuture;
-    Employee obj;
+    Employee? obj;
     if (data.isNotEmpty) {
       obj = Employee.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -5738,22 +5863,22 @@ class EmployeeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plCustomers') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedFields.add('Employee.plCustomers'); */
+          /*_loadedfields!.add('Employee.plCustomers'); */
           obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers().toList(
+              await obj.getCustomers()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Employee.plReportsTos') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedFields.add('Employee.plReportsTos'); */
+          /*_loadedfields!.add('Employee.plReportsTos'); */
           obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos().toList(
+              await obj.getReportsTos()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -5763,11 +5888,11 @@ class EmployeeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Employee.plEmployee') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Employee.plEmployee') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedFields.add('Employee.plEmployee');*/
+          /*_loadedfields!.add('Employee.plEmployee');*/
           obj.plEmployee = obj.plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -5783,10 +5908,10 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// This method returns int. [Employee]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) employeeCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? employeeCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final employeesFuture = await _obj._mnEmployee.toList(qparams);
+    final employeesFuture = await _obj!._mnEmployee.toList(qparams);
     final int count = employeesFuture[0]['CNT'] as int;
     if (employeeCount != null) {
       employeeCount(count);
@@ -5810,9 +5935,9 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// <returns>List<Employee>
   Future<List<Employee>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Employee> employeesData = await Employee.fromMapList(data,
         preload: preload,
@@ -5848,16 +5973,16 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnEmployee.toList(qparams);
+    return await _obj!._mnEmployee.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Employee>>
   Future<List<DropdownMenuItem<Employee>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Employee>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Employee>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final employeesFuture = _obj._mnEmployee.toList(qparams);
+    final employeesFuture = _obj!._mnEmployee.toList(qparams);
 
     final data = await employeesFuture;
     final int count = data.length;
@@ -5882,11 +6007,11 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['EmployeeId', displayTextColumn];
-    final employeesFuture = _obj._mnEmployee.toList(qparams);
+    final employeesFuture = _obj!._mnEmployee.toList(qparams);
 
     final data = await employeesFuture;
     final int count = data.length;
@@ -5932,7 +6057,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     }
     final List<int> EmployeeIdData = <int>[];
     qparams.selectColumns = ['EmployeeId'];
-    final EmployeeIdFuture = await _obj._mnEmployee.toList(qparams);
+    final EmployeeIdFuture = await _obj!._mnEmployee.toList(qparams);
 
     final int count = EmployeeIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -5947,7 +6072,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnEmployee.toList(qparams);
+    final objectFuture = _obj!._mnEmployee.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -5962,16 +6087,16 @@ class EmployeeFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Employee.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnEmployee.toList(qparams);
+    final objectFuture = _obj!._mnEmployee.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -5983,89 +6108,89 @@ class EmployeeFilterBuilder extends SearchCriteria {
 
 // region EmployeeFields
 class EmployeeFields {
-  static TableField _fEmployeeId;
+  static TableField? _fEmployeeId;
   static TableField get EmployeeId {
     return _fEmployeeId = _fEmployeeId ??
         SqlSyntax.setField(_fEmployeeId, 'employeeid', DbType.integer);
   }
 
-  static TableField _fLastName;
+  static TableField? _fLastName;
   static TableField get LastName {
     return _fLastName =
         _fLastName ?? SqlSyntax.setField(_fLastName, 'LastName', DbType.text);
   }
 
-  static TableField _fFirstName;
+  static TableField? _fFirstName;
   static TableField get FirstName {
     return _fFirstName = _fFirstName ??
         SqlSyntax.setField(_fFirstName, 'FirstName', DbType.text);
   }
 
-  static TableField _fTitle;
+  static TableField? _fTitle;
   static TableField get Title {
     return _fTitle =
         _fTitle ?? SqlSyntax.setField(_fTitle, 'Title', DbType.text);
   }
 
-  static TableField _fBirthDate;
+  static TableField? _fBirthDate;
   static TableField get BirthDate {
     return _fBirthDate = _fBirthDate ??
         SqlSyntax.setField(_fBirthDate, 'BirthDate', DbType.datetime);
   }
 
-  static TableField _fHireDate;
+  static TableField? _fHireDate;
   static TableField get HireDate {
     return _fHireDate = _fHireDate ??
         SqlSyntax.setField(_fHireDate, 'HireDate', DbType.datetime);
   }
 
-  static TableField _fAddress;
+  static TableField? _fAddress;
   static TableField get Address {
     return _fAddress =
         _fAddress ?? SqlSyntax.setField(_fAddress, 'Address', DbType.text);
   }
 
-  static TableField _fCity;
+  static TableField? _fCity;
   static TableField get City {
     return _fCity = _fCity ?? SqlSyntax.setField(_fCity, 'City', DbType.text);
   }
 
-  static TableField _fState;
+  static TableField? _fState;
   static TableField get State {
     return _fState =
         _fState ?? SqlSyntax.setField(_fState, 'State', DbType.text);
   }
 
-  static TableField _fCountry;
+  static TableField? _fCountry;
   static TableField get Country {
     return _fCountry =
         _fCountry ?? SqlSyntax.setField(_fCountry, 'Country', DbType.text);
   }
 
-  static TableField _fPostalCode;
+  static TableField? _fPostalCode;
   static TableField get PostalCode {
     return _fPostalCode = _fPostalCode ??
         SqlSyntax.setField(_fPostalCode, 'PostalCode', DbType.text);
   }
 
-  static TableField _fPhone;
+  static TableField? _fPhone;
   static TableField get Phone {
     return _fPhone =
         _fPhone ?? SqlSyntax.setField(_fPhone, 'Phone', DbType.text);
   }
 
-  static TableField _fFax;
+  static TableField? _fFax;
   static TableField get Fax {
     return _fFax = _fFax ?? SqlSyntax.setField(_fFax, 'Fax', DbType.text);
   }
 
-  static TableField _fEmail;
+  static TableField? _fEmail;
   static TableField get Email {
     return _fEmail =
         _fEmail ?? SqlSyntax.setField(_fEmail, 'Email', DbType.text);
   }
 
-  static TableField _fReportsTo;
+  static TableField? _fReportsTo;
   static TableField get ReportsTo {
     return _fReportsTo = _fReportsTo ??
         SqlSyntax.setField(_fReportsTo, 'ReportsTo', DbType.integer);
@@ -6091,7 +6216,7 @@ class Genre {
   Genre({this.GenreId, this.Name}) {
     _setDefaultValues();
   }
-  Genre.withFields(this.GenreId, this.Name) {
+  Genre.withFields(this.Name) {
     _setDefaultValues();
   }
   Genre.withId(this.GenreId, this.Name) {
@@ -6105,24 +6230,22 @@ class Genre {
     if (o['Name'] != null) {
       Name = o['Name'] as String;
     }
-
-    isSaved = true;
   }
   // FIELDS (Genre)
-  int GenreId;
-  String Name;
-  bool isSaved;
-  BoolResult saveResult;
+  int? GenreId;
+  String? Name;
+
+  BoolResult? saveResult;
   // end FIELDS (Genre)
 
 // COLLECTIONS & VIRTUALS (Genre)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
-  List<Track> plTracks;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
+  List<Track>? plTracks;
 
   /// get Track(s) filtered by GenreId=GenreId
-  TrackFilterBuilder getTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  TrackFilterBuilder? getTracks(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (GenreId == null) {
       return null;
     }
@@ -6136,7 +6259,7 @@ class Genre {
 // END COLLECTIONS & VIRTUALS (Genre)
 
   static const bool _softDeleteActivated = false;
-  GenreManager __mnGenre;
+  GenreManager? __mnGenre;
 
   GenreManager get _mnGenre {
     return __mnGenre = __mnGenre ?? GenreManager();
@@ -6170,7 +6293,7 @@ class Genre {
 
 // COLLECTIONS (Genre)
     if (!forQuery) {
-      map['Tracks'] = await getTracks().toMapList();
+      map['Tracks'] = await getTracks()!.toMapList();
     }
 // END COLLECTIONS (Genre)
 
@@ -6188,17 +6311,17 @@ class Genre {
   }
 
   List<dynamic> toArgs() {
-    return [GenreId, Name];
+    return [Name];
   }
 
   List<dynamic> toArgsWithIds() {
     return [GenreId, Name];
   }
 
-  static Future<List<Genre>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Genre>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Genre.fromWebUrl: ErrorMessage: ${e.toString()}');
@@ -6206,8 +6329,8 @@ class Genre {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Genre>> fromJson(String jsonBody) async {
@@ -6225,9 +6348,9 @@ class Genre {
 
   static Future<List<Genre>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Genre> objList = <Genre>[];
     loadedFields = loadedFields ?? [];
@@ -6239,12 +6362,12 @@ class Genre {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Genre.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Genre.plTracks'); */
+          /*_loadedfields!.add('Genre.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -6258,7 +6381,7 @@ class Genre {
 
   /// returns Genre by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int GenreId
+  /// Primary Keys: int? GenreId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -6272,15 +6395,15 @@ class Genre {
 
   ///
   /// <returns>returns Genre if exist, otherwise returns null
-  Future<Genre> getById(int GenreId,
+  Future<Genre?> getById(int? GenreId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (GenreId == null) {
       return null;
     }
-    Genre obj;
+    Genre? obj;
     final data = await _mnGenre.getById([GenreId]);
     if (data.length != 0) {
       obj = Genre.fromMap(data[0] as Map<String, dynamic>);
@@ -6289,12 +6412,12 @@ class Genre {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Genre.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Genre.plTracks'); */
+          /*_loadedfields!.add('Genre.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -6310,18 +6433,24 @@ class Genre {
   /// Saves the (Genre) object. If the GenreId field is null, saves as a new record and returns new GenreId, if GenreId is not null then updates record
 
   /// <returns>Returns GenreId
-  Future<int> save() async {
-    if (GenreId == null || GenreId == 0 || !isSaved) {
-      await _mnGenre.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (GenreId == null || GenreId == 0) {
+      GenreId = await _mnGenre.insert(this);
     } else {
       // GenreId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnGenre.update(this);
     }
 
     return GenreId;
+  }
+
+  /// saveAs Genre. Returns a new Primary Key value of Genre
+
+  /// <returns>Returns a new Primary Key value of Genre
+  Future<int?> saveAs() async {
+    GenreId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Genre> as a bulk in one transaction
@@ -6336,14 +6465,19 @@ class Genre {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < genres.length; i++) {
+      if (genres[i].GenreId == null) {
+        genres[i].GenreId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns GenreId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnGenre.rawInsert(
               'INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',
@@ -6398,23 +6532,22 @@ class Genre {
     }
   }
 
-  GenreFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+  GenreFilterBuilder select(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return GenreFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   GenreFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return GenreFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -6440,10 +6573,9 @@ class Genre {
 
 // region GenreField
 class GenreField extends SearchCriteria {
-  GenreField(this.genreFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  GenreField(this.genreFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   GenreFilterBuilder genreFB;
 
@@ -6460,7 +6592,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param, SqlSyntax.NotEQuals,
             genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6473,7 +6605,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6486,7 +6618,7 @@ class GenreField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6500,7 +6632,7 @@ class GenreField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           genreFB._addedBlocks);
       _waitingNot = '';
-      genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+      genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
           genreFB._addedBlocks.retVal;
     }
     return genreFB;
@@ -6515,9 +6647,9 @@ class GenreField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           genreFB._addedBlocks);
       _waitingNot = '';
-      genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+      genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
           genreFB._addedBlocks.retVal;
-      genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+      genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
           genreFB._addedBlocks.retVal;
     }
     return genreFB;
@@ -6532,7 +6664,7 @@ class GenreField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           genreFB._addedBlocks);
       _waitingNot = '';
-      genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+      genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
           genreFB._addedBlocks.retVal;
     }
     return genreFB;
@@ -6565,7 +6697,7 @@ class GenreField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6578,7 +6710,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param,
             SqlSyntax.LessThanOrEquals, genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6591,7 +6723,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6604,7 +6736,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param, SqlSyntax.LessThan,
             genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6617,7 +6749,7 @@ class GenreField extends SearchCriteria {
         : setCriteria(pValue, genreFB.parameters, param, SqlSyntax.GreaterThan,
             genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6630,7 +6762,7 @@ class GenreField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         genreFB._addedBlocks);
     _waitingNot = '';
-    genreFB._addedBlocks.needEndBlock[genreFB._blockIndex] =
+    genreFB._addedBlocks.needEndBlock![genreFB._blockIndex] =
         genreFB._addedBlocks.retVal;
     return genreFB;
   }
@@ -6641,25 +6773,19 @@ class GenreField extends SearchCriteria {
 class GenreFilterBuilder extends SearchCriteria {
   GenreFilterBuilder(Genre obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Genre _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Genre? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   GenreFilterBuilder get and {
@@ -6679,24 +6805,24 @@ class GenreFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   GenreFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  GenreFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  GenreFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -6724,11 +6850,11 @@ class GenreFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   GenreFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -6743,8 +6869,8 @@ class GenreFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -6763,8 +6889,8 @@ class GenreFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -6783,8 +6909,8 @@ class GenreFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -6803,8 +6929,8 @@ class GenreFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -6813,25 +6939,25 @@ class GenreFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  GenreField setField(GenreField field, String colName, DbType dbtype) {
+  GenreField setField(GenreField? field, String colName, DbType dbtype) {
     return GenreField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  GenreField _GenreId;
+  GenreField? _GenreId;
   GenreField get GenreId {
     return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
   }
 
-  GenreField _Name;
+  GenreField? _Name;
   GenreField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -6850,7 +6976,7 @@ class GenreFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -6863,16 +6989,22 @@ class GenreFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -6927,7 +7059,7 @@ class GenreFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
 
     final idListTrackBYGenreId = toListPrimaryKeySQL(false);
@@ -6944,9 +7076,9 @@ class GenreFilterBuilder extends SearchCriteria {
     }
 
     if (Genre._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnGenre.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnGenre.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnGenre.delete(qparams);
+      r = await _obj!._mnGenre.delete(qparams);
     }
     return r;
   }
@@ -6958,11 +7090,11 @@ class GenreFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'GenreId IN (SELECT GenreId from Genre ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'GenreId IN (SELECT GenreId from Genre ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnGenre.updateBatch(qparams, values);
+    return _obj!._mnGenre.updateBatch(qparams, values);
   }
 
   /// This method always returns Genre Obj if exist, otherwise returns null
@@ -6979,16 +7111,16 @@ class GenreFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Genre>
-  Future<Genre> toSingle(
+  Future<Genre?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnGenre.toList(qparams);
+    final objFuture = _obj!._mnGenre.toList(qparams);
     final data = await objFuture;
-    Genre obj;
+    Genre? obj;
     if (data.isNotEmpty) {
       obj = Genre.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -6996,12 +7128,12 @@ class GenreFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Genre.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Genre.plTracks'); */
+          /*_loadedfields!.add('Genre.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -7017,10 +7149,10 @@ class GenreFilterBuilder extends SearchCriteria {
   /// This method returns int. [Genre]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) genreCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? genreCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final genresFuture = await _obj._mnGenre.toList(qparams);
+    final genresFuture = await _obj!._mnGenre.toList(qparams);
     final int count = genresFuture[0]['CNT'] as int;
     if (genreCount != null) {
       genreCount(count);
@@ -7044,9 +7176,9 @@ class GenreFilterBuilder extends SearchCriteria {
   /// <returns>List<Genre>
   Future<List<Genre>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Genre> genresData = await Genre.fromMapList(data,
         preload: preload,
@@ -7082,15 +7214,15 @@ class GenreFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnGenre.toList(qparams);
+    return await _obj!._mnGenre.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Genre>>
   Future<List<DropdownMenuItem<Genre>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Genre>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Genre>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final genresFuture = _obj._mnGenre.toList(qparams);
+    final genresFuture = _obj!._mnGenre.toList(qparams);
 
     final data = await genresFuture;
     final int count = data.length;
@@ -7115,11 +7247,11 @@ class GenreFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['GenreId', displayTextColumn];
-    final genresFuture = _obj._mnGenre.toList(qparams);
+    final genresFuture = _obj!._mnGenre.toList(qparams);
 
     final data = await genresFuture;
     final int count = data.length;
@@ -7164,7 +7296,7 @@ class GenreFilterBuilder extends SearchCriteria {
     }
     final List<int> GenreIdData = <int>[];
     qparams.selectColumns = ['GenreId'];
-    final GenreIdFuture = await _obj._mnGenre.toList(qparams);
+    final GenreIdFuture = await _obj!._mnGenre.toList(qparams);
 
     final int count = GenreIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -7179,7 +7311,7 @@ class GenreFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnGenre.toList(qparams);
+    final objectFuture = _obj!._mnGenre.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -7194,16 +7326,16 @@ class GenreFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Genre.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnGenre.toList(qparams);
+    final objectFuture = _obj!._mnGenre.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -7215,13 +7347,13 @@ class GenreFilterBuilder extends SearchCriteria {
 
 // region GenreFields
 class GenreFields {
-  static TableField _fGenreId;
+  static TableField? _fGenreId;
   static TableField get GenreId {
     return _fGenreId =
         _fGenreId ?? SqlSyntax.setField(_fGenreId, 'genreid', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
@@ -7256,7 +7388,6 @@ class Invoice {
     _setDefaultValues();
   }
   Invoice.withFields(
-      this.InvoiceId,
       this.InvoiceDate,
       this.BillingAddress,
       this.BillingCity,
@@ -7287,7 +7418,7 @@ class Invoice {
     if (o['InvoiceDate'] != null) {
       InvoiceDate = int.tryParse(o['InvoiceDate'].toString()) != null
           ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['InvoiceDate'].toString()))
+              int.tryParse(o['InvoiceDate'].toString())!)
           : DateTime.tryParse(o['InvoiceDate'].toString());
     }
     if (o['BillingAddress'] != null) {
@@ -7315,31 +7446,29 @@ class Invoice {
         ? Customer.fromMap(o['customer'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Invoice)
-  int InvoiceId;
-  DateTime InvoiceDate;
-  String BillingAddress;
-  String BillingCity;
-  String BillingState;
-  String BillingCountry;
-  String BillingPostalCode;
-  double Total;
-  int CustomerId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? InvoiceId;
+  DateTime? InvoiceDate;
+  String? BillingAddress;
+  String? BillingCity;
+  String? BillingState;
+  String? BillingCountry;
+  String? BillingPostalCode;
+  double? Total;
+  int? CustomerId;
+
+  BoolResult? saveResult;
   // end FIELDS (Invoice)
 
 // RELATIONSHIPS (Invoice)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plCustomer', 'plField2'..]) or so on..
-  Customer plCustomer;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plCustomer', 'plField2'..]) or so on..
+  Customer? plCustomer;
 
   /// get Customer By CustomerId
-  Future<Customer> getCustomer(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Customer?> getCustomer(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Customer().getById(CustomerId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -7348,12 +7477,12 @@ class Invoice {
 
 // COLLECTIONS & VIRTUALS (Invoice)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
-  List<InvoiceLine> plInvoiceLines;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
+  List<InvoiceLine>? plInvoiceLines;
 
   /// get InvoiceLine(s) filtered by InvoiceId=InvoiceId
-  InvoiceLineFilterBuilder getInvoiceLines(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  InvoiceLineFilterBuilder? getInvoiceLines(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (InvoiceId == null) {
       return null;
     }
@@ -7367,7 +7496,7 @@ class Invoice {
 // END COLLECTIONS & VIRTUALS (Invoice)
 
   static const bool _softDeleteActivated = false;
-  InvoiceManager __mnInvoice;
+  InvoiceManager? __mnInvoice;
 
   InvoiceManager get _mnInvoice {
     return __mnInvoice = __mnInvoice ?? InvoiceManager();
@@ -7382,8 +7511,10 @@ class Invoice {
     }
     if (InvoiceDate != null) {
       map['InvoiceDate'] = forJson
-          ? InvoiceDate.toString()
-          : forQuery ? InvoiceDate.millisecondsSinceEpoch : InvoiceDate;
+          ? InvoiceDate!.toString()
+          : forQuery
+              ? InvoiceDate!.millisecondsSinceEpoch
+              : InvoiceDate;
     }
 
     if (BillingAddress != null) {
@@ -7411,7 +7542,11 @@ class Invoice {
     }
 
     if (CustomerId != null) {
-      map['CustomerId'] = forView ? plCustomer.FirstName : CustomerId;
+      map['CustomerId'] = forView
+          ? plCustomer == null
+              ? CustomerId
+              : plCustomer!.FirstName
+          : CustomerId;
     }
 
     return map;
@@ -7427,8 +7562,10 @@ class Invoice {
     }
     if (InvoiceDate != null) {
       map['InvoiceDate'] = forJson
-          ? InvoiceDate.toString()
-          : forQuery ? InvoiceDate.millisecondsSinceEpoch : InvoiceDate;
+          ? InvoiceDate!.toString()
+          : forQuery
+              ? InvoiceDate!.millisecondsSinceEpoch
+              : InvoiceDate;
     }
 
     if (BillingAddress != null) {
@@ -7456,12 +7593,16 @@ class Invoice {
     }
 
     if (CustomerId != null) {
-      map['CustomerId'] = forView ? plCustomer.FirstName : CustomerId;
+      map['CustomerId'] = forView
+          ? plCustomer == null
+              ? CustomerId
+              : plCustomer!.FirstName
+          : CustomerId;
     }
 
 // COLLECTIONS (Invoice)
     if (!forQuery) {
-      map['InvoiceLines'] = await getInvoiceLines().toMapList();
+      map['InvoiceLines'] = await getInvoiceLines()!.toMapList();
     }
 // END COLLECTIONS (Invoice)
 
@@ -7480,7 +7621,6 @@ class Invoice {
 
   List<dynamic> toArgs() {
     return [
-      InvoiceId,
       InvoiceDate,
       BillingAddress,
       BillingCity,
@@ -7506,10 +7646,10 @@ class Invoice {
     ];
   }
 
-  static Future<List<Invoice>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Invoice>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -7518,8 +7658,8 @@ class Invoice {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Invoice>> fromJson(String jsonBody) async {
@@ -7537,9 +7677,9 @@ class Invoice {
 
   static Future<List<Invoice>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Invoice> objList = <Invoice>[];
     loadedFields = loadedFields ?? [];
@@ -7551,12 +7691,12 @@ class Invoice {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Invoice.plInvoiceLines'); */
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -7566,11 +7706,11 @@ class Invoice {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plCustomer') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plCustomer') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedFields.add('Customer.plCustomer');*/
+          /*_loadedfields!.add('Customer.plCustomer');*/
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -7584,7 +7724,7 @@ class Invoice {
 
   /// returns Invoice by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int InvoiceId
+  /// Primary Keys: int? InvoiceId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -7598,15 +7738,15 @@ class Invoice {
 
   ///
   /// <returns>returns Invoice if exist, otherwise returns null
-  Future<Invoice> getById(int InvoiceId,
+  Future<Invoice?> getById(int? InvoiceId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (InvoiceId == null) {
       return null;
     }
-    Invoice obj;
+    Invoice? obj;
     final data = await _mnInvoice.getById([InvoiceId]);
     if (data.length != 0) {
       obj = Invoice.fromMap(data[0] as Map<String, dynamic>);
@@ -7615,12 +7755,12 @@ class Invoice {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Invoice.plInvoiceLines'); */
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -7630,11 +7770,11 @@ class Invoice {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plCustomer') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plCustomer') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedFields.add('Customer.plCustomer');*/
+          /*_loadedfields!.add('Customer.plCustomer');*/
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -7650,18 +7790,24 @@ class Invoice {
   /// Saves the (Invoice) object. If the InvoiceId field is null, saves as a new record and returns new InvoiceId, if InvoiceId is not null then updates record
 
   /// <returns>Returns InvoiceId
-  Future<int> save() async {
-    if (InvoiceId == null || InvoiceId == 0 || !isSaved) {
-      await _mnInvoice.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (InvoiceId == null || InvoiceId == 0) {
+      InvoiceId = await _mnInvoice.insert(this);
     } else {
       // InvoiceId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnInvoice.update(this);
     }
 
     return InvoiceId;
+  }
+
+  /// saveAs Invoice. Returns a new Primary Key value of Invoice
+
+  /// <returns>Returns a new Primary Key value of Invoice
+  Future<int?> saveAs() async {
+    InvoiceId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Invoice> as a bulk in one transaction
@@ -7676,14 +7822,19 @@ class Invoice {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < invoices.length; i++) {
+      if (invoices[i].InvoiceId == null) {
+        invoices[i].InvoiceId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns InvoiceId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnInvoice.rawInsert(
               'INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -7752,23 +7903,21 @@ class Invoice {
   }
 
   InvoiceFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return InvoiceFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   InvoiceFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return InvoiceFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -7794,10 +7943,9 @@ class Invoice {
 
 // region InvoiceField
 class InvoiceField extends SearchCriteria {
-  InvoiceField(this.invoiceFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  InvoiceField(this.invoiceFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   InvoiceFilterBuilder invoiceFB;
 
@@ -7814,7 +7962,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param, SqlSyntax.NotEQuals,
             invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7827,7 +7975,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7840,7 +7988,7 @@ class InvoiceField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7854,7 +8002,7 @@ class InvoiceField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoiceFB._addedBlocks);
       _waitingNot = '';
-      invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+      invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
           invoiceFB._addedBlocks.retVal;
     }
     return invoiceFB;
@@ -7869,9 +8017,9 @@ class InvoiceField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoiceFB._addedBlocks);
       _waitingNot = '';
-      invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+      invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
           invoiceFB._addedBlocks.retVal;
-      invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+      invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
           invoiceFB._addedBlocks.retVal;
     }
     return invoiceFB;
@@ -7886,7 +8034,7 @@ class InvoiceField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoiceFB._addedBlocks);
       _waitingNot = '';
-      invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+      invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
           invoiceFB._addedBlocks.retVal;
     }
     return invoiceFB;
@@ -7919,7 +8067,7 @@ class InvoiceField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7932,7 +8080,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param,
             SqlSyntax.LessThanOrEquals, invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7945,7 +8093,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7958,7 +8106,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param, SqlSyntax.LessThan,
             invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7971,7 +8119,7 @@ class InvoiceField extends SearchCriteria {
         : setCriteria(pValue, invoiceFB.parameters, param,
             SqlSyntax.GreaterThan, invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7984,7 +8132,7 @@ class InvoiceField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         invoiceFB._addedBlocks);
     _waitingNot = '';
-    invoiceFB._addedBlocks.needEndBlock[invoiceFB._blockIndex] =
+    invoiceFB._addedBlocks.needEndBlock![invoiceFB._blockIndex] =
         invoiceFB._addedBlocks.retVal;
     return invoiceFB;
   }
@@ -7995,25 +8143,19 @@ class InvoiceField extends SearchCriteria {
 class InvoiceFilterBuilder extends SearchCriteria {
   InvoiceFilterBuilder(Invoice obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Invoice _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Invoice? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   InvoiceFilterBuilder get and {
@@ -8033,24 +8175,24 @@ class InvoiceFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   InvoiceFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  InvoiceFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  InvoiceFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -8078,11 +8220,11 @@ class InvoiceFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   InvoiceFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -8097,8 +8239,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -8117,8 +8259,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -8137,8 +8279,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -8157,8 +8299,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -8167,64 +8309,64 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  InvoiceField setField(InvoiceField field, String colName, DbType dbtype) {
+  InvoiceField setField(InvoiceField? field, String colName, DbType dbtype) {
     return InvoiceField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  InvoiceField _InvoiceId;
+  InvoiceField? _InvoiceId;
   InvoiceField get InvoiceId {
     return _InvoiceId = setField(_InvoiceId, 'InvoiceId', DbType.integer);
   }
 
-  InvoiceField _InvoiceDate;
+  InvoiceField? _InvoiceDate;
   InvoiceField get InvoiceDate {
     return _InvoiceDate =
         setField(_InvoiceDate, 'InvoiceDate', DbType.datetime);
   }
 
-  InvoiceField _BillingAddress;
+  InvoiceField? _BillingAddress;
   InvoiceField get BillingAddress {
     return _BillingAddress =
         setField(_BillingAddress, 'BillingAddress', DbType.text);
   }
 
-  InvoiceField _BillingCity;
+  InvoiceField? _BillingCity;
   InvoiceField get BillingCity {
     return _BillingCity = setField(_BillingCity, 'BillingCity', DbType.text);
   }
 
-  InvoiceField _BillingState;
+  InvoiceField? _BillingState;
   InvoiceField get BillingState {
     return _BillingState = setField(_BillingState, 'BillingState', DbType.text);
   }
 
-  InvoiceField _BillingCountry;
+  InvoiceField? _BillingCountry;
   InvoiceField get BillingCountry {
     return _BillingCountry =
         setField(_BillingCountry, 'BillingCountry', DbType.text);
   }
 
-  InvoiceField _BillingPostalCode;
+  InvoiceField? _BillingPostalCode;
   InvoiceField get BillingPostalCode {
     return _BillingPostalCode =
         setField(_BillingPostalCode, 'BillingPostalCode', DbType.text);
   }
 
-  InvoiceField _Total;
+  InvoiceField? _Total;
   InvoiceField get Total {
     return _Total = setField(_Total, 'Total', DbType.real);
   }
 
-  InvoiceField _CustomerId;
+  InvoiceField? _CustomerId;
   InvoiceField get CustomerId {
     return _CustomerId = setField(_CustomerId, 'CustomerId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -8243,7 +8385,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -8256,16 +8398,22 @@ class InvoiceFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -8320,7 +8468,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
 
     final idListInvoiceLineBYInvoiceId = toListPrimaryKeySQL(false);
@@ -8337,9 +8485,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
     }
 
     if (Invoice._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnInvoice.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnInvoice.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnInvoice.delete(qparams);
+      r = await _obj!._mnInvoice.delete(qparams);
     }
     return r;
   }
@@ -8351,11 +8499,11 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'InvoiceId IN (SELECT InvoiceId from Invoice ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'InvoiceId IN (SELECT InvoiceId from Invoice ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnInvoice.updateBatch(qparams, values);
+    return _obj!._mnInvoice.updateBatch(qparams, values);
   }
 
   /// This method always returns Invoice Obj if exist, otherwise returns null
@@ -8372,16 +8520,16 @@ class InvoiceFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Invoice>
-  Future<Invoice> toSingle(
+  Future<Invoice?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnInvoice.toList(qparams);
+    final objFuture = _obj!._mnInvoice.toList(qparams);
     final data = await objFuture;
-    Invoice obj;
+    Invoice? obj;
     if (data.isNotEmpty) {
       obj = Invoice.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -8389,12 +8537,12 @@ class InvoiceFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Invoice.plInvoiceLines'); */
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -8404,11 +8552,11 @@ class InvoiceFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Customer.plCustomer') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Customer.plCustomer') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedFields.add('Customer.plCustomer');*/
+          /*_loadedfields!.add('Customer.plCustomer');*/
           obj.plCustomer = obj.plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -8424,10 +8572,10 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// This method returns int. [Invoice]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) invoiceCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? invoiceCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final invoicesFuture = await _obj._mnInvoice.toList(qparams);
+    final invoicesFuture = await _obj!._mnInvoice.toList(qparams);
     final int count = invoicesFuture[0]['CNT'] as int;
     if (invoiceCount != null) {
       invoiceCount(count);
@@ -8451,9 +8599,9 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// <returns>List<Invoice>
   Future<List<Invoice>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Invoice> invoicesData = await Invoice.fromMapList(data,
         preload: preload,
@@ -8489,16 +8637,16 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnInvoice.toList(qparams);
+    return await _obj!._mnInvoice.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Invoice>>
   Future<List<DropdownMenuItem<Invoice>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Invoice>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Invoice>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final invoicesFuture = _obj._mnInvoice.toList(qparams);
+    final invoicesFuture = _obj!._mnInvoice.toList(qparams);
 
     final data = await invoicesFuture;
     final int count = data.length;
@@ -8523,11 +8671,11 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['InvoiceId', displayTextColumn];
-    final invoicesFuture = _obj._mnInvoice.toList(qparams);
+    final invoicesFuture = _obj!._mnInvoice.toList(qparams);
 
     final data = await invoicesFuture;
     final int count = data.length;
@@ -8573,7 +8721,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     }
     final List<int> InvoiceIdData = <int>[];
     qparams.selectColumns = ['InvoiceId'];
-    final InvoiceIdFuture = await _obj._mnInvoice.toList(qparams);
+    final InvoiceIdFuture = await _obj!._mnInvoice.toList(qparams);
 
     final int count = InvoiceIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -8588,7 +8736,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnInvoice.toList(qparams);
+    final objectFuture = _obj!._mnInvoice.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -8603,16 +8751,16 @@ class InvoiceFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Invoice.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnInvoice.toList(qparams);
+    final objectFuture = _obj!._mnInvoice.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -8624,56 +8772,56 @@ class InvoiceFilterBuilder extends SearchCriteria {
 
 // region InvoiceFields
 class InvoiceFields {
-  static TableField _fInvoiceId;
+  static TableField? _fInvoiceId;
   static TableField get InvoiceId {
     return _fInvoiceId = _fInvoiceId ??
         SqlSyntax.setField(_fInvoiceId, 'invoiceid', DbType.integer);
   }
 
-  static TableField _fInvoiceDate;
+  static TableField? _fInvoiceDate;
   static TableField get InvoiceDate {
     return _fInvoiceDate = _fInvoiceDate ??
         SqlSyntax.setField(_fInvoiceDate, 'InvoiceDate', DbType.datetime);
   }
 
-  static TableField _fBillingAddress;
+  static TableField? _fBillingAddress;
   static TableField get BillingAddress {
     return _fBillingAddress = _fBillingAddress ??
         SqlSyntax.setField(_fBillingAddress, 'BillingAddress', DbType.text);
   }
 
-  static TableField _fBillingCity;
+  static TableField? _fBillingCity;
   static TableField get BillingCity {
     return _fBillingCity = _fBillingCity ??
         SqlSyntax.setField(_fBillingCity, 'BillingCity', DbType.text);
   }
 
-  static TableField _fBillingState;
+  static TableField? _fBillingState;
   static TableField get BillingState {
     return _fBillingState = _fBillingState ??
         SqlSyntax.setField(_fBillingState, 'BillingState', DbType.text);
   }
 
-  static TableField _fBillingCountry;
+  static TableField? _fBillingCountry;
   static TableField get BillingCountry {
     return _fBillingCountry = _fBillingCountry ??
         SqlSyntax.setField(_fBillingCountry, 'BillingCountry', DbType.text);
   }
 
-  static TableField _fBillingPostalCode;
+  static TableField? _fBillingPostalCode;
   static TableField get BillingPostalCode {
     return _fBillingPostalCode = _fBillingPostalCode ??
         SqlSyntax.setField(
             _fBillingPostalCode, 'BillingPostalCode', DbType.text);
   }
 
-  static TableField _fTotal;
+  static TableField? _fTotal;
   static TableField get Total {
     return _fTotal =
         _fTotal ?? SqlSyntax.setField(_fTotal, 'Total', DbType.real);
   }
 
-  static TableField _fCustomerId;
+  static TableField? _fCustomerId;
   static TableField get CustomerId {
     return _fCustomerId = _fCustomerId ??
         SqlSyntax.setField(_fCustomerId, 'CustomerId', DbType.integer);
@@ -8704,8 +8852,8 @@ class InvoiceLine {
       this.InvoiceId}) {
     _setDefaultValues();
   }
-  InvoiceLine.withFields(this.InvoiceLineId, this.UnitPrice, this.Quantity,
-      this.TrackId, this.InvoiceId) {
+  InvoiceLine.withFields(
+      this.UnitPrice, this.Quantity, this.TrackId, this.InvoiceId) {
     _setDefaultValues();
   }
   InvoiceLine.withId(this.InvoiceLineId, this.UnitPrice, this.Quantity,
@@ -8735,39 +8883,37 @@ class InvoiceLine {
         ? Invoice.fromMap(o['invoice'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (InvoiceLine)
-  int InvoiceLineId;
-  double UnitPrice;
-  int Quantity;
-  int TrackId;
-  int InvoiceId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? InvoiceLineId;
+  double? UnitPrice;
+  int? Quantity;
+  int? TrackId;
+  int? InvoiceId;
+
+  BoolResult? saveResult;
   // end FIELDS (InvoiceLine)
 
 // RELATIONSHIPS (InvoiceLine)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
-  Track plTrack;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
+  Track? plTrack;
 
   /// get Track By TrackId
-  Future<Track> getTrack(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Track?> getTrack(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Track()
         .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoice', 'plField2'..]) or so on..
-  Invoice plInvoice;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plInvoice', 'plField2'..]) or so on..
+  Invoice? plInvoice;
 
   /// get Invoice By InvoiceId
-  Future<Invoice> getInvoice(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Invoice?> getInvoice(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Invoice().getById(InvoiceId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -8775,7 +8921,7 @@ class InvoiceLine {
   // END RELATIONSHIPS (InvoiceLine)
 
   static const bool _softDeleteActivated = false;
-  InvoiceLineManager __mnInvoiceLine;
+  InvoiceLineManager? __mnInvoiceLine;
 
   InvoiceLineManager get _mnInvoiceLine {
     return __mnInvoiceLine = __mnInvoiceLine ?? InvoiceLineManager();
@@ -8797,11 +8943,19 @@ class InvoiceLine {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (InvoiceId != null) {
-      map['InvoiceId'] = forView ? plInvoice.BillingAddress : InvoiceId;
+      map['InvoiceId'] = forView
+          ? plInvoice == null
+              ? InvoiceId
+              : plInvoice!.BillingAddress
+          : InvoiceId;
     }
 
     return map;
@@ -8824,11 +8978,19 @@ class InvoiceLine {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (InvoiceId != null) {
-      map['InvoiceId'] = forView ? plInvoice.BillingAddress : InvoiceId;
+      map['InvoiceId'] = forView
+          ? plInvoice == null
+              ? InvoiceId
+              : plInvoice!.BillingAddress
+          : InvoiceId;
     }
 
     return map;
@@ -8845,17 +9007,17 @@ class InvoiceLine {
   }
 
   List<dynamic> toArgs() {
-    return [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId];
+    return [UnitPrice, Quantity, TrackId, InvoiceId];
   }
 
   List<dynamic> toArgsWithIds() {
     return [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId];
   }
 
-  static Future<List<InvoiceLine>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<InvoiceLine>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -8864,8 +9026,8 @@ class InvoiceLine {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<InvoiceLine>> fromJson(String jsonBody) async {
@@ -8885,9 +9047,9 @@ class InvoiceLine {
 
   static Future<List<InvoiceLine>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<InvoiceLine> objList = <InvoiceLine>[];
     loadedFields = loadedFields ?? [];
@@ -8899,20 +9061,20 @@ class InvoiceLine {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Invoice.plInvoice') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoice') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedFields.add('Invoice.plInvoice');*/
+          /*_loadedfields!.add('Invoice.plInvoice');*/
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -8926,7 +9088,7 @@ class InvoiceLine {
 
   /// returns InvoiceLine by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int InvoiceLineId
+  /// Primary Keys: int? InvoiceLineId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -8940,15 +9102,15 @@ class InvoiceLine {
 
   ///
   /// <returns>returns InvoiceLine if exist, otherwise returns null
-  Future<InvoiceLine> getById(int InvoiceLineId,
+  Future<InvoiceLine?> getById(int? InvoiceLineId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (InvoiceLineId == null) {
       return null;
     }
-    InvoiceLine obj;
+    InvoiceLine? obj;
     final data = await _mnInvoiceLine.getById([InvoiceLineId]);
     if (data.length != 0) {
       obj = InvoiceLine.fromMap(data[0] as Map<String, dynamic>);
@@ -8957,20 +9119,20 @@ class InvoiceLine {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Invoice.plInvoice') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoice') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedFields.add('Invoice.plInvoice');*/
+          /*_loadedfields!.add('Invoice.plInvoice');*/
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -8986,18 +9148,24 @@ class InvoiceLine {
   /// Saves the (InvoiceLine) object. If the InvoiceLineId field is null, saves as a new record and returns new InvoiceLineId, if InvoiceLineId is not null then updates record
 
   /// <returns>Returns InvoiceLineId
-  Future<int> save() async {
-    if (InvoiceLineId == null || InvoiceLineId == 0 || !isSaved) {
-      await _mnInvoiceLine.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (InvoiceLineId == null || InvoiceLineId == 0) {
+      InvoiceLineId = await _mnInvoiceLine.insert(this);
     } else {
       // InvoiceLineId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnInvoiceLine.update(this);
     }
 
     return InvoiceLineId;
+  }
+
+  /// saveAs InvoiceLine. Returns a new Primary Key value of InvoiceLine
+
+  /// <returns>Returns a new Primary Key value of InvoiceLine
+  Future<int?> saveAs() async {
+    InvoiceLineId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<InvoiceLine> as a bulk in one transaction
@@ -9012,14 +9180,19 @@ class InvoiceLine {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < invoicelines.length; i++) {
+      if (invoicelines[i].InvoiceLineId == null) {
+        invoicelines[i].InvoiceLineId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns InvoiceLineId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnInvoiceLine.rawInsert(
               'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
@@ -9074,23 +9247,21 @@ class InvoiceLine {
   }
 
   InvoiceLineFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return InvoiceLineFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   InvoiceLineFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return InvoiceLineFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -9116,10 +9287,9 @@ class InvoiceLine {
 
 // region InvoiceLineField
 class InvoiceLineField extends SearchCriteria {
-  InvoiceLineField(this.invoicelineFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  InvoiceLineField(this.invoicelineFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   InvoiceLineFilterBuilder invoicelineFB;
 
@@ -9136,7 +9306,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.NotEQuals, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9149,7 +9319,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9162,7 +9332,7 @@ class InvoiceLineField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9176,7 +9346,7 @@ class InvoiceLineField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoicelineFB._addedBlocks);
       _waitingNot = '';
-      invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+      invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
           invoicelineFB._addedBlocks.retVal;
     }
     return invoicelineFB;
@@ -9191,9 +9361,9 @@ class InvoiceLineField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoicelineFB._addedBlocks);
       _waitingNot = '';
-      invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+      invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
           invoicelineFB._addedBlocks.retVal;
-      invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+      invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
           invoicelineFB._addedBlocks.retVal;
     }
     return invoicelineFB;
@@ -9208,7 +9378,7 @@ class InvoiceLineField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           invoicelineFB._addedBlocks);
       _waitingNot = '';
-      invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+      invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
           invoicelineFB._addedBlocks.retVal;
     }
     return invoicelineFB;
@@ -9257,7 +9427,7 @@ class InvoiceLineField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9270,7 +9440,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.LessThanOrEquals, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9283,7 +9453,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9296,7 +9466,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.LessThan, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9309,7 +9479,7 @@ class InvoiceLineField extends SearchCriteria {
         : setCriteria(pValue, invoicelineFB.parameters, param,
             SqlSyntax.GreaterThan, invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9322,7 +9492,7 @@ class InvoiceLineField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         invoicelineFB._addedBlocks);
     _waitingNot = '';
-    invoicelineFB._addedBlocks.needEndBlock[invoicelineFB._blockIndex] =
+    invoicelineFB._addedBlocks.needEndBlock![invoicelineFB._blockIndex] =
         invoicelineFB._addedBlocks.retVal;
     return invoicelineFB;
   }
@@ -9333,25 +9503,19 @@ class InvoiceLineField extends SearchCriteria {
 class InvoiceLineFilterBuilder extends SearchCriteria {
   InvoiceLineFilterBuilder(InvoiceLine obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  InvoiceLine _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  InvoiceLine? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   InvoiceLineFilterBuilder get and {
@@ -9371,17 +9535,17 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   InvoiceLineFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  InvoiceLineFilterBuilder where(String whereCriteria,
+  InvoiceLineFilterBuilder where(String? whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
@@ -9389,7 +9553,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -9417,11 +9581,11 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   InvoiceLineFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -9436,8 +9600,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -9456,8 +9620,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -9476,8 +9640,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -9496,8 +9660,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -9507,41 +9671,41 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   }
 
   InvoiceLineField setField(
-      InvoiceLineField field, String colName, DbType dbtype) {
+      InvoiceLineField? field, String colName, DbType dbtype) {
     return InvoiceLineField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  InvoiceLineField _InvoiceLineId;
+  InvoiceLineField? _InvoiceLineId;
   InvoiceLineField get InvoiceLineId {
     return _InvoiceLineId =
         setField(_InvoiceLineId, 'InvoiceLineId', DbType.integer);
   }
 
-  InvoiceLineField _UnitPrice;
+  InvoiceLineField? _UnitPrice;
   InvoiceLineField get UnitPrice {
     return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
   }
 
-  InvoiceLineField _Quantity;
+  InvoiceLineField? _Quantity;
   InvoiceLineField get Quantity {
     return _Quantity = setField(_Quantity, 'Quantity', DbType.integer);
   }
 
-  InvoiceLineField _TrackId;
+  InvoiceLineField? _TrackId;
   InvoiceLineField get TrackId {
     return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
-  InvoiceLineField _InvoiceId;
+  InvoiceLineField? _InvoiceId;
   InvoiceLineField get InvoiceId {
     return _InvoiceId = setField(_InvoiceId, 'InvoiceId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -9560,7 +9724,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -9573,16 +9737,22 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -9637,12 +9807,12 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
 
     if (InvoiceLine._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnInvoiceLine.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnInvoiceLine.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnInvoiceLine.delete(qparams);
+      r = await _obj!._mnInvoiceLine.delete(qparams);
     }
     return r;
   }
@@ -9654,11 +9824,11 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'InvoiceLineId IN (SELECT InvoiceLineId from InvoiceLine ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'InvoiceLineId IN (SELECT InvoiceLineId from InvoiceLine ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnInvoiceLine.updateBatch(qparams, values);
+    return _obj!._mnInvoiceLine.updateBatch(qparams, values);
   }
 
   /// This method always returns InvoiceLine Obj if exist, otherwise returns null
@@ -9675,16 +9845,16 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<InvoiceLine>
-  Future<InvoiceLine> toSingle(
+  Future<InvoiceLine?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnInvoiceLine.toList(qparams);
+    final objFuture = _obj!._mnInvoiceLine.toList(qparams);
     final data = await objFuture;
-    InvoiceLine obj;
+    InvoiceLine? obj;
     if (data.isNotEmpty) {
       obj = InvoiceLine.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -9692,20 +9862,20 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Invoice.plInvoice') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Invoice.plInvoice') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedFields.add('Invoice.plInvoice');*/
+          /*_loadedfields!.add('Invoice.plInvoice');*/
           obj.plInvoice = obj.plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -9721,10 +9891,10 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// This method returns int. [InvoiceLine]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) invoicelineCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? invoicelineCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final invoicelinesFuture = await _obj._mnInvoiceLine.toList(qparams);
+    final invoicelinesFuture = await _obj!._mnInvoiceLine.toList(qparams);
     final int count = invoicelinesFuture[0]['CNT'] as int;
     if (invoicelineCount != null) {
       invoicelineCount(count);
@@ -9748,9 +9918,9 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// <returns>List<InvoiceLine>
   Future<List<InvoiceLine>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<InvoiceLine> invoicelinesData = await InvoiceLine.fromMapList(
         data,
@@ -9787,16 +9957,16 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnInvoiceLine.toList(qparams);
+    return await _obj!._mnInvoiceLine.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<InvoiceLine>>
   Future<List<DropdownMenuItem<InvoiceLine>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<InvoiceLine>> o)
+      [VoidCallback Function(List<DropdownMenuItem<InvoiceLine>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final invoicelinesFuture = _obj._mnInvoiceLine.toList(qparams);
+    final invoicelinesFuture = _obj!._mnInvoiceLine.toList(qparams);
 
     final data = await invoicelinesFuture;
     final int count = data.length;
@@ -9821,11 +9991,11 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['InvoiceLineId', displayTextColumn];
-    final invoicelinesFuture = _obj._mnInvoiceLine.toList(qparams);
+    final invoicelinesFuture = _obj!._mnInvoiceLine.toList(qparams);
 
     final data = await invoicelinesFuture;
     final int count = data.length;
@@ -9871,7 +10041,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     }
     final List<int> InvoiceLineIdData = <int>[];
     qparams.selectColumns = ['InvoiceLineId'];
-    final InvoiceLineIdFuture = await _obj._mnInvoiceLine.toList(qparams);
+    final InvoiceLineIdFuture = await _obj!._mnInvoiceLine.toList(qparams);
 
     final int count = InvoiceLineIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -9886,7 +10056,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnInvoiceLine.toList(qparams);
+    final objectFuture = _obj!._mnInvoiceLine.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -9901,16 +10071,16 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await InvoiceLine.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnInvoiceLine.toList(qparams);
+    final objectFuture = _obj!._mnInvoiceLine.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -9922,31 +10092,31 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
 
 // region InvoiceLineFields
 class InvoiceLineFields {
-  static TableField _fInvoiceLineId;
+  static TableField? _fInvoiceLineId;
   static TableField get InvoiceLineId {
     return _fInvoiceLineId = _fInvoiceLineId ??
         SqlSyntax.setField(_fInvoiceLineId, 'invoicelineid', DbType.integer);
   }
 
-  static TableField _fUnitPrice;
+  static TableField? _fUnitPrice;
   static TableField get UnitPrice {
     return _fUnitPrice = _fUnitPrice ??
         SqlSyntax.setField(_fUnitPrice, 'UnitPrice', DbType.real);
   }
 
-  static TableField _fQuantity;
+  static TableField? _fQuantity;
   static TableField get Quantity {
     return _fQuantity = _fQuantity ??
         SqlSyntax.setField(_fQuantity, 'Quantity', DbType.integer);
   }
 
-  static TableField _fTrackId;
+  static TableField? _fTrackId;
   static TableField get TrackId {
     return _fTrackId =
         _fTrackId ?? SqlSyntax.setField(_fTrackId, 'TrackId', DbType.integer);
   }
 
-  static TableField _fInvoiceId;
+  static TableField? _fInvoiceId;
   static TableField get InvoiceId {
     return _fInvoiceId = _fInvoiceId ??
         SqlSyntax.setField(_fInvoiceId, 'InvoiceId', DbType.integer);
@@ -9972,7 +10142,7 @@ class MediaType {
   MediaType({this.MediaTypeId, this.Name}) {
     _setDefaultValues();
   }
-  MediaType.withFields(this.MediaTypeId, this.Name) {
+  MediaType.withFields(this.Name) {
     _setDefaultValues();
   }
   MediaType.withId(this.MediaTypeId, this.Name) {
@@ -9986,24 +10156,22 @@ class MediaType {
     if (o['Name'] != null) {
       Name = o['Name'] as String;
     }
-
-    isSaved = true;
   }
   // FIELDS (MediaType)
-  int MediaTypeId;
-  String Name;
-  bool isSaved;
-  BoolResult saveResult;
+  int? MediaTypeId;
+  String? Name;
+
+  BoolResult? saveResult;
   // end FIELDS (MediaType)
 
 // COLLECTIONS & VIRTUALS (MediaType)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
-  List<Track> plTracks;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
+  List<Track>? plTracks;
 
   /// get Track(s) filtered by MediaTypeId=MediaTypeId
-  TrackFilterBuilder getTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  TrackFilterBuilder? getTracks(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (MediaTypeId == null) {
       return null;
     }
@@ -10017,7 +10185,7 @@ class MediaType {
 // END COLLECTIONS & VIRTUALS (MediaType)
 
   static const bool _softDeleteActivated = false;
-  MediaTypeManager __mnMediaType;
+  MediaTypeManager? __mnMediaType;
 
   MediaTypeManager get _mnMediaType {
     return __mnMediaType = __mnMediaType ?? MediaTypeManager();
@@ -10051,7 +10219,7 @@ class MediaType {
 
 // COLLECTIONS (MediaType)
     if (!forQuery) {
-      map['Tracks'] = await getTracks().toMapList();
+      map['Tracks'] = await getTracks()!.toMapList();
     }
 // END COLLECTIONS (MediaType)
 
@@ -10069,17 +10237,17 @@ class MediaType {
   }
 
   List<dynamic> toArgs() {
-    return [MediaTypeId, Name];
+    return [Name];
   }
 
   List<dynamic> toArgsWithIds() {
     return [MediaTypeId, Name];
   }
 
-  static Future<List<MediaType>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<MediaType>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -10088,8 +10256,8 @@ class MediaType {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<MediaType>> fromJson(String jsonBody) async {
@@ -10109,9 +10277,9 @@ class MediaType {
 
   static Future<List<MediaType>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<MediaType> objList = <MediaType>[];
     loadedFields = loadedFields ?? [];
@@ -10123,12 +10291,12 @@ class MediaType {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('MediaType.plTracks'); */
+          /*_loadedfields!.add('MediaType.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -10142,7 +10310,7 @@ class MediaType {
 
   /// returns MediaType by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int MediaTypeId
+  /// Primary Keys: int? MediaTypeId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -10156,15 +10324,15 @@ class MediaType {
 
   ///
   /// <returns>returns MediaType if exist, otherwise returns null
-  Future<MediaType> getById(int MediaTypeId,
+  Future<MediaType?> getById(int? MediaTypeId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (MediaTypeId == null) {
       return null;
     }
-    MediaType obj;
+    MediaType? obj;
     final data = await _mnMediaType.getById([MediaTypeId]);
     if (data.length != 0) {
       obj = MediaType.fromMap(data[0] as Map<String, dynamic>);
@@ -10173,12 +10341,12 @@ class MediaType {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('MediaType.plTracks'); */
+          /*_loadedfields!.add('MediaType.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -10194,18 +10362,24 @@ class MediaType {
   /// Saves the (MediaType) object. If the MediaTypeId field is null, saves as a new record and returns new MediaTypeId, if MediaTypeId is not null then updates record
 
   /// <returns>Returns MediaTypeId
-  Future<int> save() async {
-    if (MediaTypeId == null || MediaTypeId == 0 || !isSaved) {
-      await _mnMediaType.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (MediaTypeId == null || MediaTypeId == 0) {
+      MediaTypeId = await _mnMediaType.insert(this);
     } else {
       // MediaTypeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnMediaType.update(this);
     }
 
     return MediaTypeId;
+  }
+
+  /// saveAs MediaType. Returns a new Primary Key value of MediaType
+
+  /// <returns>Returns a new Primary Key value of MediaType
+  Future<int?> saveAs() async {
+    MediaTypeId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<MediaType> as a bulk in one transaction
@@ -10220,14 +10394,19 @@ class MediaType {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < mediatypes.length; i++) {
+      if (mediatypes[i].MediaTypeId == null) {
+        mediatypes[i].MediaTypeId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns MediaTypeId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnMediaType.rawInsert(
               'INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',
@@ -10287,23 +10466,21 @@ class MediaType {
   }
 
   MediaTypeFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return MediaTypeFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   MediaTypeFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return MediaTypeFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -10329,10 +10506,9 @@ class MediaType {
 
 // region MediaTypeField
 class MediaTypeField extends SearchCriteria {
-  MediaTypeField(this.mediatypeFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  MediaTypeField(this.mediatypeFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   MediaTypeFilterBuilder mediatypeFB;
 
@@ -10349,7 +10525,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param,
             SqlSyntax.NotEQuals, mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10362,7 +10538,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10375,7 +10551,7 @@ class MediaTypeField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10389,7 +10565,7 @@ class MediaTypeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           mediatypeFB._addedBlocks);
       _waitingNot = '';
-      mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+      mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
           mediatypeFB._addedBlocks.retVal;
     }
     return mediatypeFB;
@@ -10404,9 +10580,9 @@ class MediaTypeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           mediatypeFB._addedBlocks);
       _waitingNot = '';
-      mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+      mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
           mediatypeFB._addedBlocks.retVal;
-      mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+      mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
           mediatypeFB._addedBlocks.retVal;
     }
     return mediatypeFB;
@@ -10421,7 +10597,7 @@ class MediaTypeField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           mediatypeFB._addedBlocks);
       _waitingNot = '';
-      mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+      mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
           mediatypeFB._addedBlocks.retVal;
     }
     return mediatypeFB;
@@ -10454,7 +10630,7 @@ class MediaTypeField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10467,7 +10643,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param,
             SqlSyntax.LessThanOrEquals, mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10480,7 +10656,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10493,7 +10669,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param, SqlSyntax.LessThan,
             mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10506,7 +10682,7 @@ class MediaTypeField extends SearchCriteria {
         : setCriteria(pValue, mediatypeFB.parameters, param,
             SqlSyntax.GreaterThan, mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10519,7 +10695,7 @@ class MediaTypeField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         mediatypeFB._addedBlocks);
     _waitingNot = '';
-    mediatypeFB._addedBlocks.needEndBlock[mediatypeFB._blockIndex] =
+    mediatypeFB._addedBlocks.needEndBlock![mediatypeFB._blockIndex] =
         mediatypeFB._addedBlocks.retVal;
     return mediatypeFB;
   }
@@ -10530,25 +10706,19 @@ class MediaTypeField extends SearchCriteria {
 class MediaTypeFilterBuilder extends SearchCriteria {
   MediaTypeFilterBuilder(MediaType obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  MediaType _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  MediaType? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   MediaTypeFilterBuilder get and {
@@ -10568,24 +10738,25 @@ class MediaTypeFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   MediaTypeFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  MediaTypeFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  MediaTypeFilterBuilder where(String? whereCriteria,
+      {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -10613,11 +10784,11 @@ class MediaTypeFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   MediaTypeFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -10632,8 +10803,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -10652,8 +10823,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -10672,8 +10843,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -10692,8 +10863,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -10702,25 +10873,26 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  MediaTypeField setField(MediaTypeField field, String colName, DbType dbtype) {
+  MediaTypeField setField(
+      MediaTypeField? field, String colName, DbType dbtype) {
     return MediaTypeField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  MediaTypeField _MediaTypeId;
+  MediaTypeField? _MediaTypeId;
   MediaTypeField get MediaTypeId {
     return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
   }
 
-  MediaTypeField _Name;
+  MediaTypeField? _Name;
   MediaTypeField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -10739,7 +10911,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -10752,16 +10924,22 @@ class MediaTypeFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -10816,7 +10994,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (Track) according to DeleteRule.NO_ACTION
 
     final idListTrackBYMediaTypeId = toListPrimaryKeySQL(false);
@@ -10833,9 +11011,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     }
 
     if (MediaType._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnMediaType.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnMediaType.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnMediaType.delete(qparams);
+      r = await _obj!._mnMediaType.delete(qparams);
     }
     return r;
   }
@@ -10847,11 +11025,11 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'MediaTypeId IN (SELECT MediaTypeId from MediaType ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'MediaTypeId IN (SELECT MediaTypeId from MediaType ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnMediaType.updateBatch(qparams, values);
+    return _obj!._mnMediaType.updateBatch(qparams, values);
   }
 
   /// This method always returns MediaType Obj if exist, otherwise returns null
@@ -10868,16 +11046,16 @@ class MediaTypeFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<MediaType>
-  Future<MediaType> toSingle(
+  Future<MediaType?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnMediaType.toList(qparams);
+    final objFuture = _obj!._mnMediaType.toList(qparams);
     final data = await objFuture;
-    MediaType obj;
+    MediaType? obj;
     if (data.isNotEmpty) {
       obj = MediaType.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -10885,12 +11063,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('MediaType.plTracks'); */
+          /*_loadedfields!.add('MediaType.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -10906,10 +11084,10 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// This method returns int. [MediaType]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) mediatypeCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? mediatypeCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final mediatypesFuture = await _obj._mnMediaType.toList(qparams);
+    final mediatypesFuture = await _obj!._mnMediaType.toList(qparams);
     final int count = mediatypesFuture[0]['CNT'] as int;
     if (mediatypeCount != null) {
       mediatypeCount(count);
@@ -10933,9 +11111,9 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// <returns>List<MediaType>
   Future<List<MediaType>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<MediaType> mediatypesData = await MediaType.fromMapList(data,
         preload: preload,
@@ -10971,16 +11149,16 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnMediaType.toList(qparams);
+    return await _obj!._mnMediaType.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<MediaType>>
   Future<List<DropdownMenuItem<MediaType>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<MediaType>> o)
+      [VoidCallback Function(List<DropdownMenuItem<MediaType>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final mediatypesFuture = _obj._mnMediaType.toList(qparams);
+    final mediatypesFuture = _obj!._mnMediaType.toList(qparams);
 
     final data = await mediatypesFuture;
     final int count = data.length;
@@ -11005,11 +11183,11 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['MediaTypeId', displayTextColumn];
-    final mediatypesFuture = _obj._mnMediaType.toList(qparams);
+    final mediatypesFuture = _obj!._mnMediaType.toList(qparams);
 
     final data = await mediatypesFuture;
     final int count = data.length;
@@ -11055,7 +11233,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     }
     final List<int> MediaTypeIdData = <int>[];
     qparams.selectColumns = ['MediaTypeId'];
-    final MediaTypeIdFuture = await _obj._mnMediaType.toList(qparams);
+    final MediaTypeIdFuture = await _obj!._mnMediaType.toList(qparams);
 
     final int count = MediaTypeIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -11070,7 +11248,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnMediaType.toList(qparams);
+    final objectFuture = _obj!._mnMediaType.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -11085,16 +11263,16 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await MediaType.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnMediaType.toList(qparams);
+    final objectFuture = _obj!._mnMediaType.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -11106,13 +11284,13 @@ class MediaTypeFilterBuilder extends SearchCriteria {
 
 // region MediaTypeFields
 class MediaTypeFields {
-  static TableField _fMediaTypeId;
+  static TableField? _fMediaTypeId;
   static TableField get MediaTypeId {
     return _fMediaTypeId = _fMediaTypeId ??
         SqlSyntax.setField(_fMediaTypeId, 'mediatypeid', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
@@ -11137,7 +11315,7 @@ class Playlist {
   Playlist({this.PlaylistId, this.Name}) {
     _setDefaultValues();
   }
-  Playlist.withFields(this.PlaylistId, this.Name) {
+  Playlist.withFields(this.Name) {
     _setDefaultValues();
   }
   Playlist.withId(this.PlaylistId, this.Name) {
@@ -11151,24 +11329,22 @@ class Playlist {
     if (o['Name'] != null) {
       Name = o['Name'] as String;
     }
-
-    isSaved = true;
   }
   // FIELDS (Playlist)
-  int PlaylistId;
-  String Name;
-  bool isSaved;
-  BoolResult saveResult;
+  int? PlaylistId;
+  String? Name;
+
+  BoolResult? saveResult;
   // end FIELDS (Playlist)
 
 // COLLECTIONS & VIRTUALS (Playlist)
   ///(RelationType.MANY_TO_MANY) (PlaylistTrack) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
-  List<Track> plTracks;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTracks', 'plField2'..]) or so on..
+  List<Track>? plTracks;
 
   /// get Track(s) filtered by TrackId IN PlaylistTrack
-  TrackFilterBuilder getTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  TrackFilterBuilder? getTracks(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return Track()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .where(
@@ -11180,7 +11356,7 @@ class Playlist {
 // END COLLECTIONS & VIRTUALS (Playlist)
 
   static const bool _softDeleteActivated = false;
-  PlaylistManager __mnPlaylist;
+  PlaylistManager? __mnPlaylist;
 
   PlaylistManager get _mnPlaylist {
     return __mnPlaylist = __mnPlaylist ?? PlaylistManager();
@@ -11214,7 +11390,7 @@ class Playlist {
 
 // COLLECTIONS (Playlist)
     if (!forQuery) {
-      map['Tracks'] = await getTracks().toMapList();
+      map['Tracks'] = await getTracks()!.toMapList();
     }
 // END COLLECTIONS (Playlist)
 
@@ -11232,17 +11408,17 @@ class Playlist {
   }
 
   List<dynamic> toArgs() {
-    return [PlaylistId, Name];
+    return [Name];
   }
 
   List<dynamic> toArgsWithIds() {
     return [PlaylistId, Name];
   }
 
-  static Future<List<Playlist>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Playlist>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -11251,8 +11427,8 @@ class Playlist {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Playlist>> fromJson(String jsonBody) async {
@@ -11270,9 +11446,9 @@ class Playlist {
 
   static Future<List<Playlist>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Playlist> objList = <Playlist>[];
     loadedFields = loadedFields ?? [];
@@ -11284,12 +11460,12 @@ class Playlist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Playlist.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Playlist.plTracks'); */
+          /*_loadedfields!.add('Playlist.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -11303,7 +11479,7 @@ class Playlist {
 
   /// returns Playlist by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int PlaylistId
+  /// Primary Keys: int? PlaylistId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -11317,15 +11493,15 @@ class Playlist {
 
   ///
   /// <returns>returns Playlist if exist, otherwise returns null
-  Future<Playlist> getById(int PlaylistId,
+  Future<Playlist?> getById(int? PlaylistId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (PlaylistId == null) {
       return null;
     }
-    Playlist obj;
+    Playlist? obj;
     final data = await _mnPlaylist.getById([PlaylistId]);
     if (data.length != 0) {
       obj = Playlist.fromMap(data[0] as Map<String, dynamic>);
@@ -11334,12 +11510,12 @@ class Playlist {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Playlist.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Playlist.plTracks'); */
+          /*_loadedfields!.add('Playlist.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -11355,18 +11531,24 @@ class Playlist {
   /// Saves the (Playlist) object. If the PlaylistId field is null, saves as a new record and returns new PlaylistId, if PlaylistId is not null then updates record
 
   /// <returns>Returns PlaylistId
-  Future<int> save() async {
-    if (PlaylistId == null || PlaylistId == 0 || !isSaved) {
-      await _mnPlaylist.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (PlaylistId == null || PlaylistId == 0) {
+      PlaylistId = await _mnPlaylist.insert(this);
     } else {
       // PlaylistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnPlaylist.update(this);
     }
 
     return PlaylistId;
+  }
+
+  /// saveAs Playlist. Returns a new Primary Key value of Playlist
+
+  /// <returns>Returns a new Primary Key value of Playlist
+  Future<int?> saveAs() async {
+    PlaylistId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Playlist> as a bulk in one transaction
@@ -11381,14 +11563,19 @@ class Playlist {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < playlists.length; i++) {
+      if (playlists[i].PlaylistId == null) {
+        playlists[i].PlaylistId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns PlaylistId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnPlaylist.rawInsert(
               'INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',
@@ -11441,23 +11628,21 @@ class Playlist {
   }
 
   PlaylistFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return PlaylistFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   PlaylistFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return PlaylistFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -11483,10 +11668,9 @@ class Playlist {
 
 // region PlaylistField
 class PlaylistField extends SearchCriteria {
-  PlaylistField(this.playlistFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  PlaylistField(this.playlistFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   PlaylistFilterBuilder playlistFB;
 
@@ -11503,7 +11687,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param, SqlSyntax.NotEQuals,
             playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11516,7 +11700,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11529,7 +11713,7 @@ class PlaylistField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11543,7 +11727,7 @@ class PlaylistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlistFB._addedBlocks);
       _waitingNot = '';
-      playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+      playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
           playlistFB._addedBlocks.retVal;
     }
     return playlistFB;
@@ -11558,9 +11742,9 @@ class PlaylistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlistFB._addedBlocks);
       _waitingNot = '';
-      playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+      playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
           playlistFB._addedBlocks.retVal;
-      playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+      playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
           playlistFB._addedBlocks.retVal;
     }
     return playlistFB;
@@ -11575,7 +11759,7 @@ class PlaylistField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlistFB._addedBlocks);
       _waitingNot = '';
-      playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+      playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
           playlistFB._addedBlocks.retVal;
     }
     return playlistFB;
@@ -11608,7 +11792,7 @@ class PlaylistField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11621,7 +11805,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param,
             SqlSyntax.LessThanOrEquals, playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11634,7 +11818,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11647,7 +11831,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param, SqlSyntax.LessThan,
             playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11660,7 +11844,7 @@ class PlaylistField extends SearchCriteria {
         : setCriteria(pValue, playlistFB.parameters, param,
             SqlSyntax.GreaterThan, playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11673,7 +11857,7 @@ class PlaylistField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         playlistFB._addedBlocks);
     _waitingNot = '';
-    playlistFB._addedBlocks.needEndBlock[playlistFB._blockIndex] =
+    playlistFB._addedBlocks.needEndBlock![playlistFB._blockIndex] =
         playlistFB._addedBlocks.retVal;
     return playlistFB;
   }
@@ -11684,25 +11868,19 @@ class PlaylistField extends SearchCriteria {
 class PlaylistFilterBuilder extends SearchCriteria {
   PlaylistFilterBuilder(Playlist obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Playlist _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Playlist? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   PlaylistFilterBuilder get and {
@@ -11722,24 +11900,24 @@ class PlaylistFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   PlaylistFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  PlaylistFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  PlaylistFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -11767,11 +11945,11 @@ class PlaylistFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   PlaylistFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -11786,8 +11964,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -11806,8 +11984,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -11826,8 +12004,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -11846,8 +12024,8 @@ class PlaylistFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -11856,25 +12034,25 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  PlaylistField setField(PlaylistField field, String colName, DbType dbtype) {
+  PlaylistField setField(PlaylistField? field, String colName, DbType dbtype) {
     return PlaylistField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  PlaylistField _PlaylistId;
+  PlaylistField? _PlaylistId;
   PlaylistField get PlaylistId {
     return _PlaylistId = setField(_PlaylistId, 'PlaylistId', DbType.integer);
   }
 
-  PlaylistField _Name;
+  PlaylistField? _Name;
   PlaylistField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -11893,7 +12071,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -11906,16 +12084,22 @@ class PlaylistFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -11970,12 +12154,12 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
 
     if (Playlist._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnPlaylist.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnPlaylist.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnPlaylist.delete(qparams);
+      r = await _obj!._mnPlaylist.delete(qparams);
     }
     return r;
   }
@@ -11987,11 +12171,11 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'PlaylistId IN (SELECT PlaylistId from Playlist ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'PlaylistId IN (SELECT PlaylistId from Playlist ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnPlaylist.updateBatch(qparams, values);
+    return _obj!._mnPlaylist.updateBatch(qparams, values);
   }
 
   /// This method always returns Playlist Obj if exist, otherwise returns null
@@ -12008,16 +12192,16 @@ class PlaylistFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Playlist>
-  Future<Playlist> toSingle(
+  Future<Playlist?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnPlaylist.toList(qparams);
+    final objFuture = _obj!._mnPlaylist.toList(qparams);
     final data = await objFuture;
-    Playlist obj;
+    Playlist? obj;
     if (data.isNotEmpty) {
       obj = Playlist.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -12025,12 +12209,12 @@ class PlaylistFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Playlist.plTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedFields.add('Playlist.plTracks'); */
+          /*_loadedfields!.add('Playlist.plTracks'); */
           obj.plTracks = obj.plTracks ??
-              await obj.getTracks().toList(
+              await obj.getTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -12046,10 +12230,10 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// This method returns int. [Playlist]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) playlistCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? playlistCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final playlistsFuture = await _obj._mnPlaylist.toList(qparams);
+    final playlistsFuture = await _obj!._mnPlaylist.toList(qparams);
     final int count = playlistsFuture[0]['CNT'] as int;
     if (playlistCount != null) {
       playlistCount(count);
@@ -12073,9 +12257,9 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// <returns>List<Playlist>
   Future<List<Playlist>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Playlist> playlistsData = await Playlist.fromMapList(data,
         preload: preload,
@@ -12111,16 +12295,16 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnPlaylist.toList(qparams);
+    return await _obj!._mnPlaylist.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Playlist>>
   Future<List<DropdownMenuItem<Playlist>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Playlist>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Playlist>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final playlistsFuture = _obj._mnPlaylist.toList(qparams);
+    final playlistsFuture = _obj!._mnPlaylist.toList(qparams);
 
     final data = await playlistsFuture;
     final int count = data.length;
@@ -12145,11 +12329,11 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['PlaylistId', displayTextColumn];
-    final playlistsFuture = _obj._mnPlaylist.toList(qparams);
+    final playlistsFuture = _obj!._mnPlaylist.toList(qparams);
 
     final data = await playlistsFuture;
     final int count = data.length;
@@ -12195,7 +12379,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     }
     final List<int> PlaylistIdData = <int>[];
     qparams.selectColumns = ['PlaylistId'];
-    final PlaylistIdFuture = await _obj._mnPlaylist.toList(qparams);
+    final PlaylistIdFuture = await _obj!._mnPlaylist.toList(qparams);
 
     final int count = PlaylistIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -12210,7 +12394,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnPlaylist.toList(qparams);
+    final objectFuture = _obj!._mnPlaylist.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -12225,16 +12409,16 @@ class PlaylistFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Playlist.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnPlaylist.toList(qparams);
+    final objectFuture = _obj!._mnPlaylist.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -12246,13 +12430,13 @@ class PlaylistFilterBuilder extends SearchCriteria {
 
 // region PlaylistFields
 class PlaylistFields {
-  static TableField _fPlaylistId;
+  static TableField? _fPlaylistId;
   static TableField get PlaylistId {
     return _fPlaylistId = _fPlaylistId ??
         SqlSyntax.setField(_fPlaylistId, 'playlistid', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
@@ -12286,16 +12470,8 @@ class Track {
       this.AlbumId}) {
     _setDefaultValues();
   }
-  Track.withFields(
-      this.TrackId,
-      this.Name,
-      this.Composer,
-      this.Milliseconds,
-      this.Bytes,
-      this.UnitPrice,
-      this.MediaTypeId,
-      this.GenreId,
-      this.AlbumId) {
+  Track.withFields(this.Name, this.Composer, this.Milliseconds, this.Bytes,
+      this.UnitPrice, this.MediaTypeId, this.GenreId, this.AlbumId) {
     _setDefaultValues();
   }
   Track.withId(
@@ -12347,55 +12523,53 @@ class Track {
         ? Album.fromMap(o['album'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
-
-    isSaved = true;
   }
   // FIELDS (Track)
-  int TrackId;
-  String Name;
-  String Composer;
-  int Milliseconds;
-  int Bytes;
-  double UnitPrice;
-  int MediaTypeId;
-  int GenreId;
-  int AlbumId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? TrackId;
+  String? Name;
+  String? Composer;
+  int? Milliseconds;
+  int? Bytes;
+  double? UnitPrice;
+  int? MediaTypeId;
+  int? GenreId;
+  int? AlbumId;
+
+  BoolResult? saveResult;
   // end FIELDS (Track)
 
 // RELATIONSHIPS (Track)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plMediaType', 'plField2'..]) or so on..
-  MediaType plMediaType;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plMediaType', 'plField2'..]) or so on..
+  MediaType? plMediaType;
 
   /// get MediaType By MediaTypeId
-  Future<MediaType> getMediaType(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<MediaType?> getMediaType(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await MediaType().getById(MediaTypeId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plGenre', 'plField2'..]) or so on..
-  Genre plGenre;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plGenre', 'plField2'..]) or so on..
+  Genre? plGenre;
 
   /// get Genre By GenreId
-  Future<Genre> getGenre(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Genre?> getGenre(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Genre()
         .getById(GenreId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plAlbum', 'plField2'..]) or so on..
-  Album plAlbum;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plAlbum', 'plField2'..]) or so on..
+  Album? plAlbum;
 
   /// get Album By AlbumId
-  Future<Album> getAlbum(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Album?> getAlbum(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Album()
         .getById(AlbumId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -12404,12 +12578,12 @@ class Track {
 
 // COLLECTIONS & VIRTUALS (Track)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
-  List<InvoiceLine> plInvoiceLines;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plInvoiceLines', 'plField2'..]) or so on..
+  List<InvoiceLine>? plInvoiceLines;
 
   /// get InvoiceLine(s) filtered by TrackId=TrackId
-  InvoiceLineFilterBuilder getInvoiceLines(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  InvoiceLineFilterBuilder? getInvoiceLines(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (TrackId == null) {
       return null;
     }
@@ -12421,12 +12595,12 @@ class Track {
   }
 
   ///(RelationType.MANY_TO_MANY) (PlaylistTrack) to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylists', 'plField2'..]) or so on..
-  List<Playlist> plPlaylists;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plPlaylists', 'plField2'..]) or so on..
+  List<Playlist>? plPlaylists;
 
   /// get Playlist(s) filtered by PlaylistId IN PlaylistTrack
-  PlaylistFilterBuilder getPlaylists(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  PlaylistFilterBuilder? getPlaylists(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return Playlist()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .where(
@@ -12436,12 +12610,12 @@ class Track {
   }
 
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plVTracks', 'plField2'..]) or so on..
-  List<VTrack> plVTracks;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plVTracks', 'plField2'..]) or so on..
+  List<VTrack>? plVTracks;
 
   /// get VTrack(s) filtered by TrackId=TrackId
-  VTrackFilterBuilder getVTracks(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+  VTrackFilterBuilder? getVTracks(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (TrackId == null) {
       return null;
     }
@@ -12455,7 +12629,7 @@ class Track {
 // END COLLECTIONS & VIRTUALS (Track)
 
   static const bool _softDeleteActivated = false;
-  TrackManager __mnTrack;
+  TrackManager? __mnTrack;
 
   TrackManager get _mnTrack {
     return __mnTrack = __mnTrack ?? TrackManager();
@@ -12489,15 +12663,27 @@ class Track {
     }
 
     if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
+      map['MediaTypeId'] = forView
+          ? plMediaType == null
+              ? MediaTypeId
+              : plMediaType!.Name
+          : MediaTypeId;
     }
 
     if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre.Name : GenreId;
+      map['GenreId'] = forView
+          ? plGenre == null
+              ? GenreId
+              : plGenre!.Name
+          : GenreId;
     }
 
     if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
+      map['AlbumId'] = forView
+          ? plAlbum == null
+              ? AlbumId
+              : plAlbum!.Title
+          : AlbumId;
     }
 
     return map;
@@ -12532,26 +12718,38 @@ class Track {
     }
 
     if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType.Name : MediaTypeId;
+      map['MediaTypeId'] = forView
+          ? plMediaType == null
+              ? MediaTypeId
+              : plMediaType!.Name
+          : MediaTypeId;
     }
 
     if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre.Name : GenreId;
+      map['GenreId'] = forView
+          ? plGenre == null
+              ? GenreId
+              : plGenre!.Name
+          : GenreId;
     }
 
     if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum.Title : AlbumId;
+      map['AlbumId'] = forView
+          ? plAlbum == null
+              ? AlbumId
+              : plAlbum!.Title
+          : AlbumId;
     }
 
 // COLLECTIONS (Track)
     if (!forQuery) {
-      map['InvoiceLines'] = await getInvoiceLines().toMapList();
+      map['InvoiceLines'] = await getInvoiceLines()!.toMapList();
     }
     if (!forQuery) {
-      map['Playlists'] = await getPlaylists().toMapList();
+      map['Playlists'] = await getPlaylists()!.toMapList();
     }
     if (!forQuery) {
-      map['VTracks'] = await getVTracks().toMapList();
+      map['VTracks'] = await getVTracks()!.toMapList();
     }
 // END COLLECTIONS (Track)
 
@@ -12570,7 +12768,6 @@ class Track {
 
   List<dynamic> toArgs() {
     return [
-      TrackId,
       Name,
       Composer,
       Milliseconds,
@@ -12596,10 +12793,10 @@ class Track {
     ];
   }
 
-  static Future<List<Track>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<Track>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Track.fromWebUrl: ErrorMessage: ${e.toString()}');
@@ -12607,8 +12804,8 @@ class Track {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Track>> fromJson(String jsonBody) async {
@@ -12626,9 +12823,9 @@ class Track {
 
   static Future<List<Track>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<Track> objList = <Track>[];
     loadedFields = loadedFields ?? [];
@@ -12640,32 +12837,32 @@ class Track {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Track.plInvoiceLines'); */
+          /*_loadedfields!.add('Track.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plPlaylists') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedFields.add('Track.plPlaylists'); */
+          /*_loadedfields!.add('Track.plPlaylists'); */
           obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
+              await obj.getPlaylists()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plVTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedFields.add('Track.plVTracks'); */
+          /*_loadedfields!.add('Track.plVTracks'); */
           obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks().toList(
+              await obj.getVTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -12675,29 +12872,29 @@ class Track {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plMediaType') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plMediaType') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedFields.add('MediaType.plMediaType');*/
+          /*_loadedfields!.add('MediaType.plMediaType');*/
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Genre.plGenre') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plGenre') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedFields.add('Genre.plGenre');*/
+          /*_loadedfields!.add('Genre.plGenre');*/
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Album.plAlbum') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plAlbum') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedFields.add('Album.plAlbum');*/
+          /*_loadedfields!.add('Album.plAlbum');*/
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -12711,7 +12908,7 @@ class Track {
 
   /// returns Track by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int TrackId
+  /// Primary Keys: int? TrackId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -12725,15 +12922,15 @@ class Track {
 
   ///
   /// <returns>returns Track if exist, otherwise returns null
-  Future<Track> getById(int TrackId,
+  Future<Track?> getById(int? TrackId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (TrackId == null) {
       return null;
     }
-    Track obj;
+    Track? obj;
     final data = await _mnTrack.getById([TrackId]);
     if (data.length != 0) {
       obj = Track.fromMap(data[0] as Map<String, dynamic>);
@@ -12742,32 +12939,32 @@ class Track {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Track.plInvoiceLines'); */
+          /*_loadedfields!.add('Track.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plPlaylists') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedFields.add('Track.plPlaylists'); */
+          /*_loadedfields!.add('Track.plPlaylists'); */
           obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
+              await obj.getPlaylists()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plVTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedFields.add('Track.plVTracks'); */
+          /*_loadedfields!.add('Track.plVTracks'); */
           obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks().toList(
+              await obj.getVTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -12777,29 +12974,29 @@ class Track {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plMediaType') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plMediaType') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedFields.add('MediaType.plMediaType');*/
+          /*_loadedfields!.add('MediaType.plMediaType');*/
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Genre.plGenre') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plGenre') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedFields.add('Genre.plGenre');*/
+          /*_loadedfields!.add('Genre.plGenre');*/
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Album.plAlbum') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plAlbum') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedFields.add('Album.plAlbum');*/
+          /*_loadedfields!.add('Album.plAlbum');*/
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -12815,18 +13012,24 @@ class Track {
   /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
 
   /// <returns>Returns TrackId
-  Future<int> save() async {
-    if (TrackId == null || TrackId == 0 || !isSaved) {
-      await _mnTrack.insert(this);
-      if (saveResult != null && saveResult.success) {
-        isSaved = true;
-      }
+  Future<int?> save() async {
+    if (TrackId == null || TrackId == 0) {
+      TrackId = await _mnTrack.insert(this);
     } else {
       // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnTrack.update(this);
     }
 
     return TrackId;
+  }
+
+  /// saveAs Track. Returns a new Primary Key value of Track
+
+  /// <returns>Returns a new Primary Key value of Track
+  Future<int?> saveAs() async {
+    TrackId = null;
+
+    return save();
   }
 
   /// saveAll method saves the sent List<Track> as a bulk in one transaction
@@ -12841,14 +13044,19 @@ class Track {
     }
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
+    for (int i = 0; i < tracks.length; i++) {
+      if (tracks[i].TrackId == null) {
+        tracks[i].TrackId = result![i] as int;
+      }
+    }
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns TrackId
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnTrack.rawInsert(
               'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -12921,23 +13129,22 @@ class Track {
     }
   }
 
-  TrackFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+  TrackFilterBuilder select(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return TrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   TrackFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return TrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
 
-  void _setDefaultValues() {
-    isSaved = false;
-  }
+  void _setDefaultValues() {}
   // END METHODS
   // CUSTOM CODES
   /*
@@ -12963,10 +13170,9 @@ class Track {
 
 // region TrackField
 class TrackField extends SearchCriteria {
-  TrackField(this.trackFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  TrackField(this.trackFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   TrackFilterBuilder trackFB;
 
@@ -12983,7 +13189,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.NotEQuals,
             trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -12996,7 +13202,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13009,7 +13215,7 @@ class TrackField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13023,7 +13229,7 @@ class TrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           trackFB._addedBlocks);
       _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+      trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
           trackFB._addedBlocks.retVal;
     }
     return trackFB;
@@ -13038,9 +13244,9 @@ class TrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           trackFB._addedBlocks);
       _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+      trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
           trackFB._addedBlocks.retVal;
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+      trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
           trackFB._addedBlocks.retVal;
     }
     return trackFB;
@@ -13055,7 +13261,7 @@ class TrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           trackFB._addedBlocks);
       _waitingNot = '';
-      trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+      trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
           trackFB._addedBlocks.retVal;
     }
     return trackFB;
@@ -13088,7 +13294,7 @@ class TrackField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13101,7 +13307,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param,
             SqlSyntax.LessThanOrEquals, trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13114,7 +13320,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13127,7 +13333,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.LessThan,
             trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13140,7 +13346,7 @@ class TrackField extends SearchCriteria {
         : setCriteria(pValue, trackFB.parameters, param, SqlSyntax.GreaterThan,
             trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13153,7 +13359,7 @@ class TrackField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         trackFB._addedBlocks);
     _waitingNot = '';
-    trackFB._addedBlocks.needEndBlock[trackFB._blockIndex] =
+    trackFB._addedBlocks.needEndBlock![trackFB._blockIndex] =
         trackFB._addedBlocks.retVal;
     return trackFB;
   }
@@ -13164,25 +13370,19 @@ class TrackField extends SearchCriteria {
 class TrackFilterBuilder extends SearchCriteria {
   TrackFilterBuilder(Track obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Track _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Track? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   TrackFilterBuilder get and {
@@ -13202,24 +13402,24 @@ class TrackFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   TrackFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  TrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  TrackFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -13247,11 +13447,11 @@ class TrackFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   TrackFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -13266,8 +13466,8 @@ class TrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -13286,8 +13486,8 @@ class TrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -13306,8 +13506,8 @@ class TrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -13326,8 +13526,8 @@ class TrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -13336,61 +13536,61 @@ class TrackFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  TrackField setField(TrackField field, String colName, DbType dbtype) {
+  TrackField setField(TrackField? field, String colName, DbType dbtype) {
     return TrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  TrackField _TrackId;
+  TrackField? _TrackId;
   TrackField get TrackId {
     return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
-  TrackField _Name;
+  TrackField? _Name;
   TrackField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  TrackField _Composer;
+  TrackField? _Composer;
   TrackField get Composer {
     return _Composer = setField(_Composer, 'Composer', DbType.text);
   }
 
-  TrackField _Milliseconds;
+  TrackField? _Milliseconds;
   TrackField get Milliseconds {
     return _Milliseconds =
         setField(_Milliseconds, 'Milliseconds', DbType.integer);
   }
 
-  TrackField _Bytes;
+  TrackField? _Bytes;
   TrackField get Bytes {
     return _Bytes = setField(_Bytes, 'Bytes', DbType.integer);
   }
 
-  TrackField _UnitPrice;
+  TrackField? _UnitPrice;
   TrackField get UnitPrice {
     return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
   }
 
-  TrackField _MediaTypeId;
+  TrackField? _MediaTypeId;
   TrackField get MediaTypeId {
     return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
   }
 
-  TrackField _GenreId;
+  TrackField? _GenreId;
   TrackField get GenreId {
     return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
   }
 
-  TrackField _AlbumId;
+  TrackField? _AlbumId;
   TrackField get AlbumId {
     return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -13409,7 +13609,7 @@ class TrackFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -13422,16 +13622,22 @@ class TrackFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -13486,7 +13692,7 @@ class TrackFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     // Check sub records where in (InvoiceLine) according to DeleteRule.NO_ACTION
 
     final idListInvoiceLineBYTrackId = toListPrimaryKeySQL(false);
@@ -13517,9 +13723,9 @@ class TrackFilterBuilder extends SearchCriteria {
     }
 
     if (Track._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnTrack.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnTrack.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnTrack.delete(qparams);
+      r = await _obj!._mnTrack.delete(qparams);
     }
     return r;
   }
@@ -13531,11 +13737,11 @@ class TrackFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'TrackId IN (SELECT TrackId from Track ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'TrackId IN (SELECT TrackId from Track ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnTrack.updateBatch(qparams, values);
+    return _obj!._mnTrack.updateBatch(qparams, values);
   }
 
   /// This method always returns Track Obj if exist, otherwise returns null
@@ -13552,16 +13758,16 @@ class TrackFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<Track>
-  Future<Track> toSingle(
+  Future<Track?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnTrack.toList(qparams);
+    final objFuture = _obj!._mnTrack.toList(qparams);
     final data = await objFuture;
-    Track obj;
+    Track? obj;
     if (data.isNotEmpty) {
       obj = Track.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -13569,32 +13775,32 @@ class TrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plInvoiceLines') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedFields.add('Track.plInvoiceLines'); */
+          /*_loadedfields!.add('Track.plInvoiceLines'); */
           obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines().toList(
+              await obj.getInvoiceLines()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plPlaylists') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedFields.add('Track.plPlaylists'); */
+          /*_loadedfields!.add('Track.plPlaylists'); */
           obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists().toList(
+              await obj.getPlaylists()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Track.plVTracks') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedFields.add('Track.plVTracks'); */
+          /*_loadedfields!.add('Track.plVTracks'); */
           obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks().toList(
+              await obj.getVTracks()!.toList(
                   preload: preload,
                   preloadFields: preloadFields,
                   loadParents: false /*, loadedFields:_loadedFields*/);
@@ -13604,29 +13810,29 @@ class TrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('MediaType.plMediaType') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('MediaType.plMediaType') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedFields.add('MediaType.plMediaType');*/
+          /*_loadedfields!.add('MediaType.plMediaType');*/
           obj.plMediaType = obj.plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Genre.plGenre') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Genre.plGenre') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedFields.add('Genre.plGenre');*/
+          /*_loadedfields!.add('Genre.plGenre');*/
           obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Album.plAlbum') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Album.plAlbum') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedFields.add('Album.plAlbum');*/
+          /*_loadedfields!.add('Album.plAlbum');*/
           obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -13642,10 +13848,10 @@ class TrackFilterBuilder extends SearchCriteria {
   /// This method returns int. [Track]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) trackCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? trackCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final tracksFuture = await _obj._mnTrack.toList(qparams);
+    final tracksFuture = await _obj!._mnTrack.toList(qparams);
     final int count = tracksFuture[0]['CNT'] as int;
     if (trackCount != null) {
       trackCount(count);
@@ -13669,9 +13875,9 @@ class TrackFilterBuilder extends SearchCriteria {
   /// <returns>List<Track>
   Future<List<Track>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<Track> tracksData = await Track.fromMapList(data,
         preload: preload,
@@ -13707,15 +13913,15 @@ class TrackFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnTrack.toList(qparams);
+    return await _obj!._mnTrack.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Track>>
   Future<List<DropdownMenuItem<Track>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Track>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Track>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final tracksFuture = _obj._mnTrack.toList(qparams);
+    final tracksFuture = _obj!._mnTrack.toList(qparams);
 
     final data = await tracksFuture;
     final int count = data.length;
@@ -13740,11 +13946,11 @@ class TrackFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['TrackId', displayTextColumn];
-    final tracksFuture = _obj._mnTrack.toList(qparams);
+    final tracksFuture = _obj!._mnTrack.toList(qparams);
 
     final data = await tracksFuture;
     final int count = data.length;
@@ -13789,7 +13995,7 @@ class TrackFilterBuilder extends SearchCriteria {
     }
     final List<int> TrackIdData = <int>[];
     qparams.selectColumns = ['TrackId'];
-    final TrackIdFuture = await _obj._mnTrack.toList(qparams);
+    final TrackIdFuture = await _obj!._mnTrack.toList(qparams);
 
     final int count = TrackIdFuture.length;
     for (int i = 0; i < count; i++) {
@@ -13804,7 +14010,7 @@ class TrackFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnTrack.toList(qparams);
+    final objectFuture = _obj!._mnTrack.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -13819,16 +14025,16 @@ class TrackFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Track.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnTrack.toList(qparams);
+    final objectFuture = _obj!._mnTrack.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -13840,54 +14046,54 @@ class TrackFilterBuilder extends SearchCriteria {
 
 // region TrackFields
 class TrackFields {
-  static TableField _fTrackId;
+  static TableField? _fTrackId;
   static TableField get TrackId {
     return _fTrackId =
         _fTrackId ?? SqlSyntax.setField(_fTrackId, 'trackid', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
 
-  static TableField _fComposer;
+  static TableField? _fComposer;
   static TableField get Composer {
     return _fComposer =
         _fComposer ?? SqlSyntax.setField(_fComposer, 'Composer', DbType.text);
   }
 
-  static TableField _fMilliseconds;
+  static TableField? _fMilliseconds;
   static TableField get Milliseconds {
     return _fMilliseconds = _fMilliseconds ??
         SqlSyntax.setField(_fMilliseconds, 'Milliseconds', DbType.integer);
   }
 
-  static TableField _fBytes;
+  static TableField? _fBytes;
   static TableField get Bytes {
     return _fBytes =
         _fBytes ?? SqlSyntax.setField(_fBytes, 'Bytes', DbType.integer);
   }
 
-  static TableField _fUnitPrice;
+  static TableField? _fUnitPrice;
   static TableField get UnitPrice {
     return _fUnitPrice = _fUnitPrice ??
         SqlSyntax.setField(_fUnitPrice, 'UnitPrice', DbType.real);
   }
 
-  static TableField _fMediaTypeId;
+  static TableField? _fMediaTypeId;
   static TableField get MediaTypeId {
     return _fMediaTypeId = _fMediaTypeId ??
         SqlSyntax.setField(_fMediaTypeId, 'MediaTypeId', DbType.integer);
   }
 
-  static TableField _fGenreId;
+  static TableField? _fGenreId;
   static TableField get GenreId {
     return _fGenreId =
         _fGenreId ?? SqlSyntax.setField(_fGenreId, 'GenreId', DbType.integer);
   }
 
-  static TableField _fAlbumId;
+  static TableField? _fAlbumId;
   static TableField get AlbumId {
     return _fAlbumId =
         _fAlbumId ?? SqlSyntax.setField(_fAlbumId, 'AlbumId', DbType.integer);
@@ -13947,23 +14153,23 @@ class VTrack {
     isSaved = true;
   }
   // FIELDS (VTrack)
-  String Name;
-  String album;
-  String media;
-  String genres;
-  int TrackId;
-  bool isSaved;
-  BoolResult saveResult;
+  String? Name;
+  String? album;
+  String? media;
+  String? genres;
+  int? TrackId;
+  bool? isSaved;
+  BoolResult? saveResult;
   // end FIELDS (VTrack)
 
 // RELATIONSHIPS (VTrack)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
-  Track plTrack;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
+  Track? plTrack;
 
   /// get Track By TrackId
-  Future<Track> getTrack(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Track?> getTrack(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Track()
         .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -13971,7 +14177,7 @@ class VTrack {
   // END RELATIONSHIPS (VTrack)
 
   static const bool _softDeleteActivated = false;
-  VTrackManager __mnVTrack;
+  VTrackManager? __mnVTrack;
 
   VTrackManager get _mnVTrack {
     return __mnVTrack = __mnVTrack ?? VTrackManager();
@@ -13998,7 +14204,11 @@ class VTrack {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     return map;
@@ -14026,7 +14236,11 @@ class VTrack {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     return map;
@@ -14050,10 +14264,10 @@ class VTrack {
     return [Name, album, media, genres, TrackId];
   }
 
-  static Future<List<VTrack>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<VTrack>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR VTrack.fromWebUrl: ErrorMessage: ${e.toString()}');
@@ -14061,8 +14275,8 @@ class VTrack {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<VTrack>> fromJson(String jsonBody) async {
@@ -14080,9 +14294,9 @@ class VTrack {
 
   static Future<List<VTrack>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<VTrack> objList = <VTrack>[];
     loadedFields = loadedFields ?? [];
@@ -14094,11 +14308,11 @@ class VTrack {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -14111,14 +14325,14 @@ class VTrack {
   }
 
   VTrackFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return VTrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   VTrackFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return VTrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
@@ -14153,10 +14367,9 @@ class VTrack {
 
 // region VTrackField
 class VTrackField extends SearchCriteria {
-  VTrackField(this.vtrackFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  VTrackField(this.vtrackFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   VTrackFilterBuilder vtrackFB;
 
@@ -14173,7 +14386,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param, SqlSyntax.NotEQuals,
             vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14186,7 +14399,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14199,7 +14412,7 @@ class VTrackField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14213,7 +14426,7 @@ class VTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           vtrackFB._addedBlocks);
       _waitingNot = '';
-      vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+      vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
           vtrackFB._addedBlocks.retVal;
     }
     return vtrackFB;
@@ -14228,9 +14441,9 @@ class VTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           vtrackFB._addedBlocks);
       _waitingNot = '';
-      vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+      vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
           vtrackFB._addedBlocks.retVal;
-      vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+      vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
           vtrackFB._addedBlocks.retVal;
     }
     return vtrackFB;
@@ -14245,7 +14458,7 @@ class VTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           vtrackFB._addedBlocks);
       _waitingNot = '';
-      vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+      vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
           vtrackFB._addedBlocks.retVal;
     }
     return vtrackFB;
@@ -14278,7 +14491,7 @@ class VTrackField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14291,7 +14504,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param,
             SqlSyntax.LessThanOrEquals, vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14304,7 +14517,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14317,7 +14530,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param, SqlSyntax.LessThan,
             vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14330,7 +14543,7 @@ class VTrackField extends SearchCriteria {
         : setCriteria(pValue, vtrackFB.parameters, param, SqlSyntax.GreaterThan,
             vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14343,7 +14556,7 @@ class VTrackField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         vtrackFB._addedBlocks);
     _waitingNot = '';
-    vtrackFB._addedBlocks.needEndBlock[vtrackFB._blockIndex] =
+    vtrackFB._addedBlocks.needEndBlock![vtrackFB._blockIndex] =
         vtrackFB._addedBlocks.retVal;
     return vtrackFB;
   }
@@ -14354,25 +14567,19 @@ class VTrackField extends SearchCriteria {
 class VTrackFilterBuilder extends SearchCriteria {
   VTrackFilterBuilder(VTrack obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  VTrack _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  VTrack? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   VTrackFilterBuilder get and {
@@ -14392,24 +14599,24 @@ class VTrackFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   VTrackFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  VTrackFilterBuilder where(String whereCriteria, {dynamic parameterValue}) {
+  VTrackFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
           columnName: parameterValue == null ? null : '',
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -14437,11 +14644,11 @@ class VTrackFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   VTrackFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -14456,8 +14663,8 @@ class VTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -14476,8 +14683,8 @@ class VTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -14496,8 +14703,8 @@ class VTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -14516,8 +14723,8 @@ class VTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -14526,40 +14733,40 @@ class VTrackFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  VTrackField setField(VTrackField field, String colName, DbType dbtype) {
+  VTrackField setField(VTrackField? field, String colName, DbType dbtype) {
     return VTrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  VTrackField _Name;
+  VTrackField? _Name;
   VTrackField get Name {
     return _Name = setField(_Name, 'Name', DbType.text);
   }
 
-  VTrackField _album;
+  VTrackField? _album;
   VTrackField get album {
     return _album = setField(_album, 'album', DbType.text);
   }
 
-  VTrackField _media;
+  VTrackField? _media;
   VTrackField get media {
     return _media = setField(_media, 'media', DbType.text);
   }
 
-  VTrackField _genres;
+  VTrackField? _genres;
   VTrackField get genres {
     return _genres = setField(_genres, 'genres', DbType.text);
   }
 
-  VTrackField _TrackId;
+  VTrackField? _TrackId;
   VTrackField get TrackId {
     return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -14578,7 +14785,7 @@ class VTrackFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -14591,16 +14798,22 @@ class VTrackFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -14664,16 +14877,16 @@ class VTrackFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<VTrack>
-  Future<VTrack> toSingle(
+  Future<VTrack?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnVTrack.toList(qparams);
+    final objFuture = _obj!._mnVTrack.toList(qparams);
     final data = await objFuture;
-    VTrack obj;
+    VTrack? obj;
     if (data.isNotEmpty) {
       obj = VTrack.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -14681,11 +14894,11 @@ class VTrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -14701,10 +14914,10 @@ class VTrackFilterBuilder extends SearchCriteria {
   /// This method returns int. [VTrack]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) vtrackCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? vtrackCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final vtracksFuture = await _obj._mnVTrack.toList(qparams);
+    final vtracksFuture = await _obj!._mnVTrack.toList(qparams);
     final int count = vtracksFuture[0]['CNT'] as int;
     if (vtrackCount != null) {
       vtrackCount(count);
@@ -14728,9 +14941,9 @@ class VTrackFilterBuilder extends SearchCriteria {
   /// <returns>List<VTrack>
   Future<List<VTrack>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<VTrack> vtracksData = await VTrack.fromMapList(data,
         preload: preload,
@@ -14766,7 +14979,7 @@ class VTrackFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnVTrack.toList(qparams);
+    return await _obj!._mnVTrack.toList(qparams);
   }
 
   /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [VTrack]
@@ -14790,7 +15003,7 @@ class VTrackFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnVTrack.toList(qparams);
+    final objectFuture = _obj!._mnVTrack.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -14805,16 +15018,16 @@ class VTrackFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await VTrack.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnVTrack.toList(qparams);
+    final objectFuture = _obj!._mnVTrack.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -14826,30 +15039,30 @@ class VTrackFilterBuilder extends SearchCriteria {
 
 // region VTrackFields
 class VTrackFields {
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get Name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'Name', DbType.text);
   }
 
-  static TableField _fAlbum;
+  static TableField? _fAlbum;
   static TableField get album {
     return _fAlbum =
         _fAlbum ?? SqlSyntax.setField(_fAlbum, 'album', DbType.text);
   }
 
-  static TableField _fMedia;
+  static TableField? _fMedia;
   static TableField get media {
     return _fMedia =
         _fMedia ?? SqlSyntax.setField(_fMedia, 'media', DbType.text);
   }
 
-  static TableField _fGenres;
+  static TableField? _fGenres;
   static TableField get genres {
     return _fGenres =
         _fGenres ?? SqlSyntax.setField(_fGenres, 'genres', DbType.text);
   }
 
-  static TableField _fTrackId;
+  static TableField? _fTrackId;
   static TableField get TrackId {
     return _fTrackId =
         _fTrackId ?? SqlSyntax.setField(_fTrackId, 'TrackId', DbType.integer);
@@ -14902,32 +15115,32 @@ class PlaylistTrack {
     isSaved = true;
   }
   // FIELDS (PlaylistTrack)
-  int TrackId;
-  int PlaylistId;
-  bool isSaved;
-  BoolResult saveResult;
+  int? TrackId;
+  int? PlaylistId;
+  bool? isSaved;
+  BoolResult? saveResult;
   // end FIELDS (PlaylistTrack)
 
 // RELATIONSHIPS (PlaylistTrack)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
-  Track plTrack;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTrack', 'plField2'..]) or so on..
+  Track? plTrack;
 
   /// get Track By TrackId
-  Future<Track> getTrack(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Track?> getTrack(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Track()
         .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields. Ex: toList(preload:true, preloadFields:['plPlaylist', 'plField2'..]) or so on..
-  Playlist plPlaylist;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plPlaylist', 'plField2'..]) or so on..
+  Playlist? plPlaylist;
 
   /// get Playlist By PlaylistId
-  Future<Playlist> getPlaylist(
-      {bool loadParents = false, List<String> loadedFields}) async {
+  Future<Playlist?> getPlaylist(
+      {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Playlist().getById(PlaylistId,
         loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
@@ -14935,7 +15148,7 @@ class PlaylistTrack {
   // END RELATIONSHIPS (PlaylistTrack)
 
   static const bool _softDeleteActivated = false;
-  PlaylistTrackManager __mnPlaylistTrack;
+  PlaylistTrackManager? __mnPlaylistTrack;
 
   PlaylistTrackManager get _mnPlaylistTrack {
     return __mnPlaylistTrack = __mnPlaylistTrack ?? PlaylistTrackManager();
@@ -14946,11 +15159,19 @@ class PlaylistTrack {
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (PlaylistId != null) {
-      map['PlaylistId'] = forView ? plPlaylist.Name : PlaylistId;
+      map['PlaylistId'] = forView
+          ? plPlaylist == null
+              ? PlaylistId
+              : plPlaylist!.Name
+          : PlaylistId;
     }
 
     return map;
@@ -14962,11 +15183,19 @@ class PlaylistTrack {
       bool forView = false]) async {
     final map = <String, dynamic>{};
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (PlaylistId != null) {
-      map['PlaylistId'] = forView ? plPlaylist.Name : PlaylistId;
+      map['PlaylistId'] = forView
+          ? plPlaylist == null
+              ? PlaylistId
+              : plPlaylist!.Name
+          : PlaylistId;
     }
 
     return map;
@@ -14990,10 +15219,10 @@ class PlaylistTrack {
     return [TrackId, PlaylistId];
   }
 
-  static Future<List<PlaylistTrack>> fromWebUrl(String url,
-      {Map<String, String> headers}) async {
+  static Future<List<PlaylistTrack>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -15002,8 +15231,8 @@ class PlaylistTrack {
     }
   }
 
-  Future<http.Response> postUrl(String url, {Map<String, String> headers}) {
-    return http.post(url, headers: headers, body: toJson());
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<PlaylistTrack>> fromJson(String jsonBody) async {
@@ -15023,9 +15252,9 @@ class PlaylistTrack {
 
   static Future<List<PlaylistTrack>> fromMapList(List<dynamic> data,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields,
+      List<String>? loadedFields,
       bool setDefaultValues = true}) async {
     final List<PlaylistTrack> objList = <PlaylistTrack>[];
     loadedFields = loadedFields ?? [];
@@ -15037,20 +15266,20 @@ class PlaylistTrack {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Playlist.plPlaylist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plPlaylist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedFields.add('Playlist.plPlaylist');*/
+          /*_loadedfields!.add('Playlist.plPlaylist');*/
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -15064,7 +15293,7 @@ class PlaylistTrack {
 
   /// returns PlaylistTrack by ID if exist, otherwise returns null
   ///
-  /// Primary Keys: int TrackId, int PlaylistId
+  /// Primary Keys: int? TrackId, int? PlaylistId
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -15078,15 +15307,15 @@ class PlaylistTrack {
 
   ///
   /// <returns>returns PlaylistTrack if exist, otherwise returns null
-  Future<PlaylistTrack> getById(int TrackId, int PlaylistId,
+  Future<PlaylistTrack?> getById(int? TrackId, int? PlaylistId,
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     if (TrackId == null) {
       return null;
     }
-    PlaylistTrack obj;
+    PlaylistTrack? obj;
     final data = await _mnPlaylistTrack.getById([TrackId, PlaylistId]);
     if (data.length != 0) {
       obj = PlaylistTrack.fromMap(data[0] as Map<String, dynamic>);
@@ -15095,20 +15324,20 @@ class PlaylistTrack {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Playlist.plPlaylist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plPlaylist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedFields.add('Playlist.plPlaylist');*/
+          /*_loadedfields!.add('Playlist.plPlaylist');*/
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -15132,7 +15361,7 @@ class PlaylistTrack {
     final result = BoolResult(success: false);
     try {
       await _mnPlaylistTrack.rawInsert(
-          'INSERT ${isSaved ? 'OR REPLACE' : ''} INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+          'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
           toArgsWithIds());
       result.success = true;
       isSaved = true;
@@ -15158,13 +15387,13 @@ class PlaylistTrack {
     //    return Chinookdb().batchCommit();
     final result = await Chinookdb().batchCommit();
 
-    return result;
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns 1
-  Future<int> upsert() async {
+  Future<int?> upsert() async {
     try {
       if (await _mnPlaylistTrack.rawInsert(
               'INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
@@ -15219,14 +15448,14 @@ class PlaylistTrack {
   }
 
   PlaylistTrackFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return PlaylistTrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   PlaylistTrackFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return PlaylistTrackFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
@@ -15261,10 +15490,9 @@ class PlaylistTrack {
 
 // region PlaylistTrackField
 class PlaylistTrackField extends SearchCriteria {
-  PlaylistTrackField(this.playlisttrackFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  PlaylistTrackField(this.playlisttrackFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   PlaylistTrackFilterBuilder playlisttrackFB;
 
@@ -15281,7 +15509,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.NotEQuals, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15294,7 +15522,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15307,7 +15535,7 @@ class PlaylistTrackField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15321,7 +15549,7 @@ class PlaylistTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlisttrackFB._addedBlocks);
       _waitingNot = '';
-      playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+      playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
           playlisttrackFB._addedBlocks.retVal;
     }
     return playlisttrackFB;
@@ -15336,9 +15564,9 @@ class PlaylistTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlisttrackFB._addedBlocks);
       _waitingNot = '';
-      playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+      playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
           playlisttrackFB._addedBlocks.retVal;
-      playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+      playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
           playlisttrackFB._addedBlocks.retVal;
     }
     return playlisttrackFB;
@@ -15353,7 +15581,7 @@ class PlaylistTrackField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           playlisttrackFB._addedBlocks);
       _waitingNot = '';
-      playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+      playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
           playlisttrackFB._addedBlocks.retVal;
     }
     return playlisttrackFB;
@@ -15402,7 +15630,7 @@ class PlaylistTrackField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15415,7 +15643,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.LessThanOrEquals, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15428,7 +15656,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15441,7 +15669,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.LessThan, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15454,7 +15682,7 @@ class PlaylistTrackField extends SearchCriteria {
         : setCriteria(pValue, playlisttrackFB.parameters, param,
             SqlSyntax.GreaterThan, playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15467,7 +15695,7 @@ class PlaylistTrackField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         playlisttrackFB._addedBlocks);
     _waitingNot = '';
-    playlisttrackFB._addedBlocks.needEndBlock[playlisttrackFB._blockIndex] =
+    playlisttrackFB._addedBlocks.needEndBlock![playlisttrackFB._blockIndex] =
         playlisttrackFB._addedBlocks.retVal;
     return playlisttrackFB;
   }
@@ -15478,25 +15706,19 @@ class PlaylistTrackField extends SearchCriteria {
 class PlaylistTrackFilterBuilder extends SearchCriteria {
   PlaylistTrackFilterBuilder(PlaylistTrack obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  PlaylistTrack _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  PlaylistTrack? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   PlaylistTrackFilterBuilder get and {
@@ -15516,17 +15738,17 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   PlaylistTrackFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  PlaylistTrackFilterBuilder where(String whereCriteria,
+  PlaylistTrackFilterBuilder where(String? whereCriteria,
       {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter(
@@ -15534,7 +15756,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
           hasParameter: parameterValue != null);
       _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
           '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -15562,11 +15784,11 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   PlaylistTrackFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -15581,8 +15803,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -15601,8 +15823,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -15621,8 +15843,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -15641,8 +15863,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         havingList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s.isNotEmpty) {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             havingList.add(' $s ');
           }
         }
@@ -15652,25 +15874,25 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   }
 
   PlaylistTrackField setField(
-      PlaylistTrackField field, String colName, DbType dbtype) {
+      PlaylistTrackField? field, String colName, DbType dbtype) {
     return PlaylistTrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  PlaylistTrackField _TrackId;
+  PlaylistTrackField? _TrackId;
   PlaylistTrackField get TrackId {
     return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
-  PlaylistTrackField _PlaylistId;
+  PlaylistTrackField? _PlaylistId;
   PlaylistTrackField get PlaylistId {
     return _PlaylistId = setField(_PlaylistId, 'PlaylistId', DbType.integer);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -15689,7 +15911,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
@@ -15702,16 +15924,22 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
               ..value = param.value['args'];
           }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -15766,12 +15994,12 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
 
     if (PlaylistTrack._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnPlaylistTrack.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnPlaylistTrack.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnPlaylistTrack.delete(qparams);
+      r = await _obj!._mnPlaylistTrack.delete(qparams);
     }
     return r;
   }
@@ -15783,11 +16011,11 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'TrackId IN (SELECT TrackId from PlaylistTrack ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'TrackId IN (SELECT TrackId from PlaylistTrack ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnPlaylistTrack.updateBatch(qparams, values);
+    return _obj!._mnPlaylistTrack.updateBatch(qparams, values);
   }
 
   /// This method always returns PlaylistTrack Obj if exist, otherwise returns null
@@ -15804,16 +16032,16 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
 
   ///
   /// <returns>List<PlaylistTrack>
-  Future<PlaylistTrack> toSingle(
+  Future<PlaylistTrack?> toSingle(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnPlaylistTrack.toList(qparams);
+    final objFuture = _obj!._mnPlaylistTrack.toList(qparams);
     final data = await objFuture;
-    PlaylistTrack obj;
+    PlaylistTrack? obj;
     if (data.isNotEmpty) {
       obj = PlaylistTrack.fromMap(data[0] as Map<String, dynamic>);
       // final List<String> _loadedFields = loadedFields ?? [];
@@ -15821,20 +16049,20 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedFields.contains('Track.plTrack') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Track.plTrack') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedFields.add('Track.plTrack');*/
+          /*_loadedfields!.add('Track.plTrack');*/
           obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
-        if (/*!_loadedFields.contains('Playlist.plPlaylist') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('Playlist.plPlaylist') && */ (preloadFields ==
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedFields.add('Playlist.plPlaylist');*/
+          /*_loadedfields!.add('Playlist.plPlaylist');*/
           obj.plPlaylist = obj.plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
@@ -15850,10 +16078,11 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// This method returns int. [PlaylistTrack]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) playlisttrackCount]) async {
+  Future<int> toCount(
+      [VoidCallback Function(int c)? playlisttrackCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final playlisttracksFuture = await _obj._mnPlaylistTrack.toList(qparams);
+    final playlisttracksFuture = await _obj!._mnPlaylistTrack.toList(qparams);
     final int count = playlisttracksFuture[0]['CNT'] as int;
     if (playlisttrackCount != null) {
       playlisttrackCount(count);
@@ -15877,9 +16106,9 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// <returns>List<PlaylistTrack>
   Future<List<PlaylistTrack>> toList(
       {bool preload = false,
-      List<String> preloadFields,
+      List<String>? preloadFields,
       bool loadParents = false,
-      List<String> loadedFields}) async {
+      List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<PlaylistTrack> playlisttracksData =
         await PlaylistTrack.fromMapList(data,
@@ -15916,7 +16145,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnPlaylistTrack.toList(qparams);
+    return await _obj!._mnPlaylistTrack.toList(qparams);
   }
 
   /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [PlaylistTrack]
@@ -15943,7 +16172,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       _buildParameters();
     }
     qparams.selectColumns = ['TrackId', 'PlaylistId'];
-    final playlisttrackFuture = await _obj._mnPlaylistTrack.toList(qparams);
+    final playlisttrackFuture = await _obj!._mnPlaylistTrack.toList(qparams);
     return await PlaylistTrack.fromMapList(playlisttrackFuture);
   }
 
@@ -15953,7 +16182,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnPlaylistTrack.toList(qparams);
+    final objectFuture = _obj!._mnPlaylistTrack.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -15968,16 +16197,16 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await PlaylistTrack.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnPlaylistTrack.toList(qparams);
+    final objectFuture = _obj!._mnPlaylistTrack.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -15989,13 +16218,13 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
 
 // region PlaylistTrackFields
 class PlaylistTrackFields {
-  static TableField _fTrackId;
+  static TableField? _fTrackId;
   static TableField get TrackId {
     return _fTrackId =
         _fTrackId ?? SqlSyntax.setField(_fTrackId, 'TrackId', DbType.integer);
   }
 
-  static TableField _fPlaylistId;
+  static TableField? _fPlaylistId;
   static TableField get PlaylistId {
     return _fPlaylistId = _fPlaylistId ??
         SqlSyntax.setField(_fPlaylistId, 'PlaylistId', DbType.integer);
@@ -16046,7 +16275,7 @@ class AlbumController extends Album {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'AlbumToTrack':
         return SQFViewList(
@@ -16097,7 +16326,7 @@ class ArtistController extends Artist {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'ArtistToAlbum':
         return SQFViewList(
@@ -16148,7 +16377,7 @@ class CustomerController extends Customer {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'CustomerToInvoice':
         return SQFViewList(
@@ -16208,7 +16437,7 @@ class EmployeeController extends Employee {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'EmployeeToCustomer':
         return SQFViewList(
@@ -16270,7 +16499,7 @@ class GenreController extends Genre {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'GenreToTrack':
         return SQFViewList(
@@ -16321,7 +16550,7 @@ class InvoiceController extends Invoice {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'InvoiceToInvoiceLine':
         return SQFViewList(
@@ -16397,7 +16626,7 @@ class MediaTypeController extends MediaType {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'MediaTypeToTrack':
         return SQFViewList(
@@ -16448,7 +16677,7 @@ class PlaylistController extends Playlist {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'PlaylistToTrack':
         return SQFViewList(
@@ -16508,7 +16737,7 @@ class TrackController extends Track {
     return menu;
   }
 
-  SQFViewList subList(int id, String controllerName) {
+  SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
       case 'TrackToInvoiceLine':
         return SQFViewList(

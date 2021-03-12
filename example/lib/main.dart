@@ -92,10 +92,10 @@ Future<bool> runSamples() async {
 
 Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
   final list = await model.execDataTable(pSql);
-  printList(list);
+  printList(list!);
 }
 
-void printList(List<dynamic> list, {bool isMap = false, String title}) {
+void printList(List<dynamic> list, {bool isMap = false, String? title}) {
   print('PRINTLIST--------------$title---------------lenght: ${list.length}');
   for (final o in list) {
     if (isMap) {
@@ -711,7 +711,7 @@ Future<void> samples7() async {
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
   for (var category in categoryList) {
-    final productList = await category.getProducts().toList();
+    final productList = await category.getProducts()!.toList();
     print(
         'EXAMPLE 7.2.${category.id}: Products of \'${category.name}\' listing \n-> category.getProducts((productList) {}); ');
     // PRINT RESULTS TO DEBUG CONSOLE
@@ -726,7 +726,7 @@ Future<void> samples7() async {
 }
 
 Future<void> samples8() async {
-  List<Todo> todosList = await Todo.fromWeb();
+  List<Todo>? todosList = await Todo.fromWeb();
   if (todosList != null) {
     await Todo().upsertAll(todosList);
 
@@ -741,14 +741,14 @@ Future<void> samples8() async {
         '---------------------------------------------------------------\n\n');
   }
   todosList =
-      await Todo.fromWebUrl('https://jsonplaceholder.typicode.com/todos');
+      await Todo.fromWebUrl(Uri.parse('https://jsonplaceholder.typicode.com/todos'));
   if (todosList != null) {
     final results = await Todo().upsertAll(todosList);
     print(
         'EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);');
 
     // print upsert Results
-    for (var res in results.commitResult) {
+    for (var res in results.commitResult!) {
       res = res; // dummy line for analysis_options (unused_local_variable)
       //print(res.toString()); // uncomment this line for print save results
     }
@@ -784,7 +784,7 @@ Future<void> samples9() async {
   final result_93 = await MyDbModel().execDataTable(sql_93);
   print(
       'EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable(\'$sql_93\');\n -> print result:');
-  for (var item in result_93) {
+  for (var item in result_93!) {
     print(item.toString());
   }
 
@@ -821,7 +821,7 @@ Future<void> samples10() async {
 Future<void> samples11() async {
   // EXAMPLE 11.1 single object to Json
   final product = await Product().select().toSingle();
-  final jsonString = product.toJson();
+  final jsonString = product!.toJson();
 
   print(
       'EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString');

@@ -16,9 +16,9 @@ class ProductList extends StatefulWidget {
 class ProductListState extends State {
   ProductListState();
   
-  List<Product> products;
+  List<Product>? products;
   OrderBy orderRadioValue = OrderBy.None;
-  String orderBy;
+  String? orderBy;
   @override
   void initState() {
     SearchFilterProduct.showIsDeleted = false;
@@ -31,7 +31,7 @@ class ProductListState extends State {
   Widget build(BuildContext context) {
     void getData() async {
       // Set category id parameter
-      final int selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
+      final int? selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
           
 
       /*
@@ -91,7 +91,7 @@ class ProductListState extends State {
       getData();
     }
     void goToDetail(Product product) async {
-      final bool result = await Navigator.push(context,
+      final bool? result = await Navigator.push(context,
           MaterialPageRoute(builder: (context) => ProductDetail(product)));
       if (result != null) {
         if (result) {
@@ -101,7 +101,7 @@ class ProductListState extends State {
     }
 
     void goToProductAdd(Product product) async {
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context, MaterialPageRoute(builder: (context) => ProductAdd(product)));
       if (result != null) {
         if (result) {
@@ -116,12 +116,12 @@ class ProductListState extends State {
         case Choice.Delete:
           final confirm = await UITools(context).confirmDialog(
               'Delete \'${product.name}\'?',
-              '${(product.isDeleted ? 'Hard ' : '')}Delete Product');
-          if (confirm) {
+              '${(product.isDeleted! ? 'Hard ' : '')}Delete Product');
+          if (confirm!) {
             result = await product.delete();
             if (result.success) {
               UITools(context).alertDialog('${product.name} deleted',
-                  title: '${(product.isDeleted ? 'Hard ' : '')}Delete Product',
+                  title: '${(product.isDeleted! ? 'Hard ' : '')}Delete Product',
                   callBack: () {
                 //Navigator.pop(context, true);
                 getData();
@@ -132,7 +132,7 @@ class ProductListState extends State {
         case Choice.Recover:
           final confirm = await UITools(context)
               .confirmDialog('Recover \'${product.name}\'?', 'Recover Product');
-          if (confirm) {
+          if (confirm!) {
             result = await product.recover();
             if (result.success) {
               UITools(context).alertDialog('${product.name} recovered',
@@ -151,7 +151,7 @@ class ProductListState extends State {
     }
 
     void selectOrderBy(OrderBy value) {
-      String _orderBy;
+      String? _orderBy;
       switch (value) {
         case OrderBy.NameAsc:
           _orderBy = 'name';
@@ -188,7 +188,7 @@ class ProductListState extends State {
             child: SizedBox(
               width: UITools(context).scaleWidth(60),
               height: UITools(context).scaleHeight(50),
-              child: UITools.imageFromNetwork(product.imageUrl),
+              child: UITools.imageFromNetwork(product.imageUrl!),
             ),
           ),
           title: Text(
@@ -197,7 +197,7 @@ class ProductListState extends State {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 decoration:
-                    product.isDeleted ? TextDecoration.lineThrough : null,
+                    product.isDeleted! ? TextDecoration.lineThrough : null,
                 fontSize: UITools(context).scaleWidth(24)),
           ),
           subtitle: Column(
@@ -209,7 +209,7 @@ class ProductListState extends State {
                     child: Text(product.description ?? '',
                         style: TextStyle(
                             color: Color.fromRGBO(255, 255, 255, .5),
-                            decoration: product.isDeleted
+                            decoration: product.isDeleted!
                                 ? TextDecoration.lineThrough
                                 : null,
                             fontSize: UITools(context).scaleWidth(18))),
@@ -233,7 +233,7 @@ class ProductListState extends State {
         );
 
     void goToProductFilter() async {
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => ProductFilterWindow()));
@@ -248,9 +248,9 @@ class ProductListState extends State {
           elevation: 2.0,
           margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           child: Container(
-            decoration: product.isDeleted
+            decoration: product.isDeleted!
                 ? BoxDecoration(color: Color.fromRGBO(111, 14, 33, .9))
-                : product.isActive
+                : product.isActive!
                     ? BoxDecoration(color: Color.fromRGBO(111, 84, 133, .9))
                     : BoxDecoration(color: Color.fromRGBO(111, 84, 113, .5)),
             child: makeProductListTile(product),
@@ -260,41 +260,41 @@ class ProductListState extends State {
     final makeProductList = ListView(
       children: ListTile.divideTiles(
         context: this.context,
-        tiles: List.generate(products.length, (index) {
-          if (products[index].id == 0) {
+        tiles: List.generate(products!.length, (index) {
+          if (products![index].id == 0) {
             return makeProductCart(
-                products[index]); // 'List All' item has no delete/info actions
+                products![index]); // 'List All' item has no delete/info actions
           } else {
             return SlideMenu(
-              child: makeProductCart(products[index]),
+              child: makeProductCart(products![index]),
               menuItems: <Widget>[
                 Container(
                   //decoration:  BoxDecoration(color: Color.fromRGBO(111, 84, 133, .9)),
                   child: IconButton(
                       icon: Icon(
-                        products[index].isDeleted
+                        products![index].isDeleted!
                             ? Icons.delete_forever
                             : Icons.delete_outline,
                         color: Colors.pinkAccent,
                       ),
                       onPressed: () {
-                        select(Choice.Delete, products[index]);
+                        select(Choice.Delete, products![index]);
                       }),
                 ),
                 Container(
                   child: IconButton(
                       icon: Icon(
-                        products[index].isDeleted
+                        products![index].isDeleted!
                             ? Icons.restore_from_trash
                             : Icons.edit,
                         color: Colors.tealAccent,
                       ),
                       onPressed: () {
                         select(
-                            products[index].isDeleted
+                            products![index].isDeleted!
                                 ? Choice.Recover
                                 : Choice.Update,
-                            products[index]);
+                            products![index]);
                       }),
                 ),
               ],
@@ -321,7 +321,7 @@ class ProductListState extends State {
           },
         ),
         title: Text(
-          '(${products.length} items)',
+          '(${products!.length} items)',
           textAlign: TextAlign.left,
         ),
         actions: <Widget>[
@@ -335,7 +335,7 @@ class ProductListState extends State {
                   value: SearchFilterProduct.showIsDeleted,
                   onChanged: (value) {
                     setState(() {
-                      SearchFilterProduct.showIsDeleted = value;
+                      SearchFilterProduct.showIsDeleted = value!;
                       getData();
                     });
                   },

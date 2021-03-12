@@ -102,7 +102,7 @@ class UITools {
 
   void goToModelPage(StatefulWidget modelPage, String title) async {
     await Navigator.push(
-        _context,
+        _context!,
         MaterialPageRoute(
             builder: (context) => Scaffold(
                   backgroundColor: mainBgColor,
@@ -158,7 +158,7 @@ class UITools {
       dynamic obj,
       bool useSoftDeleting,
       bool hasSubItems,
-      String formListTitleField,
+      String? formListTitleField,
       void Function() getData) async {
     BoolResult result;
     bool updated = false;
@@ -167,7 +167,7 @@ class UITools {
         final confirm = await confirmDialog(
             'Delete \'${data[formListTitleField]}\'?${hasSubItems ? '\n\nWARNING!\nAlso all children items in this parent item will be deleted\nNote: You can recover this item after you delete it.' : ''}',
             '${(!useSoftDeleting ? '' : data['isDeleted'] == 1 ? 'Hard ' : '')}Delete Item');
-        if (confirm) {
+        if (confirm!) {
           result = await obj.delete() as BoolResult;
           if (result.success) {
             updated = true;
@@ -183,7 +183,7 @@ class UITools {
       case Choice.Recover:
         final confirm = await confirmDialog(
             'Recover \'${data[formListTitleField]}\'?', 'Recover Item');
-        if (confirm) {
+        if (confirm!) {
           result = await obj.recover() as BoolResult;
           if (result.success) {
             updated = true;
@@ -203,11 +203,11 @@ class UITools {
 
 // END MAIN CONTROLLER DESIGN
 
-  static AnimationController lastController;
-  double get windowWidth => MediaQuery.of(_context).size.width;
-  double get windowHeight => MediaQuery.of(_context).size.height;
+  static AnimationController? lastController;
+  double get windowWidth => MediaQuery.of(_context!).size.width;
+  double get windowHeight => MediaQuery.of(_context!).size.height;
 
-  BuildContext _context;
+  BuildContext? _context;
   // this resolution is iphone 6/7/8
   static const int _mobileSizeWidth = 375;
   static const int _mobileSizeHeight = 667;
@@ -245,7 +245,7 @@ class UITools {
 
   Future<int> showWaitScreen(String message, int second) async {
     showDialog(
-        context: _context,
+        context: _context!,
         barrierDismissible: false,
         builder: (BuildContext context) {
           return Dialog(
@@ -269,8 +269,8 @@ class UITools {
         });
 
     return Future<int>.delayed(Duration(seconds: second), () {
-      Navigator.pop(_context); //pop dialog
-      return;
+      Navigator.pop(_context!); //pop dialog
+      return 0;
     });
   }
 
@@ -284,7 +284,7 @@ class UITools {
     return retVal;
   }
 
-  static Container imageFromNetwork(String imgUrl) {
+  static Container imageFromNetwork(String? imgUrl) {
     if (imgUrl == null || imgUrl.isEmpty) {
       return Container(
           decoration: BoxDecoration(
@@ -297,7 +297,7 @@ class UITools {
     }
   }
 
-  static Container imageFromCache(String imgUrl) {
+  static Container imageFromCache(String? imgUrl) {
     if (imgUrl == null || imgUrl.isEmpty) {
       return Container(
           decoration: BoxDecoration(
@@ -315,7 +315,7 @@ class UITools {
     }
   }
 
-  static Container imageFromCacheProvider(String imgUrl) {
+  static Container imageFromCacheProvider(String? imgUrl) {
     if (imgUrl == null || imgUrl.isEmpty) {
       return Container(
           decoration: BoxDecoration(
@@ -334,16 +334,16 @@ class UITools {
   }
 
   void alertDialog(String message,
-      {String title = CONSTANTS.APP_TITLE, VoidCallback callBack}) async {
+      {String title = CONSTANTS.APP_TITLE, VoidCallback? callBack}) async {
     return showDialog(
-        context: _context,
+        context: _context!,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(title),
             content: Text(message),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
-              FlatButton(
+              TextButton(
                 child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -356,23 +356,23 @@ class UITools {
         });
   }
 
-  Future<bool> confirmDialog(String message,
+  Future<bool?> confirmDialog(String message,
       [String title = 'SqfEntity Sample']) async {
     return showDialog<bool>(
-      context: _context,
+      context: _context!,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
-            FlatButton(
+            TextButton(
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(true);

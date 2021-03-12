@@ -26,16 +26,15 @@ import 'sqfentity_connection_base.dart';
 
 // BEGIN DATABASE CONNECTION
 
-class SqfEntityConnectionMobile implements SqfEntityConnectionBase{
-   SqfEntityConnectionMobile(this.connection);
+class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
+  SqfEntityConnectionMobile(this.connection);
   @override
   Future<void> writeDatabase(ByteData data) async {
-   
     final List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     try {
       final dbpath = await getDatabasesPath();
-      final path = '$dbpath/${connection.databaseName}';
+      final path = '$dbpath/${connection!.databaseName}';
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
         if (File('$path-wal').existsSync()) {
@@ -50,23 +49,23 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase{
   }
 
   /// When the software/app is started, sqfentity checks the database was it initialized. If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
-   @override
-   Future<Database> openDb() async {
+  @override
+  Future<Database> openDb() async {
     final lock = Lock();
-       Database _db;
+    Database? _db;
     await lock.synchronized(() async {
       final databasesPath = await getDatabasesPath();
-      final path = join(databasesPath, connection.databaseName);
+      final path = join(databasesPath!, connection!.databaseName);
       final file = File(path);
 
       // check if file exists
       if (!file.existsSync()) {
         // Copy from asset if MyDbModel.bundledDatabasePath is not empty
-        if (connection.bundledDatabasePath != null &&
-            connection.bundledDatabasePath != '' &&
-            connection.bundledDatabasePath != 'null') {
+        if (connection!.bundledDatabasePath != null &&
+            connection!.bundledDatabasePath != '' &&
+            connection!.bundledDatabasePath != 'null') {
           final ByteData data =
-              await rootBundle.load(connection.bundledDatabasePath);
+              await rootBundle.load(connection!.bundledDatabasePath!);
           await writeDatabase(data);
         }
       }
@@ -75,23 +74,24 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase{
       // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: password); // SQLChipher
 
       // uncomment line below if you want to use sqflite
-      _db = await openDatabase(path, version: connection.dbVersion ?? 1, onCreate: createDb); // SQFLite
-   
+      _db = await openDatabase(path,
+          version: connection!.dbVersion, onCreate: createDb); // SQFLite
     });
     //}
-    return _db;
+    return _db!;
   }
 
   /// Creates db if not exist
-   @override
-   void createDb(Database db, int version) async {
+  @override
+  void createDb(Database db, int version) async {
     await db.execute(
         'Create table sqfentitytables (id integer primary key, tablename text, version int, properties text)');
     await db.execute(
         'Create table sqfentitysequences (id text UNIQUE, value integer)');
-    print('Your database ${connection.databaseName} v:$version created successfully');
+    print(
+        'Your database ${connection!.databaseName} v:$version created successfully');
   }
 
   @override
-  SqfEntityConnection connection;
+  SqfEntityConnection? connection;
 }

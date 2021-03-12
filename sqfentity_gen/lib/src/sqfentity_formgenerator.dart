@@ -16,7 +16,7 @@ class Imports {
 
 class SqfEntityFormGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
   @override
-  String generateForAnnotatedElement(
+  String? generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
     final model = annotation.read('model').objectValue;
 
@@ -32,23 +32,24 @@ class SqfEntityFormGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
         '-------------------------------------------------------FormBuilder: $instanceName');
     final dbModel = builder.toModel();
 
-    if (dbModel.formTables.isEmpty) 
-    {return null;}
+    if (dbModel.formTables!.isEmpty) {
+      return null;
+    }
 
     final modelStr = StringBuffer();
     final String path = element.source
         .toString()
         .substring(element.source.toString().lastIndexOf('/') + 1);
-    if (dbModel.ignoreForFile != null && dbModel.ignoreForFile.isNotEmpty) {
+    if (dbModel.ignoreForFile != null && dbModel.ignoreForFile!.isNotEmpty) {
       modelStr
-          .writeln('// ignore_for_file: ${dbModel.ignoreForFile.join(', ')}');
+          .writeln('// ignore_for_file: ${dbModel.ignoreForFile!.join(', ')}');
     }
     // print('${tables[0].modelName} Model recognized succesfuly');
     modelStr.writeln('part of \'$path\';');
 
     // print('before for (final table in tables), tables.length=${dbModel.formTables.length}');
     //..writeln('/*') // write output as commented to see what is wrong
-    for (final table in dbModel.formTables) {
+    for (final table in dbModel.formTables!) {
       //  print('before toFormWidgetsCode for table ${table.tableName}');
       modelStr.writeln(SqfEntityFormConverter(table).toFormWidgetsCode());
     }

@@ -16,13 +16,17 @@ class SQFViewList extends StatefulWidget {
     this.filterParameter,
   });
   final dynamic T;
-  final bool useSoftDeleting;
-  final String filterExpression;
+  final bool? useSoftDeleting;
+  final String? filterExpression;
   final dynamic filterParameter;
-  final String primaryKeyName;
+  final String? primaryKeyName;
   @override
   State<StatefulWidget> createState() => SQFViewListState(
-      T, useSoftDeleting, filterExpression, primaryKeyName, filterParameter);
+      T,
+      useSoftDeleting ?? false,
+      filterExpression,
+      primaryKeyName,
+      filterParameter);
 }
 
 class SQFViewListState extends State {
@@ -31,11 +35,11 @@ class SQFViewListState extends State {
   dynamic T;
   final bool useSoftDeleting;
 
-  String formListTitleField;
-  String formListSubTitleField;
-  final String filterExpression;
+  String? formListTitleField;
+  String? formListSubTitleField;
+  final String? filterExpression;
   final dynamic filterParameter;
-  final String primaryKeyName;
+  final String? primaryKeyName;
   List<dynamic> datalist = <dynamic>[];
   bool showIsDeleted = false;
   @override
@@ -44,10 +48,10 @@ class SQFViewListState extends State {
       formListTitleField = T.formListTitleField as String;
       formListSubTitleField = T.formListSubTitleField as String;
       final selectCols = <String>[]
-        ..add(primaryKeyName)
-        ..add(formListTitleField);
-      if (formListSubTitleField != null && formListSubTitleField.isNotEmpty) {
-        selectCols.add(formListSubTitleField);
+        ..add(primaryKeyName!)
+        ..add(formListTitleField!);
+      if (formListSubTitleField != null && formListSubTitleField!.isNotEmpty) {
+        selectCols.add(formListSubTitleField!);
       }
       if (useSoftDeleting) {
         selectCols.add('isDeleted');
@@ -68,12 +72,12 @@ class SQFViewListState extends State {
     }
 
     void goToDetail(dynamic data) async {
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => Scaffold(
                     backgroundColor: UITools.mainBgColor,
-                    body: SQFViewDetail(data, formListTitleField, T,
+                    body: SQFViewDetail(data, formListTitleField!, T,
                         useSoftDeleting, primaryKeyName),
                     //body: SQFViewListItems(),
                     appBar: AppBar(
@@ -95,7 +99,7 @@ class SQFViewListState extends State {
 
     Future<void> goToUpdate(dynamic data) async {
       final editWidget = await T.gotoEdit(data) as Widget;
-      final bool result = await Navigator.push(
+      final bool? result = await Navigator.push(
           context, MaterialPageRoute(builder: (context) => editWidget));
       if (result != null) {
         if (result) {
@@ -133,7 +137,7 @@ class SQFViewListState extends State {
                 fontSize: UITools(context).scaleWidth(24)),
           ),
           subtitle:
-              formListSubTitleField != null && formListSubTitleField.isNotEmpty
+              formListSubTitleField != null && formListSubTitleField!.isNotEmpty
                   ? Text(data[formListSubTitleField].toString(),
                       style: TextStyle(
                         color: UITools.mainTextColorAlternative,
@@ -186,7 +190,7 @@ class SQFViewListState extends State {
                           obj,
                           useSoftDeleting,
                           false,
-                          formListTitleField,
+                          formListTitleField!,
                           getData);
                     }),
               ),
@@ -217,7 +221,7 @@ class SQFViewListState extends State {
                             obj,
                             useSoftDeleting,
                             false,
-                            formListTitleField,
+                            formListTitleField!,
                             getData);
                       }
                     }),
@@ -259,7 +263,7 @@ class SQFViewListState extends State {
                   value: showIsDeleted,
                   onChanged: (value) {
                     setState(() {
-                      showIsDeleted = value;
+                      showIsDeleted = value!;
                       getData();
                     });
                   },

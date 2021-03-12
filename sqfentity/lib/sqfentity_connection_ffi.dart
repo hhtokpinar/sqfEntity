@@ -16,7 +16,6 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-
 import 'dart:async' show Future;
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -28,19 +27,18 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 // BEGIN DATABASE CONNECTION
-class SqfEntityConnectionFfi implements SqfEntityConnectionBase{
-   SqfEntityConnectionFfi(this.connection);
-  
+class SqfEntityConnectionFfi implements SqfEntityConnectionBase {
+  SqfEntityConnectionFfi(this.connection);
 
-    @override
+  @override
   Future<void> writeDatabase(ByteData data) async {
-     final List<int> bytes =
+    final List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     try {
       sqfliteFfiInit();
       final databaseFactory = databaseFactoryFfi;
       final dbpath = await databaseFactory.getDatabasesPath();
-      final path = '$dbpath/${connection.databaseName}';
+      final path = '$dbpath/${connection!.databaseName}';
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
         if (File('$path-wal').existsSync()) {
@@ -55,23 +53,25 @@ class SqfEntityConnectionFfi implements SqfEntityConnectionBase{
   }
 
   /// When the software/app is started, sqfentity checks the database was it initialized. If needed, initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
-  @override Future<Database> openDb() async {
+  @override
+  Future<Database> openDb() async {
     final lock = Lock();
-    Database _db;
+    Database? _db;
     await lock.synchronized(() async {
       sqfliteFfiInit();
       final databaseFactory = databaseFactoryFfi;
       final databasesPath = await databaseFactory.getDatabasesPath();
-      final path = join(databasesPath, connection.databaseName);
+      final path = join(databasesPath, connection!.databaseName);
       final file = File(path);
 
       // check if file exists
       if (!file.existsSync()) {
         // Copy from asset if MyDbModel.bundledDatabasePath is not empty
-        if (connection.bundledDatabasePath != null &&
-            connection.bundledDatabasePath != '' &&
-            connection.bundledDatabasePath != 'null') {
-          final ByteData data = await rootBundle.load(connection.bundledDatabasePath);
+        if (connection!.bundledDatabasePath != null &&
+            connection!.bundledDatabasePath != '' &&
+            connection!.bundledDatabasePath != 'null') {
+          final ByteData data =
+              await rootBundle.load(connection!.bundledDatabasePath!);
           await writeDatabase(data);
         }
       }
@@ -84,26 +84,26 @@ class SqfEntityConnectionFfi implements SqfEntityConnectionBase{
       //} else {
 
       _db = await databaseFactory.openDatabase(path,
-          options:
-              OpenDatabaseOptions(version: connection.dbVersion ?? 1, onCreate: createDb));
+          options: OpenDatabaseOptions(
+              version: connection!.dbVersion, onCreate: createDb));
 
       //  }
     });
     //}
-    return _db;
+    return _db!;
   }
 
   /// Creates db if not exist
-   @override 
-   void createDb(Database db, int version) async {
+  @override
+  void createDb(Database db, int version) async {
     await db.execute(
         'Create table sqfentitytables (id integer primary key, tablename text, version int, properties text)');
     await db.execute(
         'Create table sqfentitysequences (id text UNIQUE, value integer)');
-     print('Your database ${connection.databaseName} v:$version created successfully');
+    print(
+        'Your database ${connection!.databaseName} v:$version created successfully');
   }
 
   @override
-  SqfEntityConnection connection;
+  SqfEntityConnection? connection;
 }
-

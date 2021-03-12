@@ -20,20 +20,19 @@ import 'dart:async' show Future;
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 
-
 class SqfEntityConnection {
   SqfEntityConnection(this.databaseName,
       {this.bundledDatabasePath, this.dbVersion = 1, this.password});
   String databaseName;
-  String bundledDatabasePath;
-  String password;
+  String? bundledDatabasePath;
+  String? password;
   int dbVersion;
 }
 
 abstract class SqfEntityConnectionBase {
   SqfEntityConnectionBase({this.connection});
-  static Map<String, Database> dbMap;
-  SqfEntityConnection connection;
+  static Map<String, Database>? dbMap;
+  SqfEntityConnection? connection;
   Future<void> writeDatabase(ByteData data);
   Future<Database> openDb();
   void createDb(Database db, int version);

@@ -23,7 +23,7 @@ class ProductAddState extends State {
 
   List<DropdownMenuItem<int>> _dropdownMenuItemsForCategoryId =
       <DropdownMenuItem<int>>[];
-  int _selectedCategoryId;
+  int? _selectedCategoryId;
 
   final TextEditingController txtRownum = TextEditingController();
   final TextEditingController txtImageUrl = TextEditingController();
@@ -33,20 +33,19 @@ class ProductAddState extends State {
 
   @override
   void initState() {
-    txtName.text = product.name == null ? '' : product.name;
-    txtDescription.text =
-        product.description == null ? '' : product.description;
+    txtName.text = product.name ?? '';
+    txtDescription.text = product.description ?? '';
     txtPrice.text = product.price == null ? '' : product.price.toString();
 
     txtRownum.text = product.rownum == null ? '' : product.rownum.toString();
-    txtImageUrl.text = product.imageUrl == null ? '' : product.imageUrl;
+    txtImageUrl.text = product.imageUrl ?? '';
     txtDatetime.text =
-        product.datetime == null ? '' : UITools.convertDate(product.datetime);
+        product.datetime == null ? '' : UITools.convertDate(product.datetime!);
     txtTimeForDatetime.text =
-        product.datetime == null ? '' : UITools.convertTime(product.datetime);
+        product.datetime == null ? '' : UITools.convertTime(product.datetime!);
 
     txtDate.text =
-        product.date == null ? '' : UITools.convertDate(product.date);
+        product.date == null ? '' : UITools.convertDate(product.date!);
 
     super.initState();
   }
@@ -66,7 +65,7 @@ class ProductAddState extends State {
         _dropdownMenuItemsForCategoryId.isEmpty) {
       buildDropDownMenuForCategoryId();
     }
-    void onChangeDropdownItemForCategoryId(int selectedCategoryId) {
+    void onChangeDropdownItemForCategoryId(int? selectedCategoryId) {
       setState(() {
         _selectedCategoryId = selectedCategoryId;
       });
@@ -97,10 +96,10 @@ class ProductAddState extends State {
                     buildRowImageUrl(),
                     buildRowDatetime(),
                     buildRowDate(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -121,7 +120,7 @@ class ProductAddState extends State {
   Widget buildRowName() {
     return TextFormField(
       validator: (value) {
-        if (value.isEmpty) {
+        if (value == null || value.isEmpty) {
           return 'Please enter Name';
         }
         return null;
@@ -141,7 +140,7 @@ class ProductAddState extends State {
   Widget buildRowPrice() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && double.tryParse(value) == null) {
+        if (value!.isNotEmpty && double.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -158,7 +157,7 @@ class ProductAddState extends State {
         Text('IsActive?'),
         Checkbox(
           value: product.isActive ?? false,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               product.isActive = value;
             });
@@ -169,7 +168,8 @@ class ProductAddState extends State {
   }
 
   Widget buildRowCategoryId(
-      void Function(int selectedCategoryId) onChangeDropdownItemForCategoryId) {
+      void Function(int? selectedCategoryId)
+          onChangeDropdownItemForCategoryId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -184,13 +184,6 @@ class ProductAddState extends State {
                 items: _dropdownMenuItemsForCategoryId,
                 onChanged: onChangeDropdownItemForCategoryId,
                 validator: (value) {
-                  if ((_selectedCategoryId != null &&
-                          _selectedCategoryId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Category';
-                  }
                   return null;
                 },
               ),
@@ -202,7 +195,7 @@ class ProductAddState extends State {
   Widget buildRowRownum() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -267,7 +260,7 @@ class ProductAddState extends State {
                         hours: sqfSelectedDate.hour,
                         minutes: sqfSelectedDate.minute,
                         seconds: sqfSelectedDate.second));
-                txtDatetime.text = UITools.convertDate(product.datetime);
+                txtDatetime.text = UITools.convertDate(product.datetime!);
               });
             },
                 currentTime: DateTime.tryParse(
@@ -337,7 +330,7 @@ class ProductAddState extends State {
       ..datetime = _datetime
       ..date = _date;
     await product.save();
-    if (product.saveResult.success) {
+    if (product.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(product.saveResult.toString(),
@@ -362,7 +355,7 @@ class CategoryAddState extends State {
 
   @override
   void initState() {
-    txtName.text = category.name == null ? '' : category.name;
+    txtName.text = category.name ?? '';
 
     super.initState();
   }
@@ -388,10 +381,10 @@ class CategoryAddState extends State {
                   children: <Widget>[
                     buildRowName(),
                     buildRowIsActive(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -412,7 +405,7 @@ class CategoryAddState extends State {
   Widget buildRowName() {
     return TextFormField(
       validator: (value) {
-        if (value.isEmpty) {
+        if (value == null || value.isEmpty) {
           return 'Please enter Name';
         }
         return null;
@@ -428,7 +421,7 @@ class CategoryAddState extends State {
         Text('IsActive?'),
         Checkbox(
           value: category.isActive ?? false,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               category.isActive = value;
             });
@@ -455,7 +448,7 @@ class CategoryAddState extends State {
   void save() async {
     category..name = txtName.text;
     await category.save();
-    if (category.saveResult.success) {
+    if (category.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(category.saveResult.toString(),
@@ -482,7 +475,7 @@ class TodoAddState extends State {
   @override
   void initState() {
     txtUserId.text = todos.userId == null ? '' : todos.userId.toString();
-    txtTitle.text = todos.title == null ? '' : todos.title;
+    txtTitle.text = todos.title ?? '';
 
     super.initState();
   }
@@ -509,10 +502,10 @@ class TodoAddState extends State {
                     buildRowUserId(),
                     buildRowTitle(),
                     buildRowCompleted(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -533,7 +526,7 @@ class TodoAddState extends State {
   Widget buildRowId() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -547,7 +540,7 @@ class TodoAddState extends State {
   Widget buildRowUserId() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -571,7 +564,7 @@ class TodoAddState extends State {
         Text('Completed?'),
         Checkbox(
           value: todos.completed ?? false,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               todos.completed = value;
             });
@@ -601,7 +594,7 @@ class TodoAddState extends State {
       ..userId = int.tryParse(txtUserId.text)
       ..title = txtTitle.text;
     await todos.save();
-    if (todos.saveResult.success) {
+    if (todos.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(todos.saveResult.toString(),

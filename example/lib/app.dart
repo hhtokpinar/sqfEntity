@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
-  Home({Key key, this.title}) : super(key: key);
-  final String title;
+  Home({Key? key, this.title}) : super(key: key);
+  final String? title;
 
   @override
   HomeState createState() => HomeState();
@@ -28,7 +28,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   TextEditingController txtModel = TextEditingController();
-  int selectedDb;
+  int? selectedDb;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

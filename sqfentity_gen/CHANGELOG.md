@@ -1,3 +1,8 @@
+## 1.5.0-nullsafety.0
+
+1. Migrated to null safety, min SDK is 2.12.0.
+
+
 ## 1.4.0
 
 1. Added Desktop support [issue #59](https://github.com/hhtokpinar/sqfEntity/issues/59)

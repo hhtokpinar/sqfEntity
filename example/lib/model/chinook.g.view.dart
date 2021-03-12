@@ -17,15 +17,14 @@ class AlbumAddState extends State {
   AlbumAddState(this.album);
   Album album;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtAlbumId = TextEditingController();
   final TextEditingController txtTitle = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForArtistId =
       <DropdownMenuItem<int>>[];
-  int _selectedArtistId;
+  int? _selectedArtistId;
 
   @override
   void initState() {
-    txtTitle.text = album.Title == null ? '' : album.Title;
+    txtTitle.text = album.Title ?? '';
 
     super.initState();
   }
@@ -45,7 +44,7 @@ class AlbumAddState extends State {
         _dropdownMenuItemsForArtistId.isEmpty) {
       buildDropDownMenuForArtistId();
     }
-    void onChangeDropdownItemForArtistId(int selectedArtistId) {
+    void onChangeDropdownItemForArtistId(int? selectedArtistId) {
       setState(() {
         _selectedArtistId = selectedArtistId;
       });
@@ -68,13 +67,12 @@ class AlbumAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowAlbumId(),
                     buildRowTitle(),
                     buildRowArtistId(onChangeDropdownItemForArtistId),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -92,20 +90,6 @@ class AlbumAddState extends State {
     );
   }
 
-  Widget buildRowAlbumId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtAlbumId,
-      decoration: InputDecoration(labelText: 'AlbumId'),
-    );
-  }
-
   Widget buildRowTitle() {
     return TextFormField(
       controller: txtTitle,
@@ -114,7 +98,7 @@ class AlbumAddState extends State {
   }
 
   Widget buildRowArtistId(
-      void Function(int selectedArtistId) onChangeDropdownItemForArtistId) {
+      void Function(int? selectedArtistId) onChangeDropdownItemForArtistId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -129,13 +113,6 @@ class AlbumAddState extends State {
                 items: _dropdownMenuItemsForArtistId,
                 onChanged: onChangeDropdownItemForArtistId,
                 validator: (value) {
-                  if ((_selectedArtistId != null &&
-                          _selectedArtistId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Artist';
-                  }
                   return null;
                 },
               ),
@@ -160,11 +137,10 @@ class AlbumAddState extends State {
 
   void save() async {
     album
-      ..AlbumId = int.tryParse(txtAlbumId.text)
       ..Title = txtTitle.text
       ..ArtistId = _selectedArtistId;
     await album.save();
-    if (album.saveResult.success) {
+    if (album.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(album.saveResult.toString(),
@@ -184,12 +160,11 @@ class ArtistAddState extends State {
   ArtistAddState(this.artist);
   Artist artist;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtArtistId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = artist.Name == null ? '' : artist.Name;
+    txtName.text = artist.Name ?? '';
 
     super.initState();
   }
@@ -213,12 +188,11 @@ class ArtistAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowArtistId(),
                     buildRowName(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -233,20 +207,6 @@ class ArtistAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowArtistId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtArtistId,
-      decoration: InputDecoration(labelText: 'ArtistId'),
     );
   }
 
@@ -272,11 +232,9 @@ class ArtistAddState extends State {
   }
 
   void save() async {
-    artist
-      ..ArtistId = int.tryParse(txtArtistId.text)
-      ..Name = txtName.text;
+    artist..Name = txtName.text;
     await artist.save();
-    if (artist.saveResult.success) {
+    if (artist.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(artist.saveResult.toString(),
@@ -297,7 +255,6 @@ class CustomerAddState extends State {
   CustomerAddState(this.customer);
   Customer customer;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtCustomerId = TextEditingController();
   final TextEditingController txtFirstName = TextEditingController();
   final TextEditingController txtLastName = TextEditingController();
   final TextEditingController txtCompany = TextEditingController();
@@ -311,21 +268,21 @@ class CustomerAddState extends State {
   final TextEditingController txtEmail = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForSupportRepId =
       <DropdownMenuItem<int>>[];
-  int _selectedSupportRepId;
+  int? _selectedSupportRepId;
 
   @override
   void initState() {
-    txtFirstName.text = customer.FirstName == null ? '' : customer.FirstName;
-    txtLastName.text = customer.LastName == null ? '' : customer.LastName;
-    txtCompany.text = customer.Company == null ? '' : customer.Company;
-    txtAddress.text = customer.Address == null ? '' : customer.Address;
-    txtCity.text = customer.City == null ? '' : customer.City;
-    txtState.text = customer.State == null ? '' : customer.State;
-    txtCountry.text = customer.Country == null ? '' : customer.Country;
-    txtPostalCode.text = customer.PostalCode == null ? '' : customer.PostalCode;
-    txtPhone.text = customer.Phone == null ? '' : customer.Phone;
-    txtFax.text = customer.Fax == null ? '' : customer.Fax;
-    txtEmail.text = customer.Email == null ? '' : customer.Email;
+    txtFirstName.text = customer.FirstName ?? '';
+    txtLastName.text = customer.LastName ?? '';
+    txtCompany.text = customer.Company ?? '';
+    txtAddress.text = customer.Address ?? '';
+    txtCity.text = customer.City ?? '';
+    txtState.text = customer.State ?? '';
+    txtCountry.text = customer.Country ?? '';
+    txtPostalCode.text = customer.PostalCode ?? '';
+    txtPhone.text = customer.Phone ?? '';
+    txtFax.text = customer.Fax ?? '';
+    txtEmail.text = customer.Email ?? '';
 
     super.initState();
   }
@@ -345,7 +302,7 @@ class CustomerAddState extends State {
         _dropdownMenuItemsForSupportRepId.isEmpty) {
       buildDropDownMenuForSupportRepId();
     }
-    void onChangeDropdownItemForSupportRepId(int selectedSupportRepId) {
+    void onChangeDropdownItemForSupportRepId(int? selectedSupportRepId) {
       setState(() {
         _selectedSupportRepId = selectedSupportRepId;
       });
@@ -368,7 +325,6 @@ class CustomerAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowCustomerId(),
                     buildRowFirstName(),
                     buildRowLastName(),
                     buildRowCompany(),
@@ -381,10 +337,10 @@ class CustomerAddState extends State {
                     buildRowFax(),
                     buildRowEmail(),
                     buildRowSupportRepId(onChangeDropdownItemForSupportRepId),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -399,20 +355,6 @@ class CustomerAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowCustomerId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtCustomerId,
-      decoration: InputDecoration(labelText: 'CustomerId'),
     );
   }
 
@@ -494,7 +436,7 @@ class CustomerAddState extends State {
   }
 
   Widget buildRowSupportRepId(
-      void Function(int selectedSupportRepId)
+      void Function(int? selectedSupportRepId)
           onChangeDropdownItemForSupportRepId) {
     return Row(
       children: <Widget>[
@@ -510,13 +452,6 @@ class CustomerAddState extends State {
                 items: _dropdownMenuItemsForSupportRepId,
                 onChanged: onChangeDropdownItemForSupportRepId,
                 validator: (value) {
-                  if ((_selectedSupportRepId != null &&
-                          _selectedSupportRepId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Employee';
-                  }
                   return null;
                 },
               ),
@@ -541,7 +476,6 @@ class CustomerAddState extends State {
 
   void save() async {
     customer
-      ..CustomerId = int.tryParse(txtCustomerId.text)
       ..FirstName = txtFirstName.text
       ..LastName = txtLastName.text
       ..Company = txtCompany.text
@@ -555,7 +489,7 @@ class CustomerAddState extends State {
       ..Email = txtEmail.text
       ..SupportRepId = _selectedSupportRepId;
     await customer.save();
-    if (customer.saveResult.success) {
+    if (customer.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(customer.saveResult.toString(),
@@ -576,7 +510,6 @@ class EmployeeAddState extends State {
   EmployeeAddState(this.employee);
   Employee employee;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtEmployeeId = TextEditingController();
   final TextEditingController txtLastName = TextEditingController();
   final TextEditingController txtFirstName = TextEditingController();
   final TextEditingController txtTitle = TextEditingController();
@@ -594,33 +527,35 @@ class EmployeeAddState extends State {
   final TextEditingController txtEmail = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForReportsTo =
       <DropdownMenuItem<int>>[];
-  int _selectedReportsTo;
+  int? _selectedReportsTo;
 
   @override
   void initState() {
-    txtLastName.text = employee.LastName == null ? '' : employee.LastName;
-    txtFirstName.text = employee.FirstName == null ? '' : employee.FirstName;
-    txtTitle.text = employee.Title == null ? '' : employee.Title;
+    txtLastName.text = employee.LastName ?? '';
+    txtFirstName.text = employee.FirstName ?? '';
+    txtTitle.text = employee.Title ?? '';
     txtBirthDate.text = employee.BirthDate == null
         ? ''
-        : UITools.convertDate(employee.BirthDate);
+        : UITools.convertDate(employee.BirthDate!);
     txtTimeForBirthDate.text = employee.BirthDate == null
         ? ''
-        : UITools.convertTime(employee.BirthDate);
+        : UITools.convertTime(employee.BirthDate!);
 
-    txtHireDate.text =
-        employee.HireDate == null ? '' : UITools.convertDate(employee.HireDate);
-    txtTimeForHireDate.text =
-        employee.HireDate == null ? '' : UITools.convertTime(employee.HireDate);
+    txtHireDate.text = employee.HireDate == null
+        ? ''
+        : UITools.convertDate(employee.HireDate!);
+    txtTimeForHireDate.text = employee.HireDate == null
+        ? ''
+        : UITools.convertTime(employee.HireDate!);
 
-    txtAddress.text = employee.Address == null ? '' : employee.Address;
-    txtCity.text = employee.City == null ? '' : employee.City;
-    txtState.text = employee.State == null ? '' : employee.State;
-    txtCountry.text = employee.Country == null ? '' : employee.Country;
-    txtPostalCode.text = employee.PostalCode == null ? '' : employee.PostalCode;
-    txtPhone.text = employee.Phone == null ? '' : employee.Phone;
-    txtFax.text = employee.Fax == null ? '' : employee.Fax;
-    txtEmail.text = employee.Email == null ? '' : employee.Email;
+    txtAddress.text = employee.Address ?? '';
+    txtCity.text = employee.City ?? '';
+    txtState.text = employee.State ?? '';
+    txtCountry.text = employee.Country ?? '';
+    txtPostalCode.text = employee.PostalCode ?? '';
+    txtPhone.text = employee.Phone ?? '';
+    txtFax.text = employee.Fax ?? '';
+    txtEmail.text = employee.Email ?? '';
 
     super.initState();
   }
@@ -640,7 +575,7 @@ class EmployeeAddState extends State {
         _dropdownMenuItemsForReportsTo.isEmpty) {
       buildDropDownMenuForReportsTo();
     }
-    void onChangeDropdownItemForReportsTo(int selectedReportsTo) {
+    void onChangeDropdownItemForReportsTo(int? selectedReportsTo) {
       setState(() {
         _selectedReportsTo = selectedReportsTo;
       });
@@ -663,7 +598,6 @@ class EmployeeAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowEmployeeId(),
                     buildRowLastName(),
                     buildRowFirstName(),
                     buildRowTitle(),
@@ -678,10 +612,10 @@ class EmployeeAddState extends State {
                     buildRowFax(),
                     buildRowEmail(),
                     buildRowReportsTo(onChangeDropdownItemForReportsTo),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -696,20 +630,6 @@ class EmployeeAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowEmployeeId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtEmployeeId,
-      decoration: InputDecoration(labelText: 'EmployeeId'),
     );
   }
 
@@ -780,7 +700,7 @@ class EmployeeAddState extends State {
                         hours: sqfSelectedDate.hour,
                         minutes: sqfSelectedDate.minute,
                         seconds: sqfSelectedDate.second));
-                txtBirthDate.text = UITools.convertDate(employee.BirthDate);
+                txtBirthDate.text = UITools.convertDate(employee.BirthDate!);
               });
             },
                 currentTime: DateTime.tryParse(
@@ -840,7 +760,7 @@ class EmployeeAddState extends State {
                         hours: sqfSelectedDate.hour,
                         minutes: sqfSelectedDate.minute,
                         seconds: sqfSelectedDate.second));
-                txtHireDate.text = UITools.convertDate(employee.HireDate);
+                txtHireDate.text = UITools.convertDate(employee.HireDate!);
               });
             },
                 currentTime: DateTime.tryParse(
@@ -911,7 +831,7 @@ class EmployeeAddState extends State {
   }
 
   Widget buildRowReportsTo(
-      void Function(int selectedReportsTo) onChangeDropdownItemForReportsTo) {
+      void Function(int? selectedReportsTo) onChangeDropdownItemForReportsTo) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -926,13 +846,6 @@ class EmployeeAddState extends State {
                 items: _dropdownMenuItemsForReportsTo,
                 onChanged: onChangeDropdownItemForReportsTo,
                 validator: (value) {
-                  if ((_selectedReportsTo != null &&
-                          _selectedReportsTo.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Employee';
-                  }
                   return null;
                 },
               ),
@@ -974,7 +887,6 @@ class EmployeeAddState extends State {
     }
 
     employee
-      ..EmployeeId = int.tryParse(txtEmployeeId.text)
       ..LastName = txtLastName.text
       ..FirstName = txtFirstName.text
       ..Title = txtTitle.text
@@ -990,7 +902,7 @@ class EmployeeAddState extends State {
       ..Email = txtEmail.text
       ..ReportsTo = _selectedReportsTo;
     await employee.save();
-    if (employee.saveResult.success) {
+    if (employee.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(employee.saveResult.toString(),
@@ -1010,12 +922,11 @@ class GenreAddState extends State {
   GenreAddState(this.genre);
   Genre genre;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtGenreId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = genre.Name == null ? '' : genre.Name;
+    txtName.text = genre.Name ?? '';
 
     super.initState();
   }
@@ -1039,12 +950,11 @@ class GenreAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowGenreId(),
                     buildRowName(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -1059,20 +969,6 @@ class GenreAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowGenreId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtGenreId,
-      decoration: InputDecoration(labelText: 'GenreId'),
     );
   }
 
@@ -1098,11 +994,9 @@ class GenreAddState extends State {
   }
 
   void save() async {
-    genre
-      ..GenreId = int.tryParse(txtGenreId.text)
-      ..Name = txtName.text;
+    genre..Name = txtName.text;
     await genre.save();
-    if (genre.saveResult.success) {
+    if (genre.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(genre.saveResult.toString(),
@@ -1122,7 +1016,6 @@ class InvoiceAddState extends State {
   InvoiceAddState(this.invoice);
   Invoice invoice;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtInvoiceId = TextEditingController();
   final TextEditingController txtInvoiceDate = TextEditingController();
   final TextEditingController txtTimeForInvoiceDate = TextEditingController();
   final TextEditingController txtBillingAddress = TextEditingController();
@@ -1133,27 +1026,22 @@ class InvoiceAddState extends State {
   final TextEditingController txtTotal = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForCustomerId =
       <DropdownMenuItem<int>>[];
-  int _selectedCustomerId;
+  int? _selectedCustomerId;
 
   @override
   void initState() {
     txtInvoiceDate.text = invoice.InvoiceDate == null
         ? ''
-        : UITools.convertDate(invoice.InvoiceDate);
+        : UITools.convertDate(invoice.InvoiceDate!);
     txtTimeForInvoiceDate.text = invoice.InvoiceDate == null
         ? ''
-        : UITools.convertTime(invoice.InvoiceDate);
+        : UITools.convertTime(invoice.InvoiceDate!);
 
-    txtBillingAddress.text =
-        invoice.BillingAddress == null ? '' : invoice.BillingAddress;
-    txtBillingCity.text =
-        invoice.BillingCity == null ? '' : invoice.BillingCity;
-    txtBillingState.text =
-        invoice.BillingState == null ? '' : invoice.BillingState;
-    txtBillingCountry.text =
-        invoice.BillingCountry == null ? '' : invoice.BillingCountry;
-    txtBillingPostalCode.text =
-        invoice.BillingPostalCode == null ? '' : invoice.BillingPostalCode;
+    txtBillingAddress.text = invoice.BillingAddress ?? '';
+    txtBillingCity.text = invoice.BillingCity ?? '';
+    txtBillingState.text = invoice.BillingState ?? '';
+    txtBillingCountry.text = invoice.BillingCountry ?? '';
+    txtBillingPostalCode.text = invoice.BillingPostalCode ?? '';
     txtTotal.text = invoice.Total == null ? '' : invoice.Total.toString();
 
     super.initState();
@@ -1174,7 +1062,7 @@ class InvoiceAddState extends State {
         _dropdownMenuItemsForCustomerId.isEmpty) {
       buildDropDownMenuForCustomerId();
     }
-    void onChangeDropdownItemForCustomerId(int selectedCustomerId) {
+    void onChangeDropdownItemForCustomerId(int? selectedCustomerId) {
       setState(() {
         _selectedCustomerId = selectedCustomerId;
       });
@@ -1197,7 +1085,6 @@ class InvoiceAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowInvoiceId(),
                     buildRowInvoiceDate(),
                     buildRowBillingAddress(),
                     buildRowBillingCity(),
@@ -1206,10 +1093,10 @@ class InvoiceAddState extends State {
                     buildRowBillingPostalCode(),
                     buildRowTotal(),
                     buildRowCustomerId(onChangeDropdownItemForCustomerId),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -1224,20 +1111,6 @@ class InvoiceAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowInvoiceId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtInvoiceId,
-      decoration: InputDecoration(labelText: 'InvoiceId'),
     );
   }
 
@@ -1287,7 +1160,7 @@ class InvoiceAddState extends State {
                         hours: sqfSelectedDate.hour,
                         minutes: sqfSelectedDate.minute,
                         seconds: sqfSelectedDate.second));
-                txtInvoiceDate.text = UITools.convertDate(invoice.InvoiceDate);
+                txtInvoiceDate.text = UITools.convertDate(invoice.InvoiceDate!);
               });
             },
                 currentTime: DateTime.tryParse(
@@ -1339,7 +1212,7 @@ class InvoiceAddState extends State {
   Widget buildRowTotal() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && double.tryParse(value) == null) {
+        if (value!.isNotEmpty && double.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -1351,7 +1224,8 @@ class InvoiceAddState extends State {
   }
 
   Widget buildRowCustomerId(
-      void Function(int selectedCustomerId) onChangeDropdownItemForCustomerId) {
+      void Function(int? selectedCustomerId)
+          onChangeDropdownItemForCustomerId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -1366,13 +1240,6 @@ class InvoiceAddState extends State {
                 items: _dropdownMenuItemsForCustomerId,
                 onChanged: onChangeDropdownItemForCustomerId,
                 validator: (value) {
-                  if ((_selectedCustomerId != null &&
-                          _selectedCustomerId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Customer';
-                  }
                   return null;
                 },
               ),
@@ -1406,7 +1273,6 @@ class InvoiceAddState extends State {
     }
 
     invoice
-      ..InvoiceId = int.tryParse(txtInvoiceId.text)
       ..InvoiceDate = _invoiceDate
       ..BillingAddress = txtBillingAddress.text
       ..BillingCity = txtBillingCity.text
@@ -1416,7 +1282,7 @@ class InvoiceAddState extends State {
       ..Total = double.tryParse(txtTotal.text)
       ..CustomerId = _selectedCustomerId;
     await invoice.save();
-    if (invoice.saveResult.success) {
+    if (invoice.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(invoice.saveResult.toString(),
@@ -1437,16 +1303,15 @@ class InvoiceLineAddState extends State {
   InvoiceLineAddState(this.invoiceline);
   InvoiceLine invoiceline;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtInvoiceLineId = TextEditingController();
   final TextEditingController txtUnitPrice = TextEditingController();
   final TextEditingController txtQuantity = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForTrackId =
       <DropdownMenuItem<int>>[];
-  int _selectedTrackId;
+  int? _selectedTrackId;
 
   List<DropdownMenuItem<int>> _dropdownMenuItemsForInvoiceId =
       <DropdownMenuItem<int>>[];
-  int _selectedInvoiceId;
+  int? _selectedInvoiceId;
 
   @override
   void initState() {
@@ -1473,7 +1338,7 @@ class InvoiceLineAddState extends State {
         _dropdownMenuItemsForTrackId.isEmpty) {
       buildDropDownMenuForTrackId();
     }
-    void onChangeDropdownItemForTrackId(int selectedTrackId) {
+    void onChangeDropdownItemForTrackId(int? selectedTrackId) {
       setState(() {
         _selectedTrackId = selectedTrackId;
       });
@@ -1492,7 +1357,7 @@ class InvoiceLineAddState extends State {
         _dropdownMenuItemsForInvoiceId.isEmpty) {
       buildDropDownMenuForInvoiceId();
     }
-    void onChangeDropdownItemForInvoiceId(int selectedInvoiceId) {
+    void onChangeDropdownItemForInvoiceId(int? selectedInvoiceId) {
       setState(() {
         _selectedInvoiceId = selectedInvoiceId;
       });
@@ -1515,15 +1380,14 @@ class InvoiceLineAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowInvoiceLineId(),
                     buildRowUnitPrice(),
                     buildRowQuantity(),
                     buildRowTrackId(onChangeDropdownItemForTrackId),
                     buildRowInvoiceId(onChangeDropdownItemForInvoiceId),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -1541,24 +1405,10 @@ class InvoiceLineAddState extends State {
     );
   }
 
-  Widget buildRowInvoiceLineId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtInvoiceLineId,
-      decoration: InputDecoration(labelText: 'InvoiceLineId'),
-    );
-  }
-
   Widget buildRowUnitPrice() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && double.tryParse(value) == null) {
+        if (value!.isNotEmpty && double.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -1572,7 +1422,7 @@ class InvoiceLineAddState extends State {
   Widget buildRowQuantity() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -1584,7 +1434,7 @@ class InvoiceLineAddState extends State {
   }
 
   Widget buildRowTrackId(
-      void Function(int selectedTrackId) onChangeDropdownItemForTrackId) {
+      void Function(int? selectedTrackId) onChangeDropdownItemForTrackId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -1599,13 +1449,6 @@ class InvoiceLineAddState extends State {
                 items: _dropdownMenuItemsForTrackId,
                 onChanged: onChangeDropdownItemForTrackId,
                 validator: (value) {
-                  if ((_selectedTrackId != null &&
-                          _selectedTrackId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Track';
-                  }
                   return null;
                 },
               ),
@@ -1615,7 +1458,7 @@ class InvoiceLineAddState extends State {
   }
 
   Widget buildRowInvoiceId(
-      void Function(int selectedInvoiceId) onChangeDropdownItemForInvoiceId) {
+      void Function(int? selectedInvoiceId) onChangeDropdownItemForInvoiceId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -1630,13 +1473,6 @@ class InvoiceLineAddState extends State {
                 items: _dropdownMenuItemsForInvoiceId,
                 onChanged: onChangeDropdownItemForInvoiceId,
                 validator: (value) {
-                  if ((_selectedInvoiceId != null &&
-                          _selectedInvoiceId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Invoice';
-                  }
                   return null;
                 },
               ),
@@ -1661,13 +1497,12 @@ class InvoiceLineAddState extends State {
 
   void save() async {
     invoiceline
-      ..InvoiceLineId = int.tryParse(txtInvoiceLineId.text)
       ..UnitPrice = double.tryParse(txtUnitPrice.text)
       ..Quantity = int.tryParse(txtQuantity.text)
       ..TrackId = _selectedTrackId
       ..InvoiceId = _selectedInvoiceId;
     await invoiceline.save();
-    if (invoiceline.saveResult.success) {
+    if (invoiceline.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(invoiceline.saveResult.toString(),
@@ -1688,12 +1523,11 @@ class MediaTypeAddState extends State {
   MediaTypeAddState(this.mediatype);
   MediaType mediatype;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtMediaTypeId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = mediatype.Name == null ? '' : mediatype.Name;
+    txtName.text = mediatype.Name ?? '';
 
     super.initState();
   }
@@ -1717,12 +1551,11 @@ class MediaTypeAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowMediaTypeId(),
                     buildRowName(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -1737,20 +1570,6 @@ class MediaTypeAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowMediaTypeId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtMediaTypeId,
-      decoration: InputDecoration(labelText: 'MediaTypeId'),
     );
   }
 
@@ -1776,11 +1595,9 @@ class MediaTypeAddState extends State {
   }
 
   void save() async {
-    mediatype
-      ..MediaTypeId = int.tryParse(txtMediaTypeId.text)
-      ..Name = txtName.text;
+    mediatype..Name = txtName.text;
     await mediatype.save();
-    if (mediatype.saveResult.success) {
+    if (mediatype.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(mediatype.saveResult.toString(),
@@ -1801,12 +1618,11 @@ class PlaylistAddState extends State {
   PlaylistAddState(this.playlist);
   Playlist playlist;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtPlaylistId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = playlist.Name == null ? '' : playlist.Name;
+    txtName.text = playlist.Name ?? '';
 
     super.initState();
   }
@@ -1830,12 +1646,11 @@ class PlaylistAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowPlaylistId(),
                     buildRowName(),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -1850,20 +1665,6 @@ class PlaylistAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowPlaylistId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtPlaylistId,
-      decoration: InputDecoration(labelText: 'PlaylistId'),
     );
   }
 
@@ -1889,11 +1690,9 @@ class PlaylistAddState extends State {
   }
 
   void save() async {
-    playlist
-      ..PlaylistId = int.tryParse(txtPlaylistId.text)
-      ..Name = txtName.text;
+    playlist..Name = txtName.text;
     await playlist.save();
-    if (playlist.saveResult.success) {
+    if (playlist.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(playlist.saveResult.toString(),
@@ -1913,7 +1712,6 @@ class TrackAddState extends State {
   TrackAddState(this.track);
   Track track;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController txtTrackId = TextEditingController();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtComposer = TextEditingController();
   final TextEditingController txtMilliseconds = TextEditingController();
@@ -1921,20 +1719,20 @@ class TrackAddState extends State {
   final TextEditingController txtUnitPrice = TextEditingController();
   List<DropdownMenuItem<int>> _dropdownMenuItemsForMediaTypeId =
       <DropdownMenuItem<int>>[];
-  int _selectedMediaTypeId;
+  int? _selectedMediaTypeId;
 
   List<DropdownMenuItem<int>> _dropdownMenuItemsForGenreId =
       <DropdownMenuItem<int>>[];
-  int _selectedGenreId;
+  int? _selectedGenreId;
 
   List<DropdownMenuItem<int>> _dropdownMenuItemsForAlbumId =
       <DropdownMenuItem<int>>[];
-  int _selectedAlbumId;
+  int? _selectedAlbumId;
 
   @override
   void initState() {
-    txtName.text = track.Name == null ? '' : track.Name;
-    txtComposer.text = track.Composer == null ? '' : track.Composer;
+    txtName.text = track.Name ?? '';
+    txtComposer.text = track.Composer ?? '';
     txtMilliseconds.text =
         track.Milliseconds == null ? '' : track.Milliseconds.toString();
     txtBytes.text = track.Bytes == null ? '' : track.Bytes.toString();
@@ -1959,7 +1757,7 @@ class TrackAddState extends State {
         _dropdownMenuItemsForMediaTypeId.isEmpty) {
       buildDropDownMenuForMediaTypeId();
     }
-    void onChangeDropdownItemForMediaTypeId(int selectedMediaTypeId) {
+    void onChangeDropdownItemForMediaTypeId(int? selectedMediaTypeId) {
       setState(() {
         _selectedMediaTypeId = selectedMediaTypeId;
       });
@@ -1978,7 +1776,7 @@ class TrackAddState extends State {
         _dropdownMenuItemsForGenreId.isEmpty) {
       buildDropDownMenuForGenreId();
     }
-    void onChangeDropdownItemForGenreId(int selectedGenreId) {
+    void onChangeDropdownItemForGenreId(int? selectedGenreId) {
       setState(() {
         _selectedGenreId = selectedGenreId;
       });
@@ -1997,7 +1795,7 @@ class TrackAddState extends State {
         _dropdownMenuItemsForAlbumId.isEmpty) {
       buildDropDownMenuForAlbumId();
     }
-    void onChangeDropdownItemForAlbumId(int selectedAlbumId) {
+    void onChangeDropdownItemForAlbumId(int? selectedAlbumId) {
       setState(() {
         _selectedAlbumId = selectedAlbumId;
       });
@@ -2020,7 +1818,6 @@ class TrackAddState extends State {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    buildRowTrackId(),
                     buildRowName(),
                     buildRowComposer(),
                     buildRowMilliseconds(),
@@ -2029,10 +1826,10 @@ class TrackAddState extends State {
                     buildRowMediaTypeId(onChangeDropdownItemForMediaTypeId),
                     buildRowGenreId(onChangeDropdownItemForGenreId),
                     buildRowAlbumId(onChangeDropdownItemForAlbumId),
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                           /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -2047,20 +1844,6 @@ class TrackAddState extends State {
               )),
         ),
       ),
-    );
-  }
-
-  Widget buildRowTrackId() {
-    return TextFormField(
-      validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
-          return 'Please Enter valid number';
-        }
-
-        return null;
-      },
-      controller: txtTrackId,
-      decoration: InputDecoration(labelText: 'TrackId'),
     );
   }
 
@@ -2081,7 +1864,7 @@ class TrackAddState extends State {
   Widget buildRowMilliseconds() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -2095,7 +1878,7 @@ class TrackAddState extends State {
   Widget buildRowBytes() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && int.tryParse(value) == null) {
+        if (value!.isNotEmpty && int.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -2109,7 +1892,7 @@ class TrackAddState extends State {
   Widget buildRowUnitPrice() {
     return TextFormField(
       validator: (value) {
-        if (value.isNotEmpty && double.tryParse(value) == null) {
+        if (value!.isNotEmpty && double.tryParse(value) == null) {
           return 'Please Enter valid number';
         }
 
@@ -2121,7 +1904,7 @@ class TrackAddState extends State {
   }
 
   Widget buildRowMediaTypeId(
-      void Function(int selectedMediaTypeId)
+      void Function(int? selectedMediaTypeId)
           onChangeDropdownItemForMediaTypeId) {
     return Row(
       children: <Widget>[
@@ -2137,13 +1920,6 @@ class TrackAddState extends State {
                 items: _dropdownMenuItemsForMediaTypeId,
                 onChanged: onChangeDropdownItemForMediaTypeId,
                 validator: (value) {
-                  if ((_selectedMediaTypeId != null &&
-                          _selectedMediaTypeId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter MediaType';
-                  }
                   return null;
                 },
               ),
@@ -2153,7 +1929,7 @@ class TrackAddState extends State {
   }
 
   Widget buildRowGenreId(
-      void Function(int selectedGenreId) onChangeDropdownItemForGenreId) {
+      void Function(int? selectedGenreId) onChangeDropdownItemForGenreId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -2168,13 +1944,6 @@ class TrackAddState extends State {
                 items: _dropdownMenuItemsForGenreId,
                 onChanged: onChangeDropdownItemForGenreId,
                 validator: (value) {
-                  if ((_selectedGenreId != null &&
-                          _selectedGenreId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Genre';
-                  }
                   return null;
                 },
               ),
@@ -2184,7 +1953,7 @@ class TrackAddState extends State {
   }
 
   Widget buildRowAlbumId(
-      void Function(int selectedAlbumId) onChangeDropdownItemForAlbumId) {
+      void Function(int? selectedAlbumId) onChangeDropdownItemForAlbumId) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -2199,13 +1968,6 @@ class TrackAddState extends State {
                 items: _dropdownMenuItemsForAlbumId,
                 onChanged: onChangeDropdownItemForAlbumId,
                 validator: (value) {
-                  if ((_selectedAlbumId != null &&
-                          _selectedAlbumId.toString() != '0') ||
-                      true) {
-                    return null;
-                  } else if (value == null || value == 0) {
-                    return 'Please enter Album';
-                  }
                   return null;
                 },
               ),
@@ -2230,7 +1992,6 @@ class TrackAddState extends State {
 
   void save() async {
     track
-      ..TrackId = int.tryParse(txtTrackId.text)
       ..Name = txtName.text
       ..Composer = txtComposer.text
       ..Milliseconds = int.tryParse(txtMilliseconds.text)
@@ -2240,7 +2001,7 @@ class TrackAddState extends State {
       ..GenreId = _selectedGenreId
       ..AlbumId = _selectedAlbumId;
     await track.save();
-    if (track.saveResult.success) {
+    if (track.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(track.saveResult.toString(),

@@ -18,12 +18,12 @@ class PopupLayout extends ModalRoute {
       this.left,
       this.right});
 
- double top;
-  double bottom;
-  double left;
-  double right;
-  Color bgColor;
-  final Widget child;
+ double? top;
+  double? bottom;
+  double? left;
+  double? right;
+  Color? bgColor;
+  final Widget? child;
 
   @override
   Duration get transitionDuration => Duration(milliseconds: 300);
@@ -36,10 +36,10 @@ class PopupLayout extends ModalRoute {
 
   @override
   Color get barrierColor =>
-      bgColor == null ? Colors.black.withOpacity(0.5) : bgColor;
+      bgColor == null ? Colors.black.withOpacity(0.5) : bgColor!;
 
   @override
-  String get barrierLabel => null;
+  String? get barrierLabel => null;
 
   @override
   bool get maintainState => false;
@@ -77,10 +77,10 @@ class PopupLayout extends ModalRoute {
   Widget _buildOverlayContent(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
-          bottom: bottom,
-          left: left,
-          right: right,
-          top: top),
+          bottom: bottom!,
+          left: left!,
+          right: right!,
+          top: top!),
       child: child,
     );
   }
@@ -101,10 +101,10 @@ class PopupLayout extends ModalRoute {
 
 class PopupContent extends StatefulWidget {
   PopupContent({
-    Key key,
+    Key? key,
     this.content,
   }) : super(key: key);
-  final Widget content;
+  final Widget? content;
   @override
   _PopupContentState createState() => _PopupContentState();
 }
@@ -124,7 +124,7 @@ class _PopupContentState extends State<PopupContent> {
 }
 
     void showPopup(BuildContext context, Widget widget, String title,
-      {BuildContext popupContext}) {
+      {BuildContext? popupContext}) {
     Navigator.push(
       context,
       PopupLayout(

@@ -3,15 +3,15 @@ import 'helper.dart';
 
 class SlideMenu extends StatefulWidget {
   SlideMenu({this.child, this.menuItems});
-  final Widget child;
-  final List<Widget> menuItems;
+  final Widget? child;
+  final List<Widget>? menuItems;
   @override
   _SlideMenuState createState() => _SlideMenuState();
 }
 
 class _SlideMenuState extends State<SlideMenu>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  AnimationController? _controller;
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _SlideMenuState extends State<SlideMenu>
 
   @override
   void dispose() {
-    _controller
+    _controller!
       ..animateTo(.0)
       ..dispose();
     super.dispose();
@@ -32,31 +32,31 @@ class _SlideMenuState extends State<SlideMenu>
   Widget build(BuildContext context) {
     final animation =
         Tween(begin: const Offset(0.0, 0.0), end: const Offset(-0.4, 0.0))
-            .animate(CurveTween(curve: Curves.decelerate).animate(_controller));
+            .animate(CurveTween(curve: Curves.decelerate).animate(_controller!));
 
     return GestureDetector(
       onHorizontalDragUpdate: (data) {
         // we can access context.size here
         setState(() {
-          _controller.value -= data.primaryDelta / context.size.width;
+          _controller!.value -= data.primaryDelta! / context.size!.width;
         });
       },
       onHorizontalDragEnd: (data) {
-        if (data.primaryVelocity > 2500) {
-          _controller
+        if (data.primaryVelocity! > 2500) {
+          _controller!
               .animateTo(.0); //close menu on fast swipe in the right direction
-        } else if (_controller.value >= .5 ||
-            data.primaryVelocity <
+        } else if (_controller!.value >= .5 ||
+            data.primaryVelocity! <
                 -2500) // fully open if dragged a lot to left or on fast swipe to left
         {
-          _controller.animateTo(1.0);
+          _controller!.animateTo(1.0);
           if (UITools.lastController != null) {
-            UITools.lastController.animateTo(1.0);
+            UITools.lastController!.animateTo(1.0);
           }
           UITools.lastController = _controller;
         } else // close if none of above
         {
-          _controller.animateTo(.0);
+          _controller!.animateTo(.0);
           UITools.lastController = null;
         }
       },
@@ -67,7 +67,7 @@ class _SlideMenuState extends State<SlideMenu>
             child: LayoutBuilder(
               builder: (context, constraint) {
                 return AnimatedBuilder(
-                  animation: _controller,
+                  animation: _controller!,
                   builder: (context, child) {
                     return Stack(
                       children: <Widget>[
@@ -79,7 +79,7 @@ class _SlideMenuState extends State<SlideMenu>
                           child: Container(
                             color: Colors.black26,
                             child: Row(
-                              children: widget.menuItems.map((child) {
+                              children: widget.menuItems!.map((child) {
                                 return Expanded(
                                   child: child,
                                 );

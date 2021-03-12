@@ -17,7 +17,6 @@ import 'package:source_gen/source_gen.dart';
 import 'package:sqfentity_gen/src/sqfentity_formgenerator.dart';
 import 'package:sqfentity_gen/src/sqfentity_generator.dart';
 
-
 Builder sqfentityBuilder(BuilderOptions options) =>
     SharedPartBuilder([SqfEntityGenerator()], 'sqfentity');
 
@@ -27,5 +26,4 @@ Builder sqfentityFormBuilder(BuilderOptions options) =>
 
 Builder sqfentityFormBuilderTest(BuilderOptions options) =>
     LibraryBuilder(SqfEntityFormGenerator(),
-        generatedExtension: '.t241.view.dart');
-
+        generatedExtension: '.t0.view.dart');

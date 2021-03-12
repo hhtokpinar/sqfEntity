@@ -21,7 +21,7 @@ class SqfEntityFormConverter {
   final SqfEntityTableBase table;
   String toFormWidgetsCode() {
     // print('toFormWidgetsCode begin');
-    final String tablename = table.tableName.toLowerCase();
+    final String tablename = table.tableName!.toLowerCase();
     final String modelName = table.modelName ?? toCamelCase(table.tableName);
 
     // print('toFormWidgetsCode begin 2: tableName:$tablename');
@@ -68,10 +68,10 @@ class ${modelName}AddState extends State {
                 child: Column(
                   children: <Widget>[
                     ${toFormBuildRowWidgets(table).toString()}
-                    FlatButton(
+                    TextButton(
                       child: saveButton(),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a Snackbar.
                           save();
                            /* Scaffold.of(context).showSnackBar(SnackBar(
@@ -111,7 +111,7 @@ class ${modelName}AddState extends State {
     $tablename
       ${toFormSaveCode(table).toString()};
     await $tablename.${table.relationType == RelationType.ONE_TO_ONE ? '_' : ''}save();
-    if ($tablename.saveResult.success) {
+    if ($tablename.saveResult!.success) {
       Navigator.pop(context, true);
     } else
     {
@@ -127,11 +127,11 @@ class ${modelName}AddState extends State {
   String toFormBuildRowWidgets(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 6: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    if (table.primaryKeyName.isNotEmpty &&
+    if (table.primaryKeyName!.isNotEmpty &&
         table.primaryKeyType != PrimaryKeyType.integer_auto_incremental) {
       retVal.writeln('buildRow${toCamelCase(table.primaryKeyName)}(),');
     }
-    for (final field in table.fields.where((f) => f.sequencedBy == null)) {
+    for (final field in table.fields!.where((f) => f.sequencedBy == null)) {
       final ccName = toCamelCase(field.fieldName);
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.ONE_TO_MANY) {
@@ -147,7 +147,7 @@ class ${modelName}AddState extends State {
   String toFormSaveCodeDateTimeVariables(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 8: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    for (final field in table.fields.where((f) =>
+    for (final field in table.fields!.where((f) =>
         f.dbType == DbType.date ||
         f.dbType == DbType.datetime ||
         f.dbType == DbType.datetimeUtc)) {
@@ -174,7 +174,7 @@ class ${modelName}AddState extends State {
   String toFormSaveCode(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 9: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    if (table.primaryKeyName.isNotEmpty &&
+    if (table.primaryKeyName!.isNotEmpty &&
         table.primaryKeyType != PrimaryKeyType.integer_auto_incremental) {
       retVal.writeln(toFieldSaveCode(SqfEntityFieldBase(
           table.primaryKeyName,
@@ -183,7 +183,7 @@ class ${modelName}AddState extends State {
               : DbType.integer,
           isPrimaryKeyField: true)));
     }
-    for (final field in table.fields.where((f) => f.dbType != DbType.bool)) {
+    for (final field in table.fields!.where((f) => f.dbType != DbType.bool)) {
       retVal.writeln(toFieldSaveCode(field));
     }
     return retVal.toString();
@@ -215,7 +215,7 @@ class ${modelName}AddState extends State {
   String toFormBuildRowCodeTable(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 7: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    if (table.primaryKeyName.isNotEmpty &&
+    if (table.primaryKeyName!.isNotEmpty &&
         table.primaryKeyType != PrimaryKeyType.integer_auto_incremental) {
       retVal.writeln(toFormBuildRowCodeField(SqfEntityFieldBase(
           table.primaryKeyName,
@@ -224,7 +224,7 @@ class ${modelName}AddState extends State {
               : DbType.integer,
           isPrimaryKeyField: true)));
     }
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is! SqfEntityFieldRelationshipBase ||
           (field is SqfEntityFieldRelationshipBase &&
               field.relationType == RelationType.ONE_TO_MANY)) {
@@ -237,7 +237,7 @@ class ${modelName}AddState extends State {
   String toFormDeclarationCodeTable(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 3: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    if (table.primaryKeyName.isNotEmpty &&
+    if (table.primaryKeyName!.isNotEmpty &&
         table.primaryKeyType != PrimaryKeyType.integer_auto_incremental) {
       retVal.writeln(toFormDeclarationCodeField(SqfEntityFieldBase(
           table.primaryKeyName,
@@ -246,7 +246,7 @@ class ${modelName}AddState extends State {
               : DbType.integer,
           isPrimaryKeyField: true)));
     }
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is! SqfEntityFieldRelationshipBase ||
           (field is SqfEntityFieldRelationshipBase &&
               field.relationType == RelationType.ONE_TO_MANY)) {
@@ -259,7 +259,7 @@ class ${modelName}AddState extends State {
   String toFormInitStateCodeTable(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 4: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is SqfEntityFieldRelationshipBase) {
       } else {
         retVal.writeln(toFormInitStateCodeField(field));
@@ -271,9 +271,9 @@ class ${modelName}AddState extends State {
   String toFormDeclarationCodeField(SqfEntityFieldType field) {
     final String ccName = toCamelCase(field.fieldName);
     if (field is SqfEntityFieldRelationshipBase) {
-      return '''List<DropdownMenuItem<${field.table.primaryKeyTypes[0]}>> _dropdownMenuItemsFor$ccName =
-      <DropdownMenuItem<${field.table.primaryKeyTypes[0]}>>[];
-  ${field.table.primaryKeyTypes[0]} _selected$ccName;
+      return '''List<DropdownMenuItem<${field.table!.primaryKeyTypes[0]}>> _dropdownMenuItemsFor$ccName =
+      <DropdownMenuItem<${field.table!.primaryKeyTypes[0]}>>[];
+  ${field.table!.primaryKeyTypes[0]}? _selected$ccName;
         ''';
     } else {
       switch (field.dbType) {
@@ -291,32 +291,32 @@ class ${modelName}AddState extends State {
   }
 
   String toFormInitStateCodeField(SqfEntityFieldType field) {
-    final String objName = field.table.tableName.toLowerCase();
-    final String fName = field.fieldName;
+    final String objName = field.table!.tableName!.toLowerCase();
+    final String fName = field.fieldName!;
     final String ccName = toCamelCase(fName);
     switch (field.dbType) {
       case DbType.real:
       case DbType.integer:
       case DbType.numeric:
-        return 'txt$ccName.text = $objName.$fName == null? \'\': $objName.$fName.toString();';
+        return 'txt$ccName.text =$objName.$fName == null ? \'\' : $objName.$fName.toString();';
       case DbType.bool:
         return '';
       case DbType.date:
-        return 'txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName);';
+        return 'txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName!);';
       case DbType.datetime:
       case DbType.datetimeUtc:
-        return '''txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName);
-        txtTimeFor$ccName.text = $objName.$fName == null? \'\': UITools.convertTime($objName.$fName);
+        return '''txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName!);
+        txtTimeFor$ccName.text = $objName.$fName == null? \'\': UITools.convertTime($objName.$fName!);
         ''';
       default:
-        return 'txt$ccName.text = $objName.$fName == null? \'\': $objName.$fName;';
+        return 'txt$ccName.text = $objName.$fName ?? \'\';';
     }
   }
 
   String toFormBuildDropDownCodeTable(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 5: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.ONE_TO_MANY) {
         field.relationshipName = field.relationshipName ?? table.modelName;
@@ -333,14 +333,14 @@ class ${modelName}AddState extends State {
           await ${field.relationshipName}().select().toDropDownMenuInt('${field.formDropDownTextField}');
       setState(() {
         _dropdownMenuItemsFor$ccName = dropdownMenuItems;
-        _selected$ccName = ${table.tableName.toLowerCase()}.${field.fieldName};
+        _selected$ccName = ${table.tableName!.toLowerCase()}.${field.fieldName};
       });
     }
     if (_dropdownMenuItemsFor$ccName == null ||
         _dropdownMenuItemsFor$ccName.isEmpty) {
       buildDropDownMenuFor$ccName();
     }
-    void onChangeDropdownItemFor$ccName(${field.table.primaryKeyTypes[0]} selected$ccName) {
+    void onChangeDropdownItemFor$ccName(${field.table!.primaryKeyTypes[0]}? selected$ccName) {
       setState(() {
         _selected$ccName = selected$ccName;
       });
@@ -351,11 +351,11 @@ class ${modelName}AddState extends State {
     // print('toFormWidgetsCode begin 7.1: tableName:${table.tableName}');
     final ccName = toCamelCase(field.fieldName);
     field.table = field.table ?? table;
-    final tablename = field.table.tableName.toLowerCase();
+    final tablename = field.table!.tableName!.toLowerCase();
     final retVal = StringBuffer()..write('''Widget buildRow$ccName() {''');
 
     if (field is SqfEntityFieldRelationshipBase) {
-      return '''Widget buildRow$ccName(void Function(${field.table.primaryKeyTypes[0]} selected$ccName) onChangeDropdownItemFor$ccName) {
+      return '''Widget buildRow$ccName(void Function(${field.table!.primaryKeyTypes[0]}? selected$ccName) onChangeDropdownItemFor$ccName) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -370,12 +370,14 @@ class ${modelName}AddState extends State {
                 items: _dropdownMenuItemsFor$ccName,
                 onChanged: onChangeDropdownItemFor$ccName,
                 validator: (value) {
-                  if ((_selected$ccName != null && _selected$ccName.toString() != '0') ${field.isNotNull != null && field.isNotNull ? '' : '|| true'}) {
+                  ${field.isNotNull != null && field.isNotNull! ? '''
+                  if ((_selected$ccName != null && _selected$ccName.toString() != '0')) {
                     return null;
                   } else if (value == null || value == 0) {
                     return 'Please enter ${field.relationshipName}';
                   }
                   return null;
+                  ''' : 'return null;'}
                 },
               ),
             )),
@@ -403,7 +405,7 @@ class ${modelName}AddState extends State {
               return 'Please Enter Maximum ${field.maxValue} (required)'; }''');
         }
 
-        if ((field.isNotNull != null && field.isNotNull)) {
+        if ((field.isNotNull != null && field.isNotNull!)) {
           retVal.writeln('''return TextFormField(
       validator: (value) {
          if (${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) == null) 
@@ -415,7 +417,7 @@ class ${modelName}AddState extends State {
       },''');
         } else {
           retVal.writeln('''return TextFormField(
-      validator: (value) { if (value.isNotEmpty && ${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) == null) 
+      validator: (value) { if (value!.isNotEmpty && ${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) == null) 
       { return 'Please Enter valid number'; }
       ${rangeValidator.toString().replaceAll('(required)', '')}
         return null;
@@ -428,7 +430,7 @@ class ${modelName}AddState extends State {
         Text('$ccName?'),
         Checkbox(
           value: $tablename.${field.fieldName} ?? false,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               $tablename.${field.fieldName} = value;
             });
@@ -470,7 +472,7 @@ class ${modelName}AddState extends State {
           },
               currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now(),
               locale: UITools.mainDatePickerLocaleType),
-          ${field.isNotNull != null && field.isNotNull ? 'validator: (value) { if (value.isEmpty) { return \'Please enter $ccName\'; } return null;},' : ''}
+          ${field.isNotNull != null && field.isNotNull! ? 'validator: (value) { if (value == null || value.isEmpty) { return \'Please enter $ccName\'; } return null;},' : ''}
           controller: txt$ccName,
           decoration: InputDecoration(labelText: '$ccName'),
         ),
@@ -481,7 +483,7 @@ class ${modelName}AddState extends State {
               setState(() {
                 final d = DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now();
                 $tablename.${field.fieldName} = DateTime(d.year, d.month, d.day).add(Duration(hours: sqfSelectedDate.hour,minutes: sqfSelectedDate.minute,seconds: sqfSelectedDate.second));
-                txt$ccName.text = UITools.convertDate($tablename.${field.fieldName});
+                txt$ccName.text = UITools.convertDate($tablename.${field.fieldName}!);
               });
             },
                 currentTime: DateTime.tryParse('\${UITools.convertDate(DateTime.now())} \${txtTimeFor$ccName.text}') ?? $tablename.${field.fieldName} ?? DateTime.now(),
@@ -492,11 +494,10 @@ class ${modelName}AddState extends State {
     ]);
 }''');
         return retVal.toString();
-        break;
       default:
-        if ((field.isNotNull != null && field.isNotNull)) {
+        if ((field.isNotNull != null && field.isNotNull!)) {
           retVal.writeln('''return TextFormField(
-     validator: (value) { if (value.isEmpty)
+     validator: (value) { if (value == null || value.isEmpty)
      { return 'Please enter $ccName'; }
         return null;
      },''');
@@ -516,12 +517,12 @@ class ${modelName}AddState extends State {
 String getformListTitleField(SqfEntityTableBase table) {
   String fieldName = '';
   if (table.formListTitleField != null) {
-    fieldName = table.formListTitleField;
+    fieldName = table.formListTitleField!;
   } else {
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is! SqfEntityFieldVirtualBase) {
         if (field.dbType == DbType.text) {
-          fieldName = field.fieldName;
+          fieldName = field.fieldName!;
           break;
         }
       }
@@ -537,24 +538,24 @@ String getformListSubTitleField(SqfEntityTableBase table) {
   String fieldName = '';
   table.formListTitleField = getformListTitleField(table);
   if (table.formListSubTitleField != null) {
-    fieldName = table.formListSubTitleField;
+    fieldName = table.formListSubTitleField!;
   } else {
-    for (final field in table.fields) {
+    for (final field in table.fields!) {
       if (field is! SqfEntityFieldVirtualBase) {
         if (field.dbType == DbType.text &&
             field.fieldName != table.formListTitleField) {
-          fieldName = field.fieldName;
+          fieldName = field.fieldName!;
           break;
         }
       }
     }
     if (fieldName.isEmpty) {
-      for (final field in table.fields.where((f) =>
+      for (final field in table.fields!.where((f) =>
           f is! SqfEntityFieldVirtualBase &&
           !(f is SqfEntityFieldRelationshipBase &&
               f.relationType == RelationType.MANY_TO_MANY))) {
         if (field.fieldName != table.formListTitleField) {
-          fieldName = field.fieldName;
+          fieldName = field.fieldName!;
           break;
         }
       }
