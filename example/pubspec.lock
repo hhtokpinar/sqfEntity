@@ -423,14 +423,14 @@ packages:
       path: "../sqfentity"
       relative: true
     source: path
-    version: "1.5.0-nullsafety.0"
+    version: "1.5.0-nullsafety.0+2"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "1.5.0-nullsafety.0+1"
+    version: "1.5.0-nullsafety.0+5"
   sqflite:
     dependency: transitive
     description:

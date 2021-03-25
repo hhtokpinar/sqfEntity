@@ -336,8 +336,7 @@ class ${modelName}AddState extends State {
         _selected$ccName = ${table.tableName!.toLowerCase()}.${field.fieldName};
       });
     }
-    if (_dropdownMenuItemsFor$ccName == null ||
-        _dropdownMenuItemsFor$ccName.isEmpty) {
+    if (_dropdownMenuItemsFor$ccName.isEmpty) {
       buildDropDownMenuFor$ccName();
     }
     void onChangeDropdownItemFor$ccName(${field.table!.primaryKeyTypes[0]}? selected$ccName) {
@@ -393,22 +392,22 @@ class ${modelName}AddState extends State {
         final rangeValidator = StringBuffer();
         if (field.minValue != null && field.maxValue != null) {
           rangeValidator.write(
-              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) >${field.maxValue} || ${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) < ${field.minValue}){ 
+              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value)! >${field.maxValue} || ${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value)! < ${field.minValue}){ 
               return 'Please Enter Between ${field.minValue} and ${field.maxValue} (required)'; }''');
         } else if (field.minValue != null) {
           rangeValidator.write(
-              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) < ${field.minValue}){ 
+              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value)! < ${field.minValue}){ 
               return 'Please Enter Minimum ${field.minValue} (required)'; }''');
         } else if (field.maxValue != null) {
           rangeValidator.write(
-              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) > ${field.maxValue}){ 
+              '''else if(${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value)! > ${field.maxValue}){ 
               return 'Please Enter Maximum ${field.maxValue} (required)'; }''');
         }
 
         if ((field.isNotNull != null && field.isNotNull!)) {
           retVal.writeln('''return TextFormField(
       validator: (value) {
-         if (${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value) == null) 
+         if (${field.dbType == DbType.real ? 'double' : 'int'}.tryParse(value!) == null) 
             { 
               return 'Please Enter valid number (required)'; 
             }

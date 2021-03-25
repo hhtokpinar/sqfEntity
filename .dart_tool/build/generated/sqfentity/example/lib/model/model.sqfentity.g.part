@@ -297,7 +297,7 @@ class Product {
   Future<Category?> getCategory(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Category().getById(categoryId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Product)
@@ -333,7 +333,11 @@ class Product {
     }
 
     if (categoryId != null) {
-      map['categoryId'] = forView ? plCategory!.name : categoryId;
+      map['categoryId'] = forView
+          ? plCategory == null
+              ? categoryId
+              : plCategory!.name
+          : categoryId;
     }
 
     if (rownum != null) {
@@ -393,7 +397,11 @@ class Product {
     }
 
     if (categoryId != null) {
-      map['categoryId'] = forView ? plCategory!.name : categoryId;
+      map['categoryId'] = forView
+          ? plCategory == null
+              ? categoryId
+              : plCategory!.name
+          : categoryId;
     }
 
     if (rownum != null) {
@@ -1115,7 +1123,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  ProductField setField(ProductField field, String colName, DbType dbtype) {
+  ProductField setField(ProductField? field, String colName, DbType dbtype) {
     return ProductField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -1125,57 +1133,57 @@ class ProductFilterBuilder extends SearchCriteria {
 
   ProductField? _id;
   ProductField get id {
-    return _id = setField(_id!, 'id', DbType.integer);
+    return _id = setField(_id, 'id', DbType.integer);
   }
 
   ProductField? _name;
   ProductField get name {
-    return _name = setField(_name!, 'name', DbType.text);
+    return _name = setField(_name, 'name', DbType.text);
   }
 
   ProductField? _description;
   ProductField get description {
-    return _description = setField(_description!, 'description', DbType.text);
+    return _description = setField(_description, 'description', DbType.text);
   }
 
   ProductField? _price;
   ProductField get price {
-    return _price = setField(_price!, 'price', DbType.real);
+    return _price = setField(_price, 'price', DbType.real);
   }
 
   ProductField? _isActive;
   ProductField get isActive {
-    return _isActive = setField(_isActive!, 'isActive', DbType.bool);
+    return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
   ProductField? _categoryId;
   ProductField get categoryId {
-    return _categoryId = setField(_categoryId!, 'categoryId', DbType.integer);
+    return _categoryId = setField(_categoryId, 'categoryId', DbType.integer);
   }
 
   ProductField? _rownum;
   ProductField get rownum {
-    return _rownum = setField(_rownum!, 'rownum', DbType.integer);
+    return _rownum = setField(_rownum, 'rownum', DbType.integer);
   }
 
   ProductField? _imageUrl;
   ProductField get imageUrl {
-    return _imageUrl = setField(_imageUrl!, 'imageUrl', DbType.text);
+    return _imageUrl = setField(_imageUrl, 'imageUrl', DbType.text);
   }
 
   ProductField? _datetime;
   ProductField get datetime {
-    return _datetime = setField(_datetime!, 'datetime', DbType.datetime);
+    return _datetime = setField(_datetime, 'datetime', DbType.datetime);
   }
 
   ProductField? _date;
   ProductField get date {
-    return _date = setField(_date!, 'date', DbType.date);
+    return _date = setField(_date, 'date', DbType.date);
   }
 
   ProductField? _isDeleted;
   ProductField get isDeleted {
-    return _isDeleted = setField(_isDeleted!, 'isDeleted', DbType.bool);
+    return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
   }
 
   bool _getIsDeleted = false;
@@ -2385,7 +2393,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  CategoryField setField(CategoryField field, String colName, DbType dbtype) {
+  CategoryField setField(CategoryField? field, String colName, DbType dbtype) {
     return CategoryField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -2395,17 +2403,17 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   CategoryField? _id;
   CategoryField get id {
-    return _id = setField(_id!, 'id', DbType.integer);
+    return _id = setField(_id, 'id', DbType.integer);
   }
 
   CategoryField? _name;
   CategoryField get name {
-    return _name = setField(_name!, 'name', DbType.text);
+    return _name = setField(_name, 'name', DbType.text);
   }
 
   CategoryField? _isActive;
   CategoryField get isActive {
-    return _isActive = setField(_isActive!, 'isActive', DbType.bool);
+    return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
   bool _getIsDeleted = false;
@@ -3520,7 +3528,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  TodoField setField(TodoField field, String colName, DbType dbtype) {
+  TodoField setField(TodoField? field, String colName, DbType dbtype) {
     return TodoField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -3530,22 +3538,22 @@ class TodoFilterBuilder extends SearchCriteria {
 
   TodoField? _id;
   TodoField get id {
-    return _id = setField(_id!, 'id', DbType.integer);
+    return _id = setField(_id, 'id', DbType.integer);
   }
 
   TodoField? _userId;
   TodoField get userId {
-    return _userId = setField(_userId!, 'userId', DbType.integer);
+    return _userId = setField(_userId, 'userId', DbType.integer);
   }
 
   TodoField? _title;
   TodoField get title {
-    return _title = setField(_title!, 'title', DbType.text);
+    return _title = setField(_title, 'title', DbType.text);
   }
 
   TodoField? _completed;
   TodoField get completed {
-    return _completed = setField(_completed!, 'completed', DbType.bool);
+    return _completed = setField(_completed, 'completed', DbType.bool);
   }
 
   bool _getIsDeleted = false;

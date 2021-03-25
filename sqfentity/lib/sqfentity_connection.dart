@@ -55,7 +55,10 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
     Database? _db;
     await lock.synchronized(() async {
       final databasesPath = await getDatabasesPath();
-      final path = join(databasesPath!, connection!.databaseName);
+      String path = '';
+      if (databasesPath != null) {
+        path = join(databasesPath, connection!.databaseName);
+      }
       final file = File(path);
 
       // check if file exists

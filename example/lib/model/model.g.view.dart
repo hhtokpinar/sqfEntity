@@ -61,8 +61,7 @@ class ProductAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForCategoryId == null ||
-        _dropdownMenuItemsForCategoryId.isEmpty) {
+    if (_dropdownMenuItemsForCategoryId.isEmpty) {
       buildDropDownMenuForCategoryId();
     }
     void onChangeDropdownItemForCategoryId(int? selectedCategoryId) {

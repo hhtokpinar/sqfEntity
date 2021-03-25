@@ -40,8 +40,7 @@ class AlbumAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForArtistId == null ||
-        _dropdownMenuItemsForArtistId.isEmpty) {
+    if (_dropdownMenuItemsForArtistId.isEmpty) {
       buildDropDownMenuForArtistId();
     }
     void onChangeDropdownItemForArtistId(int? selectedArtistId) {
@@ -298,8 +297,7 @@ class CustomerAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForSupportRepId == null ||
-        _dropdownMenuItemsForSupportRepId.isEmpty) {
+    if (_dropdownMenuItemsForSupportRepId.isEmpty) {
       buildDropDownMenuForSupportRepId();
     }
     void onChangeDropdownItemForSupportRepId(int? selectedSupportRepId) {
@@ -571,8 +569,7 @@ class EmployeeAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForReportsTo == null ||
-        _dropdownMenuItemsForReportsTo.isEmpty) {
+    if (_dropdownMenuItemsForReportsTo.isEmpty) {
       buildDropDownMenuForReportsTo();
     }
     void onChangeDropdownItemForReportsTo(int? selectedReportsTo) {
@@ -1058,8 +1055,7 @@ class InvoiceAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForCustomerId == null ||
-        _dropdownMenuItemsForCustomerId.isEmpty) {
+    if (_dropdownMenuItemsForCustomerId.isEmpty) {
       buildDropDownMenuForCustomerId();
     }
     void onChangeDropdownItemForCustomerId(int? selectedCustomerId) {
@@ -1334,8 +1330,7 @@ class InvoiceLineAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForTrackId == null ||
-        _dropdownMenuItemsForTrackId.isEmpty) {
+    if (_dropdownMenuItemsForTrackId.isEmpty) {
       buildDropDownMenuForTrackId();
     }
     void onChangeDropdownItemForTrackId(int? selectedTrackId) {
@@ -1353,8 +1348,7 @@ class InvoiceLineAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForInvoiceId == null ||
-        _dropdownMenuItemsForInvoiceId.isEmpty) {
+    if (_dropdownMenuItemsForInvoiceId.isEmpty) {
       buildDropDownMenuForInvoiceId();
     }
     void onChangeDropdownItemForInvoiceId(int? selectedInvoiceId) {
@@ -1753,8 +1747,7 @@ class TrackAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForMediaTypeId == null ||
-        _dropdownMenuItemsForMediaTypeId.isEmpty) {
+    if (_dropdownMenuItemsForMediaTypeId.isEmpty) {
       buildDropDownMenuForMediaTypeId();
     }
     void onChangeDropdownItemForMediaTypeId(int? selectedMediaTypeId) {
@@ -1772,8 +1765,7 @@ class TrackAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForGenreId == null ||
-        _dropdownMenuItemsForGenreId.isEmpty) {
+    if (_dropdownMenuItemsForGenreId.isEmpty) {
       buildDropDownMenuForGenreId();
     }
     void onChangeDropdownItemForGenreId(int? selectedGenreId) {
@@ -1791,8 +1783,7 @@ class TrackAddState extends State {
       });
     }
 
-    if (_dropdownMenuItemsForAlbumId == null ||
-        _dropdownMenuItemsForAlbumId.isEmpty) {
+    if (_dropdownMenuItemsForAlbumId.isEmpty) {
       buildDropDownMenuForAlbumId();
     }
     void onChangeDropdownItemForAlbumId(int? selectedAlbumId) {

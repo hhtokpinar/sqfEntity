@@ -1,4 +1,4 @@
-## 1.5.0-nullsafety.0
+## 1.5.0-nullsafety.0+2
 
 1. Migrated to null safety, min SDK is 2.12.0.
 

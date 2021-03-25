@@ -539,7 +539,7 @@ class Album {
   Future<Artist?> getArtist(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Artist().getById(ArtistId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Album)
@@ -583,7 +583,11 @@ class Album {
     }
 
     if (ArtistId != null) {
-      map['ArtistId'] = forView ? plArtist!.Name : ArtistId;
+      map['ArtistId'] = forView
+          ? plArtist == null
+              ? ArtistId
+              : plArtist!.Name
+          : ArtistId;
     }
 
     return map;
@@ -602,7 +606,11 @@ class Album {
     }
 
     if (ArtistId != null) {
-      map['ArtistId'] = forView ? plArtist!.Name : ArtistId;
+      map['ArtistId'] = forView
+          ? plArtist == null
+              ? ArtistId
+              : plArtist!.Name
+          : ArtistId;
     }
 
 // COLLECTIONS (Album)
@@ -1282,7 +1290,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  AlbumField setField(AlbumField field, String colName, DbType dbtype) {
+  AlbumField setField(AlbumField? field, String colName, DbType dbtype) {
     return AlbumField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -1292,17 +1300,17 @@ class AlbumFilterBuilder extends SearchCriteria {
 
   AlbumField? _AlbumId;
   AlbumField get AlbumId {
-    return _AlbumId = setField(_AlbumId!, 'AlbumId', DbType.integer);
+    return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
   }
 
   AlbumField? _Title;
   AlbumField get Title {
-    return _Title = setField(_Title!, 'Title', DbType.text);
+    return _Title = setField(_Title, 'Title', DbType.text);
   }
 
   AlbumField? _ArtistId;
   AlbumField get ArtistId {
-    return _ArtistId = setField(_ArtistId!, 'ArtistId', DbType.integer);
+    return _ArtistId = setField(_ArtistId, 'ArtistId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -2470,7 +2478,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  ArtistField setField(ArtistField field, String colName, DbType dbtype) {
+  ArtistField setField(ArtistField? field, String colName, DbType dbtype) {
     return ArtistField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -2480,12 +2488,12 @@ class ArtistFilterBuilder extends SearchCriteria {
 
   ArtistField? _ArtistId;
   ArtistField get ArtistId {
-    return _ArtistId = setField(_ArtistId!, 'ArtistId', DbType.integer);
+    return _ArtistId = setField(_ArtistId, 'ArtistId', DbType.integer);
   }
 
   ArtistField? _Name;
   ArtistField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   bool _getIsDeleted = false;
@@ -3028,7 +3036,7 @@ class Customer {
   Future<Employee?> getEmployee(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Employee().getById(SupportRepId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Customer)
@@ -3112,7 +3120,11 @@ class Customer {
     }
 
     if (SupportRepId != null) {
-      map['SupportRepId'] = forView ? plEmployee!.LastName : SupportRepId;
+      map['SupportRepId'] = forView
+          ? plEmployee == null
+              ? SupportRepId
+              : plEmployee!.LastName
+          : SupportRepId;
     }
 
     return map;
@@ -3171,7 +3183,11 @@ class Customer {
     }
 
     if (SupportRepId != null) {
-      map['SupportRepId'] = forView ? plEmployee!.LastName : SupportRepId;
+      map['SupportRepId'] = forView
+          ? plEmployee == null
+              ? SupportRepId
+              : plEmployee!.LastName
+          : SupportRepId;
     }
 
 // COLLECTIONS (Customer)
@@ -3896,7 +3912,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  CustomerField setField(CustomerField field, String colName, DbType dbtype) {
+  CustomerField setField(CustomerField? field, String colName, DbType dbtype) {
     return CustomerField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -3906,68 +3922,68 @@ class CustomerFilterBuilder extends SearchCriteria {
 
   CustomerField? _CustomerId;
   CustomerField get CustomerId {
-    return _CustomerId = setField(_CustomerId!, 'CustomerId', DbType.integer);
+    return _CustomerId = setField(_CustomerId, 'CustomerId', DbType.integer);
   }
 
   CustomerField? _FirstName;
   CustomerField get FirstName {
-    return _FirstName = setField(_FirstName!, 'FirstName', DbType.text);
+    return _FirstName = setField(_FirstName, 'FirstName', DbType.text);
   }
 
   CustomerField? _LastName;
   CustomerField get LastName {
-    return _LastName = setField(_LastName!, 'LastName', DbType.text);
+    return _LastName = setField(_LastName, 'LastName', DbType.text);
   }
 
   CustomerField? _Company;
   CustomerField get Company {
-    return _Company = setField(_Company!, 'Company', DbType.text);
+    return _Company = setField(_Company, 'Company', DbType.text);
   }
 
   CustomerField? _Address;
   CustomerField get Address {
-    return _Address = setField(_Address!, 'Address', DbType.text);
+    return _Address = setField(_Address, 'Address', DbType.text);
   }
 
   CustomerField? _City;
   CustomerField get City {
-    return _City = setField(_City!, 'City', DbType.text);
+    return _City = setField(_City, 'City', DbType.text);
   }
 
   CustomerField? _State;
   CustomerField get State {
-    return _State = setField(_State!, 'State', DbType.text);
+    return _State = setField(_State, 'State', DbType.text);
   }
 
   CustomerField? _Country;
   CustomerField get Country {
-    return _Country = setField(_Country!, 'Country', DbType.text);
+    return _Country = setField(_Country, 'Country', DbType.text);
   }
 
   CustomerField? _PostalCode;
   CustomerField get PostalCode {
-    return _PostalCode = setField(_PostalCode!, 'PostalCode', DbType.text);
+    return _PostalCode = setField(_PostalCode, 'PostalCode', DbType.text);
   }
 
   CustomerField? _Phone;
   CustomerField get Phone {
-    return _Phone = setField(_Phone!, 'Phone', DbType.text);
+    return _Phone = setField(_Phone, 'Phone', DbType.text);
   }
 
   CustomerField? _Fax;
   CustomerField get Fax {
-    return _Fax = setField(_Fax!, 'Fax', DbType.text);
+    return _Fax = setField(_Fax, 'Fax', DbType.text);
   }
 
   CustomerField? _Email;
   CustomerField get Email {
-    return _Email = setField(_Email!, 'Email', DbType.text);
+    return _Email = setField(_Email, 'Email', DbType.text);
   }
 
   CustomerField? _SupportRepId;
   CustomerField get SupportRepId {
     return _SupportRepId =
-        setField(_SupportRepId!, 'SupportRepId', DbType.integer);
+        setField(_SupportRepId, 'SupportRepId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -4609,7 +4625,7 @@ class Employee {
   Future<Employee?> getEmployee(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Employee().getById(ReportsTo,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Employee)
@@ -4726,7 +4742,11 @@ class Employee {
     }
 
     if (ReportsTo != null) {
-      map['ReportsTo'] = forView ? plEmployee!.LastName : ReportsTo;
+      map['ReportsTo'] = forView
+          ? plEmployee == null
+              ? ReportsTo
+              : plEmployee!.LastName
+          : ReportsTo;
     }
 
     return map;
@@ -4801,7 +4821,11 @@ class Employee {
     }
 
     if (ReportsTo != null) {
-      map['ReportsTo'] = forView ? plEmployee!.LastName : ReportsTo;
+      map['ReportsTo'] = forView
+          ? plEmployee == null
+              ? ReportsTo
+              : plEmployee!.LastName
+          : ReportsTo;
     }
 
 // COLLECTIONS (Employee)
@@ -5567,7 +5591,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  EmployeeField setField(EmployeeField field, String colName, DbType dbtype) {
+  EmployeeField setField(EmployeeField? field, String colName, DbType dbtype) {
     return EmployeeField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -5577,77 +5601,77 @@ class EmployeeFilterBuilder extends SearchCriteria {
 
   EmployeeField? _EmployeeId;
   EmployeeField get EmployeeId {
-    return _EmployeeId = setField(_EmployeeId!, 'EmployeeId', DbType.integer);
+    return _EmployeeId = setField(_EmployeeId, 'EmployeeId', DbType.integer);
   }
 
   EmployeeField? _LastName;
   EmployeeField get LastName {
-    return _LastName = setField(_LastName!, 'LastName', DbType.text);
+    return _LastName = setField(_LastName, 'LastName', DbType.text);
   }
 
   EmployeeField? _FirstName;
   EmployeeField get FirstName {
-    return _FirstName = setField(_FirstName!, 'FirstName', DbType.text);
+    return _FirstName = setField(_FirstName, 'FirstName', DbType.text);
   }
 
   EmployeeField? _Title;
   EmployeeField get Title {
-    return _Title = setField(_Title!, 'Title', DbType.text);
+    return _Title = setField(_Title, 'Title', DbType.text);
   }
 
   EmployeeField? _BirthDate;
   EmployeeField get BirthDate {
-    return _BirthDate = setField(_BirthDate!, 'BirthDate', DbType.datetime);
+    return _BirthDate = setField(_BirthDate, 'BirthDate', DbType.datetime);
   }
 
   EmployeeField? _HireDate;
   EmployeeField get HireDate {
-    return _HireDate = setField(_HireDate!, 'HireDate', DbType.datetime);
+    return _HireDate = setField(_HireDate, 'HireDate', DbType.datetime);
   }
 
   EmployeeField? _Address;
   EmployeeField get Address {
-    return _Address = setField(_Address!, 'Address', DbType.text);
+    return _Address = setField(_Address, 'Address', DbType.text);
   }
 
   EmployeeField? _City;
   EmployeeField get City {
-    return _City = setField(_City!, 'City', DbType.text);
+    return _City = setField(_City, 'City', DbType.text);
   }
 
   EmployeeField? _State;
   EmployeeField get State {
-    return _State = setField(_State!, 'State', DbType.text);
+    return _State = setField(_State, 'State', DbType.text);
   }
 
   EmployeeField? _Country;
   EmployeeField get Country {
-    return _Country = setField(_Country!, 'Country', DbType.text);
+    return _Country = setField(_Country, 'Country', DbType.text);
   }
 
   EmployeeField? _PostalCode;
   EmployeeField get PostalCode {
-    return _PostalCode = setField(_PostalCode!, 'PostalCode', DbType.text);
+    return _PostalCode = setField(_PostalCode, 'PostalCode', DbType.text);
   }
 
   EmployeeField? _Phone;
   EmployeeField get Phone {
-    return _Phone = setField(_Phone!, 'Phone', DbType.text);
+    return _Phone = setField(_Phone, 'Phone', DbType.text);
   }
 
   EmployeeField? _Fax;
   EmployeeField get Fax {
-    return _Fax = setField(_Fax!, 'Fax', DbType.text);
+    return _Fax = setField(_Fax, 'Fax', DbType.text);
   }
 
   EmployeeField? _Email;
   EmployeeField get Email {
-    return _Email = setField(_Email!, 'Email', DbType.text);
+    return _Email = setField(_Email, 'Email', DbType.text);
   }
 
   EmployeeField? _ReportsTo;
   EmployeeField get ReportsTo {
-    return _ReportsTo = setField(_ReportsTo!, 'ReportsTo', DbType.integer);
+    return _ReportsTo = setField(_ReportsTo, 'ReportsTo', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -6911,7 +6935,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  GenreField setField(GenreField field, String colName, DbType dbtype) {
+  GenreField setField(GenreField? field, String colName, DbType dbtype) {
     return GenreField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -6921,12 +6945,12 @@ class GenreFilterBuilder extends SearchCriteria {
 
   GenreField? _GenreId;
   GenreField get GenreId {
-    return _GenreId = setField(_GenreId!, 'GenreId', DbType.integer);
+    return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
   }
 
   GenreField? _Name;
   GenreField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   bool _getIsDeleted = false;
@@ -7442,7 +7466,7 @@ class Invoice {
   Future<Customer?> getCustomer(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Customer().getById(CustomerId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Invoice)
@@ -7514,7 +7538,11 @@ class Invoice {
     }
 
     if (CustomerId != null) {
-      map['CustomerId'] = forView ? plCustomer!.FirstName : CustomerId;
+      map['CustomerId'] = forView
+          ? plCustomer == null
+              ? CustomerId
+              : plCustomer!.FirstName
+          : CustomerId;
     }
 
     return map;
@@ -7561,7 +7589,11 @@ class Invoice {
     }
 
     if (CustomerId != null) {
-      map['CustomerId'] = forView ? plCustomer!.FirstName : CustomerId;
+      map['CustomerId'] = forView
+          ? plCustomer == null
+              ? CustomerId
+              : plCustomer!.FirstName
+          : CustomerId;
     }
 
 // COLLECTIONS (Invoice)
@@ -8273,7 +8305,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  InvoiceField setField(InvoiceField field, String colName, DbType dbtype) {
+  InvoiceField setField(InvoiceField? field, String colName, DbType dbtype) {
     return InvoiceField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -8283,52 +8315,51 @@ class InvoiceFilterBuilder extends SearchCriteria {
 
   InvoiceField? _InvoiceId;
   InvoiceField get InvoiceId {
-    return _InvoiceId = setField(_InvoiceId!, 'InvoiceId', DbType.integer);
+    return _InvoiceId = setField(_InvoiceId, 'InvoiceId', DbType.integer);
   }
 
   InvoiceField? _InvoiceDate;
   InvoiceField get InvoiceDate {
     return _InvoiceDate =
-        setField(_InvoiceDate!, 'InvoiceDate', DbType.datetime);
+        setField(_InvoiceDate, 'InvoiceDate', DbType.datetime);
   }
 
   InvoiceField? _BillingAddress;
   InvoiceField get BillingAddress {
     return _BillingAddress =
-        setField(_BillingAddress!, 'BillingAddress', DbType.text);
+        setField(_BillingAddress, 'BillingAddress', DbType.text);
   }
 
   InvoiceField? _BillingCity;
   InvoiceField get BillingCity {
-    return _BillingCity = setField(_BillingCity!, 'BillingCity', DbType.text);
+    return _BillingCity = setField(_BillingCity, 'BillingCity', DbType.text);
   }
 
   InvoiceField? _BillingState;
   InvoiceField get BillingState {
-    return _BillingState =
-        setField(_BillingState!, 'BillingState', DbType.text);
+    return _BillingState = setField(_BillingState, 'BillingState', DbType.text);
   }
 
   InvoiceField? _BillingCountry;
   InvoiceField get BillingCountry {
     return _BillingCountry =
-        setField(_BillingCountry!, 'BillingCountry', DbType.text);
+        setField(_BillingCountry, 'BillingCountry', DbType.text);
   }
 
   InvoiceField? _BillingPostalCode;
   InvoiceField get BillingPostalCode {
     return _BillingPostalCode =
-        setField(_BillingPostalCode!, 'BillingPostalCode', DbType.text);
+        setField(_BillingPostalCode, 'BillingPostalCode', DbType.text);
   }
 
   InvoiceField? _Total;
   InvoiceField get Total {
-    return _Total = setField(_Total!, 'Total', DbType.real);
+    return _Total = setField(_Total, 'Total', DbType.real);
   }
 
   InvoiceField? _CustomerId;
   InvoiceField get CustomerId {
-    return _CustomerId = setField(_CustomerId!, 'CustomerId', DbType.integer);
+    return _CustomerId = setField(_CustomerId, 'CustomerId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -8867,8 +8898,8 @@ class InvoiceLine {
   /// get Track By TrackId
   Future<Track?> getTrack(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Track().getById(TrackId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+    final _obj = await Track()
+        .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -8880,7 +8911,7 @@ class InvoiceLine {
   Future<Invoice?> getInvoice(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Invoice().getById(InvoiceId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (InvoiceLine)
@@ -8908,11 +8939,19 @@ class InvoiceLine {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (InvoiceId != null) {
-      map['InvoiceId'] = forView ? plInvoice!.BillingAddress : InvoiceId;
+      map['InvoiceId'] = forView
+          ? plInvoice == null
+              ? InvoiceId
+              : plInvoice!.BillingAddress
+          : InvoiceId;
     }
 
     return map;
@@ -8935,11 +8974,19 @@ class InvoiceLine {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (InvoiceId != null) {
-      map['InvoiceId'] = forView ? plInvoice!.BillingAddress : InvoiceId;
+      map['InvoiceId'] = forView
+          ? plInvoice == null
+              ? InvoiceId
+              : plInvoice!.BillingAddress
+          : InvoiceId;
     }
 
     return map;
@@ -9620,7 +9667,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   }
 
   InvoiceLineField setField(
-      InvoiceLineField field, String colName, DbType dbtype) {
+      InvoiceLineField? field, String colName, DbType dbtype) {
     return InvoiceLineField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -9631,27 +9678,27 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   InvoiceLineField? _InvoiceLineId;
   InvoiceLineField get InvoiceLineId {
     return _InvoiceLineId =
-        setField(_InvoiceLineId!, 'InvoiceLineId', DbType.integer);
+        setField(_InvoiceLineId, 'InvoiceLineId', DbType.integer);
   }
 
   InvoiceLineField? _UnitPrice;
   InvoiceLineField get UnitPrice {
-    return _UnitPrice = setField(_UnitPrice!, 'UnitPrice', DbType.real);
+    return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
   }
 
   InvoiceLineField? _Quantity;
   InvoiceLineField get Quantity {
-    return _Quantity = setField(_Quantity!, 'Quantity', DbType.integer);
+    return _Quantity = setField(_Quantity, 'Quantity', DbType.integer);
   }
 
   InvoiceLineField? _TrackId;
   InvoiceLineField get TrackId {
-    return _TrackId = setField(_TrackId!, 'TrackId', DbType.integer);
+    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
   InvoiceLineField? _InvoiceId;
   InvoiceLineField get InvoiceId {
-    return _InvoiceId = setField(_InvoiceId!, 'InvoiceId', DbType.integer);
+    return _InvoiceId = setField(_InvoiceId, 'InvoiceId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -10822,7 +10869,8 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  MediaTypeField setField(MediaTypeField field, String colName, DbType dbtype) {
+  MediaTypeField setField(
+      MediaTypeField? field, String colName, DbType dbtype) {
     return MediaTypeField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -10832,13 +10880,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
 
   MediaTypeField? _MediaTypeId;
   MediaTypeField get MediaTypeId {
-    return _MediaTypeId =
-        setField(_MediaTypeId!, 'MediaTypeId', DbType.integer);
+    return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
   }
 
   MediaTypeField? _Name;
   MediaTypeField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   bool _getIsDeleted = false;
@@ -11983,7 +12030,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  PlaylistField setField(PlaylistField field, String colName, DbType dbtype) {
+  PlaylistField setField(PlaylistField? field, String colName, DbType dbtype) {
     return PlaylistField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -11993,12 +12040,12 @@ class PlaylistFilterBuilder extends SearchCriteria {
 
   PlaylistField? _PlaylistId;
   PlaylistField get PlaylistId {
-    return _PlaylistId = setField(_PlaylistId!, 'PlaylistId', DbType.integer);
+    return _PlaylistId = setField(_PlaylistId, 'PlaylistId', DbType.integer);
   }
 
   PlaylistField? _Name;
   PlaylistField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   bool _getIsDeleted = false;
@@ -12496,7 +12543,7 @@ class Track {
   Future<MediaType?> getMediaType(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await MediaType().getById(MediaTypeId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -12507,8 +12554,8 @@ class Track {
   /// get Genre By GenreId
   Future<Genre?> getGenre(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Genre().getById(GenreId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+    final _obj = await Genre()
+        .getById(GenreId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -12519,8 +12566,8 @@ class Track {
   /// get Album By AlbumId
   Future<Album?> getAlbum(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Album().getById(AlbumId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+    final _obj = await Album()
+        .getById(AlbumId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Track)
@@ -12612,15 +12659,27 @@ class Track {
     }
 
     if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType!.Name : MediaTypeId;
+      map['MediaTypeId'] = forView
+          ? plMediaType == null
+              ? MediaTypeId
+              : plMediaType!.Name
+          : MediaTypeId;
     }
 
     if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre!.Name : GenreId;
+      map['GenreId'] = forView
+          ? plGenre == null
+              ? GenreId
+              : plGenre!.Name
+          : GenreId;
     }
 
     if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum!.Title : AlbumId;
+      map['AlbumId'] = forView
+          ? plAlbum == null
+              ? AlbumId
+              : plAlbum!.Title
+          : AlbumId;
     }
 
     return map;
@@ -12655,15 +12714,27 @@ class Track {
     }
 
     if (MediaTypeId != null) {
-      map['MediaTypeId'] = forView ? plMediaType!.Name : MediaTypeId;
+      map['MediaTypeId'] = forView
+          ? plMediaType == null
+              ? MediaTypeId
+              : plMediaType!.Name
+          : MediaTypeId;
     }
 
     if (GenreId != null) {
-      map['GenreId'] = forView ? plGenre!.Name : GenreId;
+      map['GenreId'] = forView
+          ? plGenre == null
+              ? GenreId
+              : plGenre!.Name
+          : GenreId;
     }
 
     if (AlbumId != null) {
-      map['AlbumId'] = forView ? plAlbum!.Title : AlbumId;
+      map['AlbumId'] = forView
+          ? plAlbum == null
+              ? AlbumId
+              : plAlbum!.Title
+          : AlbumId;
     }
 
 // COLLECTIONS (Track)
@@ -13461,7 +13532,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  TrackField setField(TrackField field, String colName, DbType dbtype) {
+  TrackField setField(TrackField? field, String colName, DbType dbtype) {
     return TrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -13471,49 +13542,48 @@ class TrackFilterBuilder extends SearchCriteria {
 
   TrackField? _TrackId;
   TrackField get TrackId {
-    return _TrackId = setField(_TrackId!, 'TrackId', DbType.integer);
+    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
   TrackField? _Name;
   TrackField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   TrackField? _Composer;
   TrackField get Composer {
-    return _Composer = setField(_Composer!, 'Composer', DbType.text);
+    return _Composer = setField(_Composer, 'Composer', DbType.text);
   }
 
   TrackField? _Milliseconds;
   TrackField get Milliseconds {
     return _Milliseconds =
-        setField(_Milliseconds!, 'Milliseconds', DbType.integer);
+        setField(_Milliseconds, 'Milliseconds', DbType.integer);
   }
 
   TrackField? _Bytes;
   TrackField get Bytes {
-    return _Bytes = setField(_Bytes!, 'Bytes', DbType.integer);
+    return _Bytes = setField(_Bytes, 'Bytes', DbType.integer);
   }
 
   TrackField? _UnitPrice;
   TrackField get UnitPrice {
-    return _UnitPrice = setField(_UnitPrice!, 'UnitPrice', DbType.real);
+    return _UnitPrice = setField(_UnitPrice, 'UnitPrice', DbType.real);
   }
 
   TrackField? _MediaTypeId;
   TrackField get MediaTypeId {
-    return _MediaTypeId =
-        setField(_MediaTypeId!, 'MediaTypeId', DbType.integer);
+    return _MediaTypeId = setField(_MediaTypeId, 'MediaTypeId', DbType.integer);
   }
 
   TrackField? _GenreId;
   TrackField get GenreId {
-    return _GenreId = setField(_GenreId!, 'GenreId', DbType.integer);
+    return _GenreId = setField(_GenreId, 'GenreId', DbType.integer);
   }
 
   TrackField? _AlbumId;
   TrackField get AlbumId {
-    return _AlbumId = setField(_AlbumId!, 'AlbumId', DbType.integer);
+    return _AlbumId = setField(_AlbumId, 'AlbumId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -14096,8 +14166,8 @@ class VTrack {
   /// get Track By TrackId
   Future<Track?> getTrack(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Track().getById(TrackId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+    final _obj = await Track()
+        .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (VTrack)
@@ -14130,7 +14200,11 @@ class VTrack {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     return map;
@@ -14158,7 +14232,11 @@ class VTrack {
     }
 
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     return map;
@@ -14651,7 +14729,7 @@ class VTrackFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  VTrackField setField(VTrackField field, String colName, DbType dbtype) {
+  VTrackField setField(VTrackField? field, String colName, DbType dbtype) {
     return VTrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -14661,27 +14739,27 @@ class VTrackFilterBuilder extends SearchCriteria {
 
   VTrackField? _Name;
   VTrackField get Name {
-    return _Name = setField(_Name!, 'Name', DbType.text);
+    return _Name = setField(_Name, 'Name', DbType.text);
   }
 
   VTrackField? _album;
   VTrackField get album {
-    return _album = setField(_album!, 'album', DbType.text);
+    return _album = setField(_album, 'album', DbType.text);
   }
 
   VTrackField? _media;
   VTrackField get media {
-    return _media = setField(_media!, 'media', DbType.text);
+    return _media = setField(_media, 'media', DbType.text);
   }
 
   VTrackField? _genres;
   VTrackField get genres {
-    return _genres = setField(_genres!, 'genres', DbType.text);
+    return _genres = setField(_genres, 'genres', DbType.text);
   }
 
   VTrackField? _TrackId;
   VTrackField get TrackId {
-    return _TrackId = setField(_TrackId!, 'TrackId', DbType.integer);
+    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
   bool _getIsDeleted = false;
@@ -15047,8 +15125,8 @@ class PlaylistTrack {
   /// get Track By TrackId
   Future<Track?> getTrack(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Track().getById(TrackId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+    final _obj = await Track()
+        .getById(TrackId, loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
 
@@ -15060,7 +15138,7 @@ class PlaylistTrack {
   Future<Playlist?> getPlaylist(
       {bool loadParents = false, List<String>? loadedFields}) async {
     final _obj = await Playlist().getById(PlaylistId,
-        loadParents: loadParents, loadedFields: loadedFields!);
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (PlaylistTrack)
@@ -15077,11 +15155,19 @@ class PlaylistTrack {
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (PlaylistId != null) {
-      map['PlaylistId'] = forView ? plPlaylist!.Name : PlaylistId;
+      map['PlaylistId'] = forView
+          ? plPlaylist == null
+              ? PlaylistId
+              : plPlaylist!.Name
+          : PlaylistId;
     }
 
     return map;
@@ -15093,11 +15179,19 @@ class PlaylistTrack {
       bool forView = false]) async {
     final map = <String, dynamic>{};
     if (TrackId != null) {
-      map['TrackId'] = forView ? plTrack!.Name : TrackId;
+      map['TrackId'] = forView
+          ? plTrack == null
+              ? TrackId
+              : plTrack!.Name
+          : TrackId;
     }
 
     if (PlaylistId != null) {
-      map['PlaylistId'] = forView ? plPlaylist!.Name : PlaylistId;
+      map['PlaylistId'] = forView
+          ? plPlaylist == null
+              ? PlaylistId
+              : plPlaylist!.Name
+          : PlaylistId;
     }
 
     return map;
@@ -15776,7 +15870,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   }
 
   PlaylistTrackField setField(
-      PlaylistTrackField field, String colName, DbType dbtype) {
+      PlaylistTrackField? field, String colName, DbType dbtype) {
     return PlaylistTrackField(this)
       ..param = DbParameter(
           dbType: dbtype,
@@ -15786,12 +15880,12 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
 
   PlaylistTrackField? _TrackId;
   PlaylistTrackField get TrackId {
-    return _TrackId = setField(_TrackId!, 'TrackId', DbType.integer);
+    return _TrackId = setField(_TrackId, 'TrackId', DbType.integer);
   }
 
   PlaylistTrackField? _PlaylistId;
   PlaylistTrackField get PlaylistId {
-    return _PlaylistId = setField(_PlaylistId!, 'PlaylistId', DbType.integer);
+    return _PlaylistId = setField(_PlaylistId, 'PlaylistId', DbType.integer);
   }
 
   bool _getIsDeleted = false;

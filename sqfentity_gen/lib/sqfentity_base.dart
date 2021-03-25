@@ -134,6 +134,7 @@ class SqfEntityField {
       this.isIndex,
       this.isIndexGroup,
       this.checkCondition,
+      this.formLabelText,
       this.collate});
   final String? fieldName;
   final DbType? dbType;
@@ -148,6 +149,7 @@ class SqfEntityField {
   final int? isIndexGroup;
   final bool? isUnique;
   final Collate? collate;
+  final String? formLabelText;
 }
 
 class SqfEntityFieldVirtual implements SqfEntityField {
@@ -191,6 +193,9 @@ class SqfEntityFieldVirtual implements SqfEntityField {
 
   @override
   Collate? get collate => null;
+
+  @override
+  String? get formLabelText => null;
 }
 
 class SqfEntityFieldPrimaryKey extends SqfEntityField {
@@ -210,6 +215,7 @@ class SqfEntityFieldRelationship implements SqfEntityField {
     this.defaultValue,
     this.minValue,
     this.maxValue,
+    this.formLabelText,
     this.formDropDownTextField,
     this.relationType,
     this.manyToManyTableName,
@@ -251,6 +257,8 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final int? isIndexGroup;
   @override
   final Collate? collate;
+  @override
+  final String? formLabelText;
 }
 
 class SqfEntityModel {
@@ -372,6 +380,7 @@ class SqfEntityModelConverter {
       ..isNotNull = field.isNotNull
       ..checkCondition = field.checkCondition
       ..collate = field.collate
+      ..formLabelText = field.formLabelText
       ..sequencedBy =
           field.sequencedBy == null ? null : toSequence(field.sequencedBy!);
   }
@@ -1075,7 +1084,7 @@ class SqfEntityObjectBuilder {
           RelationType.ONE_TO_ONE) {
         final o2oName = tableCollection.childTable.modelName!;
         final o2oNameLower = o2oName.toLowerCase();
-        retVal.writeln('''$o2oName _$o2oNameLower;
+        retVal.writeln('''$o2oName? _$o2oNameLower;
             $o2oName get $o2oNameLower {
             return _$o2oNameLower = _$o2oNameLower ?? $o2oName();
             }
@@ -2156,7 +2165,7 @@ class ${_table.modelName}FilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\\'\${param.value.join('\\',\\'')}\\''
               : param.value.join(',');
           whereString += param.whereString
@@ -3245,7 +3254,8 @@ abstract class SqfEntityFieldType {
       this.checkCondition,
       this.isIndex,
       this.isIndexGroup,
-      this.collate});
+      this.collate,
+      this.formLabelText});
   String? fieldName;
   DbType? dbType;
   dynamic defaultValue;
@@ -3260,6 +3270,7 @@ abstract class SqfEntityFieldType {
   bool? isIndex;
   int? isIndexGroup;
   String? checkCondition;
+  String? formLabelText;
   Collate? collate;
   String toSqLiteFieldString();
 
@@ -3287,7 +3298,8 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       this.isIndex,
       this.isIndexGroup,
       this.checkCondition,
-      this.collate});
+      this.collate,
+      this.formLabelText});
   @override
   String? fieldName;
   @override
@@ -3379,6 +3391,9 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
 
   @override
   Collate? collate;
+
+  @override
+  String? formLabelText;
 }
 
 class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
@@ -3453,6 +3468,9 @@ class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
 
   @override
   Collate? collate;
+
+  @override
+  String? formLabelText;
 }
 
 class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
@@ -3463,6 +3481,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       this.minValue,
       this.maxValue,
       this.formDropDownTextField,
+      this.formLabelText,
       this.relationshipName,
       this.relationType,
       this.manyToManyTableName,
@@ -3582,6 +3601,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
 
   @override
   Collate? collate;
+
+  @override
+  String? formLabelText;
 }
 
 abstract class SqfEntityModelBase {

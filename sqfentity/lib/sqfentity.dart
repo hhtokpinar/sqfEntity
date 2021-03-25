@@ -88,10 +88,10 @@ class SqfEntityProvider extends SqfEntityModelBase {
   SqfEntityConnection? _connection;
   SqfEntityConnectionBase? _connectionBase;
   static Map<String, Database?>? _dbMap;
-  static Map<String, Batch>? _openedBatch;
+  static Map<String, Batch?>? _openedBatch;
 
   static Map<String, Batch?> get openedBatch {
-    return _openedBatch = _openedBatch ?? <String, Batch>{};
+    return _openedBatch = _openedBatch ?? <String, Batch?>{};
   }
 
   Future<Database?> get db async {

@@ -1205,7 +1205,7 @@ class ProductFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -2435,7 +2435,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -3575,7 +3575,7 @@ class TodoFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString

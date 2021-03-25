@@ -81,3 +81,4 @@ example/lib/model/test.g.dart
 .dart_tool/build/
 .dart_tool/build/generated/sqfentity/example/lib/model/model.sqfentity.g.part
 .dart_tool/build/generated/sqfentity/example/lib/model/chinook.sqfentity.g.part
+example_ns

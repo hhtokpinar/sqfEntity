@@ -1332,7 +1332,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -2515,7 +2515,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -4005,7 +4005,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -5693,7 +5693,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -6972,7 +6972,7 @@ class GenreFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -8381,7 +8381,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -9720,7 +9720,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -10907,7 +10907,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -12067,7 +12067,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -13605,7 +13605,7 @@ class TrackFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -14781,7 +14781,7 @@ class VTrackFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
@@ -15907,7 +15907,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
         if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text
+          param.value = param.dbType == DbType.text || param.value[0] is String
               ? '\'${param.value.join('\',\'')}\''
               : param.value.join(',');
           whereString += param.whereString
