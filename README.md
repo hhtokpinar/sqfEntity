@@ -265,9 +265,12 @@ Run this script with this parameters.
 
 **bundledDatabasePath:** File path of your copied database
 
-    final bundledDbModel = await convertDatabaseToModelBase(
-        databaseName: 'chinook.db',  
-        bundledDatabasePath: 'assets/chinook.sqlite');
+    class BundledDbModel extends SqfEntityModelProvider {}
+
+    final bundledDbModel = await convertDatabaseToModelBase(BundledDbModel()
+    ..databaseName = 'chinook.db'
+    ..bundledDatabasePath = 'assets/chinook.sqlite');
+
 
 *STEP 3*
 
