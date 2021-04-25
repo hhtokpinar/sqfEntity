@@ -3370,7 +3370,7 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       case DbType.blob:
         return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';
       case DbType.time:
-        return 'if(o[\'$fieldName\'] != null) {$fieldName = TimeOfDay(hour: int.parse(o[\'$fieldName\'].toString()[0]), minute: int.parse(o[\'$fieldName\'].toString()[1]));}';
+        return 'if(o[\'$fieldName\'] != null) {$fieldName = TimeOfDay(hour: int.parse(o[\'$fieldName\'].toString().split(\':\')[0]), minute: int.parse(o[\'$fieldName\'].toString().split(\':\')[1]));}';
 
       default:
         //     return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';

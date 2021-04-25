@@ -1,4 +1,4 @@
-## 2.0.0-nullsafety.0+7
+## 2.0.0-nullsafety.0+8
 Added DbType.time
 
 ## 2.0.0-nullsafety.0+6

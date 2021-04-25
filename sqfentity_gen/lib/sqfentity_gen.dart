@@ -256,8 +256,8 @@ SqfEntityFieldType toField(
       ..isIndexGroup = getIntValue(obj, 'isIndexGroup')
       ..checkCondition = getStringValue(obj, 'checkCondition')
       ..manyToManyTableName = getStringValue(obj, 'manyToManyTableName')
-      ..relationType = getTypeValue(obj, 'relationType') as RelationType
-      ..collate = getTypeValue(obj, 'collate') as Collate
+      ..relationType = getTypeValue(obj, 'relationType') as RelationType?
+      ..collate = getTypeValue(obj, 'collate') as Collate?
       ..init();
   } else {
     final SqfEntityFieldType retVal = SqfEntityFieldBase(fieldName!, dbType);
