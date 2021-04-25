@@ -171,7 +171,7 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
       getListValue(obj, 'fields')!, dbModelName, //keepFieldNamesAsOriginal
     )
     ..primaryKeyType = getTypeValue(obj, 'primaryKeyType') as PrimaryKeyType
-    ..objectType = getTypeValue(obj, 'objectType') as ObjectType
+    ..objectType = getTypeValue(obj, 'objectType') as ObjectType?
     ..defaultJsonUrl = getStringValue(obj, 'defaultJsonUrl')
     ..modelName = getStringValue(obj, 'modelName')
     ..dbModel = dbModelName
@@ -206,7 +206,7 @@ SqfEntityFieldType getFieldProperties(
     ..isIndex = getBoolValue(obj, 'isIndex')
     ..isIndexGroup = getIntValue(obj, 'isIndexGroup')
     ..checkCondition = getStringValue(obj, 'checkCondition')
-    ..collate = getTypeValue(obj, 'collate') as Collate
+    ..collate = getTypeValue(obj, 'collate') as Collate?
     ..sequencedBy =
         obj.getField('sequencedBy').toString().contains('SqfEntitySequence')
             ? toSequence(obj.getField('sequencedBy')!)
@@ -224,7 +224,8 @@ SqfEntityFieldType toField(
     throw Exception(
         'SQFENTITY ERROR: fieldName: [$fieldName] IS FORBIDDEN. PLEASE CHANGE THE FIELD NAME');
   }
-  final dbType = getTypeValue(obj, 'dbType') as DbType;
+  final dbType = getTypeValue(obj, 'dbType') as DbType? ?? DbType.text;
+
   if (obj.toString().startsWith('SqfEntityFieldVirtual')) {
     return SqfEntityFieldVirtualBase(fieldName!, dbType);
   } else if (obj.toString().startsWith('SqfEntityFieldRelationship')) {
@@ -539,7 +540,8 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
         continue;
       }
       addedTables.add(table.modelName!);
-      strTables.writeln('''
+      strTables.writeln(
+          '''
 // ${table.modelName} TABLE      
 class Table${table.modelName} extends SqfEntityTableBase {
   Table${table.modelName}() {
@@ -577,7 +579,8 @@ class Table${table.modelName} extends SqfEntityTableBase {
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
     for (final table in _m.databaseTables!
         .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
-      strTables.writeln('''
+      strTables.writeln(
+          '''
 
 const table${toCamelCase(table.tableName)} = SqfEntityTable(
     tableName: '${table.tableName}' 
@@ -598,7 +601,8 @@ const table${toCamelCase(table.tableName)} = SqfEntityTable(
     }
     strSequences.writeln('// BEGIN SEQUENCES');
     for (var seq in _m.sequences!) {
-      strSequences.writeln('''
+      strSequences.writeln(
+          '''
 // ${seq.sequenceName} SEQUENCE
 class Sequence${seq.modelName} extends SqfEntitySequenceBase {
   Sequence${seq.modelName}() {

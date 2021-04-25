@@ -50,8 +50,6 @@ Future<bool> runSamples() async {
   // SELECT AND ORDER PRODUCTS BY FIELDS
   await samples1();
 
-  //return true;
-
   // FILTERS: SOME FILTERS ON PRODUCTS
   await samples2();
 
@@ -84,6 +82,7 @@ Future<bool> runSamples() async {
 
   // get data from view sample
   await samples12();
+
   // create model from existing database sample
   await createModelFromDatabaseSample();
 

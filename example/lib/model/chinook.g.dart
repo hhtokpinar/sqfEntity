@@ -510,13 +510,14 @@ class Album {
   Album.withId(this.AlbumId, this.Title, this.ArtistId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Album.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     AlbumId = int.tryParse(o['AlbumId'].toString());
     if (o['Title'] != null) {
-      Title = o['Title'] as String;
+      Title = o['Title'].toString();
     }
     ArtistId = int.tryParse(o['ArtistId'].toString());
 
@@ -850,7 +851,7 @@ class Album {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Album Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -1765,13 +1766,14 @@ class Artist {
   Artist.withId(this.ArtistId, this.Name) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Artist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     ArtistId = int.tryParse(o['ArtistId'].toString());
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
   }
   // FIELDS (Artist)
@@ -2039,7 +2041,7 @@ class Artist {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Artist Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -2967,43 +2969,44 @@ class Customer {
       this.SupportRepId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Customer.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     CustomerId = int.tryParse(o['CustomerId'].toString());
     if (o['FirstName'] != null) {
-      FirstName = o['FirstName'] as String;
+      FirstName = o['FirstName'].toString();
     }
     if (o['LastName'] != null) {
-      LastName = o['LastName'] as String;
+      LastName = o['LastName'].toString();
     }
     if (o['Company'] != null) {
-      Company = o['Company'] as String;
+      Company = o['Company'].toString();
     }
     if (o['Address'] != null) {
-      Address = o['Address'] as String;
+      Address = o['Address'].toString();
     }
     if (o['City'] != null) {
-      City = o['City'] as String;
+      City = o['City'].toString();
     }
     if (o['State'] != null) {
-      State = o['State'] as String;
+      State = o['State'].toString();
     }
     if (o['Country'] != null) {
-      Country = o['Country'] as String;
+      Country = o['Country'].toString();
     }
     if (o['PostalCode'] != null) {
-      PostalCode = o['PostalCode'] as String;
+      PostalCode = o['PostalCode'].toString();
     }
     if (o['Phone'] != null) {
-      Phone = o['Phone'] as String;
+      Phone = o['Phone'].toString();
     }
     if (o['Fax'] != null) {
-      Fax = o['Fax'] as String;
+      Fax = o['Fax'].toString();
     }
     if (o['Email'] != null) {
-      Email = o['Email'] as String;
+      Email = o['Email'].toString();
     }
     SupportRepId = int.tryParse(o['SupportRepId'].toString());
 
@@ -3470,7 +3473,7 @@ class Customer {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Customer Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -4542,19 +4545,20 @@ class Employee {
       this.ReportsTo) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Employee.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     EmployeeId = int.tryParse(o['EmployeeId'].toString());
     if (o['LastName'] != null) {
-      LastName = o['LastName'] as String;
+      LastName = o['LastName'].toString();
     }
     if (o['FirstName'] != null) {
-      FirstName = o['FirstName'] as String;
+      FirstName = o['FirstName'].toString();
     }
     if (o['Title'] != null) {
-      Title = o['Title'] as String;
+      Title = o['Title'].toString();
     }
     if (o['BirthDate'] != null) {
       BirthDate = int.tryParse(o['BirthDate'].toString()) != null
@@ -4569,28 +4573,28 @@ class Employee {
           : DateTime.tryParse(o['HireDate'].toString());
     }
     if (o['Address'] != null) {
-      Address = o['Address'] as String;
+      Address = o['Address'].toString();
     }
     if (o['City'] != null) {
-      City = o['City'] as String;
+      City = o['City'].toString();
     }
     if (o['State'] != null) {
-      State = o['State'] as String;
+      State = o['State'].toString();
     }
     if (o['Country'] != null) {
-      Country = o['Country'] as String;
+      Country = o['Country'].toString();
     }
     if (o['PostalCode'] != null) {
-      PostalCode = o['PostalCode'] as String;
+      PostalCode = o['PostalCode'].toString();
     }
     if (o['Phone'] != null) {
-      Phone = o['Phone'] as String;
+      Phone = o['Phone'].toString();
     }
     if (o['Fax'] != null) {
-      Fax = o['Fax'] as String;
+      Fax = o['Fax'].toString();
     }
     if (o['Email'] != null) {
-      Email = o['Email'] as String;
+      Email = o['Email'].toString();
     }
     ReportsTo = int.tryParse(o['ReportsTo'].toString());
 
@@ -5137,7 +5141,7 @@ class Employee {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Employee Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -6222,13 +6226,14 @@ class Genre {
   Genre.withId(this.GenreId, this.Name) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Genre.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     GenreId = int.tryParse(o['GenreId'].toString());
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
   }
   // FIELDS (Genre)
@@ -6496,7 +6501,7 @@ class Genre {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Genre Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -7410,6 +7415,7 @@ class Invoice {
       this.CustomerId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Invoice.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
@@ -7422,19 +7428,19 @@ class Invoice {
           : DateTime.tryParse(o['InvoiceDate'].toString());
     }
     if (o['BillingAddress'] != null) {
-      BillingAddress = o['BillingAddress'] as String;
+      BillingAddress = o['BillingAddress'].toString();
     }
     if (o['BillingCity'] != null) {
-      BillingCity = o['BillingCity'] as String;
+      BillingCity = o['BillingCity'].toString();
     }
     if (o['BillingState'] != null) {
-      BillingState = o['BillingState'] as String;
+      BillingState = o['BillingState'].toString();
     }
     if (o['BillingCountry'] != null) {
-      BillingCountry = o['BillingCountry'] as String;
+      BillingCountry = o['BillingCountry'].toString();
     }
     if (o['BillingPostalCode'] != null) {
-      BillingPostalCode = o['BillingPostalCode'] as String;
+      BillingPostalCode = o['BillingPostalCode'].toString();
     }
     if (o['Total'] != null) {
       Total = double.tryParse(o['Total'].toString());
@@ -7864,7 +7870,7 @@ class Invoice {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Invoice Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -8860,6 +8866,7 @@ class InvoiceLine {
       this.TrackId, this.InvoiceId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   InvoiceLine.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
@@ -9213,7 +9220,7 @@ class InvoiceLine {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'InvoiceLine Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -10148,13 +10155,14 @@ class MediaType {
   MediaType.withId(this.MediaTypeId, this.Name) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   MediaType.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     MediaTypeId = int.tryParse(o['MediaTypeId'].toString());
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
   }
   // FIELDS (MediaType)
@@ -10426,7 +10434,7 @@ class MediaType {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'MediaType Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -11321,13 +11329,14 @@ class Playlist {
   Playlist.withId(this.PlaylistId, this.Name) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Playlist.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     PlaylistId = int.tryParse(o['PlaylistId'].toString());
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
   }
   // FIELDS (Playlist)
@@ -11595,7 +11604,7 @@ class Playlist {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Playlist Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -12486,16 +12495,17 @@ class Track {
       this.AlbumId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Track.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     TrackId = int.tryParse(o['TrackId'].toString());
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
     if (o['Composer'] != null) {
-      Composer = o['Composer'] as String;
+      Composer = o['Composer'].toString();
     }
     if (o['Milliseconds'] != null) {
       Milliseconds = int.tryParse(o['Milliseconds'].toString());
@@ -13085,7 +13095,7 @@ class Track {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Track Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -14126,21 +14136,22 @@ class VTrack {
   VTrack.withId(this.Name, this.album, this.media, this.genres, this.TrackId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   VTrack.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     if (o['Name'] != null) {
-      Name = o['Name'] as String;
+      Name = o['Name'].toString();
     }
     if (o['album'] != null) {
-      album = o['album'] as String;
+      album = o['album'].toString();
     }
     if (o['media'] != null) {
-      media = o['media'] as String;
+      media = o['media'].toString();
     }
     if (o['genres'] != null) {
-      genres = o['genres'] as String;
+      genres = o['genres'].toString();
     }
     TrackId = int.tryParse(o['TrackId'].toString());
 
@@ -15094,6 +15105,7 @@ class PlaylistTrack {
   PlaylistTrack.withId(this.TrackId, this.PlaylistId) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   PlaylistTrack.fromMap(Map<String, dynamic> o,
       {bool setDefaultValues = true}) {
     if (setDefaultValues) {
@@ -15408,12 +15420,12 @@ class PlaylistTrack {
             success: false,
             errorMessage: 'PlaylistTrack TrackId=$TrackId did not update');
       }
-      return 1;
+      return TrackId;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'PlaylistTrack Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 

@@ -1168,7 +1168,7 @@ class ProductFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
+    var r = BoolResult(success: false);
     if (Product._softDeleteActivated && !hardDelete) {
       r = await _obj._mnProduct.updateBatch(qparams, {'isDeleted': 1});
     } else {

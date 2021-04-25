@@ -14,10 +14,12 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   http: ^0.13.0 
-  flutter_datetime_picker:
-  sqfentity: 
-  sqfentity_gen: 
-  
+  flutter_datetime_picker: ^1.5.1
+  sqflite_sqlcipher: ^2.0.0
+  sqfentity: ^2.0.0-dev.0
+  sqfentity_gen: ^2.0.0-dev.0+1
+
+
 dependency_overrides:
   sqfentity: 
     path: ../sqfentity

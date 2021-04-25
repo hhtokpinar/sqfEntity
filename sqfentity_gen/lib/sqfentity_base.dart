@@ -620,6 +620,7 @@ class SqfEntityObjectBuilder {
     ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues();}
     ${_table.modelName}.withFields(${_table.createConstructure}){ _setDefaultValues();}
     ${_table.modelName}.withId(${_table.createConstructureWithId}){ _setDefaultValues();}
+    // fromMap v2.0
     ${_table.modelName}.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) 
       {_setDefaultValues();}
@@ -753,10 +754,10 @@ class SqfEntityObjectBuilder {
         saveResult = BoolResult(
             success: false, errorMessage: '${_table.modelName} ${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]} did not update');
          }
-          return ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : '${_table.primaryKeyNames[0]}'};
+          return ${_table.primaryKeyTypes[0] == 'String' ? '1' : '${_table.primaryKeyNames[0]}'};
        } catch (e) {
         saveResult = BoolResult(success: false,errorMessage: '${_table.modelName} Save failed. Error: \${e.toString()}');
-        return 0;
+        return null;
       }
     }
 
@@ -951,7 +952,7 @@ class SqfEntityObjectBuilder {
     if (_table.primaryKeyName != null && _table.primaryKeyName!.isNotEmpty) {
       if (_table.primaryKeyType == PrimaryKeyType.text) {
         _retVal.writeln(
-            '${_table.primaryKeyNames[0]} = o[\'${_table.primaryKeyNames[0]}\'] as String;');
+            '${_table.primaryKeyNames[0]} = o[\'${_table.primaryKeyNames[0]}\'].toString();');
       } else {
         _retVal.writeln(
             '${_table.primaryKeyNames[0]} = int.tryParse(o[\'${_table.primaryKeyNames[0]}\'].toString());');
@@ -1211,7 +1212,7 @@ class SqfEntityObjectBuilder {
           final relationName =
               tableCollection.childTable.modelName!.toLowerCase();
           retVal.writeln(
-              '''if (!forQuery && $relationName != null) {map['$relationName'] = await $relationName.toMapWithChildren();}''');
+              '''if (!forQuery) {map['$relationName'] = await $relationName.toMapWithChildren();}''');
         } else {
           retVal.writeln(
               '''if (!forQuery) {map['$funcName'] = await get$funcName()!.toMapList();}''');
@@ -1291,7 +1292,7 @@ class SqfEntityObjectBuilder {
       switch (tableCollection.childTableField.deleteRule) {
         case DeleteRule.SET_NULL:
           retVal += '''
-      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.update({"${tableCollection.childTableField.fieldName}": null});}
+      {result = await ${tableCollection.childTable.modelName}().select()${filterExpression.toString()}.update({'${tableCollection.childTableField.fieldName}': null});}
       if (!result.success) {return result;}
       ''';
           break;
@@ -1389,7 +1390,7 @@ class SqfEntityObjectBuilder {
     ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '''
     for (int i = 0; i < ${toPluralName(_table._modelLowerCase)}.length; i++) {
       if(${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} == null) { 
-        ${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} = result![i] as int; 
+        ${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} = result![i] as ${_table.primaryKeyTypes[0]}; 
         }
     }
     ''' : ''}
@@ -1593,7 +1594,7 @@ String __toOnetoOneCollections(SqfEntityTableBase _table) {
   final retVal = StringBuffer();
   final collections = <String>[];
   for (var tableCollection in _table.collections!) {
-    final String funcName = tableCollection.childTableField.table!.modelName!;
+    final String funcName = tableCollection.childTable.modelName!;
 
     if (collections.contains(funcName)) {
       continue;
@@ -1613,19 +1614,19 @@ String __toOnetoOneCollections(SqfEntityTableBase _table) {
           Property();
           obj.property._productProductId = obj.productId;
       */
-      retVal.writeln(
-          '''obj._${tableCollection.childTable.modelName!.toLowerCase()} = await ${tableCollection.childTable.modelName}()
+      retVal.writeln('''
+          .._${tableCollection.childTable.modelName!.toLowerCase()} = await ${tableCollection.childTable.modelName}()
           .select()
           .${tableCollection.childTableField.fieldName}
           .equals(obj.$childTableFieldTablePrimaryKeyName)
-          .toSingle();          
+          .toSingle()          
           ''');
       collections.add(funcName);
     }
   }
 
   return retVal.length > 0
-      ? '\n//      RELATIONS OneToOne (${_table.modelName})\n${retVal.toString()}//      END RELATIONS OneToOne (${_table.modelName})\n'
+      ? '\n//      RELATIONS OneToOne (${_table.modelName})\n obj ${retVal.toString()};//      END RELATIONS OneToOne (${_table.modelName})\n'
       : '';
 }
 
@@ -2898,7 +2899,7 @@ class AddedBlocks {
 }
 
 class BoolResult {
-  BoolResult({required this.success, this.successMessage, this.errorMessage});
+  BoolResult({this.success = false, this.successMessage, this.errorMessage});
   String? successMessage;
   String? errorMessage;
   bool success = false;
@@ -3020,7 +3021,7 @@ class SqfEntityTableBase {
               : field.table!.primaryKeyType != PrimaryKeyType.text
                   ? DbType.integer
                   : DbType.text
-          ..deleteRule = field.deleteRule
+          ..deleteRule = field.deleteRule ?? DeleteRule.NO_ACTION
           ..relationType = field.relationType ?? RelationType.ONE_TO_MANY;
         if (field.relationType != RelationType.MANY_TO_MANY) {
           relationType = relationType ?? field.relationType;
@@ -3339,6 +3340,8 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
         return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;}\n';
       case DbType.datetimeUtc:
         return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;}\n';
+      case DbType.time:
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';}';
       default:
         {
           return 'if ($fieldName != null) {map[\'$fieldName\'] = $fieldName;}\n';
@@ -3350,21 +3353,28 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
   String toFromMapString() {
     switch (dbType) {
       case DbType.bool:
-        //if(o['isActive'] != null) isActive =          o['isActive'] == 1 || o['isActive'] == true;
-        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] == 1 || o[\'$fieldName\'] == true;}';
-
+        // return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] == 1 || o[\'$fieldName\'] == true;}';
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString() == "1" || o[\'$fieldName\'].toString() == "true";}'; // https://github.com/hhtokpinar/sqfEntity/issues/170#issuecomment-826160862
       case DbType.date:
       case DbType.datetime:
         return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString()) != null ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(o[\'$fieldName\'].toString())!) : DateTime.tryParse(o[\'$fieldName\'].toString());}';
       case DbType.datetimeUtc:
         return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString()) != null ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(o[\'$fieldName\'].toString())!, isUtc: true) : DateTime.tryParse(o[\'$fieldName\'].toString());}';
       case DbType.real:
-        return 'if(o[\'$fieldName\'] != null) {$fieldName = double.tryParse(o[\'$fieldName\'].toString());}';
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = double.tryParse(o[\'$fieldName\'].toString());}';
       case DbType.integer:
       case DbType.numeric:
-        return 'if(o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString());}';
-      default:
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString());}';
+      case DbType.text:
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString();}';
+      case DbType.blob:
         return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';
+      case DbType.time:
+        return 'if(o[\'$fieldName\'] != null) {$fieldName = TimeOfDay(hour: int.parse(o[\'$fieldName\'].toString()[0]), minute: int.parse(o[\'$fieldName\'].toString()[1]));}';
+
+      default:
+        //     return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString();}';
     }
   }
 
@@ -3530,7 +3540,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
   final List<SqfEntityFieldType> relationshipFields = <SqfEntityFieldType>[];
   String? manyToManyTableName;
   SqfEntityTableBase? manyToManyTable;
-  DeleteRule deleteRule = DeleteRule.NO_ACTION;
+  DeleteRule? deleteRule = DeleteRule.NO_ACTION;
   RelationType? relationType;
 
   @override
@@ -3565,10 +3575,14 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
       switch (dbType) {
         case DbType.bool:
           return '$fieldName = o[\'$fieldName\'] != null ? o[\'$fieldName\'] == 1 : null;\n';
+        case DbType.text:
+          return '$fieldName = o[\'$fieldName\'].toString();\n';
         default:
           {
             if (dartType[dbType!.index].toString() == 'int') {
               return '$fieldName = int.tryParse(o[\'$fieldName\'].toString());\n';
+            } else if (dartType[dbType!.index].toString() == 'String') {
+              return '$fieldName = o[\'$fieldName\'].toString();\n';
             } else {
               return '$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};\n';
             }
@@ -3852,28 +3866,30 @@ SQLite KEYWORDS
 
 // List<String> dartType: each element of the list corresponds to the DbType enum index
 const List<String> dartType = [
-  'int',
-  'String',
-  'Uint8List',
-  'double',
-  'int',
-  'bool',
-  'DateTime',
-  'DateTime',
-  'String',
-  'DateTime',
+  'int', // 0
+  'String', // 1
+  'Uint8List', // 2
+  'double', // 3
+  'int', // 4
+  'bool', // 5
+  'DateTime', // 6
+  'DateTime', // 7
+  'String', // 8
+  'DateTime', // 9
+  'TimeOfDay', // 10
 ];
 const List<String> sqLiteType = [
-  'integer',
-  'text',
-  'blob',
-  'real',
-  'numeric',
-  'numeric',
-  'datetime',
-  'date',
-  'text',
-  'datetimeutc',
+  'integer', // 0
+  'text', // 1
+  'blob', // 2
+  'real', // 3
+  'numeric', // 4
+  'numeric', // 5
+  'datetime', // 6
+  'date', // 7
+  'text', // 8
+  'datetimeutc', // 9
+  'text', // 10
 ];
 enum DeleteRule { CASCADE, SET_DEFAULT_VALUE, SET_NULL, NO_ACTION }
 enum Collate { BINARY, NOCASE, RTRIM }
@@ -3887,7 +3903,7 @@ enum PrimaryKeyType { integer_auto_incremental, text, integer_unique }
 enum ObjectType { table, view }
 //enum DefaultValues { date_now, datetime_now }
 enum DbType {
-  integer,
+  integer, // 0
 // ------------------------------------------------------
 // INT                             |
 // INTEGER                         |
@@ -3899,7 +3915,7 @@ enum DbType {
 // INT2                            |
 // INT8	                           |
 // -----------------------------------------------------
-  text,
+  text, // 1
 // -----------------------------------------------------
 // CHARACTER(20)                   |
 // VARCHAR(255)                    |
@@ -3910,18 +3926,18 @@ enum DbType {
 // TEXT                            |
 // CLOB                            |
 // ------------------------------------------------------
-  blob,
+  blob, // 2
 // ------------------------------------------------------
 // BLOB                            |        BLOB
 // ------------------------------------------------------
-  real,
+  real, // 3
 // ------------------------------------------------------
 // REAL                            |
 // DOUBLE                          |
 // DOUBLE PRECISION                |        REAL
 // FLOAT	                         |
 // ------------------------------------------------------
-  numeric,
+  numeric, // 4
 // ------------------------------------------------------
 // NUMERIC                         |
 // DECIMAL(10,5)                   |
@@ -3929,12 +3945,13 @@ enum DbType {
 // DATE                            |
 // DATETIME	                       |
 // -------------------------------------------------------
-  bool,
+  bool, // 5
   // bool is not a supported SQLite type. Builder converts this type to numeric values (false=0, true=1)
-  datetime,
-  date,
-  unknown,
-  datetimeUtc
+  datetime, // 6
+  date, // 7
+  unknown, // 8
+  datetimeUtc, // 9
+  time // 10
 }
 
 DbType parseDbType(String val) {

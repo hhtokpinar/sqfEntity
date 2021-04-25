@@ -24,7 +24,7 @@ class AlbumAddState extends State {
 
   @override
   void initState() {
-    txtTitle.text = album.Title ?? '';
+    txtTitle.text = album.Title == null ? '' : album.Title.toString();
 
     super.initState();
   }
@@ -163,7 +163,7 @@ class ArtistAddState extends State {
 
   @override
   void initState() {
-    txtName.text = artist.Name ?? '';
+    txtName.text = artist.Name == null ? '' : artist.Name.toString();
 
     super.initState();
   }
@@ -271,17 +271,23 @@ class CustomerAddState extends State {
 
   @override
   void initState() {
-    txtFirstName.text = customer.FirstName ?? '';
-    txtLastName.text = customer.LastName ?? '';
-    txtCompany.text = customer.Company ?? '';
-    txtAddress.text = customer.Address ?? '';
-    txtCity.text = customer.City ?? '';
-    txtState.text = customer.State ?? '';
-    txtCountry.text = customer.Country ?? '';
-    txtPostalCode.text = customer.PostalCode ?? '';
-    txtPhone.text = customer.Phone ?? '';
-    txtFax.text = customer.Fax ?? '';
-    txtEmail.text = customer.Email ?? '';
+    txtFirstName.text =
+        customer.FirstName == null ? '' : customer.FirstName.toString();
+    txtLastName.text =
+        customer.LastName == null ? '' : customer.LastName.toString();
+    txtCompany.text =
+        customer.Company == null ? '' : customer.Company.toString();
+    txtAddress.text =
+        customer.Address == null ? '' : customer.Address.toString();
+    txtCity.text = customer.City == null ? '' : customer.City.toString();
+    txtState.text = customer.State == null ? '' : customer.State.toString();
+    txtCountry.text =
+        customer.Country == null ? '' : customer.Country.toString();
+    txtPostalCode.text =
+        customer.PostalCode == null ? '' : customer.PostalCode.toString();
+    txtPhone.text = customer.Phone == null ? '' : customer.Phone.toString();
+    txtFax.text = customer.Fax == null ? '' : customer.Fax.toString();
+    txtEmail.text = customer.Email == null ? '' : customer.Email.toString();
 
     super.initState();
   }
@@ -529,9 +535,11 @@ class EmployeeAddState extends State {
 
   @override
   void initState() {
-    txtLastName.text = employee.LastName ?? '';
-    txtFirstName.text = employee.FirstName ?? '';
-    txtTitle.text = employee.Title ?? '';
+    txtLastName.text =
+        employee.LastName == null ? '' : employee.LastName.toString();
+    txtFirstName.text =
+        employee.FirstName == null ? '' : employee.FirstName.toString();
+    txtTitle.text = employee.Title == null ? '' : employee.Title.toString();
     txtBirthDate.text = employee.BirthDate == null
         ? ''
         : UITools.convertDate(employee.BirthDate!);
@@ -546,14 +554,17 @@ class EmployeeAddState extends State {
         ? ''
         : UITools.convertTime(employee.HireDate!);
 
-    txtAddress.text = employee.Address ?? '';
-    txtCity.text = employee.City ?? '';
-    txtState.text = employee.State ?? '';
-    txtCountry.text = employee.Country ?? '';
-    txtPostalCode.text = employee.PostalCode ?? '';
-    txtPhone.text = employee.Phone ?? '';
-    txtFax.text = employee.Fax ?? '';
-    txtEmail.text = employee.Email ?? '';
+    txtAddress.text =
+        employee.Address == null ? '' : employee.Address.toString();
+    txtCity.text = employee.City == null ? '' : employee.City.toString();
+    txtState.text = employee.State == null ? '' : employee.State.toString();
+    txtCountry.text =
+        employee.Country == null ? '' : employee.Country.toString();
+    txtPostalCode.text =
+        employee.PostalCode == null ? '' : employee.PostalCode.toString();
+    txtPhone.text = employee.Phone == null ? '' : employee.Phone.toString();
+    txtFax.text = employee.Fax == null ? '' : employee.Fax.toString();
+    txtEmail.text = employee.Email == null ? '' : employee.Email.toString();
 
     super.initState();
   }
@@ -923,7 +934,7 @@ class GenreAddState extends State {
 
   @override
   void initState() {
-    txtName.text = genre.Name ?? '';
+    txtName.text = genre.Name == null ? '' : genre.Name.toString();
 
     super.initState();
   }
@@ -1034,11 +1045,17 @@ class InvoiceAddState extends State {
         ? ''
         : UITools.convertTime(invoice.InvoiceDate!);
 
-    txtBillingAddress.text = invoice.BillingAddress ?? '';
-    txtBillingCity.text = invoice.BillingCity ?? '';
-    txtBillingState.text = invoice.BillingState ?? '';
-    txtBillingCountry.text = invoice.BillingCountry ?? '';
-    txtBillingPostalCode.text = invoice.BillingPostalCode ?? '';
+    txtBillingAddress.text =
+        invoice.BillingAddress == null ? '' : invoice.BillingAddress.toString();
+    txtBillingCity.text =
+        invoice.BillingCity == null ? '' : invoice.BillingCity.toString();
+    txtBillingState.text =
+        invoice.BillingState == null ? '' : invoice.BillingState.toString();
+    txtBillingCountry.text =
+        invoice.BillingCountry == null ? '' : invoice.BillingCountry.toString();
+    txtBillingPostalCode.text = invoice.BillingPostalCode == null
+        ? ''
+        : invoice.BillingPostalCode.toString();
     txtTotal.text = invoice.Total == null ? '' : invoice.Total.toString();
 
     super.initState();
@@ -1521,7 +1538,7 @@ class MediaTypeAddState extends State {
 
   @override
   void initState() {
-    txtName.text = mediatype.Name ?? '';
+    txtName.text = mediatype.Name == null ? '' : mediatype.Name.toString();
 
     super.initState();
   }
@@ -1616,7 +1633,7 @@ class PlaylistAddState extends State {
 
   @override
   void initState() {
-    txtName.text = playlist.Name ?? '';
+    txtName.text = playlist.Name == null ? '' : playlist.Name.toString();
 
     super.initState();
   }
@@ -1725,8 +1742,8 @@ class TrackAddState extends State {
 
   @override
   void initState() {
-    txtName.text = track.Name ?? '';
-    txtComposer.text = track.Composer ?? '';
+    txtName.text = track.Name == null ? '' : track.Name.toString();
+    txtComposer.text = track.Composer == null ? '' : track.Composer.toString();
     txtMilliseconds.text =
         track.Milliseconds == null ? '' : track.Milliseconds.toString();
     txtBytes.text = track.Bytes == null ? '' : track.Bytes.toString();

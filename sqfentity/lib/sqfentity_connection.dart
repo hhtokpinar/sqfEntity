@@ -20,7 +20,8 @@ import 'dart:async' show Future;
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 import 'sqfentity_connection_base.dart';
 
@@ -54,11 +55,9 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
     final lock = Lock();
     Database? _db;
     await lock.synchronized(() async {
-      final databasesPath = await getDatabasesPath();
+      final String databasesPath = await getDatabasesPath();
       String path = '';
-      if (databasesPath != null) {
-        path = join(databasesPath, connection!.databaseName);
-      }
+      path = join(databasesPath, connection!.databaseName);
       final file = File(path);
 
       // check if file exists
@@ -74,11 +73,13 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
       }
 
       // uncomment line below if you want to use sqlchiper
-      // _db = await openDatabase(path, version: 1, onCreate: _createDb, password: password); // SQLChipher
+      _db = await openDatabase(path,
+          version: connection!.dbVersion,
+          onCreate: createDb,
+          password: connection!.password); // SQLChipher
 
       // uncomment line below if you want to use sqflite
-      _db = await openDatabase(path,
-          version: connection!.dbVersion, onCreate: createDb); // SQFLite
+      // _db = await openDatabase(path, version: connection!.dbVersion, onCreate: createDb); // SQFLite
     });
     //}
     return _db!;

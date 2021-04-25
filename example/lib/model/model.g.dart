@@ -229,22 +229,24 @@ class Product {
       this.isDeleted) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Product.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     id = int.tryParse(o['id'].toString());
     if (o['name'] != null) {
-      name = o['name'] as String;
+      name = o['name'].toString();
     }
     if (o['description'] != null) {
-      description = o['description'] as String;
+      description = o['description'].toString();
     }
     if (o['price'] != null) {
       price = double.tryParse(o['price'].toString());
     }
     if (o['isActive'] != null) {
-      isActive = o['isActive'] == 1 || o['isActive'] == true;
+      isActive =
+          o['isActive'].toString() == "1" || o['isActive'].toString() == "true";
     }
     categoryId = int.tryParse(o['categoryId'].toString());
 
@@ -252,7 +254,7 @@ class Product {
       rownum = int.tryParse(o['rownum'].toString());
     }
     if (o['imageUrl'] != null) {
-      imageUrl = o['imageUrl'] as String;
+      imageUrl = o['imageUrl'].toString();
     }
     if (o['datetime'] != null) {
       datetime = int.tryParse(o['datetime'].toString()) != null
@@ -671,7 +673,7 @@ class Product {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Product Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -1663,16 +1665,18 @@ class Category {
   Category.withId(this.id, this.name, this.isActive) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Category.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
     id = int.tryParse(o['id'].toString());
     if (o['name'] != null) {
-      name = o['name'] as String;
+      name = o['name'].toString();
     }
     if (o['isActive'] != null) {
-      isActive = o['isActive'] == 1 || o['isActive'] == true;
+      isActive =
+          o['isActive'].toString() == "1" || o['isActive'].toString() == "true";
     }
   }
   // FIELDS (Category)
@@ -1949,7 +1953,7 @@ class Category {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Category Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
@@ -2849,6 +2853,7 @@ class Todo {
   Todo.withId(this.id, this.userId, this.title, this.completed) {
     _setDefaultValues();
   }
+  // fromMap v2.0
   Todo.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
@@ -2858,10 +2863,11 @@ class Todo {
       userId = int.tryParse(o['userId'].toString());
     }
     if (o['title'] != null) {
-      title = o['title'] as String;
+      title = o['title'].toString();
     }
     if (o['completed'] != null) {
-      completed = o['completed'] == 1 || o['completed'] == true;
+      completed = o['completed'].toString() == "1" ||
+          o['completed'].toString() == "true";
     }
 
     isSaved = true;
@@ -3091,7 +3097,7 @@ class Todo {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Todo Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 

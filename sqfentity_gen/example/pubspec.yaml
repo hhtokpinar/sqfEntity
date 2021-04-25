@@ -19,8 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqfentity: ^1.4.0-dev.0.1
-  sqfentity_gen: ^1.4.0-dev.0.1
+  sqfentity: ^2.0.0-dev.0
+  sqfentity_gen: ^2.0.0-dev.0
   path_provider: any
   pedantic: ^1.8.0+1
   http: ^0.12.0+1

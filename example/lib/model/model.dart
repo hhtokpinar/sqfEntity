@@ -44,7 +44,6 @@ const tableProduct = SqfEntityTable(
       SqfEntityField('description', DbType.text),
       SqfEntityField('price', DbType.real, defaultValue: 0),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
-      //SqfEntityField('isActive2', DbType.bool, defaultValue: true),
 
       /// Relationship column for CategoryId of Product
       SqfEntityFieldRelationship(
@@ -102,7 +101,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_v1.4.0+3.db',
+    databaseName: 'sampleORM_v2.0.0+7.db',
     password:
         null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.

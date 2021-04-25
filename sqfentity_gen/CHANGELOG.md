@@ -1,4 +1,12 @@
-## 1.5.0-nullsafety.0+5
+## 2.0.0-nullsafety.0+7
+Added DbType.time
+
+## 2.0.0-nullsafety.0+6
+1. Migrated to null safety, min SDK is 2.12.0.
+2. implemented SQLChiper to encrypt DB
+3. updated source_gen to v1.0.0
+
+## 1.5.0-nullsafety.0+8
 some bugs fixed
 
 ## 1.5.0-nullsafety.0

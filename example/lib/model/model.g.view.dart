@@ -33,12 +33,14 @@ class ProductAddState extends State {
 
   @override
   void initState() {
-    txtName.text = product.name ?? '';
-    txtDescription.text = product.description ?? '';
+    txtName.text = product.name == null ? '' : product.name.toString();
+    txtDescription.text =
+        product.description == null ? '' : product.description.toString();
     txtPrice.text = product.price == null ? '' : product.price.toString();
 
     txtRownum.text = product.rownum == null ? '' : product.rownum.toString();
-    txtImageUrl.text = product.imageUrl ?? '';
+    txtImageUrl.text =
+        product.imageUrl == null ? '' : product.imageUrl.toString();
     txtDatetime.text =
         product.datetime == null ? '' : UITools.convertDate(product.datetime!);
     txtTimeForDatetime.text =
@@ -354,7 +356,7 @@ class CategoryAddState extends State {
 
   @override
   void initState() {
-    txtName.text = category.name ?? '';
+    txtName.text = category.name == null ? '' : category.name.toString();
 
     super.initState();
   }
@@ -474,7 +476,7 @@ class TodoAddState extends State {
   @override
   void initState() {
     txtUserId.text = todos.userId == null ? '' : todos.userId.toString();
-    txtTitle.text = todos.title ?? '';
+    txtTitle.text = todos.title == null ? '' : todos.title.toString();
 
     super.initState();
   }

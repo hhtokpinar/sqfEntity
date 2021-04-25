@@ -25,7 +25,10 @@ class SqfEntityFormConverter {
     final String modelName = table.modelName ?? toCamelCase(table.tableName);
 
     // print('toFormWidgetsCode begin 2: tableName:$tablename');
-
+    if (table.primaryKeyNames.isEmpty) {
+      throw Exception(
+          '    SQFENTITIY: FORM GENERATOR ERROR:  Table [$tablename] has no primary key. Remove this table from formTables list in your DB Model or add a primary key into the table');
+    }
     return '''   
 class ${modelName}Add extends StatefulWidget {
   ${modelName}Add(this._$tablename);
@@ -205,6 +208,8 @@ class ${modelName}AddState extends State {
           return '..${field.fieldName} = int.tryParse(txt$ccName.text)';
         case DbType.real:
           return '..${field.fieldName} = double.tryParse(txt$ccName.text)';
+        case DbType.blob:
+          return '..${field.fieldName} = txt$ccName.text  as Uint8List';
         default:
           return '..${field.fieldName} = txt$ccName.text';
       }
@@ -237,7 +242,7 @@ class ${modelName}AddState extends State {
   String toFormDeclarationCodeTable(SqfEntityTableBase table) {
     // print('toFormWidgetsCode begin 3: tableName:${table.tableName}');
     final retVal = StringBuffer();
-    if (table.primaryKeyName!.isNotEmpty &&
+    if (table.primaryKeyNames.isNotEmpty &&
         table.primaryKeyType != PrimaryKeyType.integer_auto_incremental) {
       retVal.writeln(toFormDeclarationCodeField(SqfEntityFieldBase(
           table.primaryKeyName,
@@ -295,10 +300,11 @@ class ${modelName}AddState extends State {
     final String fName = field.fieldName!;
     final String ccName = toCamelCase(fName);
     switch (field.dbType) {
-      case DbType.real:
-      case DbType.integer:
-      case DbType.numeric:
-        return 'txt$ccName.text =$objName.$fName == null ? \'\' : $objName.$fName.toString();';
+      // case DbType.real:
+      // case DbType.blob:
+      // case DbType.integer:
+      // case DbType.numeric:
+      //   return 'txt$ccName.text =$objName.$fName == null ? \'\' : $objName.$fName.toString();';
       case DbType.bool:
         return '';
       case DbType.date:
@@ -309,7 +315,8 @@ class ${modelName}AddState extends State {
         txtTimeFor$ccName.text = $objName.$fName == null? \'\': UITools.convertTime($objName.$fName!);
         ''';
       default:
-        return 'txt$ccName.text = $objName.$fName ?? \'\';';
+        return 'txt$ccName.text =$objName.$fName == null ? \'\' : $objName.$fName.toString();';
+      //return 'txt$ccName.text = $objName.$fName ?? \'\';';
     }
   }
 
