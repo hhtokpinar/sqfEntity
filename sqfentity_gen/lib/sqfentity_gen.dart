@@ -43,8 +43,14 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
   SqfEntityModelBuilder(this.model, this.instancename);
   final DartObject model;
   final String? instancename;
-  String get dbModelName =>
-      getStringValue(model, 'modelName') ?? toCamelCase(instancename);
+  String get dbModelName {
+    dynamic val = getStringValue(model, 'modelName') ?? '';
+    if (val.toString().isEmpty) {
+      val = toCamelCase(instancename);
+    }
+    return val.toString();
+  }
+
   SqfEntityModelBase toModel() {
     final dbModel = _DbModel()
       ..instanceName = instancename
@@ -170,7 +176,7 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
     ..fields = toFields(
       getListValue(obj, 'fields')!, dbModelName, //keepFieldNamesAsOriginal
     )
-    ..primaryKeyType = getTypeValue(obj, 'primaryKeyType') as PrimaryKeyType
+    ..primaryKeyType = getTypeValue(obj, 'primaryKeyType') as PrimaryKeyType?
     ..objectType = getTypeValue(obj, 'objectType') as ObjectType?
     ..defaultJsonUrl = getStringValue(obj, 'defaultJsonUrl')
     ..modelName = getStringValue(obj, 'modelName')
@@ -242,7 +248,7 @@ SqfEntityFieldType toField(
     // return getFieldProperties(retVal, obj);
 
     return SqfEntityFieldRelationshipBase(
-        parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule)
+        parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule?)
       ..defaultValue = getDynamicValue(obj, 'defaultValue')
       ..minValue = getDynamicValue(obj, 'minValue')
       ..maxValue = getDynamicValue(obj, 'maxValue')

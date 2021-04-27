@@ -56,8 +56,6 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 //   }
 // }
 
-
- 
 class SqfEntityProvider extends SqfEntityModelBase {
   SqfEntityProvider(SqfEntityModelProvider dbModel,
       {String? tableName,
@@ -380,6 +378,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
       result = await db.rawInsert(pSql, params);
     } else {
       openedBatch[_dbModel!.databaseName!]!.rawInsert(pSql, params);
+      result = 1; // Batch rawInsert do not returns any value (void)
     }
     return result;
   }

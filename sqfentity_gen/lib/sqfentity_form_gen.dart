@@ -199,6 +199,10 @@ class ${modelName}AddState extends State {
       return '..${field.fieldName} = _selected$ccName';
     } else if (field is! SqfEntityFieldRelationshipBase) {
       switch (field.dbType) {
+        case DbType.time:
+          return '''..${field.fieldName} = txt$ccName.text.isNotEmpty && txt$ccName.text.split(\':\').length> 1 ? TimeOfDay(
+          hour: int.parse(txt$ccName.text.split(\':\')[0]),
+          minute: int.parse(txt$ccName.text.split(\':\')[1])): null''';
         case DbType.date:
         case DbType.datetime:
         case DbType.datetimeUtc:

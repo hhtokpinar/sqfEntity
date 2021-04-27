@@ -746,9 +746,9 @@ class SqfEntityObjectBuilder {
     /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
     Future<int?> upsert() async {
        try {
-         if (await _mn${_table.modelName}.rawInsert( 
-          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', [${_table.createListParameterForQueryWithId.replaceAll('this.', '')}]) ==
-           1) {
+         final result = await _mn${_table.modelName}.rawInsert( 
+          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', [${_table.createListParameterForQueryWithId.replaceAll('this.', '')}]); if( result! > 0) 
+          {
           saveResult = BoolResult(success: true, successMessage: '${_table.modelName} ${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]} updated successfully');
           } else {
         saveResult = BoolResult(
@@ -3182,11 +3182,15 @@ class SqfEntityTableBase {
       }
       final consStr = fields![i].toConstructureString();
       _retVal.write(', $consStr');
-      if (isQuery &&
-          (fields![i].dbType == DbType.date ||
-              fields![i].dbType == DbType.datetime ||
-              fields![i].dbType == DbType.datetimeUtc)) {
-        _retVal.write(' != null ? $consStr !.millisecondsSinceEpoch: null');
+      if (isQuery) {
+        if (fields![i].dbType == DbType.time) {
+          _retVal.write(
+              ' != null ? \'\${${fields![i].fieldName}!.hour.toString().padLeft(2, \'0\')}:\${timefield!.minute.toString().padLeft(2, \'0\')}:00\' : null');
+        } else if (fields![i].dbType == DbType.date ||
+            fields![i].dbType == DbType.datetime ||
+            fields![i].dbType == DbType.datetimeUtc) {
+          _retVal.write(' != null ? $consStr !.millisecondsSinceEpoch: null');
+        }
       }
     }
     if (useSoftDeleting != null && useSoftDeleting!) {
@@ -3814,9 +3818,10 @@ String toSingularLowerName(String s) => s.endsWith('ies')
             ? s.substring(0, s.length - 1).toLowerCase()
             : s.toLowerCase();
 
-String toModelName(String? modelName, String definedName) => modelName == null
-    ? toCamelCase(toSingularName(definedName))
-    : toCamelCase(modelName);
+String toModelName(String? modelName, String definedName) =>
+    modelName == null || modelName.isEmpty
+        ? toCamelCase(toSingularName(definedName))
+        : toCamelCase(modelName);
 
 const String commentPreload =
     '''/// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)

@@ -18,22 +18,24 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
     //print('keepFieldNamesAsOriginal: $keepFieldNamesAsOriginal');
 
     final model = annotation.read('model').objectValue;
-    
-// When testing, you can uncomment the test line to make sure everything's working properly
-   //  return '''/* MODEL -> ${model.toString()} */''';
 
-    final instanceName =
-        element.toString().replaceAll('SqfEntityModel', '').trim();
+// When testing, you can uncomment the test line to make sure everything's working properly
+    //  return '''/* MODEL -> ${model.toString()} */''';
+
+    final instanceName = element
+        .toString()
+        .replaceAll('SqfEntityModel', '')
+        .replaceAll('*', '')
+        .trim();
     print('SQFENTITY GENERATOR STARTED... instance Of:$instanceName');
     final builder = SqfEntityModelBuilder(model, instanceName);
     print(
         'SQFENTITY GENERATOR: builder initialized (${builder.instancename})...');
     final dbModel = builder.toModel();
-    
+
     print('${dbModel.modelName} Model recognized succesfuly');
     final modelStr = MyStringBuffer()
-
-          //  ..writeln('/*') // write output as commented to see what is wrong
+          //..writeln('/*') // write output as commented to see what is wrong
           ..writeln(SqfEntityConverter(dbModel).createModelDatabase())
           ..printToDebug(
               '${dbModel.modelName} converted to SqfEntityModelBase successfully')
@@ -43,7 +45,6 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
           ..writeln(SqfEntityConverter(dbModel).createControllers())
           ..printToDebug(
               '${dbModel.modelName} converted to Controller successfully')
-
         //..writeln('*/') //  write output as commented to see what is wrong
         ;
     return modelStr.toString();
