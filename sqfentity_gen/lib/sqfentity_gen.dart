@@ -399,7 +399,8 @@ class SqfEntityConverter {
     }
     final list = StringBuffer()..writeln('databaseTables = [');
     for (final table in _m.databaseTables!
-        .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
+        //.where((table) => table.relationType != RelationType.MANY_TO_MANY)
+        ) {
       list.writeln('Table${table.modelName}.getInstance,');
     }
     list.writeln('];');
@@ -553,7 +554,7 @@ class Table${table.modelName} extends SqfEntityTableBase {
   Table${table.modelName}() {
     // declare properties of EntityTable
     tableName = '${table.tableName}';${table.relationType != null && table.relationType != RelationType.ONE_TO_MANY ? _getNullableValueTable(table.relationType, 'relationType') : ''}
-    ${table.objectType == ObjectType.table ? 'primaryKeyName = ${table.primaryKeyName != null ? '\'${table.primaryKeyName}\'' : null}; primaryKeyType = ${table.primaryKeyName != null ? table.primaryKeyType.toString() : null};' : 'objectType = ${table.objectType.toString()}; sqlStatement = ${_m.instanceName}.databaseTables![$index].sqlStatement;'}
+    ${table.objectType == ObjectType.table ? '${table.primaryKeyName != null ? 'primaryKeyName = \'${table.primaryKeyName}\';' : ''} ${table.primaryKeyName != null && table.primaryKeyName!.isNotEmpty ? 'primaryKeyType = ${table.primaryKeyType.toString()};' : ''}' : 'objectType = ${table.objectType.toString()}; sqlStatement = ${_m.instanceName}.databaseTables![$index].sqlStatement;'}
     useSoftDeleting = ${table.useSoftDeleting};
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -640,7 +641,7 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
         continue;
       }
       final String commonProperties =
-          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${field.isPrimaryKeyField ?? false ? _getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField') : ''}${_getNullableValueField(field.isUnique, 'isUnique')}${_getNullableValueField(field.isNotNull, 'isNotNull')}${_getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.isIndexGroup, 'isIndexGroup')}${_getNullableValueField(field.checkCondition, 'checkCondition')}${_getNullableValueField(field.minValue, 'minValue')}${_getNullableValueField(field.maxValue, 'maxValue')}${_getNullableValueField(field.collate, 'collate')}';
+          '${_getNullableValueField(field.defaultValue, 'defaultValue')}${field.isPrimaryKeyField ?? false ? _getNullableValueField(field.isPrimaryKeyField, 'isPrimaryKeyField') : ''}${field.isPrimaryKeyField != null && field.isPrimaryKeyField == true ? '' : _getNullableValueField(field.isUnique, 'isUnique')}${field.isPrimaryKeyField != null && field.isPrimaryKeyField == true ? '' : _getNullableValueField(field.isNotNull, 'isNotNull')}${field.isPrimaryKeyField != null && field.isPrimaryKeyField == true ? '' : _getNullableValueField(field.isIndex, 'isIndex')}${_getNullableValueField(field.isIndexGroup, 'isIndexGroup')}${_getNullableValueField(field.checkCondition, 'checkCondition')}${_getNullableValueField(field.minValue, 'minValue')}${_getNullableValueField(field.maxValue, 'maxValue')}${_getNullableValueField(field.collate, 'collate')}';
       if (field is SqfEntityFieldVirtualBase) {
         strFields.writeln(
             'SqfEntityFieldVirtualBase(\'${field.fieldName}\', ${field.dbType.toString()}),');

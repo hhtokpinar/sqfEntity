@@ -794,7 +794,7 @@ class SqfEntityObjectBuilder {
     // END METHODS
     // CUSTOM CODES
     ${_table.customCode != null ? _table.customCode : '''/*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -992,6 +992,10 @@ class SqfEntityObjectBuilder {
             : '');
     for (final field in _table.fields!.where((f) => f.defaultValue != null)) {
       switch (field.dbType) {
+        case DbType.time:
+          field.defaultValue =
+              "TimeOfDay(hour: int.parse('${field.defaultValue.replaceAll('\'', '\\\'')}'.split(':')[0]), minute: int.parse('${field.defaultValue.replaceAll('\'', '\\\'')}'.split(':')[1]))";
+          break;
         case DbType.text:
           field.defaultValue =
               "'${field.defaultValue.replaceAll('\'', '\\\'')}'";
@@ -3358,7 +3362,7 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
     switch (dbType) {
       case DbType.bool:
         // return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] == 1 || o[\'$fieldName\'] == true;}';
-        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString() == "1" || o[\'$fieldName\'].toString() == "true";}'; // https://github.com/hhtokpinar/sqfEntity/issues/170#issuecomment-826160862
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString() == \'1\' || o[\'$fieldName\'].toString() == \'true\';}'; // https://github.com/hhtokpinar/sqfEntity/issues/170#issuecomment-826160862
       case DbType.date:
       case DbType.datetime:
         return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString()) != null ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(o[\'$fieldName\'].toString())!) : DateTime.tryParse(o[\'$fieldName\'].toString());}';

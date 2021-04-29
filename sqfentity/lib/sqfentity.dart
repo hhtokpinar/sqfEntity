@@ -373,12 +373,16 @@ class SqfEntityProvider extends SqfEntityModelBase {
 
   Future<int?> rawInsert(String pSql, List<dynamic>? params) async {
     int result = 0;
-    if (openedBatch[_dbModel!.databaseName!] == null) {
-      final Database db = (await this.db)!;
-      result = await db.rawInsert(pSql, params);
-    } else {
-      openedBatch[_dbModel!.databaseName!]!.rawInsert(pSql, params);
-      result = 1; // Batch rawInsert do not returns any value (void)
+    try {
+      if (openedBatch[_dbModel!.databaseName!] == null) {
+        final Database db = (await this.db)!;
+        result = await db.rawInsert(pSql, params);
+      } else {
+        openedBatch[_dbModel!.databaseName!]!.rawInsert(pSql, params);
+        result = 1; // Batch rawInsert do not returns any value (void)
+      }
+    } catch (e) {
+      print(e.toString());
     }
     return result;
   }
@@ -828,6 +832,8 @@ List<String> checkTableColumns(
               eField.toList()[0].fieldType == DbType.numeric) &&
           !(newField.dbType == DbType.datetimeUtc &&
               eField.toList()[0].fieldType == DbType.datetime) &&
+          !(newField.dbType == DbType.time &&
+              eField.toList()[0].fieldType == DbType.text) &&
           eField.toList()[0].fieldType != newField.dbType) {
         recreateTable = true;
         print(
