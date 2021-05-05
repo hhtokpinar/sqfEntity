@@ -741,15 +741,14 @@ class SqfEntityObjectBuilder {
     }'''}
 
     ${_table.objectType == ObjectType.table ? '''
-  
-    $_saveMethod 
     
+    $_saveMethod 
+
     $_saveAllMethod
 
     /// Updates if the record exists, otherwise adds a new row
     
     /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
-
     ${_table.abstractModelName != null ? '@override' : ''}
     Future<int?> upsert() async {
        try {
