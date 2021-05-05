@@ -185,6 +185,7 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
     ..formListSubTitleField = getStringValue(obj, 'formListSubTitleField')
     ..customCode = getStringValue(obj, 'customCode')
     ..primaryKeyName = getStringValue(obj, 'primaryKeyName')
+    ..abstractModelName = getStringValue(obj, 'abstractModelName')
     ..init();
   newTable.primaryKeyName = getStringValue(obj, 'primaryKeyName') == null &&
           newTable.objectType == ObjectType.table
