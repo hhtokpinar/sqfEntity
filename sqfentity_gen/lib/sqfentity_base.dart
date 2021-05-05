@@ -792,7 +792,7 @@ class SqfEntityObjectBuilder {
       $_createDefaultValues
     }
     // END METHODS
-    // CUSTOM CODES
+    // BEGIN CUSTOM CODE
     ${_table.customCode != null ? _table.customCode : '''/*
       you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
@@ -810,7 +810,7 @@ class SqfEntityObjectBuilder {
        }
       \'\'\');
      */'''}
-    // END CUSTOM CODES
+    // END CUSTOM CODE
     }
   // endregion ${_table._modelLowerCase}
               ''';
@@ -3189,7 +3189,7 @@ class SqfEntityTableBase {
       if (isQuery) {
         if (fields![i].dbType == DbType.time) {
           _retVal.write(
-              ' != null ? \'\${${fields![i].fieldName}!.hour.toString().padLeft(2, \'0\')}:\${timefield!.minute.toString().padLeft(2, \'0\')}:00\' : null');
+              ' != null ? \'\${${fields![i].fieldName}!.hour.toString().padLeft(2, \'0\')}:\${${fields![i].fieldName}!.minute.toString().padLeft(2, \'0\')}:00\' : null');
         } else if (fields![i].dbType == DbType.date ||
             fields![i].dbType == DbType.datetime ||
             fields![i].dbType == DbType.datetimeUtc) {
@@ -3489,6 +3489,82 @@ class SqfEntityFieldVirtualBase implements SqfEntityFieldType {
 
   @override
   String? formLabelText;
+}
+
+class SqfEntityFieldPrivateClassBase implements SqfEntityFieldType {
+  @override
+  String? checkCondition;
+
+  @override
+  Collate? collate;
+
+  @override
+  DbType? dbType;
+
+  @override
+  dynamic defaultValue;
+
+  @override
+  String? fieldName;
+
+  @override
+  String? formLabelText;
+
+  @override
+  bool? isIndex;
+
+  @override
+  int? isIndexGroup;
+
+  @override
+  bool? isNotNull;
+
+  @override
+  bool? isPrimaryKeyField;
+
+  @override
+  bool? isUnique;
+
+  @override
+  dynamic maxValue;
+
+  @override
+  dynamic minValue;
+
+  @override
+  int? primaryKeyIndex;
+
+  @override
+  SqfEntitySequenceBase? sequencedBy;
+
+  @override
+  SqfEntityTableBase? table;
+
+  @override
+  String toConstructureString() {
+    return '';
+  }
+
+  @override
+  String toFromMapString() {
+    return '';
+  }
+
+  @override
+  String toMapString() {
+    return '';
+  }
+
+  @override
+  String toPropertiesString() {
+    // TODO: implement toPropertiesString
+    throw UnimplementedError();
+  }
+
+  @override
+  String toSqLiteFieldString() {
+    return '';
+  }
 }
 
 class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
@@ -3960,7 +4036,7 @@ enum DbType {
   date, // 7
   unknown, // 8
   datetimeUtc, // 9
-  time // 10
+  time, // 10
 }
 
 DbType parseDbType(String val) {
