@@ -42,7 +42,8 @@ class SqfEntityTable {
       this.formListTitleField,
       this.formListSubTitleField,
       this.objectType,
-      this.sqlStatement});
+      this.sqlStatement,
+      this.abstractModelName});
   final String? tableName;
   final String? primaryKeyName;
   final List<SqfEntityField>? fields;
@@ -56,6 +57,7 @@ class SqfEntityTable {
   final String? formListSubTitleField;
   final ObjectType? objectType;
   final String? sqlStatement;
+  final String? abstractModelName;
 }
 
 class SqfEntityView {
@@ -70,7 +72,8 @@ class SqfEntityView {
       this.customCode,
       this.relationType,
       this.formListTitleField,
-      this.formListSubTitleField});
+      this.formListSubTitleField,
+      this.abstractModelName});
   final String? tableName;
   final String? primaryKeyName;
   final List<SqfEntityField>? fields;
@@ -82,6 +85,7 @@ class SqfEntityView {
   final RelationType? relationType;
   final String? formListTitleField;
   final String? formListSubTitleField;
+  final String? abstractModelName;
 }
 
 class TableCollection {
@@ -341,6 +345,7 @@ class SqfEntityModelConverter {
       ..customCode = table.customCode
       ..objectType = table.objectType
       ..fields = toFields(table)
+      ..abstractModelName = table.abstractModelName
       ..init();
   }
 
@@ -616,7 +621,7 @@ class SqfEntityObjectBuilder {
   String toString() {
     final String toString = '''
   // region ${_table.modelName}
-  class ${_table.modelName} {
+  class ${_table.modelName} ${_table.abstractModelName != null ? 'implements ${_table.abstractModelName}' : ''} {
     ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues();}
     ${_table.modelName}.withFields(${_table.createConstructure}){ _setDefaultValues();}
     ${_table.modelName}.withId(${_table.createConstructureWithId}){ _setDefaultValues();}
@@ -736,7 +741,7 @@ class SqfEntityObjectBuilder {
     }'''}
 
     ${_table.objectType == ObjectType.table ? '''
-    
+  
     $_saveMethod 
     
     $_saveAllMethod
@@ -744,6 +749,8 @@ class SqfEntityObjectBuilder {
     /// Updates if the record exists, otherwise adds a new row
     
     /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
+
+    ${_table.abstractModelName != null ? '@override' : ''}
     Future<int?> upsert() async {
        try {
          final result = await _mn${_table.modelName}.rawInsert( 
@@ -766,6 +773,7 @@ class SqfEntityObjectBuilder {
     /// Deletes ${_table.modelName}
     
     /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+    ${_table.abstractModelName != null ? '@override' : ''}
     Future<BoolResult> delete([bool hardDelete=false]) async {
       print('SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
       $_deleteMethodSingle
@@ -773,6 +781,7 @@ class SqfEntityObjectBuilder {
       $_recoverMethodSingle
 
     ''' : ''}
+    ${_table.abstractModelName != null ? '@override' : ''}
     ${_table.modelName}FilterBuilder select(
         {List<String>? columnsToSelect, bool? getIsDeleted}) {
       return ${_table.modelName}FilterBuilder(this)
@@ -2988,6 +2997,7 @@ class SqfEntityTableBase {
   RelationType? relationType;
   ObjectType? objectType;
   String? sqlStatement;
+  String? abstractModelName;
 
   void init() {
     objectType = objectType ?? ObjectType.table;
