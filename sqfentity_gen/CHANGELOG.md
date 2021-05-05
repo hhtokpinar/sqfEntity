@@ -1,3 +1,6 @@
+## 2.0.0-nullsafety.0+15
+added an option to implement an abstract class (by [Amit Rotner](https://github.com/amitrotner))
+
 ## 2.0.0-nullsafety.0+14
 Added DbType.time
 
