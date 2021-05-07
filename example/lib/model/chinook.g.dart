@@ -429,7 +429,6 @@ class TablePlaylistTrack extends SqfEntityTableBase {
     tableName = 'PlaylistTrack';
     relationType = RelationType.MANY_TO_MANY;
     primaryKeyName = '';
-    primaryKeyType = null;
     useSoftDeleting = false;
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
 
@@ -439,14 +438,12 @@ class TablePlaylistTrack extends SqfEntityTableBase {
           TableTrack.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'TrackId',
-          isPrimaryKeyField: true,
-          isNotNull: false),
+          isPrimaryKeyField: true),
       SqfEntityFieldRelationshipBase(
           TablePlaylist.getInstance, DeleteRule.NO_ACTION,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'PlaylistId',
-          isPrimaryKeyField: true,
-          isNotNull: false),
+          isPrimaryKeyField: true),
     ];
     super.init();
   }
@@ -475,6 +472,7 @@ class Chinookdb extends SqfEntityModelProvider {
       TablePlaylist.getInstance,
       TableTrack.getInstance,
       TableVTrack.getInstance,
+      TablePlaylistTrack.getInstance,
     ];
 
     bundledDatabasePath = chinookdb
@@ -832,12 +830,13 @@ class Album {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns AlbumId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnAlbum.rawInsert(
-              'INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',
-              [AlbumId, Title, ArtistId]) ==
-          1) {
+      final result = await _mnAlbum.rawInsert(
+          'INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',
+          [AlbumId, Title, ArtistId]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Album AlbumId=$AlbumId updated successfully');
@@ -870,6 +869,7 @@ class Album {
   /// Deletes Album
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Album invoked (AlbumId=$AlbumId)');
     if (await Track().select().AlbumId.equals(AlbumId).and.toCount() > 0) {
@@ -905,9 +905,9 @@ class Album {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -923,7 +923,7 @@ class Album {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion album
 
@@ -2022,12 +2022,13 @@ class Artist {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns ArtistId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnArtist.rawInsert(
-              'INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',
-              [ArtistId, Name]) ==
-          1) {
+      final result = await _mnArtist.rawInsert(
+          'INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',
+          [ArtistId, Name]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Artist ArtistId=$ArtistId updated successfully');
@@ -2059,6 +2060,7 @@ class Artist {
   /// Deletes Artist
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Artist invoked (ArtistId=$ArtistId)');
     if (await Album().select().ArtistId.equals(ArtistId).and.toCount() > 0) {
@@ -2094,9 +2096,9 @@ class Artist {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -2112,7 +2114,7 @@ class Artist {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion artist
 
@@ -3439,26 +3441,27 @@ class Customer {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns CustomerId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnCustomer.rawInsert(
-              'INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-              [
-                CustomerId,
-                FirstName,
-                LastName,
-                Company,
-                Address,
-                City,
-                State,
-                Country,
-                PostalCode,
-                Phone,
-                Fax,
-                Email,
-                SupportRepId
-              ]) ==
-          1) {
+      final result = await _mnCustomer.rawInsert(
+          'INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          [
+            CustomerId,
+            FirstName,
+            LastName,
+            Company,
+            Address,
+            City,
+            State,
+            Country,
+            PostalCode,
+            Phone,
+            Fax,
+            Email,
+            SupportRepId
+          ]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -3492,6 +3495,7 @@ class Customer {
   /// Deletes Customer
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Customer invoked (CustomerId=$CustomerId)');
     if (await Invoice().select().CustomerId.equals(CustomerId).and.toCount() >
@@ -3529,9 +3533,9 @@ class Customer {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -3547,7 +3551,7 @@ class Customer {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion customer
 
@@ -5105,28 +5109,29 @@ class Employee {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns EmployeeId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnEmployee.rawInsert(
-              'INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-              [
-                EmployeeId,
-                LastName,
-                FirstName,
-                Title,
-                BirthDate != null ? BirthDate!.millisecondsSinceEpoch : null,
-                HireDate != null ? HireDate!.millisecondsSinceEpoch : null,
-                Address,
-                City,
-                State,
-                Country,
-                PostalCode,
-                Phone,
-                Fax,
-                Email,
-                ReportsTo
-              ]) ==
-          1) {
+      final result = await _mnEmployee.rawInsert(
+          'INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          [
+            EmployeeId,
+            LastName,
+            FirstName,
+            Title,
+            BirthDate != null ? BirthDate!.millisecondsSinceEpoch : null,
+            HireDate != null ? HireDate!.millisecondsSinceEpoch : null,
+            Address,
+            City,
+            State,
+            Country,
+            PostalCode,
+            Phone,
+            Fax,
+            Email,
+            ReportsTo
+          ]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -5160,6 +5165,7 @@ class Employee {
   /// Deletes Employee
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Employee invoked (EmployeeId=$EmployeeId)');
     if (await Customer()
@@ -5209,9 +5215,9 @@ class Employee {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -5227,7 +5233,7 @@ class Employee {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion employee
 
@@ -6482,12 +6488,13 @@ class Genre {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns GenreId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnGenre.rawInsert(
-              'INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',
-              [GenreId, Name]) ==
-          1) {
+      final result = await _mnGenre.rawInsert(
+          'INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',
+          [GenreId, Name]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Genre GenreId=$GenreId updated successfully');
@@ -6519,6 +6526,7 @@ class Genre {
   /// Deletes Genre
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Genre invoked (GenreId=$GenreId)');
     if (await Track().select().GenreId.equals(GenreId).and.toCount() > 0) {
@@ -6554,9 +6562,9 @@ class Genre {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -6572,7 +6580,7 @@ class Genre {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion genre
 
@@ -7840,22 +7848,23 @@ class Invoice {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns InvoiceId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnInvoice.rawInsert(
-              'INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
-              [
-                InvoiceId,
-                InvoiceDate,
-                BillingAddress,
-                BillingCity,
-                BillingState,
-                BillingCountry,
-                BillingPostalCode,
-                Total,
-                CustomerId
-              ]) ==
-          1) {
+      final result = await _mnInvoice.rawInsert(
+          'INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
+          [
+            InvoiceId,
+            InvoiceDate,
+            BillingAddress,
+            BillingCity,
+            BillingState,
+            BillingCountry,
+            BillingPostalCode,
+            Total,
+            CustomerId
+          ]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -7889,6 +7898,7 @@ class Invoice {
   /// Deletes Invoice
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Invoice invoked (InvoiceId=$InvoiceId)');
     if (await InvoiceLine().select().InvoiceId.equals(InvoiceId).and.toCount() >
@@ -7925,9 +7935,9 @@ class Invoice {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -7943,7 +7953,7 @@ class Invoice {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion invoice
 
@@ -9199,12 +9209,13 @@ class InvoiceLine {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns InvoiceLineId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnInvoiceLine.rawInsert(
-              'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
-              [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId]) ==
-          1) {
+      final result = await _mnInvoiceLine.rawInsert(
+          'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
+          [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -9239,6 +9250,7 @@ class InvoiceLine {
   /// Deletes InvoiceLine
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print(
         'SQFENTITIY: delete InvoiceLine invoked (InvoiceLineId=$InvoiceLineId)');
@@ -9270,9 +9282,9 @@ class InvoiceLine {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -9288,7 +9300,7 @@ class InvoiceLine {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion invoiceline
 
@@ -10414,12 +10426,13 @@ class MediaType {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns MediaTypeId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnMediaType.rawInsert(
-              'INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',
-              [MediaTypeId, Name]) ==
-          1) {
+      final result = await _mnMediaType.rawInsert(
+          'INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',
+          [MediaTypeId, Name]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -10453,6 +10466,7 @@ class MediaType {
   /// Deletes MediaType
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete MediaType invoked (MediaTypeId=$MediaTypeId)');
     if (await Track().select().MediaTypeId.equals(MediaTypeId).and.toCount() >
@@ -10490,9 +10504,9 @@ class MediaType {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -10508,7 +10522,7 @@ class MediaType {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion mediatype
 
@@ -11584,12 +11598,13 @@ class Playlist {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns PlaylistId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnPlaylist.rawInsert(
-              'INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',
-              [PlaylistId, Name]) ==
-          1) {
+      final result = await _mnPlaylist.rawInsert(
+          'INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',
+          [PlaylistId, Name]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -11623,6 +11638,7 @@ class Playlist {
   /// Deletes Playlist
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Playlist invoked (PlaylistId=$PlaylistId)');
     if (!_softDeleteActivated || hardDelete) {
@@ -11653,9 +11669,9 @@ class Playlist {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -11671,7 +11687,7 @@ class Playlist {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion playlist
 
@@ -13066,22 +13082,23 @@ class Track {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns TrackId
+
   Future<int?> upsert() async {
     try {
-      if (await _mnTrack.rawInsert(
-              'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
-              [
-                TrackId,
-                Name,
-                Composer,
-                Milliseconds,
-                Bytes,
-                UnitPrice,
-                MediaTypeId,
-                GenreId,
-                AlbumId
-              ]) ==
-          1) {
+      final result = await _mnTrack.rawInsert(
+          'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
+          [
+            TrackId,
+            Name,
+            Composer,
+            Milliseconds,
+            Bytes,
+            UnitPrice,
+            MediaTypeId,
+            GenreId,
+            AlbumId
+          ]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Track TrackId=$TrackId updated successfully');
@@ -13114,6 +13131,7 @@ class Track {
   /// Deletes Track
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Track invoked (TrackId=$TrackId)');
     if (await InvoiceLine().select().TrackId.equals(TrackId).and.toCount() >
@@ -13156,9 +13174,9 @@ class Track {
 
   void _setDefaultValues() {}
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -13174,7 +13192,7 @@ class Track {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion track
 
@@ -14354,9 +14372,9 @@ class VTrack {
     isSaved = false;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -14372,7 +14390,7 @@ class VTrack {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion vtrack
 
@@ -15405,12 +15423,13 @@ class PlaylistTrack {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns 1
+
   Future<int?> upsert() async {
     try {
-      if (await _mnPlaylistTrack.rawInsert(
-              'INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
-              [TrackId, PlaylistId]) ==
-          1) {
+      final result = await _mnPlaylistTrack.rawInsert(
+          'INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+          [TrackId, PlaylistId]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage:
@@ -15444,6 +15463,7 @@ class PlaylistTrack {
   /// Deletes PlaylistTrack
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete PlaylistTrack invoked (TrackId=$TrackId)');
     if (!_softDeleteActivated || hardDelete) {
@@ -15478,9 +15498,9 @@ class PlaylistTrack {
     isSaved = false;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -15496,7 +15516,7 @@ class PlaylistTrack {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion playlisttrack
 

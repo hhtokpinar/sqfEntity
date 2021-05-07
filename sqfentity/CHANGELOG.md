@@ -1,11 +1,8 @@
-## 2.0.0-nullsafety.0+2
+## 2.0.0
 1. Migrated to null safety, min SDK is 2.12.0.
 2. implemented SQLChiper to encrypt DB
-3. updated source_gen to v1.0.0
-
-## 1.5.0-nullsafety.0+2
-
-1. Migrated to null safety, min SDK is 2.12.0.
+3. Added DbType.time
+4. Added an option to implement an abstract class (by [Amit Rotner](https://github.com/amitrotner))
 
 ## 1.4.0
 
@@ -93,7 +90,13 @@ Result:
       flutter: {Name: Princess of the Dawn, album: Restless and Wild, media: Protected AAC audio file, genres: Rock, TrackId: 5}
 
 
-## 1.3.5+3
+## 1.3.5+7
+fixed [issue #121](https://github.com/hhtokpinar/sqfEntity/issues/121) 
+
+## 1.3.5+6
+fixed [issue #115](https://github.com/hhtokpinar/sqfEntity/issues/115) 
+
+## 1.3.5+4
 Added Support Collating Sequences
 
 How to use?
@@ -102,11 +105,39 @@ Set collate parameter when declaring columns like below:
 
       SqfEntityField('name', DbType.text, collate: Collate.NOCASE)
 
-## 1.3.5+2
-added ability to change columns type
+
+## 1.3.5+3
+Added ability to change columns type
+
+
+## 1.3.5+2
+
+Added a property named ignoreForFile in SqfEntityModel.
+You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
+  
+### How to use?
+
+      @SqfEntityBuilder(myDbModel)
+         const myDbModel = SqfEntityModel(
+         modelName: 'MyDbModel',
+         databaseName: 'sampleORM_v1.3.5+1.db',
+         databaseTables: [tableProduct, tableCategory, tableTodo],
+         ignoreForFile: [ 'avoid_unused_constructor_parameters', 
+                                    'always_put_control_body_on_new_line', 
+                                    'prefer_final_fields']
+         );
+
 
 ## 1.3.5+1
-fixed some bugs
+Added multicolumn index support. For more information [click here](https://www.sqlitetutorial.net/sqlite-index/)
+
+### How to use?
+set any integer value to **isIndexGroup** parameter with isIndex: true
+example:
+
+      SqfEntityField('firtsName', DbType.text, isIndex: true, isIndexGroup: 1),
+      SqfEntityField('lastName', DbType.text, isIndex: true, isIndexGroup: 1),
+
 
 ## 1.3.5
    Added SQLite Constraints and Index property to fields
@@ -184,41 +215,29 @@ use these parameters when declaring SqfEntityField
       flutter: -----TEST: UNIQUE CONSTRAINT (name must be UNIQUE)
       flutter: product-> Save failed. Error: "UNIQUE constraint failed: product.name"...
 
-## 1.3.4+1
-   unimplemented sqlchipher due to unexpected errors in Android SDK
 
-   You can fix sqfentity version to 1.3.3+2 to use sqlchipher like below:
-
-      dependencies:
-      sqfentity: 1.3.3+2
+## 1.3.4+4
+   fixed repeated variable declaration in tables which have more than one RelationShip to the same table
    
+## 1.3.4+3
+   fixed bugs in nested Tables and Related tables which have more than one Primary Key
+   
+## 1.3.2+13
+   fixed bugs in MANY_TO_MANY Relationships
 
-## 1.3.3+6
-   implemented sqlchipher to open crypted database
+## 1.3.2+8
+   fixed bugs in nested ONE_TO_ONE Relationships
 
-   You can set password parameter of your db model like below
-
-      @SqfEntityBuilder(myDbModel)
-      const myDbModel = SqfEntityModel(
-         databaseName: 'sample.db',
-         password: 'testpassword',
-         databaseTables: [ 
-            tableProduct, tableCategory, tableTodo,
-         ],
-      );
-
-
-
-## 1.3.2
+## 1.3.2+5
    implemented MANY_TO_MANY Relationships
 
-   ### How to use many to many relationship?
+   ### How to use many yo many relationship?
 
    In Chinook.db there are two tables named Playlist and Track which are related with many to many relation.
    And there is a table called PlaylistTrack which is saved ids of those related records here.
    Now, you can define SqfEntityFieldRelationship column in one of these tables, like this:
 
-   Option 1: define this (virtual) column in Track model
+   Option 1: Define this SqfEntityFieldRelationship column in Track table model with the relationType is MANY_TO_MANY 
 
       SqfEntityFieldRelationship(
          parentTable: tablePlaylist,
@@ -227,7 +246,7 @@ use these parameters when declaring SqfEntityField
          manyToManyTableName: 'PlaylistTrack'),
    
 
-   Option 2: define this (virtual) column in Playlist model
+   Option 2: OR define this SqfEntityFieldRelationship column in Playlist table model
 
       SqfEntityFieldRelationship(
          parentTable: tableTrack,
@@ -236,25 +255,29 @@ use these parameters when declaring SqfEntityField
          manyToManyTableName: 'PlaylistTrack'),
 
 Note:   
- **manyToManyTableName** parameter is optional. It's the name of the table in which interrelated records will be saved.  SqfEntity will name it if you don't set this parameter
+ **manyToManyTableName** parameter is optional. SqfEntity will name it if you don't set this parameter
 
 After generate the models you can list related records like this:
 
-to list Tracks from a Playlist:
+to list Tracks of a Playlist:
 
       final playlist = await Playlist().getById(1);
       final tracks = await playlist.getTracks().toList();
 
-to list Playlists from a Track:   
+to list Playlists of a Track:   
+
    
       final track = await Track().getById(1);
       final playlists = await track.getPlaylists().toList();
 
-
 ## 1.3.1
    changed saveAll(), upsertAll(), rawInsert() methods according to whether have a primary key or not
 
-## 1.3.0+4
+## 1.3.0+7
+   applied following advice:
+   https://github.com/hhtokpinar/sqfEntity/issues/93#issuecomment-596340785
+
+## 1.3.0+6
    applied isPrimaryKeyField propery to both SqfEntityField or SqfEntityFieldRelationship fields 
    fixed some bugs
 
@@ -275,8 +298,34 @@ to list Playlists from a Track:
          SqfEntityFieldRelationship(fieldName: 'propertyId', parentTable: tableProperty, isPrimaryKeyField: true),
       ]);
 
-## 1.2.3+13
-  Added new feature for relationships preload parent or child fields to virtual fields that created automatically starts with 'pl'
+## 1.2.3+19
+   Added loadParents parameter into parameters of getById, toSingle, and toList methods to preload parent of items 
+   sample using:
+   Shop is the top element with no parent and the last element is Todo that has no children, so my simple schema is like this-> Shop > Category > Product > Todo
+  
+    final todo= Todo().getById(1,loadParents:true);
+    
+    print( todo.plProduct.plCategory.plShop.name );
+
+    result:
+    flutter: shop 1
+
+
+And showed how to reach to top parent in the following figure
+![loadparents](https://user-images.githubusercontent.com/18614561/74828491-416ddf80-5320-11ea-956f-7878245b61d2.gif)
+
+
+## 1.2.3+18
+   Extended preload option. Now preloading loads all nested children (except for parents)
+
+## 1.2.3+17
+   added datetimeUtc dbType for SqfEntityFields
+
+## 1.2.3+8
+   fixed bugs
+
+## 1.2.3+3
+   Added new feature for relationships preload parent or child fields to virtual fields that created automatically starts with 'pl'
 
   this field will be created for Product table
   
@@ -303,7 +352,8 @@ or Using (from child to parent):
     products[0].plCategory.name
 
 
-   Added **SqfEntityFieldVirtual** field type for virtual property. It will be declared in the model that only generates fields in the model class and not in the database table. They are used to store lists of preloaded rows from other tables.
+## 1.2.1+16
+   Added SqfEntityFieldVirtual field type for virtual property. It will be declared in the model that only generates fields in the model class and not in the database table. They are used to store lists of preloaded rows from other tables.
 
    Example:
 
@@ -338,26 +388,20 @@ or Using (from child to parent):
 
 Also removed method called 'fromObjectList'
 
-## 1.2.2+13
+## 1.2.1+13
+   fixed Relationships supports text data type
+
+## 1.2.1+12
    Fixed some Dart Analysis hints
-   
-## 1.2.2+11
-   Added writeDatabase() method
 
-    Future<void> writeDatabaseSample() async {
-        // declare your database as ByteData
-        final ByteData data = await rootBundle.load('assets/chinook.sqlite');
-        // write your new data on existing database
-        await Chinookdb().writeDatabase(data);
-        
-    }
+## 1.2.1+11
+   Applied range validator to forms (You can use minValue and maxValue property for integer, real and numeric field dbTypes)
 
-
-## 1.2.2+10
-   Added One-to-One Relationship type for relationships.
+## 1.2.1+9
+   Added One-to-One Relationships type for relationships.
    
    as an example:
-   to expand the product table with the properties table with one-to-one relationship
+   to expand the product table with the properties table with one-to-one relationships
 
     const tableProductProperties = SqfEntityTable(
     tableName: 'property',
@@ -368,6 +412,7 @@ Also removed method called 'fromObjectList'
         SqfEntityField('weight', DbType.real),
         SqfEntityField('stockQty', DbType.numeric),
         SqfEntityFieldRelationship(
+        //fieldName: 'productId',
             parentTable: tableProduct, relationType: RelationType.ONE_TO_ONE)
     ],
     );
@@ -384,49 +429,52 @@ Also removed method called 'fromObjectList'
     
     print(product.toMapWithChilds());
     
-   As you can see above, the product is a parent table and the property is its subtable that related to one-to-one.
-   
-   And here is DEBUG RESULT:
+   and here is DEBUG RESULT
 
      flutter: { productId: 8, name: Notebook 15", description: 256 GB SSD, price: 10499.0, isActive: false, categoryId: 1, rownum: 8, datetime: 2019-11-21 06:22:34.512, isDeleted: false, property: {stockQty: 4, weight: 320} } 
 
+## 1.2.1+4
+1- added equalsOrNull keyword for queries
+    Example:
 
-## 1.2.2+9
+    // this query lists only isActive=false 
+    final productList = await Product().select().isActive.not.equals(true).toList();
+    
+    // but this query lists isActive=false and isActive is null both
+    final productList = await Product().select().isActive.not.equalsOrNull(true).toList();
+
+       
+    
+2- you can define customCode property of your SqfEntityTable constant for ex:
+
+    const tablePerson = SqfEntityTable(
+    tableName: 'person',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+        SqfEntityField('firstName', DbType.text),
+        SqfEntityField('lastName', DbType.text),
+    ],
+    customCode: '''
+        String fullName()
+        { 
+        return '\$firstName \$lastName';
+        }
+    ''');
+
+## 1.2.0+13
+   modified isSaved property and to be removed when not needed
    
-   added batchStart(),batchRollback() and batchCommit() methods into db model class
+## 1.2.0+12
+   bugs fixed
+     getById(id) -> id is null then return null instead exception
+     and fixed .isNull() throws the exception
 
-   Example
-
-    // start batch
-    MyDbModel().batchStart();
-
-    // add some products
-    await Product(name: 'Notebook 12"',  description: '128 GB SSD i7',  price: 6899,  categoryId: 1).save();
-    await Product(name: 'Notebook 12"',  description: '256 GB SSD i7',  price: 8244,  categoryId: 1).save();
-    await Product(name: 'Notebook 12"',  description: '512 GB SSD i7',  price: 9214,  categoryId: 1).save();
-
-    try
-    {
-        final List<dynamic> result = await MyDbModel().batchCommit();
-        // The result contains primary keys as list of inserted records
-    } catch(e)
-    {
-        MyDbModel().batchRollback();
-    }
-
-
-## 1.2.2+8
+## 1.2.0+11
    Converting the first character of fieldName to lowercase has been cancelled. 
    Users should specify the field name as they wants
-   
-## 1.2.2+7
-   Added keepFieldNamesAsOriginal property in @SqfEntityBuilder annotation
-   Default is false and Complies with rule that "Name non-constant identifiers using lowerCamelCase.dart(non_constant_identifier_names)"
-   Example:
 
-    @SqfEntityBuilder(myDbModel, formControllers: [tableProduct, tableCategory], keepFieldNamesAsOriginal:true) 
-
-## 1.2.2+6
+## 1.2.0+9
    Added Form Generation Feature, and minValue, maxValue propery for datetime fields and fixed some bugs.
    Example:
 
@@ -448,7 +496,11 @@ Also removed method called 'fromObjectList'
         ]);
 
 
-## 1.2.1
+
+## 1.1.1+3
+   fixed the build error after defining multiple referance (RelationShip) to the same table 
+ 
+## 1.1.1+1
    added saveResult property
    Note: You must re-generate your models after updating the package
 
@@ -464,206 +516,58 @@ Also removed method called 'fromObjectList'
     print(product.saveResult.success); // bool (true/false)
     print(product.saveResult.toString()); // String (message)
 
-DEBUG CONSOLE output:
+## 1.1.0+5
+   bugfix SequenceManager error on multi database
+## 1.1.0+4
+   added unknown (text) dbType for unrecognized columns
 
-    I/flutter: true
-    I/flutter: id=15 saved successfuly
-
-    
-## 1.2.0+13
-   bug fix: fixed error in convertDatabaseToModelBase()
-## 1.2.0+8
-added getDatabasePath() method
-example: 
-
-        final String dbPath = await MyDbModel().getDatabasePath();
-
-
-
-## 1.2.0+6
-When the application was initialize initializeDB() method is performed automatically in this version. You no longer need to call this method before start application
-
-## 1.2.0+4
-   bug fix
-
-## 1.2.0+2
-
-   added DateTime dbType 
-    
-        SqfEntityField('birthDate', DbType.datetime),
+## 1.1.0+3
 
    added Date (Small Date) dbType 
     
         SqfEntityField('birthDate', DbType.date),
 
 
-## 1.2.0+1
-   modified dependencies (merged sqfentity_base with sqfentity_gen)
+## 1.1.0+2
+   added DateTime dbType 
+    
+        SqfEntityField('birthDate', DbType.datetime),
 
-## 1.1.1+2
-   modified dependencies (removed sqfentity_gen, added sqfentity_base, downgrade path version to 1.6.2)
-## 1.1.1
+
+## 1.1.0+1
+   modified sqlite dbType mapping
+
+## 1.1.0
+   merged package with sqfentity_base
+   
+## 1.0.3+5
+   removed analyzer from dependencies
+   
+## 1.0.3+4
+   added FormBuilder 
+
+## 1.0.3+3
+   removed FormBuilder  
+
+## 1.0.3+2
+   added analyzer 0.38.2
+
+## 1.0.3+1
+   sqfentity_base exported to sqfentity_base 1.0.1 package
+
+## 1.0.2+4
+   Blob type mapped as Uint8List instead String
+
+## 1.0.2
    Added function to generate model from existing database
 
-## 1.1.0+4
-   bug fix
+## 1.0.1
+   sqfentity_base moved into this package
 
-## 1.1.0+2
-   implemented source_gen for model generate
+## 1.0.0+7
+   some required changes applied
 
-## 1.0.5
-   fixed some bugs
-
-## 1.0.4+1
-   added toJsonWithChilds() method
-
-## 1.0.3
-   added toMapWithChilds() method
-   
-## 1.0.2
-   added toJson() method
-
-    final product = await Product().select().toSingle();
-    final jsonString = await product.toJson();
- 
-    print("EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString");
-
-    final jsonStringWithChilds =  await Category().select().toJson(); // all categories selected
-    print("EXAMPLE 11.2 object list with nested objects to Json\n categories jsonString is: $jsonStringWithChilds");
-
-## 1.0.1+3
-   added fromJson() method
-
-## 1.0.0+1
-   Example of linking a column to a sequence
-
-   This is sample sequence in model
-
-    class SequenceIdentity extends SqfEntitySequence {
-    SequenceIdentity() {
-        sequenceName = "identity";
-        maxValue = 10;     /* optional. default is max int (9.223.372.036.854.775.807) */
-        cycle = true;      /* optional. default is false; */
-        //minValue = 0;    /* optional. default is 0 */
-        //incrementBy = 1; /* optional. default is 1 */
-        // startWith = 0;  /* optional. default is 0 */
-        super.init();
-    }
-    static SequenceIdentity _instance;
-    static SequenceIdentity get getInstance {
-        if (_instance == null) {
-        _instance = SequenceIdentity();
-        }
-        return _instance;
-    }
-    }
-
-   How to linking a column to a sequence?
-
-    SqfEntityField("rownum", DbType.integer, sequencedBy: SequenceIdentity()
-
-## 0.2.7+1
-   added some features and methods:
-   - SEQUENCE Generator
-   - dbModel.execScalar()
-
-## 0.2.6
-   added String Primary Key Type
-   WARNING: change the 
-    
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-
-instead of
-
-    primaryKeyisIdentity = true
-
-## 0.2.5+1
-   Fixed some bugs
-## 0.2.4+1
-   New useful methods added
-   dbModel.execSQL(sql), dbModel.execSQLList(sql) and dbModel.execDataTable(sql)
-   see example at https://github.com/hhtokpinar/sqfEntity/blob/master/README.md#run-sql-raw-query-on-database-or-get-datatable
-
-## 0.2.3
-   WARNING! toCount() return type (BoolResult) changed to (int)
-
-## 0.2.2
-   startsWith(), endsWith() and contains() methods modified
-
-## 0.2.1
-   optional parameter added to delete() method
-   delete([bool hardDelete=false])
-
-## 0.2.0
-   toListString() method added
-   this method Returns List<String> for selected first column
-   Sample usage: await Product.select(columnsToSelect: ["columnName"]).toListString()
-
-## 0.1.0+22
-dependencies modified
-
-## 0.1.0+21
-.fromWebUrl method modified
-
-## 0.1.0+20
-dependencies modified
-
-## 0.1.0+18
-recover() and delete() methods updated
-
-## 0.1.0+13
-create_model.dart modified
-
-## 0.1.0+12
-README.md and example/main.dart modified
-
-## 0.1.0+11
-README.md and example/main.dart modified
-
-## 0.1.0+10
-README.md and example/main.dart modified
-
-## 0.1.0+9
-README.md and example/main.dart modified
-
-## 0.1.0+8
-README.md and example/main.dart modified
-
-## 0.1.0+7
-README.md and example/main.dart modified
-
-## 0.1.0+6
-README.md modified
-
-## 0.1.0+5
-README.md modified
-
-## 0.0.5+5
-README.md modified
-
-## 0.0.5+4
-README.md modified
-
-## 0.0.5+3
-README.md modified
-
-## 0.0.5+2
-README.md modified
-
-## 0.0.5+1
-
-* toList(), toSingle(), getById(), initializeDb(), fromWeb().. etc methods are replaced with async method
-
-## 0.0.4+1
-README.md modified
-
-## 0.0.3+1
-README.md modified
-
-## 0.0.2+1
-README.md modified
-
-## 0.0.1
-
-* Initial experimentation
-
+## 1.0.0+6
+   * Initial publish 
+   This package required for sqfentity_gen ORM for Flutter code generator
+   Includes SqfEntity base classes and Annotation Classes

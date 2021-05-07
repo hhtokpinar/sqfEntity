@@ -246,7 +246,7 @@ class Product {
     }
     if (o['isActive'] != null) {
       isActive =
-          o['isActive'].toString() == "1" || o['isActive'].toString() == "true";
+          o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
     }
     categoryId = int.tryParse(o['categoryId'].toString());
 
@@ -643,24 +643,25 @@ class Product {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
+
   Future<int?> upsert() async {
     try {
-      if (await _mnProduct.rawInsert(
-              'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-              [
-                id,
-                name,
-                description,
-                price,
-                isActive,
-                categoryId,
-                rownum,
-                imageUrl,
-                datetime != null ? datetime!.millisecondsSinceEpoch : null,
-                date != null ? date!.millisecondsSinceEpoch : null,
-                isDeleted
-              ]) ==
-          1) {
+      final result = await _mnProduct.rawInsert(
+          'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+          [
+            id,
+            name,
+            description,
+            price,
+            isActive,
+            categoryId,
+            rownum,
+            imageUrl,
+            datetime != null ? datetime!.millisecondsSinceEpoch : null,
+            date != null ? date!.millisecondsSinceEpoch : null,
+            isDeleted
+          ]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Product id=$id updated successfully');
@@ -692,6 +693,7 @@ class Product {
   /// Deletes Product
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Product invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete || isDeleted!) {
@@ -739,9 +741,9 @@ class Product {
     isDeleted = isDeleted ?? false;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -757,7 +759,7 @@ class Product {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion product
 
@@ -1676,7 +1678,7 @@ class Category {
     }
     if (o['isActive'] != null) {
       isActive =
-          o['isActive'].toString() == "1" || o['isActive'].toString() == "true";
+          o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
     }
   }
   // FIELDS (Category)
@@ -1935,12 +1937,13 @@ class Category {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
+
   Future<int?> upsert() async {
     try {
-      if (await _mnCategory.rawInsert(
-              'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
-              [id, name, isActive]) ==
-          1) {
+      final result = await _mnCategory.rawInsert(
+          'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
+          [id, name, isActive]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true,
             successMessage: 'Category id=$id updated successfully');
@@ -1972,6 +1975,7 @@ class Category {
   /// Deletes Category
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Category invoked (id=$id)');
     var result = BoolResult(success: false);
@@ -2011,9 +2015,9 @@ class Category {
     isActive = isActive ?? true;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -2029,7 +2033,7 @@ class Category {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion category
 
@@ -2866,8 +2870,8 @@ class Todo {
       title = o['title'].toString();
     }
     if (o['completed'] != null) {
-      completed = o['completed'].toString() == "1" ||
-          o['completed'].toString() == "true";
+      completed = o['completed'].toString() == '1' ||
+          o['completed'].toString() == 'true';
     }
 
     isSaved = true;
@@ -3080,12 +3084,13 @@ class Todo {
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
+
   Future<int?> upsert() async {
     try {
-      if (await _mnTodo.rawInsert(
-              'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
-              [id, userId, title, completed]) ==
-          1) {
+      final result = await _mnTodo.rawInsert(
+          'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
+          [id, userId, title, completed]);
+      if (result! > 0) {
         saveResult = BoolResult(
             success: true, successMessage: 'Todo id=$id updated successfully');
       } else {
@@ -3116,6 +3121,7 @@ class Todo {
   /// Deletes Todo
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Todo invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete) {
@@ -3148,9 +3154,9 @@ class Todo {
     completed = completed ?? false;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -3166,7 +3172,7 @@ class Todo {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion todo
 
