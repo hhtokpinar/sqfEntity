@@ -135,6 +135,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
         SqfEntityField('isActive', DbType.bool, defaultValue: true),
         SqfEntityFieldRelationship(
             parentTable: tableCategory,
+            relationType: RelationType.ONE_TO_MANY,
             deleteRule: DeleteRule.CASCADE,
             defaultValue: 0), // Relationship column for CategoryId of Product
         SqfEntityField('rownum', DbType.integer,
