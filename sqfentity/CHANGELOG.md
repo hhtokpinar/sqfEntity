@@ -571,3 +571,11 @@ Also removed method called 'fromObjectList'
    * Initial publish 
    This package required for sqfentity_gen ORM for Flutter code generator
    Includes SqfEntity base classes and Annotation Classes
+
+## version: 2.0.1
+
+- Ability to specify default columns for all tables
+- Possibility of performing actions before each insert/update
+- Log events on failure of insert/update operation
+- Addition of saveOrThrow method, making it possible to handle throws directly
+- Make all table classes extend from TableBase
