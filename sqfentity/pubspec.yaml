@@ -15,12 +15,15 @@ dependencies:
   path: ^1.8.0
   
   sqfentity_gen: #'>=2.0.0 <3.0.0'
-    path: ../sqfentity_gen
+    git:
+      ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      path: sqfentity_gen
+      url: https://github.com/aynova-tecnologia/sqfEntity.git
   sqflite_common: ^2.0.0+2
   sqflite_common_ffi: ^2.0.0
 
 
 
-dependency_overrides:
- sqfentity_gen:
-   path: ../sqfentity_gen
+# dependency_overrides:
+#  sqfentity_gen:
+#    path: ../sqfentity_gen

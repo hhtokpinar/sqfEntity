@@ -175,9 +175,11 @@ packages:
   sqfentity_gen:
     dependency: "direct main"
     description:
-      path: "../sqfentity_gen"
-      relative: true
-    source: path
+      path: sqfentity_gen
+      ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      resolved-ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      url: "https://github.com/aynova-tecnologia/sqfEntity.git"
+    source: git
     version: "2.0.0"
   sqflite_common:
     dependency: "direct main"
@@ -257,5 +259,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.12.0 <3.0.0"
+  dart: ">=2.12.2 <3.0.0"
   flutter: ">=1.24.0-10"
