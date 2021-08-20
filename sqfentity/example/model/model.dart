@@ -1572,7 +1572,7 @@ class Category {
 
   static Future<List<Category>> fromWebUrl(String url) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(Uri.parse(url));
       return await fromJson(response.body);
     } catch (e) {
       print(
@@ -2573,7 +2573,7 @@ class Todo {
 
   static Future<List<Todo>> fromWebUrl(String url) async {
     try {
-      final response = await http.get(url);
+      final response = await http.get(Uri.parse(url));
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Todo.fromWebUrl: ErrorMessage: ${e.toString()}');

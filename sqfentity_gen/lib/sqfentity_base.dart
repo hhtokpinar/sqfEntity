@@ -265,6 +265,20 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final String? formLabelText;
 }
 
+typedef PreSaveAction = Future<TableBase> Function(String tableName, TableBase);
+
+typedef LogFunction = Function(Log);
+
+class Log {
+  String msg;
+  bool success;
+  Object? error;
+  StackTrace? stackTrace;
+
+  // ignore: sort_constructors_first
+  Log({required this.msg, this.success = false, this.error, this.stackTrace});
+}
+
 class SqfEntityModel {
   const SqfEntityModel(
       {this.databaseName,
@@ -275,7 +289,10 @@ class SqfEntityModel {
       this.formTables,
       this.password,
       this.ignoreForFile,
-      this.dbVersion});
+      this.dbVersion,
+      this.defaultColumns,
+      this.preSaveAction,
+      this.logFunction});
   // STEPS FOR CREATE YOUR DB CONTEXT
 
   /// 1. declare your sqlite database name
@@ -299,6 +316,15 @@ class SqfEntityModel {
   /// You can specify the version of the database
   final int? dbVersion;
 
+  /// Indicates columns that will be added to all tables by default
+  final List<SqfEntityField>? defaultColumns;
+
+  /// Action Execute pre save
+  final PreSaveAction? preSaveAction;
+
+  /// Log events on failure of insert/update operation
+  final LogFunction? logFunction;
+
   // that's all.. one more step left for create models.dart file.
   // ATTENTION: Defining the table here provides automatic processing for database configuration only.
   // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
@@ -320,6 +346,8 @@ class SqfEntityModelConverter {
       ..databaseTables = toTables()
       ..sequences = toSequences()
       ..bundledDatabasePath = model.bundledDatabasePath
+      ..preSaveAction = model.preSaveAction
+      ..logFunction = model.logFunction
       ..init();
   }
 
@@ -621,7 +649,7 @@ class SqfEntityObjectBuilder {
   String toString() {
     final String toString = '''
   // region ${_table.modelName}
-  class ${_table.modelName} ${_table.abstractModelName != null ? 'implements ${_table.abstractModelName}' : ''} {
+  class ${_table.modelName} extends TableBase ${_table.abstractModelName != null ? 'implements ${_table.abstractModelName}' : ''} {
     ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues();}
     ${_table.modelName}.withFields(${_table.createConstructure}){ _setDefaultValues();}
     ${_table.modelName}.withId(${_table.createConstructureWithId}){ _setDefaultValues();}
@@ -862,7 +890,9 @@ class SqfEntityObjectBuilder {
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         _table.relationType != RelationType.ONE_TO_ONE) {
-      _retVal..write(', this.')..write(_table.primaryKeyName);
+      _retVal
+        ..write(', this.')
+        ..write(_table.primaryKeyName);
     }
 
     for (final field in _table.fields!
@@ -1437,7 +1467,8 @@ class SqfEntityObjectBuilder {
     final retVal = StringBuffer();
     if (_table.primaryKeyTypes[0].startsWith('int') &&
         _table.primaryKeyNames.length == 1) {
-      retVal.write('''
+      retVal
+        ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
     
@@ -1454,7 +1485,27 @@ class SqfEntityObjectBuilder {
          }
         $_toOnetoOneSaveCode
       return ${_table.primaryKeyNames[0]};
+    }''')
+        ..write('''
+  
+    /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
+    
+    /// <returns>Returns ${_table.primaryKeyNames[0]}
+    Future<int?> ${_hiddenMethod}saveOrThrow() async {
+      if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved' : ''}) {
+        ${seq.toString()}
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult != null && saveResult.success) {isSaved = true;}' : ''}
+        isInsert = true;
+          }
+      else {
+        // ${_table.primaryKeyNames[0]}= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+        await _mn${_table.modelName}.updateOrThrow(this);
+         }
+        $_toOnetoOneSaveCode
+      return ${_table.primaryKeyNames[0]};
     }''');
+
       if (_table.relationType != RelationType.ONE_TO_ONE &&
           _table.primaryKeyName != null &&
           _table.primaryKeyName!.isNotEmpty &&
@@ -1496,6 +1547,7 @@ class SqfEntityObjectBuilder {
       return result;
     }
   ''');
+
       if (_table.relationType != RelationType.ONE_TO_ONE &&
           _table.primaryKeyName != null &&
           _table.primaryKeyName!.isNotEmpty &&
@@ -1522,6 +1574,14 @@ class SqfEntityObjectBuilder {
     ''');
       }
     }
+    retVal.write('''
+    void rollbackId() {
+      if (isInsert == true) {
+        id = null;
+      }
+    }
+
+    ''');
 
     return retVal.toString();
   }
@@ -1731,8 +1791,7 @@ class SqfEntityObjectManagerBuilder {
 class ${_table.modelName}Manager extends SqfEntityProvider {
   ${_table.modelName}Manager() : super(${_table.dbModel}(),tableName: _tableName,
   primaryKeyList: _primaryKeyList,
-  whereStr : _whereStr
-  );
+  whereStr : _whereStr);
   static final String _tableName = '${_table.tableName}';
   static final List<String> _primaryKeyList = ['${_table.primaryKeyNames.join('\',\'')}'];
   static final String _whereStr = '${__getByIdWhereStr(_table).toString()}';
@@ -3169,13 +3228,17 @@ class SqfEntityTableBase {
         primaryKeyName!.isNotEmpty &&
         relationType != RelationType.ONE_TO_ONE &&
         (withId || primaryKeyType != PrimaryKeyType.integer_auto_incremental)) {
-      _retVal..write(',')..write('this.$primaryKeyName');
+      _retVal
+        ..write(',')
+        ..write('this.$primaryKeyName');
     }
 
     if (fields![0].isPrimaryKeyField != true ||
         relationType == RelationType.MANY_TO_MANY ||
         withId) {
-      _retVal..write(',')..write(fields![0].toConstructureString());
+      _retVal
+        ..write(',')
+        ..write(fields![0].toConstructureString());
     }
 
     for (int i = 1; i < fields!.length; i++) {
@@ -3724,6 +3787,14 @@ abstract class SqfEntityModelBase {
   List<SqfEntityTableBase>? formTables;
   List<SqfEntitySequenceBase>? sequences;
   List<String>? ignoreForFile;
+
+  /// Action Execute pre save
+  PreSaveAction? preSaveAction;
+
+  LogFunction? logFunction;
+
+  List<SqfEntityFieldType>? defaultColumns;
+
   void init() {
     dbVersion = dbVersion ?? 1;
     final manyToManyTables = <SqfEntityTableBase>[];
@@ -3744,9 +3815,9 @@ abstract class SqfEntityModelBase {
           field.relationType = RelationType.ONE_TO_MANY;
           databaseTables!
               .singleWhere((t) => t.tableName == field.table!.tableName!)
-                ..fields!.add(SqfEntityFieldRelationshipBase(
-                    table, field.deleteRule,
-                    relationType: RelationType.ONE_TO_MANY));
+            ..fields!.add(SqfEntityFieldRelationshipBase(
+                table, field.deleteRule,
+                relationType: RelationType.ONE_TO_MANY));
           field.table!.init();
         } else if (field.relationType == RelationType.MANY_TO_MANY) {
           print('found RelationShip ManyToMany');
@@ -3805,11 +3876,11 @@ abstract class SqfEntityModelBase {
                 .isEmpty) {
               databaseTables!
                   .singleWhere((t) => t.tableName == field.table!.tableName!)
-                    ..fields!.add(SqfEntityFieldRelationshipBase(
-                        table, field.deleteRule,
-                        manyToManyTableName: many2ManyTableName,
-                        manyToManyTable: many2manyTable,
-                        relationType: RelationType.MANY_TO_MANY));
+                ..fields!.add(SqfEntityFieldRelationshipBase(
+                    table, field.deleteRule,
+                    manyToManyTableName: many2ManyTableName,
+                    manyToManyTable: many2manyTable,
+                    relationType: RelationType.MANY_TO_MANY));
               field.table!.init();
             }
           }
@@ -4077,4 +4148,10 @@ DbType parseDbType(String val) {
   }
   return DbType.unknown;
 }
+
+abstract class TableBase {
+  /// Indicates whether an insertion was made or not
+  late bool isInsert;
+}
+
 // END ENUMS, CLASSES AND ABSTRACTS

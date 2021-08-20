@@ -11,15 +11,16 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite_sqlcipher: ^2.0.0
-  #sqflite: ^2.0.0+2
-  synchronized: ">=3.0.0 <4.0.0"
-  path: ">=1.6.2 <2.0.0"
-  sqfentity_gen: '>=2.0.0 <3.0.0'
+  synchronized: ^3.0.0
+  path: ^1.8.0
+  
+  sqfentity_gen: #'>=2.0.0 <3.0.0'
+    path: ../sqfentity_gen
   sqflite_common: ^2.0.0+2
   sqflite_common_ffi: ^2.0.0
 
 
 
-# dependency_overrides:
-#  sqfentity_gen:
-#    path: ../sqfentity_gen        
+dependency_overrides:
+ sqfentity_gen:
+   path: ../sqfentity_gen

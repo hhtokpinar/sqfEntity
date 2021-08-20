@@ -65,6 +65,10 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
           getListValue(model, 'formTables') ?? <DartObject>[], dbModelName)
       ..bundledDatabasePath = getStringValue(model, 'bundledDatabasePath')
       ..ignoreForFile = toListString(getListValue(model, 'ignoreForFile'))
+      ..defaultColumns = toFields(
+        getListValue(model, 'defaultColumns')!,
+        dbModelName, //keepFieldNamesAsOriginal
+      )
       ..init();
     return dbModel;
   }
@@ -315,17 +319,17 @@ class SqfEntityTables {
 dynamic convertType(dynamic T) {
   final type = T.type;
   var types = <String, dynamic>{};
-  if (type.toString() == 'DbType') {
+  if (type.toString().contains('DbType')) {
     types = dbTypes();
-  } else if (type.toString() == 'PrimaryKeyType') {
+  } else if (type.toString().contains('PrimaryKeyType')) {
     types = primaryKeyTypes();
-  } else if (type.toString() == 'DeleteRule') {
+  } else if (type.toString().contains('DeleteRule')) {
     types = deleteRuleTypes();
-  } else if (type.toString() == 'RelationType') {
+  } else if (type.toString().contains('RelationType')) {
     types = relationTypes();
-  } else if (type.toString() == 'ObjectType') {
+  } else if (type.toString().contains('ObjectType')) {
     types = objectTypes();
-  } else if (type.toString() == 'Collate') {
+  } else if (type.toString().contains('Collate')) {
     types = collateTypes();
   }
   for (var typ in types.entries) {
@@ -468,6 +472,8 @@ class ${_m.modelName} extends SqfEntityModelProvider {
   ${_m.modelName}() {
     databaseName = $_dbName;
     $_dbPassword $_dbVersion
+    preSaveAction = ${_m.instanceName}.preSaveAction;
+    logFunction = ${_m.instanceName}.logFunction;
     $__tableList
     $__sequenceList
     bundledDatabasePath =
