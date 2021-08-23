@@ -336,7 +336,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
 
   Future<int?> updateOrThrow(dynamic T) async {
     if (_dbModel!.preSaveAction != null) {
-      T = await _dbModel!.preSaveAction!(T.tableName as String, T);
+      T = await _dbModel!.preSaveAction!(T.tableName as String, T as TableBase);
     }
     final Map<String, dynamic> data =
         (await T.toMap(forQuery: true) as Map<String, dynamic>);
@@ -379,7 +379,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
 
   Future<int?> insertOrThrow(dynamic T) async {
     if (_dbModel!.preSaveAction != null) {
-      T = await _dbModel!.preSaveAction!(T.tableName as String, T);
+      T = await _dbModel!.preSaveAction!(T.tableName as String, T as TableBase);
     }
     final Map<String, dynamic> data =
         (await T.toMap(forQuery: true) as Map<String, dynamic>);
