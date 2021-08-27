@@ -84,6 +84,8 @@ All database tables (table1 and table2) will have the lastUpdate column
 
 - Make all table classes extend from TableBase
 
+- Added an option parameter to set databasePath at runtime.
+
 ## 2.0.0
 1. Migrated to null safety, min SDK is 2.12.0.
 2. implemented SQLChiper to encrypt DB

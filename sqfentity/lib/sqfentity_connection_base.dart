@@ -23,10 +23,11 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class SqfEntityConnection {
   SqfEntityConnection(this.databaseName,
-      {this.bundledDatabasePath, this.dbVersion = 1, this.password});
+        {this.bundledDatabasePath, this.dbVersion = 1, this.password, this.databasePath});
   String databaseName;
   String? bundledDatabasePath;
   String? password;
+  String? databasePath; // Option to set path at runtime.
   int dbVersion;
 }
 

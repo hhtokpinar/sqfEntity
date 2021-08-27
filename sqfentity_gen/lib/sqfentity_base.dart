@@ -3782,6 +3782,7 @@ abstract class SqfEntityModelBase {
   String? bundledDatabasePath;
   String? instanceName;
   String? password;
+  String? databasePath; // Option to set path at runtime.
   int? dbVersion;
   List<SqfEntityTableBase>? databaseTables;
   List<SqfEntityTableBase>? formTables;
