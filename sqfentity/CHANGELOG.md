@@ -1,3 +1,89 @@
+## 2.0.1
+
+- Ability to specify default columns for all tables
+   Example:
+
+```
+    @SqfEntityBuilder(myDbModel)
+    const myDbModel = SqfEntityModel(
+    modelName: 'AppDatabase',
+    databaseName: 'AppDatabase.db',
+    databaseTables: [
+       table1, 
+       table2
+    ],
+    sequences: [seqIdentity],
+    bundledDatabasePath: null,
+    defaultColumns: const [
+      SqfEntityField('lastUpdate', DbType.datetime),
+    ]);
+```
+
+All database tables (table1 and table2) will have the lastUpdate column
+
+- Possibility of performing actions before each insert/update
+   Example:
+
+```
+   @SqfEntityBuilder(myDbModel)
+   const myDbModel = SqfEntityModel(
+       ...
+       preSaveAction: getPreSaveAction,
+   );
+
+   Future<TableBase> getPreSaveAction(String tableName, obj) async {
+      // Update the lastUpdate column on all records before saving
+      obj.lastUpdate = DateTime.now()
+      return obj;
+   }
+```
+
+- Log events on failure of insert/update operation
+   Example:
+
+```
+   @SqfEntityBuilder(myDbModel)
+   const myDbModel = SqfEntityModel(
+       ...
+       logFunction: getLogFunction,
+   );
+
+   getLogFunction(Log log) {
+      // Report the error to the server here
+   }
+```
+
+- Addition of saveOrThrow method, making it possible to handle throws directly
+   Example usage with transactions:
+
+```
+   Future<bool> saveData() async {
+      try {
+         /// Start a transaction
+         await AppDatabase().execSQL('BEGIN');
+
+         table1.id = await table1.saveOrThrow();
+
+         table2.table1_id = table1.id;
+         table2.id = table2.saveOrThrow();
+
+         /// Confirm the data in the db
+         return (await AppDatabase().execSQL('COMMIT')).success;
+      } catch (error, stackTrace) {
+
+         /// Reverses all successful operations
+         await AppDatabase().execSQL('ROLLBACK');
+
+         /// Cancels possible ids assigned to the object during insertions, preventing a new save attempt from accidentally performing an update
+         table1?.rollbackId();
+         table2?.rollbackId();
+         return false;
+      }
+   }
+```
+
+- Make all table classes extend from TableBase
+
 ## 2.0.0
 1. Migrated to null safety, min SDK is 2.12.0.
 2. implemented SQLChiper to encrypt DB

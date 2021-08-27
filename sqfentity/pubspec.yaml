@@ -11,10 +11,14 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite_sqlcipher: ^2.0.0
-  #sqflite: ^2.0.0+2
-  synchronized: ">=3.0.0 <4.0.0"
-  path: ">=1.6.2 <2.0.0"
-  sqfentity_gen: '>=2.0.0 <3.0.0'
+  synchronized: ^3.0.0
+  path: ^1.8.0
+  
+  sqfentity_gen: #'>=2.0.0 <3.0.0'
+    git:
+      ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      path: sqfentity_gen
+      url: https://github.com/aynova-tecnologia/sqfEntity.git
   sqflite_common: ^2.0.0+2
   sqflite_common_ffi: ^2.0.0
 
@@ -22,4 +26,4 @@ dependencies:
 
 # dependency_overrides:
 #  sqfentity_gen:
-#    path: ../sqfentity_gen        
+#    path: ../sqfentity_gen

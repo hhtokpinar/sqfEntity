@@ -317,56 +317,82 @@ class SqfEntityProvider extends SqfEntityModelBase {
   }
 
   Future<int?> update(dynamic T) async {
-    final o = await T.toMap(forQuery: true);
     try {
-      if (openedBatch[_dbModel!.databaseName!] == null) {
-        final Database db = (await this.db)!;
-        final result = await db.update(_tableName!, o as Map<String, dynamic>,
-            where: _whereStr, whereArgs: buildWhereArgs(o));
-        T.saveResult = BoolResult(
-            success: true,
-            successMessage:
-                '$_tableName-> ${_primaryKeyList![0]} = ${o[_primaryKeyList![0]]} saved successfully');
-
-        return result;
-      } else {
-        openedBatch[_dbModel!.databaseName!]!.update(
-            _tableName!, o as Map<String, dynamic>,
-            where: _whereStr, whereArgs: buildWhereArgs(o));
-        T.saveResult = BoolResult(
-            success: true,
-            successMessage:
-                '$_tableName-> update: added to batch successfully');
-        return 0;
-      }
-    } catch (e) {
+      /// Leave it in this format for Throw to stay in this catch
+      final res = await updateOrThrow(T);
+      return res;
+    } catch (error, stackTrace) {
       T.saveResult = BoolResult(
           success: false,
-          errorMessage: '$_tableName-> Save failed. Error: ${e.toString()}');
+          errorMessage:
+              '$_tableName-> Save failed. Error: ${error.toString()}');
+      _dbModel?.logFunction?.call(Log(
+          msg: '$_tableName -> Save failed. Error: ${error.toString()}',
+          error: error,
+          stackTrace: stackTrace));
       return null;
+    }
+  }
+
+  Future<int?> updateOrThrow(dynamic T) async {
+    if (_dbModel!.preSaveAction != null) {
+      T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
+    }
+    final Map<String, dynamic> data =
+        (await T.toMap(forQuery: true) as Map<String, dynamic>);
+    if (openedBatch[_dbModel!.databaseName] == null) {
+      final Database? db = await this.db;
+      final result = await db?.update(_tableName!, data,
+          where: _whereStr, whereArgs: buildWhereArgs(data));
+      T.saveResult = BoolResult(
+          success: true,
+          successMessage:
+              '$_tableName-> ${_primaryKeyList![0]} = ${data[_primaryKeyList![0]]} saved successfully');
+      return result;
+    } else {
+      openedBatch[_dbModel!.databaseName]?.update(_tableName!, data,
+          where: _whereStr, whereArgs: buildWhereArgs(data));
+      T.saveResult = BoolResult(
+          success: true,
+          successMessage: '$_tableName-> update: added to batch successfully');
+      return 0;
     }
   }
 
   Future<int?> insert(dynamic T) async {
     try {
-      if (openedBatch[_dbModel!.databaseName!] == null) {
-        final Database db = (await this.db)!;
-        final result = await db.insert(
-            _tableName!, await T.toMap(forQuery: true) as Map<String, dynamic>);
-        T.saveResult = BoolResult(
-            success: true,
-            successMessage:
-                '$_tableName-> ${_primaryKeyList![0]}=$result saved successfully');
-        return result;
-      } else {
-        openedBatch[_dbModel!.databaseName!]!.insert(
-            _tableName!, await T.toMap(forQuery: true) as Map<String, dynamic>);
-        return null;
-      }
-    } catch (e) {
+      /// Leave it in this format for Throw to stay in this catch
+      final res = await insertOrThrow(T);
+      return res;
+    } catch (error, stackTrace) {
       T.saveResult = BoolResult(
           success: false,
-          errorMessage: '$_tableName-> Save failed. Error: ${e.toString()}');
+          errorMessage:
+              '$_tableName-> Save failed. Error: ${error.toString()}');
+      _dbModel?.logFunction?.call(Log(
+          msg: '$_tableName -> Save failed. Error: ${error.toString()}',
+          error: error,
+          stackTrace: stackTrace));
+      return null;
+    }
+  }
+
+  Future<int?> insertOrThrow(dynamic T) async {
+    if (_dbModel!.preSaveAction != null) {
+      T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
+    }
+    final Map<String, dynamic> data =
+        (await T.toMap(forQuery: true) as Map<String, dynamic>);
+    if (openedBatch[_dbModel!.databaseName] == null) {
+      final Database? db = await this.db;
+      final result = await db?.insert(_tableName!, data);
+      T.saveResult = BoolResult(
+          success: true,
+          successMessage:
+              '$_tableName-> ${_primaryKeyList![0]}=$result saved successfully');
+      return result;
+    } else {
+      openedBatch[_dbModel!.databaseName]!.insert(_tableName!, data);
       return null;
     }
   }

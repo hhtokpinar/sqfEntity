@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "17.0.0"
+    version: "24.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.1.0"
   args:
     dependency: transitive
     description:
@@ -35,7 +35,7 @@ packages:
       name: build
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   characters:
     dependency: transitive
     description:
@@ -84,7 +84,7 @@ packages:
       name: dart_style
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.3"
   ffi:
     dependency: transitive
     description:
@@ -124,7 +124,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.0"
+    version: "1.7.0"
   package_config:
     dependency: transitive
     description:
@@ -164,7 +164,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   source_span:
     dependency: transitive
     description:
@@ -175,9 +175,11 @@ packages:
   sqfentity_gen:
     dependency: "direct main"
     description:
-      name: sqfentity_gen
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: sqfentity_gen
+      ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      resolved-ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
+      url: "https://github.com/aynova-tecnologia/sqfEntity.git"
+    source: git
     version: "2.0.0"
   sqflite_common:
     dependency: "direct main"
