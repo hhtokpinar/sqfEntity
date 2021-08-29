@@ -30,6 +30,8 @@ class ProductAddState extends State {
   final TextEditingController txtDatetime = TextEditingController();
   final TextEditingController txtTimeForDatetime = TextEditingController();
   final TextEditingController txtDate = TextEditingController();
+  final TextEditingController txtDateCreated = TextEditingController();
+  final TextEditingController txtTimeForDateCreated = TextEditingController();
 
   @override
   void initState() {
@@ -48,6 +50,12 @@ class ProductAddState extends State {
 
     txtDate.text =
         product.date == null ? '' : UITools.convertDate(product.date!);
+    txtDateCreated.text = product.dateCreated == null
+        ? ''
+        : UITools.convertDate(product.dateCreated!);
+    txtTimeForDateCreated.text = product.dateCreated == null
+        ? ''
+        : UITools.convertTime(product.dateCreated!);
 
     super.initState();
   }
@@ -97,6 +105,7 @@ class ProductAddState extends State {
                     buildRowImageUrl(),
                     buildRowDatetime(),
                     buildRowDate(),
+                    buildRowDateCreated(),
                     TextButton(
                       child: saveButton(),
                       onPressed: () {
@@ -296,6 +305,66 @@ class ProductAddState extends State {
     );
   }
 
+  Widget buildRowDateCreated() {
+    return Row(children: <Widget>[
+      Expanded(
+        flex: 1,
+        child: TextFormField(
+          onTap: () => DatePicker.showDatePicker(context,
+              showTitleActions: true,
+              theme: UITools.mainDatePickerTheme,
+              minTime: DateTime.parse('1900-01-01'),
+              onConfirm: (sqfSelectedDate) {
+            txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
+            txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+            setState(() {
+              final d = DateTime.tryParse(txtDateCreated.text) ??
+                  product.dateCreated ??
+                  DateTime.now();
+              product.dateCreated = DateTime(sqfSelectedDate.year,
+                      sqfSelectedDate.month, sqfSelectedDate.day)
+                  .add(Duration(
+                      hours: d.hour, minutes: d.minute, seconds: d.second));
+            });
+          },
+              currentTime: DateTime.tryParse(txtDateCreated.text) ??
+                  product.dateCreated ??
+                  DateTime.now(),
+              locale: UITools.mainDatePickerLocaleType),
+          controller: txtDateCreated,
+          decoration: InputDecoration(labelText: 'DateCreated'),
+        ),
+      ),
+      Expanded(
+          flex: 1,
+          child: TextFormField(
+            onTap: () => DatePicker.showTimePicker(context,
+                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+                onConfirm: (sqfSelectedDate) {
+              txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+              setState(() {
+                final d = DateTime.tryParse(txtDateCreated.text) ??
+                    product.dateCreated ??
+                    DateTime.now();
+                product.dateCreated = DateTime(d.year, d.month, d.day).add(
+                    Duration(
+                        hours: sqfSelectedDate.hour,
+                        minutes: sqfSelectedDate.minute,
+                        seconds: sqfSelectedDate.second));
+                txtDateCreated.text = UITools.convertDate(product.dateCreated!);
+              });
+            },
+                currentTime: DateTime.tryParse(
+                        '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
+                    product.dateCreated ??
+                    DateTime.now(),
+                locale: UITools.mainDatePickerLocaleType),
+            controller: txtTimeForDateCreated,
+            decoration: InputDecoration(labelText: ''),
+          ))
+    ]);
+  }
+
   Container saveButton() {
     return Container(
       padding: const EdgeInsets.all(7.0),
@@ -320,6 +389,14 @@ class ProductAddState extends State {
           seconds: _datetimeTime.second));
     }
     final _date = DateTime.tryParse(txtDate.text);
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    if (_dateCreated != null && _dateCreatedTime != null) {
+      _dateCreated = _dateCreated.add(Duration(
+          hours: _dateCreatedTime.hour,
+          minutes: _dateCreatedTime.minute,
+          seconds: _dateCreatedTime.second));
+    }
 
     product
       ..name = txtName.text
@@ -329,7 +406,8 @@ class ProductAddState extends State {
       ..rownum = int.tryParse(txtRownum.text)
       ..imageUrl = txtImageUrl.text
       ..datetime = _datetime
-      ..date = _date;
+      ..date = _date
+      ..dateCreated = _dateCreated;
     await product.save();
     if (product.saveResult!.success) {
       Navigator.pop(context, true);
@@ -473,10 +551,20 @@ class TodoAddState extends State {
   final TextEditingController txtUserId = TextEditingController();
   final TextEditingController txtTitle = TextEditingController();
 
+  final TextEditingController txtDateCreated = TextEditingController();
+  final TextEditingController txtTimeForDateCreated = TextEditingController();
+
   @override
   void initState() {
     txtUserId.text = todos.userId == null ? '' : todos.userId.toString();
     txtTitle.text = todos.title == null ? '' : todos.title.toString();
+
+    txtDateCreated.text = todos.dateCreated == null
+        ? ''
+        : UITools.convertDate(todos.dateCreated!);
+    txtTimeForDateCreated.text = todos.dateCreated == null
+        ? ''
+        : UITools.convertTime(todos.dateCreated!);
 
     super.initState();
   }
@@ -503,6 +591,7 @@ class TodoAddState extends State {
                     buildRowUserId(),
                     buildRowTitle(),
                     buildRowCompleted(),
+                    buildRowDateCreated(),
                     TextButton(
                       child: saveButton(),
                       onPressed: () {
@@ -575,6 +664,66 @@ class TodoAddState extends State {
     );
   }
 
+  Widget buildRowDateCreated() {
+    return Row(children: <Widget>[
+      Expanded(
+        flex: 1,
+        child: TextFormField(
+          onTap: () => DatePicker.showDatePicker(context,
+              showTitleActions: true,
+              theme: UITools.mainDatePickerTheme,
+              minTime: DateTime.parse('1900-01-01'),
+              onConfirm: (sqfSelectedDate) {
+            txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
+            txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+            setState(() {
+              final d = DateTime.tryParse(txtDateCreated.text) ??
+                  todos.dateCreated ??
+                  DateTime.now();
+              todos.dateCreated = DateTime(sqfSelectedDate.year,
+                      sqfSelectedDate.month, sqfSelectedDate.day)
+                  .add(Duration(
+                      hours: d.hour, minutes: d.minute, seconds: d.second));
+            });
+          },
+              currentTime: DateTime.tryParse(txtDateCreated.text) ??
+                  todos.dateCreated ??
+                  DateTime.now(),
+              locale: UITools.mainDatePickerLocaleType),
+          controller: txtDateCreated,
+          decoration: InputDecoration(labelText: 'DateCreated'),
+        ),
+      ),
+      Expanded(
+          flex: 1,
+          child: TextFormField(
+            onTap: () => DatePicker.showTimePicker(context,
+                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+                onConfirm: (sqfSelectedDate) {
+              txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+              setState(() {
+                final d = DateTime.tryParse(txtDateCreated.text) ??
+                    todos.dateCreated ??
+                    DateTime.now();
+                todos.dateCreated = DateTime(d.year, d.month, d.day).add(
+                    Duration(
+                        hours: sqfSelectedDate.hour,
+                        minutes: sqfSelectedDate.minute,
+                        seconds: sqfSelectedDate.second));
+                txtDateCreated.text = UITools.convertDate(todos.dateCreated!);
+              });
+            },
+                currentTime: DateTime.tryParse(
+                        '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
+                    todos.dateCreated ??
+                    DateTime.now(),
+                locale: UITools.mainDatePickerLocaleType),
+            controller: txtTimeForDateCreated,
+            decoration: InputDecoration(labelText: ''),
+          ))
+    ]);
+  }
+
   Container saveButton() {
     return Container(
       padding: const EdgeInsets.all(7.0),
@@ -590,10 +739,20 @@ class TodoAddState extends State {
   }
 
   void save() async {
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    if (_dateCreated != null && _dateCreatedTime != null) {
+      _dateCreated = _dateCreated.add(Duration(
+          hours: _dateCreatedTime.hour,
+          minutes: _dateCreatedTime.minute,
+          seconds: _dateCreatedTime.second));
+    }
+
     todos
       ..id = int.tryParse(txtId.text)
       ..userId = int.tryParse(txtUserId.text)
-      ..title = txtTitle.text;
+      ..title = txtTitle.text
+      ..dateCreated = _dateCreated;
     await todos.save();
     if (todos.saveResult!.success) {
       Navigator.pop(context, true);

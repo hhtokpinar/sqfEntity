@@ -1492,10 +1492,10 @@ class SqfEntityObjectBuilder {
     
     /// <returns>Returns ${_table.primaryKeyNames[0]}
     Future<int?> ${_hiddenMethod}saveOrThrow() async {
-      if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved' : ''}) {
+      if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this);
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult != null && saveResult.success) {isSaved = true;}' : ''}
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult != null && saveResult!.success) {isSaved = true;}' : ''}
         isInsert = true;
           }
       else {
@@ -1577,7 +1577,7 @@ class SqfEntityObjectBuilder {
     retVal.write('''
     void rollbackId() {
       if (isInsert == true) {
-        id = null;
+        ${_table.primaryKeyNames[0]} = null;
       }
     }
 
@@ -2546,7 +2546,8 @@ Future<List<String>> toListString([VoidCallback Function(List<String> o)? listSt
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         !_table.primaryKeyName!.startsWith('_')) {
-      retVal.writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
+      retVal
+          .writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
 ${_table.modelName}Field get ${_table.primaryKeyNames[0]} {
 return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
 }''');
@@ -3794,7 +3795,7 @@ abstract class SqfEntityModelBase {
 
   LogFunction? logFunction;
 
-  List<SqfEntityFieldType>? defaultColumns;
+  // List<SqfEntityFieldType>? defaultColumns;
 
   void init() {
     dbVersion = dbVersion ?? 1;
@@ -3905,11 +3906,9 @@ abstract class SqfEntityModelBase {
           table.relationType = RelationType.ONE_TO_ONE;
         }
       }
-      //table.collections = _getCollections(table, this);
     }
     //print('before final table in manyToManyTables lenght=${manyToManyTables.length}');
     for (final table in manyToManyTables) {
-      //  table.collections = _getCollections(table, this);
       databaseTables!.add(table);
     }
     for (final table in databaseTables!) {

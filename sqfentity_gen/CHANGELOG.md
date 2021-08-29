@@ -1,4 +1,6 @@
-## 2.0.1
+## 2.1.0
+
+New features added: (by [Reni Delonzek](https://github.com/ReniDelonzek))
 
 - Ability to specify default columns for all tables
    Example:
@@ -83,6 +85,8 @@ All database tables (table1 and table2) will have the lastUpdate column
 ```
 
 - Make all table classes extend from TableBase
+
+Thanks to [Reni Delonzek](https://github.com/ReniDelonzek) for these contributions.  
 
 ## 2.0.0
 1. Migrated to null safety, min SDK is 2.12.0.

@@ -33,19 +33,6 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
         'SQFENTITY GENERATOR: builder initialized (${builder.instancename})...');
     final dbModel = builder.toModel();
 
-    if (dbModel.databaseTables != null) {
-      for (var table in dbModel.databaseTables!) {
-        if (dbModel.defaultColumns != null) {
-          table.fields ??= [];
-          for (SqfEntityFieldType defaultField in dbModel.defaultColumns!) {
-            if (!table.fields!.any(
-                (element) => element.fieldName == defaultField.fieldName)) {
-              table.fields!.add(defaultField);
-            }
-          }
-        }
-      }
-    }
     print('${dbModel.modelName} Model recognized succesfuly');
     final modelStr = MyStringBuffer()
           //..writeln('/*') // write output as commented to see what is wrong

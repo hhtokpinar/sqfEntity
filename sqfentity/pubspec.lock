@@ -175,12 +175,10 @@ packages:
   sqfentity_gen:
     dependency: "direct main"
     description:
-      path: sqfentity_gen
-      ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
-      resolved-ref: b5432a7ae44867ffa88178586aec83ddba0a4e92
-      url: "https://github.com/aynova-tecnologia/sqfEntity.git"
-    source: git
-    version: "2.0.0"
+      name: sqfentity_gen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   sqflite_common:
     dependency: "direct main"
     description:
