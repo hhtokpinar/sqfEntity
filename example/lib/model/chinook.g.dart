@@ -460,6 +460,8 @@ class Chinookdb extends SqfEntityModelProvider {
     databaseName = chinookdb.databaseName;
     password = chinookdb.password;
     dbVersion = chinookdb.dbVersion;
+    preSaveAction = chinookdb.preSaveAction;
+    logFunction = chinookdb.logFunction;
     databaseTables = [
       TableAlbum.getInstance,
       TableArtist.getInstance,
@@ -498,7 +500,7 @@ class Chinookdb extends SqfEntityModelProvider {
 
 // BEGIN ENTITIES
 // region Album
-class Album {
+class Album extends TableBase {
   Album({this.AlbumId, this.Title, this.ArtistId}) {
     _setDefaultValues();
   }
@@ -690,12 +692,12 @@ class Album {
         if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Album.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Album.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -706,8 +708,8 @@ class Album {
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedfields!.add('Artist.plArtist');*/
-          obj.plArtist = obj.plArtist ??
+          /*_loadedfields!.add('Artist.plArtist');*/ obj.plArtist = obj
+                  .plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -754,12 +756,12 @@ class Album {
         if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Album.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Album.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -770,8 +772,8 @@ class Album {
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedfields!.add('Artist.plArtist');*/
-          obj.plArtist = obj.plArtist ??
+          /*_loadedfields!.add('Artist.plArtist');*/ obj.plArtist = obj
+                  .plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -797,6 +799,22 @@ class Album {
     return AlbumId;
   }
 
+  /// Saves the (Album) object. If the AlbumId field is null, saves as a new record and returns new AlbumId, if AlbumId is not null then updates record
+
+  /// <returns>Returns AlbumId
+  Future<int?> saveOrThrow() async {
+    if (AlbumId == null || AlbumId == 0) {
+      AlbumId = await _mnAlbum.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // AlbumId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnAlbum.updateOrThrow(this);
+    }
+
+    return AlbumId;
+  }
+
   /// saveAs Album. Returns a new Primary Key value of Album
 
   /// <returns>Returns a new Primary Key value of Album
@@ -804,6 +822,12 @@ class Album {
     AlbumId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      AlbumId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Album> as a bulk in one transaction
@@ -1492,12 +1516,12 @@ class AlbumFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Album.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Album.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Album.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1508,8 +1532,8 @@ class AlbumFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plArtist'))) {
-          /*_loadedfields!.add('Artist.plArtist');*/
-          obj.plArtist = obj.plArtist ??
+          /*_loadedfields!.add('Artist.plArtist');*/ obj.plArtist = obj
+                  .plArtist ??
               await obj.getArtist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -1756,7 +1780,7 @@ class AlbumManager extends SqfEntityProvider {
 
 //endregion AlbumManager
 // region Artist
-class Artist {
+class Artist extends TableBase {
   Artist({this.ArtistId, this.Name}) {
     _setDefaultValues();
   }
@@ -1910,12 +1934,12 @@ class Artist {
         if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedfields!.add('Artist.plAlbums'); */
-          obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Artist.plAlbums'); */ obj.plAlbums =
+              obj.plAlbums ??
+                  await obj.getAlbums()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1960,12 +1984,12 @@ class Artist {
         if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedfields!.add('Artist.plAlbums'); */
-          obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Artist.plAlbums'); */ obj.plAlbums =
+              obj.plAlbums ??
+                  await obj.getAlbums()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1989,6 +2013,22 @@ class Artist {
     return ArtistId;
   }
 
+  /// Saves the (Artist) object. If the ArtistId field is null, saves as a new record and returns new ArtistId, if ArtistId is not null then updates record
+
+  /// <returns>Returns ArtistId
+  Future<int?> saveOrThrow() async {
+    if (ArtistId == null || ArtistId == 0) {
+      ArtistId = await _mnArtist.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // ArtistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnArtist.updateOrThrow(this);
+    }
+
+    return ArtistId;
+  }
+
   /// saveAs Artist. Returns a new Primary Key value of Artist
 
   /// <returns>Returns a new Primary Key value of Artist
@@ -1996,6 +2036,12 @@ class Artist {
     ArtistId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      ArtistId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Artist> as a bulk in one transaction
@@ -2678,12 +2724,12 @@ class ArtistFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Artist.plAlbums') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plAlbums'))) {
-          /*_loadedfields!.add('Artist.plAlbums'); */
-          obj.plAlbums = obj.plAlbums ??
-              await obj.getAlbums()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Artist.plAlbums'); */ obj.plAlbums =
+              obj.plAlbums ??
+                  await obj.getAlbums()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2923,7 +2969,7 @@ class ArtistManager extends SqfEntityProvider {
 
 //endregion ArtistManager
 // region Customer
-class Customer {
+class Customer extends TableBase {
   Customer(
       {this.CustomerId,
       this.FirstName,
@@ -3301,12 +3347,12 @@ class Customer {
         if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedfields!.add('Customer.plInvoices'); */
-          obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Customer.plInvoices'); */ obj.plInvoices =
+              obj.plInvoices ??
+                  await obj.getInvoices()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -3317,8 +3363,8 @@ class Customer {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -3365,12 +3411,12 @@ class Customer {
         if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedfields!.add('Customer.plInvoices'); */
-          obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Customer.plInvoices'); */ obj.plInvoices =
+              obj.plInvoices ??
+                  await obj.getInvoices()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -3381,8 +3427,8 @@ class Customer {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -3408,6 +3454,22 @@ class Customer {
     return CustomerId;
   }
 
+  /// Saves the (Customer) object. If the CustomerId field is null, saves as a new record and returns new CustomerId, if CustomerId is not null then updates record
+
+  /// <returns>Returns CustomerId
+  Future<int?> saveOrThrow() async {
+    if (CustomerId == null || CustomerId == 0) {
+      CustomerId = await _mnCustomer.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // CustomerId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnCustomer.updateOrThrow(this);
+    }
+
+    return CustomerId;
+  }
+
   /// saveAs Customer. Returns a new Primary Key value of Customer
 
   /// <returns>Returns a new Primary Key value of Customer
@@ -3415,6 +3477,12 @@ class Customer {
     CustomerId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      CustomerId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Customer> as a bulk in one transaction
@@ -4171,12 +4239,12 @@ class CustomerFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Customer.plInvoices') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoices'))) {
-          /*_loadedfields!.add('Customer.plInvoices'); */
-          obj.plInvoices = obj.plInvoices ??
-              await obj.getInvoices()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Customer.plInvoices'); */ obj.plInvoices =
+              obj.plInvoices ??
+                  await obj.getInvoices()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -4187,8 +4255,8 @@ class CustomerFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -4495,7 +4563,7 @@ class CustomerManager extends SqfEntityProvider {
 
 //endregion CustomerManager
 // region Employee
-class Employee {
+class Employee extends TableBase {
   Employee(
       {this.EmployeeId,
       this.LastName,
@@ -4949,22 +5017,22 @@ class Employee {
         if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedfields!.add('Employee.plCustomers'); */
-          obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plCustomers'); */ obj.plCustomers =
+              obj.plCustomers ??
+                  await obj.getCustomers()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedfields!.add('Employee.plReportsTos'); */
-          obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plReportsTos'); */ obj.plReportsTos =
+              obj.plReportsTos ??
+                  await obj.getReportsTos()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -4975,8 +5043,8 @@ class Employee {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -5023,22 +5091,22 @@ class Employee {
         if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedfields!.add('Employee.plCustomers'); */
-          obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plCustomers'); */ obj.plCustomers =
+              obj.plCustomers ??
+                  await obj.getCustomers()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedfields!.add('Employee.plReportsTos'); */
-          obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plReportsTos'); */ obj.plReportsTos =
+              obj.plReportsTos ??
+                  await obj.getReportsTos()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -5049,8 +5117,8 @@ class Employee {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -5076,6 +5144,22 @@ class Employee {
     return EmployeeId;
   }
 
+  /// Saves the (Employee) object. If the EmployeeId field is null, saves as a new record and returns new EmployeeId, if EmployeeId is not null then updates record
+
+  /// <returns>Returns EmployeeId
+  Future<int?> saveOrThrow() async {
+    if (EmployeeId == null || EmployeeId == 0) {
+      EmployeeId = await _mnEmployee.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // EmployeeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnEmployee.updateOrThrow(this);
+    }
+
+    return EmployeeId;
+  }
+
   /// saveAs Employee. Returns a new Primary Key value of Employee
 
   /// <returns>Returns a new Primary Key value of Employee
@@ -5083,6 +5167,12 @@ class Employee {
     EmployeeId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      EmployeeId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Employee> as a bulk in one transaction
@@ -5876,22 +5966,22 @@ class EmployeeFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Employee.plCustomers') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plCustomers'))) {
-          /*_loadedfields!.add('Employee.plCustomers'); */
-          obj.plCustomers = obj.plCustomers ??
-              await obj.getCustomers()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plCustomers'); */ obj.plCustomers =
+              obj.plCustomers ??
+                  await obj.getCustomers()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Employee.plReportsTos') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plReportsTos'))) {
-          /*_loadedfields!.add('Employee.plReportsTos'); */
-          obj.plReportsTos = obj.plReportsTos ??
-              await obj.getReportsTos()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Employee.plReportsTos'); */ obj.plReportsTos =
+              obj.plReportsTos ??
+                  await obj.getReportsTos()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -5902,8 +5992,8 @@ class EmployeeFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plEmployee'))) {
-          /*_loadedfields!.add('Employee.plEmployee');*/
-          obj.plEmployee = obj.plEmployee ??
+          /*_loadedfields!.add('Employee.plEmployee');*/ obj.plEmployee = obj
+                  .plEmployee ??
               await obj.getEmployee(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -6222,7 +6312,7 @@ class EmployeeManager extends SqfEntityProvider {
 
 //endregion EmployeeManager
 // region Genre
-class Genre {
+class Genre extends TableBase {
   Genre({this.GenreId, this.Name}) {
     _setDefaultValues();
   }
@@ -6376,12 +6466,12 @@ class Genre {
         if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Genre.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Genre.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -6426,12 +6516,12 @@ class Genre {
         if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Genre.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Genre.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -6455,6 +6545,22 @@ class Genre {
     return GenreId;
   }
 
+  /// Saves the (Genre) object. If the GenreId field is null, saves as a new record and returns new GenreId, if GenreId is not null then updates record
+
+  /// <returns>Returns GenreId
+  Future<int?> saveOrThrow() async {
+    if (GenreId == null || GenreId == 0) {
+      GenreId = await _mnGenre.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // GenreId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnGenre.updateOrThrow(this);
+    }
+
+    return GenreId;
+  }
+
   /// saveAs Genre. Returns a new Primary Key value of Genre
 
   /// <returns>Returns a new Primary Key value of Genre
@@ -6462,6 +6568,12 @@ class Genre {
     GenreId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      GenreId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Genre> as a bulk in one transaction
@@ -7144,12 +7256,12 @@ class GenreFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Genre.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Genre.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Genre.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7387,7 +7499,7 @@ class GenreManager extends SqfEntityProvider {
 
 //endregion GenreManager
 // region Invoice
-class Invoice {
+class Invoice extends TableBase {
   Invoice(
       {this.InvoiceId,
       this.InvoiceDate,
@@ -7708,12 +7820,13 @@ class Invoice {
         if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */ obj
+                  .plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7724,8 +7837,8 @@ class Invoice {
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedfields!.add('Customer.plCustomer');*/
-          obj.plCustomer = obj.plCustomer ??
+          /*_loadedfields!.add('Customer.plCustomer');*/ obj.plCustomer = obj
+                  .plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -7772,12 +7885,13 @@ class Invoice {
         if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */ obj
+                  .plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -7788,8 +7902,8 @@ class Invoice {
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedfields!.add('Customer.plCustomer');*/
-          obj.plCustomer = obj.plCustomer ??
+          /*_loadedfields!.add('Customer.plCustomer');*/ obj.plCustomer = obj
+                  .plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -7815,6 +7929,22 @@ class Invoice {
     return InvoiceId;
   }
 
+  /// Saves the (Invoice) object. If the InvoiceId field is null, saves as a new record and returns new InvoiceId, if InvoiceId is not null then updates record
+
+  /// <returns>Returns InvoiceId
+  Future<int?> saveOrThrow() async {
+    if (InvoiceId == null || InvoiceId == 0) {
+      InvoiceId = await _mnInvoice.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // InvoiceId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnInvoice.updateOrThrow(this);
+    }
+
+    return InvoiceId;
+  }
+
   /// saveAs Invoice. Returns a new Primary Key value of Invoice
 
   /// <returns>Returns a new Primary Key value of Invoice
@@ -7822,6 +7952,12 @@ class Invoice {
     InvoiceId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      InvoiceId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Invoice> as a bulk in one transaction
@@ -8556,12 +8692,13 @@ class InvoiceFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Invoice.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Invoice.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Invoice.plInvoiceLines'); */ obj
+                  .plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -8572,8 +8709,8 @@ class InvoiceFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plCustomer'))) {
-          /*_loadedfields!.add('Customer.plCustomer');*/
-          obj.plCustomer = obj.plCustomer ??
+          /*_loadedfields!.add('Customer.plCustomer');*/ obj.plCustomer = obj
+                  .plCustomer ??
               await obj.getCustomer(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -8859,7 +8996,7 @@ class InvoiceManager extends SqfEntityProvider {
 
 //endregion InvoiceManager
 // region InvoiceLine
-class InvoiceLine {
+class InvoiceLine extends TableBase {
   InvoiceLine(
       {this.InvoiceLineId,
       this.UnitPrice,
@@ -9082,8 +9219,7 @@ class InvoiceLine {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -9091,8 +9227,8 @@ class InvoiceLine {
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedfields!.add('Invoice.plInvoice');*/
-          obj.plInvoice = obj.plInvoice ??
+          /*_loadedfields!.add('Invoice.plInvoice');*/ obj.plInvoice = obj
+                  .plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -9140,8 +9276,7 @@ class InvoiceLine {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -9149,8 +9284,8 @@ class InvoiceLine {
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedfields!.add('Invoice.plInvoice');*/
-          obj.plInvoice = obj.plInvoice ??
+          /*_loadedfields!.add('Invoice.plInvoice');*/ obj.plInvoice = obj
+                  .plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -9176,6 +9311,22 @@ class InvoiceLine {
     return InvoiceLineId;
   }
 
+  /// Saves the (InvoiceLine) object. If the InvoiceLineId field is null, saves as a new record and returns new InvoiceLineId, if InvoiceLineId is not null then updates record
+
+  /// <returns>Returns InvoiceLineId
+  Future<int?> saveOrThrow() async {
+    if (InvoiceLineId == null || InvoiceLineId == 0) {
+      InvoiceLineId = await _mnInvoiceLine.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // InvoiceLineId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnInvoiceLine.updateOrThrow(this);
+    }
+
+    return InvoiceLineId;
+  }
+
   /// saveAs InvoiceLine. Returns a new Primary Key value of InvoiceLine
 
   /// <returns>Returns a new Primary Key value of InvoiceLine
@@ -9183,6 +9334,12 @@ class InvoiceLine {
     InvoiceLineId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      InvoiceLineId = null;
+    }
   }
 
   /// saveAll method saves the sent List<InvoiceLine> as a bulk in one transaction
@@ -9885,8 +10042,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -9894,8 +10050,8 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plInvoice'))) {
-          /*_loadedfields!.add('Invoice.plInvoice');*/
-          obj.plInvoice = obj.plInvoice ??
+          /*_loadedfields!.add('Invoice.plInvoice');*/ obj.plInvoice = obj
+                  .plInvoice ??
               await obj.getInvoice(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -10157,7 +10313,7 @@ class InvoiceLineManager extends SqfEntityProvider {
 
 //endregion InvoiceLineManager
 // region MediaType
-class MediaType {
+class MediaType extends TableBase {
   MediaType({this.MediaTypeId, this.Name}) {
     _setDefaultValues();
   }
@@ -10314,12 +10470,12 @@ class MediaType {
         if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('MediaType.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('MediaType.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -10364,12 +10520,12 @@ class MediaType {
         if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('MediaType.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('MediaType.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -10393,6 +10549,22 @@ class MediaType {
     return MediaTypeId;
   }
 
+  /// Saves the (MediaType) object. If the MediaTypeId field is null, saves as a new record and returns new MediaTypeId, if MediaTypeId is not null then updates record
+
+  /// <returns>Returns MediaTypeId
+  Future<int?> saveOrThrow() async {
+    if (MediaTypeId == null || MediaTypeId == 0) {
+      MediaTypeId = await _mnMediaType.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // MediaTypeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnMediaType.updateOrThrow(this);
+    }
+
+    return MediaTypeId;
+  }
+
   /// saveAs MediaType. Returns a new Primary Key value of MediaType
 
   /// <returns>Returns a new Primary Key value of MediaType
@@ -10400,6 +10572,12 @@ class MediaType {
     MediaTypeId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      MediaTypeId = null;
+    }
   }
 
   /// saveAll method saves the sent List<MediaType> as a bulk in one transaction
@@ -11088,12 +11266,12 @@ class MediaTypeFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('MediaType.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('MediaType.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('MediaType.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11333,7 +11511,7 @@ class MediaTypeManager extends SqfEntityProvider {
 
 //endregion MediaTypeManager
 // region Playlist
-class Playlist {
+class Playlist extends TableBase {
   Playlist({this.PlaylistId, this.Name}) {
     _setDefaultValues();
   }
@@ -11486,12 +11664,12 @@ class Playlist {
         if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Playlist.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Playlist.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11536,12 +11714,12 @@ class Playlist {
         if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Playlist.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Playlist.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -11565,6 +11743,22 @@ class Playlist {
     return PlaylistId;
   }
 
+  /// Saves the (Playlist) object. If the PlaylistId field is null, saves as a new record and returns new PlaylistId, if PlaylistId is not null then updates record
+
+  /// <returns>Returns PlaylistId
+  Future<int?> saveOrThrow() async {
+    if (PlaylistId == null || PlaylistId == 0) {
+      PlaylistId = await _mnPlaylist.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // PlaylistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnPlaylist.updateOrThrow(this);
+    }
+
+    return PlaylistId;
+  }
+
   /// saveAs Playlist. Returns a new Primary Key value of Playlist
 
   /// <returns>Returns a new Primary Key value of Playlist
@@ -11572,6 +11766,12 @@ class Playlist {
     PlaylistId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      PlaylistId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Playlist> as a bulk in one transaction
@@ -12237,12 +12437,12 @@ class PlaylistFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Playlist.plTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plTracks'))) {
-          /*_loadedfields!.add('Playlist.plTracks'); */
-          obj.plTracks = obj.plTracks ??
-              await obj.getTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Playlist.plTracks'); */ obj.plTracks =
+              obj.plTracks ??
+                  await obj.getTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -12482,7 +12682,7 @@ class PlaylistManager extends SqfEntityProvider {
 
 //endregion PlaylistManager
 // region Track
-class Track {
+class Track extends TableBase {
   Track(
       {this.TrackId,
       this.Name,
@@ -12866,32 +13066,32 @@ class Track {
         if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Track.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plInvoiceLines'); */ obj.plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedfields!.add('Track.plPlaylists'); */
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plPlaylists'); */ obj.plPlaylists =
+              obj.plPlaylists ??
+                  await obj.getPlaylists()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedfields!.add('Track.plVTracks'); */
-          obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plVTracks'); */ obj.plVTracks =
+              obj.plVTracks ??
+                  await obj.getVTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -12902,8 +13102,8 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedfields!.add('MediaType.plMediaType');*/
-          obj.plMediaType = obj.plMediaType ??
+          /*_loadedfields!.add('MediaType.plMediaType');*/ obj.plMediaType = obj
+                  .plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -12911,8 +13111,7 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedfields!.add('Genre.plGenre');*/
-          obj.plGenre = obj.plGenre ??
+          /*_loadedfields!.add('Genre.plGenre');*/ obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -12920,8 +13119,7 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedfields!.add('Album.plAlbum');*/
-          obj.plAlbum = obj.plAlbum ??
+          /*_loadedfields!.add('Album.plAlbum');*/ obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -12968,32 +13166,32 @@ class Track {
         if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Track.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plInvoiceLines'); */ obj.plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedfields!.add('Track.plPlaylists'); */
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plPlaylists'); */ obj.plPlaylists =
+              obj.plPlaylists ??
+                  await obj.getPlaylists()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedfields!.add('Track.plVTracks'); */
-          obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plVTracks'); */ obj.plVTracks =
+              obj.plVTracks ??
+                  await obj.getVTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -13004,8 +13202,8 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedfields!.add('MediaType.plMediaType');*/
-          obj.plMediaType = obj.plMediaType ??
+          /*_loadedfields!.add('MediaType.plMediaType');*/ obj.plMediaType = obj
+                  .plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -13013,8 +13211,7 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedfields!.add('Genre.plGenre');*/
-          obj.plGenre = obj.plGenre ??
+          /*_loadedfields!.add('Genre.plGenre');*/ obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -13022,8 +13219,7 @@ class Track {
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedfields!.add('Album.plAlbum');*/
-          obj.plAlbum = obj.plAlbum ??
+          /*_loadedfields!.add('Album.plAlbum');*/ obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -13049,6 +13245,22 @@ class Track {
     return TrackId;
   }
 
+  /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
+
+  /// <returns>Returns TrackId
+  Future<int?> saveOrThrow() async {
+    if (TrackId == null || TrackId == 0) {
+      TrackId = await _mnTrack.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTrack.updateOrThrow(this);
+    }
+
+    return TrackId;
+  }
+
   /// saveAs Track. Returns a new Primary Key value of Track
 
   /// <returns>Returns a new Primary Key value of Track
@@ -13056,6 +13268,12 @@ class Track {
     TrackId = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      TrackId = null;
+    }
   }
 
   /// saveAll method saves the sent List<Track> as a bulk in one transaction
@@ -13806,32 +14024,32 @@ class TrackFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('Track.plInvoiceLines') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plInvoiceLines'))) {
-          /*_loadedfields!.add('Track.plInvoiceLines'); */
-          obj.plInvoiceLines = obj.plInvoiceLines ??
-              await obj.getInvoiceLines()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plInvoiceLines'); */ obj.plInvoiceLines =
+              obj.plInvoiceLines ??
+                  await obj.getInvoiceLines()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plPlaylists') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plPlaylists'))) {
-          /*_loadedfields!.add('Track.plPlaylists'); */
-          obj.plPlaylists = obj.plPlaylists ??
-              await obj.getPlaylists()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plPlaylists'); */ obj.plPlaylists =
+              obj.plPlaylists ??
+                  await obj.getPlaylists()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
         if (/*!_loadedfields!.contains('Track.plVTracks') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plVTracks'))) {
-          /*_loadedfields!.add('Track.plVTracks'); */
-          obj.plVTracks = obj.plVTracks ??
-              await obj.getVTracks()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('Track.plVTracks'); */ obj.plVTracks =
+              obj.plVTracks ??
+                  await obj.getVTracks()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -13842,8 +14060,8 @@ class TrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plMediaType'))) {
-          /*_loadedfields!.add('MediaType.plMediaType');*/
-          obj.plMediaType = obj.plMediaType ??
+          /*_loadedfields!.add('MediaType.plMediaType');*/ obj.plMediaType = obj
+                  .plMediaType ??
               await obj.getMediaType(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -13851,8 +14069,7 @@ class TrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plGenre'))) {
-          /*_loadedfields!.add('Genre.plGenre');*/
-          obj.plGenre = obj.plGenre ??
+          /*_loadedfields!.add('Genre.plGenre');*/ obj.plGenre = obj.plGenre ??
               await obj.getGenre(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -13860,8 +14077,7 @@ class TrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plAlbum'))) {
-          /*_loadedfields!.add('Album.plAlbum');*/
-          obj.plAlbum = obj.plAlbum ??
+          /*_loadedfields!.add('Album.plAlbum');*/ obj.plAlbum = obj.plAlbum ??
               await obj.getAlbum(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -14143,7 +14359,7 @@ class TrackManager extends SqfEntityProvider {
 
 //endregion TrackManager
 // region VTrack
-class VTrack {
+class VTrack extends TableBase {
   VTrack({this.Name, this.album, this.media, this.genres, this.TrackId}) {
     _setDefaultValues();
   }
@@ -14341,8 +14557,7 @@ class VTrack {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -14927,8 +15142,7 @@ class VTrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -15113,7 +15327,7 @@ class VTrackManager extends SqfEntityProvider {
 
 //endregion VTrackManager
 // region PlaylistTrack
-class PlaylistTrack {
+class PlaylistTrack extends TableBase {
   PlaylistTrack({this.TrackId, this.PlaylistId}) {
     _setDefaultValues();
   }
@@ -15300,8 +15514,7 @@ class PlaylistTrack {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -15309,8 +15522,8 @@ class PlaylistTrack {
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedfields!.add('Playlist.plPlaylist');*/
-          obj.plPlaylist = obj.plPlaylist ??
+          /*_loadedfields!.add('Playlist.plPlaylist');*/ obj.plPlaylist = obj
+                  .plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -15358,8 +15571,7 @@ class PlaylistTrack {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -15367,8 +15579,8 @@ class PlaylistTrack {
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedfields!.add('Playlist.plPlaylist');*/
-          obj.plPlaylist = obj.plPlaylist ??
+          /*_loadedfields!.add('Playlist.plPlaylist');*/ obj.plPlaylist = obj
+                  .plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -15401,6 +15613,12 @@ class PlaylistTrack {
 
     saveResult = result;
     return result;
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      TrackId = null;
+    }
   }
 
   /// saveAll method saves the sent List<PlaylistTrack> as a bulk in one transaction
@@ -16085,8 +16303,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plTrack'))) {
-          /*_loadedfields!.add('Track.plTrack');*/
-          obj.plTrack = obj.plTrack ??
+          /*_loadedfields!.add('Track.plTrack');*/ obj.plTrack = obj.plTrack ??
               await obj.getTrack(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -16094,8 +16311,8 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plPlaylist'))) {
-          /*_loadedfields!.add('Playlist.plPlaylist');*/
-          obj.plPlaylist = obj.plPlaylist ??
+          /*_loadedfields!.add('Playlist.plPlaylist');*/ obj.plPlaylist = obj
+                  .plPlaylist ??
               await obj.getPlaylist(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }

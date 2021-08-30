@@ -60,9 +60,13 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
       ..dbVersion = getIntValue(model, 'dbVersion')
       ..sequences = toSequenceList(getListValue(model, 'sequences'))
       ..databaseTables = toTableList(
-          getListValue(model, 'databaseTables') ?? <DartObject>[], dbModelName)
+          getListValue(model, 'databaseTables') ?? <DartObject>[], dbModelName,
+          defaultColumns: toFields(getListValue(model, 'defaultColumns'),
+              dbModelName, 'defaultColumns of Model $dbModelName'))
       ..formTables = toTableList(
-          getListValue(model, 'formTables') ?? <DartObject>[], dbModelName)
+        getListValue(model, 'formTables') ?? <DartObject>[],
+        dbModelName,
+      )
       ..bundledDatabasePath = getStringValue(model, 'bundledDatabasePath')
       ..ignoreForFile = toListString(getListValue(model, 'ignoreForFile'))
       ..init();
@@ -70,7 +74,8 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
   }
 
   List<SqfEntityTableBase>? toTableList(
-      List<DartObject> objTables, String dbModelName) {
+      List<DartObject> objTables, String dbModelName,
+      {List<SqfEntityFieldType>? defaultColumns}) {
     final retVal = <SqfEntityTableBase>[];
     //if (objTables != null) {
     print('SQFENTITY_GEN.DART: recognizing Tables ($dbModelName)');
@@ -80,6 +85,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
       final table = toSqfEntityTable(
         obj,
         dbModelName,
+        defaultColumns: defaultColumns,
       );
       if (retVal.where((t) => t.tableName == table!.tableName).isEmpty) {
         retVal.add(table!);
@@ -152,7 +158,8 @@ bool ifExistTableProperty(DartObject obj, String name) =>
     obj.getField(name).toString().contains('(null)') == false;
 bool ifExist(DartObject obj, String name) => obj.getField(name) != null;
 
-SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
+SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName,
+    {List<SqfEntityFieldType>? defaultColumns}) {
   final String? _tableName = getStringValue(obj, 'tableName');
 
   if (_tableName == null) {
@@ -174,8 +181,10 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
         ? getBoolValue(obj, 'useSoftDeleting')
         : false
     ..fields = toFields(
-      getListValue(obj, 'fields')!, dbModelName, //keepFieldNamesAsOriginal
-    )
+        getListValue(obj, 'fields')!,
+        dbModelName //keepFieldNamesAsOriginal
+        ,
+        _tableName)
     ..primaryKeyType = getTypeValue(obj, 'primaryKeyType') as PrimaryKeyType?
     ..objectType = getTypeValue(obj, 'objectType') as ObjectType?
     ..defaultJsonUrl = getStringValue(obj, 'defaultJsonUrl')
@@ -185,8 +194,8 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
     ..formListSubTitleField = getStringValue(obj, 'formListSubTitleField')
     ..customCode = getStringValue(obj, 'customCode')
     ..primaryKeyName = getStringValue(obj, 'primaryKeyName')
-    ..abstractModelName = getStringValue(obj, 'abstractModelName')
-    ..init();
+    ..abstractModelName = getStringValue(obj, 'abstractModelName');
+
   newTable.primaryKeyName = getStringValue(obj, 'primaryKeyName') == null &&
           newTable.objectType == ObjectType.table
       ? newTable.primaryKeyNames.isEmpty
@@ -194,6 +203,35 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName) {
           : ''
       : getStringValue(obj, 'primaryKeyName');
 
+  if (defaultColumns != null && defaultColumns.isNotEmpty) {
+    print('adding default columns on ${newTable.tableName}');
+    for (SqfEntityFieldType defaultField in defaultColumns) {
+      final SqfEntityFieldBase newField = SqfEntityFieldBase(
+          defaultField.fieldName, defaultField.dbType,
+          defaultValue: defaultField.defaultValue,
+          minValue: defaultField.minValue,
+          maxValue: defaultField.maxValue,
+          sequencedBy: defaultField.sequencedBy,
+          isPrimaryKeyField: defaultField.isPrimaryKeyField,
+          primaryKeyIndex: defaultField.primaryKeyIndex,
+          isNotNull: defaultField.isNotNull,
+          isUnique: defaultField.isUnique,
+          isIndex: defaultField.isIndex,
+          isIndexGroup: defaultField.isIndexGroup,
+          checkCondition: defaultField.checkCondition,
+          collate: defaultField.collate,
+          formLabelText: defaultField.formLabelText);
+      if (!newTable.primaryKeyNames
+              .any((element) => element == defaultField.fieldName) &&
+          !newTable.fields!
+              .any((element) => element.fieldName == defaultField.fieldName)) {
+        print(
+            'added: ${defaultField.fieldName}, defaultField table=${defaultField.table != null ? defaultField.table!.tableName : 'null'}');
+        newTable.fields!.add(newField);
+      }
+    }
+  }
+  newTable.init();
   SqfEntityTables.add(newTable);
 
   print(
@@ -272,12 +310,14 @@ SqfEntityFieldType toField(
   }
 }
 
-List<SqfEntityFieldType> toFields(
-  List<DartObject> objFields,
-  String dbModelName, //bool keepFieldNamesAsOriginal
-) {
+List<SqfEntityFieldType>? toFields(List<DartObject>? objFields,
+    String dbModelName, String tableName //bool keepFieldNamesAsOriginal
+    ) {
   final sqfEntityFieldList = <SqfEntityFieldType>[];
   // print('--------RECOGNIZING FIELDS:');
+  if (objFields == null) {
+    return <SqfEntityFieldType>[];
+  }
   for (var obj in objFields) {
     sqfEntityFieldList.add(toField(
       obj,
@@ -315,17 +355,17 @@ class SqfEntityTables {
 dynamic convertType(dynamic T) {
   final type = T.type;
   var types = <String, dynamic>{};
-  if (type.toString() == 'DbType') {
+  if (type.toString().contains('DbType')) {
     types = dbTypes();
-  } else if (type.toString() == 'PrimaryKeyType') {
+  } else if (type.toString().contains('PrimaryKeyType')) {
     types = primaryKeyTypes();
-  } else if (type.toString() == 'DeleteRule') {
+  } else if (type.toString().contains('DeleteRule')) {
     types = deleteRuleTypes();
-  } else if (type.toString() == 'RelationType') {
+  } else if (type.toString().contains('RelationType')) {
     types = relationTypes();
-  } else if (type.toString() == 'ObjectType') {
+  } else if (type.toString().contains('ObjectType')) {
     types = objectTypes();
-  } else if (type.toString() == 'Collate') {
+  } else if (type.toString().contains('Collate')) {
     types = collateTypes();
   }
   for (var typ in types.entries) {
@@ -468,6 +508,8 @@ class ${_m.modelName} extends SqfEntityModelProvider {
   ${_m.modelName}() {
     databaseName = $_dbName;
     $_dbPassword $_dbVersion
+    preSaveAction = ${_m.instanceName}.preSaveAction;
+    logFunction = ${_m.instanceName}.logFunction;
     $__tableList
     $__sequenceList
     bundledDatabasePath =
@@ -548,8 +590,7 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
         continue;
       }
       addedTables.add(table.modelName!);
-      strTables.writeln(
-          '''
+      strTables.writeln('''
 // ${table.modelName} TABLE      
 class Table${table.modelName} extends SqfEntityTableBase {
   Table${table.modelName}() {
@@ -587,8 +628,7 @@ class Table${table.modelName} extends SqfEntityTableBase {
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
     for (final table in _m.databaseTables!
         .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
-      strTables.writeln(
-          '''
+      strTables.writeln('''
 
 const table${toCamelCase(table.tableName)} = SqfEntityTable(
     tableName: '${table.tableName}' 
@@ -609,8 +649,7 @@ const table${toCamelCase(table.tableName)} = SqfEntityTable(
     }
     strSequences.writeln('// BEGIN SEQUENCES');
     for (var seq in _m.sequences!) {
-      strSequences.writeln(
-          '''
+      strSequences.writeln('''
 // ${seq.sequenceName} SEQUENCE
 class Sequence${seq.modelName} extends SqfEntitySequenceBase {
   Sequence${seq.modelName}() {

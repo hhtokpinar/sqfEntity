@@ -67,6 +67,12 @@ class TableProduct extends SqfEntityTableBase {
           isIndex: false,
           minValue: DateTime.parse('2015-01-01'),
           maxValue: DateTime.now().add(Duration(days: 365))),
+      SqfEntityFieldBase('dateCreated', DbType.datetime,
+          defaultValue: DateTime.now(),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
@@ -125,6 +131,12 @@ class TableTodo extends SqfEntityTableBase {
           isUnique: false,
           isNotNull: false,
           isIndex: false),
+      SqfEntityFieldBase('dateCreated', DbType.datetime,
+          defaultValue: DateTime.now(),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
@@ -161,6 +173,8 @@ class MyDbModel extends SqfEntityModelProvider {
     databaseName = myDbModel.databaseName;
     password = myDbModel.password;
     dbVersion = myDbModel.dbVersion;
+    preSaveAction = myDbModel.preSaveAction;
+    logFunction = myDbModel.logFunction;
     databaseTables = [
       TableProduct.getInstance,
       TableCategory.getInstance,
@@ -187,7 +201,7 @@ class MyDbModel extends SqfEntityModelProvider {
 
 // BEGIN ENTITIES
 // region Product
-class Product {
+class Product extends TableBase {
   Product(
       {this.id,
       this.name,
@@ -199,6 +213,7 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted}) {
     _setDefaultValues();
   }
@@ -212,6 +227,7 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted) {
     _setDefaultValues();
   }
@@ -226,6 +242,7 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted) {
     _setDefaultValues();
   }
@@ -268,6 +285,12 @@ class Product {
               int.tryParse(o['date'].toString())!)
           : DateTime.tryParse(o['date'].toString());
     }
+    if (o['dateCreated'] != null) {
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
+    }
     isDeleted = o['isDeleted'] != null
         ? o['isDeleted'] == 1 || o['isDeleted'] == true
         : null;
@@ -289,6 +312,7 @@ class Product {
   String? imageUrl;
   DateTime? datetime;
   DateTime? date;
+  DateTime? dateCreated;
   bool? isDeleted;
 
   BoolResult? saveResult;
@@ -371,6 +395,14 @@ class Product {
               : date;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
@@ -435,6 +467,14 @@ class Product {
               : date;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
@@ -463,6 +503,7 @@ class Product {
       imageUrl,
       datetime != null ? datetime!.millisecondsSinceEpoch : null,
       date != null ? date!.millisecondsSinceEpoch : null,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
       isDeleted
     ];
   }
@@ -479,6 +520,7 @@ class Product {
       imageUrl,
       datetime != null ? datetime!.millisecondsSinceEpoch : null,
       date != null ? date!.millisecondsSinceEpoch : null,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
       isDeleted
     ];
   }
@@ -532,8 +574,8 @@ class Product {
                 null ||
             loadParents ||
             preloadFields.contains('plCategory'))) {
-          /*_loadedfields!.add('category.plCategory');*/
-          obj.plCategory = obj.plCategory ??
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
               await obj.getCategory(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -581,8 +623,8 @@ class Product {
                 null ||
             loadParents ||
             preloadFields.contains('plCategory'))) {
-          /*_loadedfields!.add('category.plCategory');*/
-          obj.plCategory = obj.plCategory ??
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
               await obj.getCategory(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -610,6 +652,24 @@ class Product {
     return id;
   }
 
+  /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+
+  /// <returns>Returns id
+  Future<int?> saveOrThrow() async {
+    if (id == null || id == 0) {
+      rownum = await IdentitySequence().nextVal();
+
+      id = await _mnProduct.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnProduct.updateOrThrow(this);
+    }
+
+    return id;
+  }
+
   /// saveAs Product. Returns a new Primary Key value of Product
 
   /// <returns>Returns a new Primary Key value of Product
@@ -619,11 +679,17 @@ class Product {
     return save();
   }
 
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Product> products) async {
-    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',products);
+    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',products);
     // return results; removed in sqfentity_gen 1.3.0+6
     await MyDbModel().batchStart();
     for (final obj in products) {
@@ -647,7 +713,7 @@ class Product {
   Future<int?> upsert() async {
     try {
       final result = await _mnProduct.rawInsert(
-          'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             id,
             name,
@@ -659,6 +725,7 @@ class Product {
             imageUrl,
             datetime != null ? datetime!.millisecondsSinceEpoch : null,
             date != null ? date!.millisecondsSinceEpoch : null,
+            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
             isDeleted
           ]);
       if (result! > 0) {
@@ -685,7 +752,7 @@ class Product {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
-        'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
         products);
     return results;
   }
@@ -738,6 +805,7 @@ class Product {
     isActive = isActive ?? true;
     categoryId = categoryId ?? 1;
     datetime = datetime ?? DateTime.now();
+    dateCreated = dateCreated ?? DateTime.now();
     isDeleted = isDeleted ?? false;
   }
   // END METHODS
@@ -1189,6 +1257,12 @@ class ProductFilterBuilder extends SearchCriteria {
     return _date = setField(_date, 'date', DbType.date);
   }
 
+  ProductField? _dateCreated;
+  ProductField get dateCreated {
+    return _dateCreated =
+        setField(_dateCreated, 'dateCreated', DbType.datetime);
+  }
+
   ProductField? _isDeleted;
   ProductField get isDeleted {
     return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
@@ -1363,8 +1437,8 @@ class ProductFilterBuilder extends SearchCriteria {
                 null ||
             loadParents ||
             preloadFields.contains('plCategory'))) {
-          /*_loadedfields!.add('category.plCategory');*/
-          obj.plCategory = obj.plCategory ??
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
               await obj.getCategory(
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
@@ -1635,6 +1709,12 @@ class ProductFields {
     return _fDate = _fDate ?? SqlSyntax.setField(_fDate, 'date', DbType.date);
   }
 
+  static TableField? _fDateCreated;
+  static TableField get dateCreated {
+    return _fDateCreated = _fDateCreated ??
+        SqlSyntax.setField(_fDateCreated, 'dateCreated', DbType.datetime);
+  }
+
   static TableField? _fIsDeleted;
   static TableField get isDeleted {
     return _fIsDeleted = _fIsDeleted ??
@@ -1657,7 +1737,7 @@ class ProductManager extends SqfEntityProvider {
 
 //endregion ProductManager
 // region Category
-class Category {
+class Category extends TableBase {
   Category({this.id, this.name, this.isActive}) {
     _setDefaultValues();
   }
@@ -1825,12 +1905,12 @@ class Category {
         if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plProducts'))) {
-          /*_loadedfields!.add('category.plProducts'); */
-          obj.plProducts = obj.plProducts ??
-              await obj.getProducts()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1875,12 +1955,12 @@ class Category {
         if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plProducts'))) {
-          /*_loadedfields!.add('category.plProducts'); */
-          obj.plProducts = obj.plProducts ??
-              await obj.getProducts()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -1904,6 +1984,22 @@ class Category {
     return id;
   }
 
+  /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+
+  /// <returns>Returns id
+  Future<int?> saveOrThrow() async {
+    if (id == null || id == 0) {
+      id = await _mnCategory.insertOrThrow(this);
+
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnCategory.updateOrThrow(this);
+    }
+
+    return id;
+  }
+
   /// saveAs Category. Returns a new Primary Key value of Category
 
   /// <returns>Returns a new Primary Key value of Category
@@ -1911,6 +2007,12 @@ class Category {
     id = null;
 
     return save();
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
   }
 
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
@@ -2598,12 +2700,12 @@ class CategoryFilterBuilder extends SearchCriteria {
         if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
                 null ||
             preloadFields.contains('plProducts'))) {
-          /*_loadedfields!.add('category.plProducts'); */
-          obj.plProducts = obj.plProducts ??
-              await obj.getProducts()!.toList(
-                  preload: preload,
-                  preloadFields: preloadFields,
-                  loadParents: false /*, loadedFields:_loadedFields*/);
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
 
@@ -2847,14 +2949,16 @@ class CategoryManager extends SqfEntityProvider {
 
 //endregion CategoryManager
 // region Todo
-class Todo {
-  Todo({this.id, this.userId, this.title, this.completed}) {
+class Todo extends TableBase {
+  Todo({this.id, this.userId, this.title, this.completed, this.dateCreated}) {
     _setDefaultValues();
   }
-  Todo.withFields(this.id, this.userId, this.title, this.completed) {
+  Todo.withFields(
+      this.id, this.userId, this.title, this.completed, this.dateCreated) {
     _setDefaultValues();
   }
-  Todo.withId(this.id, this.userId, this.title, this.completed) {
+  Todo.withId(
+      this.id, this.userId, this.title, this.completed, this.dateCreated) {
     _setDefaultValues();
   }
   // fromMap v2.0
@@ -2873,6 +2977,12 @@ class Todo {
       completed = o['completed'].toString() == '1' ||
           o['completed'].toString() == 'true';
     }
+    if (o['dateCreated'] != null) {
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
+    }
 
     isSaved = true;
   }
@@ -2881,6 +2991,7 @@ class Todo {
   int? userId;
   String? title;
   bool? completed;
+  DateTime? dateCreated;
   bool? isSaved;
   BoolResult? saveResult;
   // end FIELDS (Todo)
@@ -2911,6 +3022,14 @@ class Todo {
       map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     return map;
   }
 
@@ -2934,6 +3053,14 @@ class Todo {
       map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     return map;
   }
 
@@ -2948,11 +3075,23 @@ class Todo {
   }
 
   List<dynamic> toArgs() {
-    return [id, userId, title, completed];
+    return [
+      id,
+      userId,
+      title,
+      completed,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+    ];
   }
 
   List<dynamic> toArgsWithIds() {
-    return [id, userId, title, completed];
+    return [
+      id,
+      userId,
+      title,
+      completed,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+    ];
   }
 
   static Future<List<Todo>?> fromWeb({Map<String, String>? headers}) async {
@@ -3065,11 +3204,35 @@ class Todo {
     return id;
   }
 
+  /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+
+  /// <returns>Returns id
+  Future<int?> saveOrThrow() async {
+    if (id == null || id == 0 || !isSaved!) {
+      await _mnTodo.insertOrThrow(this);
+      if (saveResult != null && saveResult!.success) {
+        isSaved = true;
+      }
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTodo.updateOrThrow(this);
+    }
+
+    return id;
+  }
+
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   /// saveAll method saves the sent List<Todo> as a bulk in one transaction
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Todo> todos) async {
-    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',todos);
+    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',todos);
     // return results; removed in sqfentity_gen 1.3.0+6
     await MyDbModel().batchStart();
     for (final obj in todos) {
@@ -3088,8 +3251,14 @@ class Todo {
   Future<int?> upsert() async {
     try {
       final result = await _mnTodo.rawInsert(
-          'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
-          [id, userId, title, completed]);
+          'INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
+          [
+            id,
+            userId,
+            title,
+            completed,
+            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+          ]);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true, successMessage: 'Todo id=$id updated successfully');
@@ -3113,7 +3282,7 @@ class Todo {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
-        'INSERT OR REPLACE INTO todos (id,userId, title, completed)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
         todos);
     return results;
   }
@@ -3152,6 +3321,7 @@ class Todo {
   void _setDefaultValues() {
     isSaved = false;
     completed = completed ?? false;
+    dateCreated = dateCreated ?? DateTime.now();
   }
   // END METHODS
   // BEGIN CUSTOM CODE
@@ -3572,6 +3742,12 @@ class TodoFilterBuilder extends SearchCriteria {
     return _completed = setField(_completed, 'completed', DbType.bool);
   }
 
+  TodoField? _dateCreated;
+  TodoField get dateCreated {
+    return _dateCreated =
+        setField(_dateCreated, 'dateCreated', DbType.datetime);
+  }
+
   bool _getIsDeleted = false;
 
   void _buildParameters() {
@@ -3952,6 +4128,12 @@ class TodoFields {
   static TableField get completed {
     return _fCompleted = _fCompleted ??
         SqlSyntax.setField(_fCompleted, 'completed', DbType.bool);
+  }
+
+  static TableField? _fDateCreated;
+  static TableField get dateCreated {
+    return _fDateCreated = _fDateCreated ??
+        SqlSyntax.setField(_fDateCreated, 'dateCreated', DbType.datetime);
   }
 }
 // endregion TodoFields

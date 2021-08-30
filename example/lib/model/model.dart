@@ -111,9 +111,10 @@ const myDbModel = SqfEntityModel(
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     dbVersion: 2,
-    bundledDatabasePath: null //         'assets/sample.db'
+    bundledDatabasePath: null, //         'assets/sample.db'
     // This value is optional. When bundledDatabasePath is empty then
     // EntityBase creats a new database when initializing the database
+    defaultColumns: [SqfEntityField('dateCreated', DbType.datetime, defaultValue: 'DateTime.now()'),]
     );
 
 /* STEP 3: That's All.. 

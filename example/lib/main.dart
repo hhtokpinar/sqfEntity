@@ -594,14 +594,13 @@ Future<void> samples5() async {
   print(
       'EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});');
 
-  if (results != null) {
-    print(' List<BoolResult> result of saveAll method is following:');
+  print(' List<BoolResult> result of saveAll method is following:');
 
-    for (var result in results) {
-      print(result.toString());
-    }
-    print('---------------------------------------------------------------');
+  for (var result in results) {
+    print(result.toString());
   }
+  print('---------------------------------------------------------------');
+
   print(
       'EXAMPLE 5.4: listing saved products (set price=i) with saveAll method;');
   for (int i = 0; i < productList.length; i++) {
@@ -739,8 +738,8 @@ Future<void> samples8() async {
     print(
         '---------------------------------------------------------------\n\n');
   }
-  todosList =
-      await Todo.fromWebUrl(Uri.parse('https://jsonplaceholder.typicode.com/todos'));
+  todosList = await Todo.fromWebUrl(
+      Uri.parse('https://jsonplaceholder.typicode.com/todos'));
   if (todosList != null) {
     final results = await Todo().upsertAll(todosList);
     print(
