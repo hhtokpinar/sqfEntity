@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
-
-
 
 // STEP 1: define your tables as shown in the example Classes below.
 // Define the 'TableCategory' constant as SqfEntityTable.
@@ -42,7 +41,6 @@ const SqfEntityTable tableProduct = SqfEntityTable(
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
-      
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
@@ -66,17 +64,16 @@ const SqfEntityTable tableTodo = SqfEntityTable(
 const SqfEntitySequence seqIdentity = SqfEntitySequence(
   sequenceName: 'identity',
   //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
-  //modelName: 'SQEidentity', 
-                      /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
+  //modelName: 'SQEidentity',
+  /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
   //cycle : false,    /* optional. default is false; */
   //minValue = 0;     /* optional. default is 0 */
   //incrementBy = 1;  /* optional. default is 1 */
   // startWith = 0;   /* optional. default is 0 */
 );
 
-
 // STEP 2: Create your Database Model constant instanced from SqfEntityModel
-// Note: SqfEntity provides support for the use of multiple databases. 
+// Note: SqfEntity provides support for the use of multiple databases.
 // So you can create many Database Models and use them in the application.
 @SqfEntityBuilder(myDbModel)
 const SqfEntityModel myDbModel = SqfEntityModel(
@@ -88,11 +85,10 @@ const SqfEntityModel myDbModel = SqfEntityModel(
     formTables: [tableProduct, tableCategory, tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
-    bundledDatabasePath:
-                 'assets/sampleORM.db'   
-        // This value is optional. When bundledDatabasePath is empty then 
-        // EntityBase creats a new database when initializing the database
-);
+    bundledDatabasePath: 'assets/sampleORM.db'
+    // This value is optional. When bundledDatabasePath is empty then
+    // EntityBase creats a new database when initializing the database
+    );
 
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below
@@ -379,7 +375,9 @@ class Product {
     if (datetime != null) {
       map['datetime'] = forJson
           ? datetime.toUtc().toString()
-          : forQuery ? datetime.millisecondsSinceEpoch : datetime;
+          : forQuery
+              ? datetime.millisecondsSinceEpoch
+              : datetime;
     }
 
     if (date != null) {
@@ -434,7 +432,9 @@ class Product {
     if (datetime != null) {
       map['datetime'] = forJson
           ? datetime.toUtc().toString()
-          : forQuery ? datetime.millisecondsSinceEpoch : datetime;
+          : forQuery
+              ? datetime.millisecondsSinceEpoch
+              : datetime;
     }
 
     if (date != null) {
@@ -477,8 +477,6 @@ class Product {
       isDeleted
     ];
   }
-
-
 
   static Future<List<Product>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
@@ -920,8 +918,9 @@ class ProductFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) 
-    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -940,10 +939,12 @@ class ProductFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   ProductFilterBuilder page(int page, int pagesize) {
-    if (page > 0) 
-    {_page = page;}
-    if (pagesize > 0)
-    { _pagesize = pagesize;}
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -977,8 +978,9 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {orderByList.add(' $s ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -996,8 +998,9 @@ class ProductFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '')
-          { orderByList.add(' $s desc ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -1015,8 +1018,9 @@ class ProductFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '')
-          { groupByList.add(' $s ');}
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -1118,10 +1122,16 @@ class ProductFilterBuilder extends SearchCriteria {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -1237,8 +1247,9 @@ class ProductFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Product> o) productList]) async {
     final data = await toMapList();
     final List<Product> productsData = await Product.fromMapList(data);
-    if (productList != null) 
-    {productList(productsData);}
+    if (productList != null) {
+      productList(productsData);
+    }
     return productsData;
   }
 
@@ -1330,8 +1341,9 @@ class ProductFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) 
-    {_buildParameters();}
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> productIdData = <int>[];
     qparams.selectColumns = ['productId'];
     final productIdFuture = await _obj._mnProduct.toList(qparams);
@@ -1682,14 +1694,12 @@ class Category {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Category invoked (categoryId=$categoryId)');
-    var result = BoolResult();
-    {
-      result = await Product()
-          .select()
-          .categoryId
-          .equals(categoryId)
-          .delete(hardDelete);
-    }
+    final result = await Product()
+        .select()
+        .categoryId
+        .equals(categoryId)
+        .delete(hardDelete);
+
     if (!result.success) {
       return result;
     }
@@ -1990,8 +2000,9 @@ class CategoryFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) 
-    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -2010,10 +2021,12 @@ class CategoryFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   CategoryFilterBuilder page(int page, int pagesize) {
-    if (page > 0)
-    { _page = page;}
-    if (pagesize > 0) 
-    {_pagesize = pagesize;}
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -2047,8 +2060,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {orderByList.add(' $s ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -2066,8 +2080,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {orderByList.add(' $s desc ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -2085,8 +2100,9 @@ class CategoryFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {groupByList.add(' $s ');}
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -2148,10 +2164,16 @@ class CategoryFilterBuilder extends SearchCriteria {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -2198,7 +2220,6 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
     final productBycategoryIdidList = await toListPrimaryKey(false);
     await Product()
         .select()
@@ -2207,11 +2228,13 @@ class CategoryFilterBuilder extends SearchCriteria {
         .delete(hardDelete);
 
     if (Category._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
+      final result =
+          await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
+      return result;
     } else {
-      r = await _obj._mnCategory.delete(qparams);
+      final result = await _obj._mnCategory.delete(qparams);
+      return result;
     }
-    return r;
   }
 
   /// using:
@@ -2268,8 +2291,9 @@ class CategoryFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Category> o) categoryList]) async {
     final data = await toMapList();
     final List<Category> categoriesData = await Category.fromMapList(data);
-    if (categoryList != null) 
-    {categoryList(categoriesData);}
+    if (categoryList != null) {
+      categoryList(categoriesData);
+    }
     return categoriesData;
   }
 
@@ -2361,8 +2385,9 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) 
-    {_buildParameters();}
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> categoryIdData = <int>[];
     qparams.selectColumns = ['categoryId'];
     final categoryIdFuture = await _obj._mnCategory.toList(qparams);
@@ -2963,8 +2988,9 @@ class TodoFilterBuilder extends SearchCriteria {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
-    if (_blockIndex > 1) 
-    {_addedBlocks.needEndBlock[_blockIndex - 1] = true;}
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    }
     return this;
   }
 
@@ -2983,10 +3009,12 @@ class TodoFilterBuilder extends SearchCriteria {
   ///
   /// pagesize = row(s) per page
   TodoFilterBuilder page(int page, int pagesize) {
-    if (page > 0) 
-    {_page = page;}
-    if (pagesize > 0)
-    { _pagesize = pagesize;}
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
     return this;
   }
 
@@ -3020,8 +3048,9 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add(argFields);
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {orderByList.add(' $s ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s ');
+          }
         }
       }
     }
@@ -3039,8 +3068,9 @@ class TodoFilterBuilder extends SearchCriteria {
         orderByList.add('$argFields desc ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '') 
-          {orderByList.add(' $s desc ');}
+          if (s != null && s != '') {
+            orderByList.add(' $s desc ');
+          }
         }
       }
     }
@@ -3058,8 +3088,9 @@ class TodoFilterBuilder extends SearchCriteria {
         groupByList.add(' $argFields ');
       } else {
         for (String s in argFields as List<String>) {
-          if (s != null && s != '')
-          { groupByList.add(' $s ');}
+          if (s != null && s != '') {
+            groupByList.add(' $s ');
+          }
         }
       }
     }
@@ -3126,10 +3157,16 @@ class TodoFilterBuilder extends SearchCriteria {
         } else {
           switch (param.dbType) {
             case DbType.bool:
-              param.value =
-                  param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 =
-                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
               break;
             case DbType.date:
             case DbType.datetime:
@@ -3176,13 +3213,13 @@ class TodoFilterBuilder extends SearchCriteria {
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
-    var r = BoolResult();
     if (Todo._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnTodo.updateBatch(qparams, {'isDeleted': 1});
+      final result = await _obj._mnTodo.updateBatch(qparams, {'isDeleted': 1});
+      return result;
     } else {
-      r = await _obj._mnTodo.delete(qparams);
+      final result = await _obj._mnTodo.delete(qparams);
+      return result;
     }
-    return r;
   }
 
   /// using:
@@ -3238,8 +3275,9 @@ class TodoFilterBuilder extends SearchCriteria {
       [VoidCallback Function(List<Todo> o) todoList]) async {
     final data = await toMapList();
     final List<Todo> todosData = await Todo.fromMapList(data);
-    if (todoList != null) 
-    {todoList(todosData);}
+    if (todoList != null) {
+      todoList(todosData);
+    }
     return todosData;
   }
 
@@ -3330,8 +3368,9 @@ class TodoFilterBuilder extends SearchCriteria {
   /// This method always returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
-    if (buildParameters) 
-    {_buildParameters();}
+    if (buildParameters) {
+      _buildParameters();
+    }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
     final idFuture = await _obj._mnTodo.toList(qparams);
