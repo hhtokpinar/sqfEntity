@@ -758,7 +758,8 @@ ${table.sqlStatement}'''
   }
 
   /// Run Select Command and return List<Map<String,dynamic>> such as datatable
-  Future<List?> execDataTable(String sql, [List<dynamic>? arguments]) async {
+  Future<List<Map<String, Object?>>> execDataTable(String sql,
+      [List<dynamic>? arguments]) async {
     return SqfEntityProvider(this).execDataTable(sql, arguments);
   }
 
