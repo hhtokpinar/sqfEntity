@@ -164,12 +164,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "flutter_datetime_picker",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_datetime_picker-1.5.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "frontend_server_client",
       "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/frontend_server_client-2.1.2",
       "packageUri": "lib/",
@@ -368,12 +362,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "synchronized",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/synchronized-2.2.0+2",
-      "packageUri": "lib/",
-      "languageVersion": "2.8"
-    },
-    {
       "name": "term_glyph",
       "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.0",
       "packageUri": "lib/",
@@ -452,7 +440,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-09-10T17:48:07.233585Z",
+  "generated": "2021-09-10T22:21:01.696275Z",
   "generator": "pub",
   "generatorVersion": "2.15.0-65.0.dev"
 }

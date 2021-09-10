@@ -1426,7 +1426,7 @@ class SqfEntityObjectBuilder {
       // return results; removed in sqfentity_gen 1.3.0+6
       await ${_table.dbModel}().batchStart();
           for(final obj in ${toPluralName(_table._modelLowerCase)})
-          { await obj.save(); }
+          { await obj.save(${_table.primaryKeyTypes[0].startsWith('int') && _table.primaryKeyNames.length == 1 ? 'ignoreBatch: false' : ''}); }
       //    return ${_table.dbModel}().batchCommit();
     final result =await ${_table.dbModel}().batchCommit();
     ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '''
@@ -1471,12 +1471,12 @@ class SqfEntityObjectBuilder {
         ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    
+    /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
     /// <returns>Returns ${_table.primaryKeyNames[0]}
-    Future<int?> ${_hiddenMethod}save() async {
+    Future<int?> ${_hiddenMethod}save({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this, ignoreBatch);
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult!.success) {isSaved = true;}' : ''}
           }
       else {
@@ -1489,12 +1489,14 @@ class SqfEntityObjectBuilder {
         ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    
+    /// 
+    /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+    ///         
     /// <returns>Returns ${_table.primaryKeyNames[0]}
-    Future<int?> ${_hiddenMethod}saveOrThrow() async {
+    Future<int?> ${_hiddenMethod}saveOrThrow({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this, ignoreBatch);
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult != null && saveResult!.success) {isSaved = true;}' : ''}
         isInsert = true;
           }
@@ -1529,7 +1531,7 @@ class SqfEntityObjectBuilder {
     /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null. 
     /// 
     /// Call the saveAs() method if you do not want to save it when there is another row with the same ${_table.primaryKeyNames[0]}
-    
+    /// 
     /// <returns>Returns BoolResult
     Future<BoolResult> ${_hiddenMethod}save() async {
       final result = BoolResult(success: false);
@@ -1738,10 +1740,6 @@ String __toOnetoOneSaveCode(SqfEntityTableBase _table) {
     return '';
   }
   final retVal = StringBuffer();
-  /*
-  property
-    .._productProductId = productId
-    .._save();*/
 
   for (var tableCollection in _table.collections!) {
     if (tableCollection.childTableField.relationType ==
@@ -3234,13 +3232,13 @@ class SqfEntityTableBase {
         ..write('this.$primaryKeyName');
     }
 
-    if (fields![0].isPrimaryKeyField != true ||
-        relationType == RelationType.MANY_TO_MANY ||
-        withId) {
-      _retVal
-        ..write(',')
-        ..write(fields![0].toConstructureString());
-    }
+    // if (fields![0].isPrimaryKeyField != true ||
+    //     relationType == RelationType.MANY_TO_MANY ||
+    //     withId) {
+    //   _retVal
+    //     ..write(',')
+    //     ..write(fields![0].toConstructureString());
+    // }
 
     for (int i = 0; i < fields!.length; i++) {
       if (fields![i] is SqfEntityFieldVirtualBase ||

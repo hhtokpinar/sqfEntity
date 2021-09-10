@@ -361,10 +361,10 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> insert(dynamic T) async {
+  Future<int?> insert(dynamic T, bool ignoreBatch) async {
     try {
       /// Leave it in this format for Throw to stay in this catch
-      final res = await insertOrThrow(T);
+      final res = await insertOrThrow(T, ignoreBatch);
       return res;
     } catch (error, stackTrace) {
       T.saveResult = BoolResult(
@@ -379,13 +379,13 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> insertOrThrow(dynamic T) async {
+  Future<int?> insertOrThrow(dynamic T, bool ignoreBatch) async {
     if (_dbModel!.preSaveAction != null) {
       T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
     }
     final Map<String, dynamic> data =
         (await T.toMap(forQuery: true) as Map<String, dynamic>);
-    if (openedBatch[_dbModel!.databaseName] == null) {
+    if (openedBatch[_dbModel!.databaseName] == null || ignoreBatch) {
       final Database? db = await this.db;
       final result = await db?.insert(_tableName!, data);
       T.saveResult = BoolResult(

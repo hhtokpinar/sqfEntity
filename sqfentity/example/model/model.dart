@@ -528,7 +528,7 @@ class Product {
   /// <returns>Returns productId
   Future<int> save() async {
     if (productId == null || productId == 0) {
-      productId = await _mnProduct.insert(this);
+      productId = await _mnProduct.insert(this, true);
 
       if (productId != null) {
         rownum = await IdentitySequence().nextVal();
@@ -1632,7 +1632,7 @@ class Category {
   /// <returns>Returns categoryId
   Future<int> save() async {
     if (categoryId == null || categoryId == 0) {
-      categoryId = await _mnCategory.insert(this);
+      categoryId = await _mnCategory.insert(this, true);
     } else {
       categoryId = await _upsert();
     }
@@ -2632,7 +2632,7 @@ class Todo {
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
-      id = await _mnTodo.insert(this);
+      id = await _mnTodo.insert(this, true);
       isSaved = true;
     } else {
       id = await _upsert();

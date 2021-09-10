@@ -1,3 +1,17 @@
+## 2.1.1
+Added an optional parameter **ignoreBatch** into save() method that sent true as a default to fix issue [214](https://github.com/hhtokpinar/sqfEntity/issues/214) 
+Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+
+Sample:
+
+    await MyDbModel().batchStart();
+    for (final obj in products) {
+      await obj.save(ignoreBatch: false);
+    }
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+
+
 ## 2.1.0+2
 
 New features added: (by [Reni Delonzek](https://github.com/ReniDelonzek))
