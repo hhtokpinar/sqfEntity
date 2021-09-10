@@ -3242,7 +3242,7 @@ class SqfEntityTableBase {
         ..write(fields![0].toConstructureString());
     }
 
-    for (int i = 1; i < fields!.length; i++) {
+    for (int i = 0; i < fields!.length; i++) {
       if (fields![i] is SqfEntityFieldVirtualBase ||
           (fields![i].isPrimaryKeyField == true &&
               !withId &&

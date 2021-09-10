@@ -570,7 +570,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     if (dbSequences.isNotEmpty) {
       final tableSquence = await SqfEntityProvider(this)
           .execDataTable('PRAGMA table_info(sqfentitysequences)');
-      if (tableSquence == null || tableSquence.isEmpty) {
+      if (tableSquence.isEmpty) {
         await SqfEntityProvider(this).execSQL(
             'Create table sqfentitysequences (id text UNIQUE, value integer)');
       }
@@ -578,7 +578,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
         final sqRow = await SqfEntityProvider(this).execDataTable(
             'SELECT * FROM sqfentitysequences WHERE id=?',
             [sequence.sequenceName]);
-        if (sqRow!.isEmpty) {
+        if (sqRow.isEmpty) {
           await SqfEntityProvider(this).execSQL(
               'INSERT INTO sqfentitysequences (id, value) VALUES (?,?)',
               [sequence.sequenceName, sequence.startWith]);
@@ -606,7 +606,7 @@ ${table.sqlStatement}'''
             final tableFields = await SqfEntityProvider(this)
                 .execDataTable('PRAGMA table_info(`${table.tableName}`)');
             final List<TableField> existingDBfields = <TableField>[];
-            if (tableFields != null && tableFields.isNotEmpty) {
+            if (tableFields.isNotEmpty) {
               String? primaryKeyName;
               for (final row in tableFields) {
                 if (row['pk'].toString() == '1') {
@@ -904,7 +904,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       .execDataTable(
           '''SELECT name,type FROM sqlite_master WHERE type IN ('table','view') ${model.databaseTables != null && model.databaseTables!.isNotEmpty ? " AND name IN ('${model.databaseTables!.join('\',\'')}')" : ""}''');
   print(
-      'SQFENTITY.convertDatabaseToModelBase---------------${tableList!.length} tables and views found in ${model.bundledDatabasePath} database:');
+      'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in ${model.bundledDatabasePath} database:');
   printList(tableList);
 
   final List<SqfEntityTableBase> tables =
@@ -944,7 +944,7 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
     final tableFields =
         await bundledDbModel.execDataTable('PRAGMA table_info(`$tableName`)');
     final existingDBfields = <SqfEntityFieldType>[];
-    if (tableFields != null && tableFields.isNotEmpty) {
+    if (tableFields.isNotEmpty) {
       // check primary key in the table
       for (final row in tableFields) {
         if (row['pk'].toString() != '0') {

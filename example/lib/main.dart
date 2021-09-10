@@ -91,7 +91,7 @@ Future<bool> runSamples() async {
 
 Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
   final list = await model.execDataTable(pSql);
-  printList(list!);
+  printList(list);
 }
 
 void printList(List<dynamic> list, {bool isMap = false, String? title}) {
@@ -782,7 +782,7 @@ Future<void> samples9() async {
   final result_93 = await MyDbModel().execDataTable(sql_93);
   print(
       'EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable(\'$sql_93\');\n -> print result:');
-  for (var item in result_93!) {
+  for (var item in result_93) {
     print(item.toString());
   }
 

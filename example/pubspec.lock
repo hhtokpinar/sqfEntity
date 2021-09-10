@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "24.0.0"
+    version: "25.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.2.0"
   args:
     dependency: transitive
     description:
@@ -212,9 +212,11 @@ packages:
   flutter_datetime_picker:
     dependency: "direct main"
     description:
-      name: flutter_datetime_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: eb66486c47d50bf550950c196486121ffcea8885
+      url: "https://github.com/Realank/flutter_datetime_picker.git"
+    source: git
     version: "1.5.1"
   frontend_server_client:
     dependency: transitive
@@ -430,14 +432,14 @@ packages:
       path: "../sqfentity"
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.1.0"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "2.0.1+2"
+    version: "2.1.0+2"
   sqflite_common:
     dependency: transitive
     description:
