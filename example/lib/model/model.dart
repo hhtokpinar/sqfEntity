@@ -1,10 +1,12 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
+
 import '../tools/helper.dart';
 import 'view.list.dart';
 
@@ -114,8 +116,10 @@ const myDbModel = SqfEntityModel(
     bundledDatabasePath: null, //         'assets/sample.db'
     // This value is optional. When bundledDatabasePath is empty then
     // EntityBase creats a new database when initializing the database
-    defaultColumns: [SqfEntityField('dateCreated', DbType.datetime, defaultValue: 'DateTime.now()'),]
-    );
+    defaultColumns: [
+      SqfEntityField('dateCreated', DbType.datetime,
+          defaultValue: 'DateTime.now()'),
+    ]);
 
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below

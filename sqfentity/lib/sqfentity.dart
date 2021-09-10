@@ -191,8 +191,9 @@ class SqfEntityProvider extends SqfEntityModelBase {
     return result;
   }
 
-  /// Run Select Command and return List<Map<String,dynamic>> such as datatable
-  Future<List?> execDataTable(String pSql, [List<dynamic>? arguments]) async {
+  /// Run Select Command and return List<Map<String, Object?>> such as datatable
+  Future<List<Map<String, Object?>>> execDataTable(String pSql,
+      [List<dynamic>? arguments]) async {
     final Database db = (await this.db)!;
     final result = await db.rawQuery(pSql, arguments);
 
@@ -757,7 +758,8 @@ ${table.sqlStatement}'''
   }
 
   /// Run Select Command and return List<Map<String,dynamic>> such as datatable
-  Future<List?> execDataTable(String sql, [List<dynamic>? arguments]) async {
+  Future<List<Map<String, Object?>>> execDataTable(String sql,
+      [List<dynamic>? arguments]) async {
     return SqfEntityProvider(this).execDataTable(sql, arguments);
   }
 

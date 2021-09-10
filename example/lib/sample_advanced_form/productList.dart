@@ -1,6 +1,6 @@
-
-import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'package:flutter/material.dart';
+import 'package:sqfentity_gen/sqfentity_gen.dart';
+
 import '../model/model.dart';
 import '../tools/helper.dart';
 import '../tools/slideMenu.dart';
@@ -9,13 +9,13 @@ import 'productFilterWindow.dart';
 import 'searchFilters.dart';
 
 class ProductList extends StatefulWidget {
-    @override
+  @override
   State<StatefulWidget> createState() => ProductListState();
 }
 
 class ProductListState extends State {
   ProductListState();
-  
+
   List<Product>? products;
   OrderBy orderRadioValue = OrderBy.None;
   String? orderBy;
@@ -31,8 +31,8 @@ class ProductListState extends State {
   Widget build(BuildContext context) {
     void getData() async {
       // Set category id parameter
-      final int? selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
-          
+      final int? selectedCategoryId =
+          SearchFilterProduct.getValues.selectedCategoryId;
 
       /*
 
@@ -73,8 +73,8 @@ class ProductListState extends State {
           .contains(SearchFilterProduct.getValues.descriptionContains)
           .and
           .price
-          .between(
-              SearchFilterProduct.getValues.minPrice, SearchFilterProduct.getValues.maxPrice)
+          .between(SearchFilterProduct.getValues.minPrice,
+              SearchFilterProduct.getValues.maxPrice)
           .and
           .isActive
           .equals(SearchFilterProduct.getValues.isActive)
@@ -101,8 +101,8 @@ class ProductListState extends State {
     }
 
     void goToProductAdd(Product product) async {
-      final bool? result = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ProductAdd(product)));
+      final bool? result = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ProductAdd(product)));
       if (result != null) {
         if (result) {
           getData();
@@ -218,9 +218,11 @@ class ProductListState extends State {
               ),
               Row(
                 children: <Widget>[
-                  Text('\$ ${product.price != null ? priceFormat.format(product.price):'-'}',
-                      style:
-                          TextStyle(color: Color.fromRGBO(195, 255, 155, .8),fontSize: UITools(context).scaleWidth(14)))
+                  Text(
+                      '\$ ${product.price != null ? priceFormat.format(product.price) : '-'}',
+                      style: TextStyle(
+                          color: Color.fromRGBO(195, 255, 155, .8),
+                          fontSize: UITools(context).scaleWidth(14)))
                 ],
               )
             ],
@@ -233,10 +235,8 @@ class ProductListState extends State {
         );
 
     void goToProductFilter() async {
-      final bool? result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ProductFilterWindow()));
+      final bool? result = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ProductFilterWindow()));
       if (result != null) {
         if (result) {
           getData();
@@ -304,11 +304,11 @@ class ProductListState extends State {
       ).toList(),
     );
 
- 
     return Scaffold(
       backgroundColor: Color.fromRGBO(95, 66, 119, 1.0),
       body: makeProductList,
-      bottomNavigationBar: UITools(context).makeBottomAlert('on Tap -> Go to detail\nSwap Left -> Delete/Edit product)'),
+      bottomNavigationBar: UITools(context).makeBottomAlert(
+          'on Tap -> Go to detail\nSwap Left -> Delete/Edit product)'),
       //body: productListItems(),
 
       appBar: AppBar(
