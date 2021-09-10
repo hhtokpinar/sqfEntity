@@ -18,6 +18,6 @@ dependencies:
   sqflite_common_ffi: ^2.0.0
   
 
-# dependency_overrides:
-#  sqfentity_gen:
-#    path: ../sqfentity_gen
+dependency_overrides:
+ sqfentity_gen:
+   path: ../sqfentity_gen
