@@ -151,7 +151,6 @@ class SQFViewDetailState extends State {
           ),
           useSoftDeleting && data['isDeleted'] == true
               ? TextButton(
-               
                   clipBehavior: Clip.hardEdge,
                   child: Text(
                     'Recover',

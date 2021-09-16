@@ -691,20 +691,20 @@ class Product extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Product> products) async {
-    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',products);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in products) {
       await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-    for (int i = 0; i < products.length; i++) {
-      if (products[i].id == null) {
-        products[i].id = result![i] as int;
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+      for (int i = 0; i < products.length; i++) {
+        if (products[i].id == null) {
+          products[i].id = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -2023,20 +2023,20 @@ class Category extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Category> categories) async {
-    // final results = _mnCategory.saveAll('INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',categories);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in categories) {
       await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-    for (int i = 0; i < categories.length; i++) {
-      if (categories[i].id == null) {
-        categories[i].id = result![i] as int;
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+      for (int i = 0; i < categories.length; i++) {
+        if (categories[i].id == null) {
+          categories[i].id = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -3238,15 +3238,15 @@ class Todo extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Todo> todos) async {
-    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',todos);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in todos) {
       await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+    }
     return result!;
   }
 

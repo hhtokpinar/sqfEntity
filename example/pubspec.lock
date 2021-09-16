@@ -432,28 +432,28 @@ packages:
       path: "../sqfentity"
       relative: true
     source: path
-    version: "2.1.0+2"
+    version: "2.1.1+1"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "2.1.0+2"
+    version: "2.1.1"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0+2"
+    version: "2.0.1+1"
   sqflite_common_ffi:
     dependency: "direct dev"
     description:
       name: sqflite_common_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.0+3"
   sqflite_sqlcipher:
     dependency: "direct main"
     description:

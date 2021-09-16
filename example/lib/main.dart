@@ -856,9 +856,7 @@ Future<void> addSomeProducts() async {
 Future<void> addCategories() async {
   final category = await Category().select().toSingle();
   if (category == null) {
-    MyDbModel().batchStart();
-
-    await Category(name: 'Notebooks', isActive: true).save(ignoreBatch: false);
+    await Category(name: 'Notebooks', isActive: true).save();
     await Category(name: 'Ultrabooks', isActive: true).save();
   } else {
     print(

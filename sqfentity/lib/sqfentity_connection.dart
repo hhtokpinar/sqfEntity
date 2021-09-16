@@ -34,7 +34,8 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
     final List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     try {
-      final String databasesPath = connection!.databasePath ?? await getDatabasesPath();
+      final String databasesPath =
+          connection!.databasePath ?? await getDatabasesPath();
       final path = '$databasesPath/${connection!.databaseName}';
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
@@ -55,7 +56,8 @@ class SqfEntityConnectionMobile implements SqfEntityConnectionBase {
     final lock = Lock();
     Database? _db;
     await lock.synchronized(() async {
-      final String databasesPath = connection!.databasePath ??  await getDatabasesPath();
+      final String databasesPath =
+          connection!.databasePath ?? await getDatabasesPath();
       String path = '';
       path = join(databasesPath, connection!.databaseName);
       final file = File(path);

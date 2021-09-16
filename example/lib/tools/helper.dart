@@ -11,7 +11,7 @@ class UITools {
     _context = context;
   }
 
-  static int selectedDb =0;
+  static int selectedDb = 0;
 // BEGIN MAIN CONTROLLER DESIGN
 
   static const mainBgColor = Color.fromRGBO(95, 66, 119, 1.0);
@@ -214,17 +214,20 @@ class UITools {
 
   static String convertTime(DateTime date) {
     final retVal = StringBuffer();
-    if (date.hour < 10) 
-    {retVal.write('0');}
+    if (date.hour < 10) {
+      retVal.write('0');
+    }
     retVal.write('${date.hour}:');
 
-    if (date.minute < 10) 
-    {retVal.write('0');}
+    if (date.minute < 10) {
+      retVal.write('0');
+    }
     retVal.write('${date.minute}');
     if (date.second > 0) {
       retVal.write(':');
-      if (date.second < 10)
-      { retVal.write('0');}
+      if (date.second < 10) {
+        retVal.write('0');
+      }
       retVal.write(date.second);
     }
     return retVal.toString();
@@ -233,12 +236,14 @@ class UITools {
   static String convertDate(DateTime date) {
     final retVal = StringBuffer('${date.year}-');
 
-    if (date.month < 10)
-     {retVal.write('0');}
+    if (date.month < 10) {
+      retVal.write('0');
+    }
     retVal.write('${date.month}-');
 
-    if (date.day < 10) 
-    {retVal.write('0');}
+    if (date.day < 10) {
+      retVal.write('0');
+    }
     retVal.write(date.day);
     return retVal.toString();
   }
@@ -347,8 +352,9 @@ class UITools {
                 child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  if (callBack != null) 
-                  {callBack();}
+                  if (callBack != null) {
+                    callBack();
+                  }
                 },
               ),
             ],

@@ -1,10 +1,7 @@
-
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 import '../model/model.dart';
-
-
 
 import '../tools/helper.dart';
 
@@ -15,7 +12,6 @@ class ProductDetail extends StatefulWidget {
   State<StatefulWidget> createState() => ProductDetailState(product);
 }
 
-
 class ProductDetailState extends State {
   ProductDetailState(this.product);
   Product product;
@@ -24,10 +20,12 @@ class ProductDetailState extends State {
     final productPrice = Container(
       padding: const EdgeInsets.all(7.0),
       decoration: BoxDecoration(
-          border: Border.all(color:  Color.fromRGBO(195, 166, 219, .9)),
+          border: Border.all(color: Color.fromRGBO(195, 166, 219, .9)),
           borderRadius: BorderRadius.circular(5.0)),
-      child: Text( product.isActive! ?
-        '\$ ${product.price != null ? priceFormat.format(product.price):'-'}': 'NOT ON SALE' ,
+      child: Text(
+        product.isActive!
+            ? '\$ ${product.price != null ? priceFormat.format(product.price) : '-'}'
+            : 'NOT ON SALE',
         style: TextStyle(
             fontSize: UITools(context).scaleWidth(20.0), color: Colors.white),
       ),
@@ -40,14 +38,13 @@ class ProductDetailState extends State {
         Text(
           product.name!,
           style: TextStyle(
-              color: Colors.white,
-              fontSize: UITools(context).scaleWidth(24.0)),
+              color: Colors.white, fontSize: UITools(context).scaleWidth(24.0)),
         ),
         Container(
           width: UITools(context).scaleWidth(180.0),
           child: Divider(color: Colors.white30),
         ),
-          Text(
+        Text(
           product.description!,
           style: TextStyle(
               color: Color.fromRGBO(195, 166, 219, 1),
@@ -56,8 +53,11 @@ class ProductDetailState extends State {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: UITools(context).scaleHeight(90),),
-            productPrice],
+            SizedBox(
+              height: UITools(context).scaleHeight(90),
+            ),
+            productPrice
+          ],
           textDirection: prefix0.TextDirection.rtl,
         ),
       ],
@@ -129,18 +129,21 @@ class ProductDetailState extends State {
         PopupMenuButton<Choice>(
           onSelected: select,
           itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
-                         product.isDeleted! ? 
+            product.isDeleted!
+                ? PopupMenuItem<Choice>(
+                    child: Text('Recover product'),
+                    value: Choice.Recover,
+                  )
+                : PopupMenuItem<Choice>(
+                    child: Text('Edit product'),
+                    value: Choice.Update,
+                  ),
             PopupMenuItem<Choice>(
-              child:  Text('Recover product'),
-              value: Choice.Recover,
-            ):PopupMenuItem<Choice>(
-              child: Text('Edit product'),
-              value: Choice.Update,
+              child: product.isDeleted!
+                  ? Text('Hard delete product')
+                  : Text('Delete product'),
+              value: Choice.Delete,
             ),
-            PopupMenuItem<Choice>(
-              child: product.isDeleted! ? Text('Hard delete product'): Text('Delete product'),
-              value:  Choice.Delete,
-            ), 
           ],
         )
       ],
@@ -157,19 +160,21 @@ class ProductDetailState extends State {
     BoolResult result;
     switch (choice) {
       case Choice.Delete:
-        final confirm = await UITools(context)
-            .confirmDialog('Delete \'${product.name}\'?', '${(product.isDeleted! ? 'Hard ' : '')}Delete Product');
+        final confirm = await UITools(context).confirmDialog(
+            'Delete \'${product.name}\'?',
+            '${(product.isDeleted! ? 'Hard ' : '')}Delete Product');
         if (confirm!) {
           result = await product.delete();
           if (result.success) {
             UITools(context).alertDialog('${product.name} deleted',
-                title: '${(product.isDeleted! ? 'Hard ' : '')}Delete Product', callBack: () {
+                title: '${(product.isDeleted! ? 'Hard ' : '')}Delete Product',
+                callBack: () {
               Navigator.pop(context, true);
             });
           }
         }
         break;
-        case Choice.Recover:
+      case Choice.Recover:
         final confirm = await UITools(context)
             .confirmDialog('Recover \'${product.name}\'?', 'Recover Product');
         if (confirm!) {
@@ -191,9 +196,7 @@ class ProductDetailState extends State {
 
   void gotoDetail(Product product) async {
     final bool? result = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => 
-        ProductAdd(product)
-        ));
+        context, MaterialPageRoute(builder: (context) => ProductAdd(product)));
     if (result != null) {
       Navigator.pop(context, true);
     }
