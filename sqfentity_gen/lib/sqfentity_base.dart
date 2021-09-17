@@ -2546,8 +2546,7 @@ Future<List<String>> toListString([VoidCallback Function(List<String> o)? listSt
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         !_table.primaryKeyName!.startsWith('_')) {
-      retVal
-          .writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
+      retVal.writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
 ${_table.modelName}Field get ${_table.primaryKeyNames[0]} {
 return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
 }''');
@@ -4151,7 +4150,7 @@ DbType parseDbType(String val) {
 
 abstract class TableBase {
   /// Indicates whether an insertion was made or not
-  late bool isInsert;
+  bool isInsert = false;
 }
 
 // END ENUMS, CLASSES AND ABSTRACTS
