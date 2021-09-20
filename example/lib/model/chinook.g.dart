@@ -786,11 +786,11 @@ class Album extends TableBase {
   }
 
   /// Saves the (Album) object. If the AlbumId field is null, saves as a new record and returns new AlbumId, if AlbumId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns AlbumId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (AlbumId == null || AlbumId == 0) {
-      AlbumId = await _mnAlbum.insert(this);
+      AlbumId = await _mnAlbum.insert(this, ignoreBatch);
     } else {
       // AlbumId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnAlbum.update(this);
@@ -800,11 +800,13 @@ class Album extends TableBase {
   }
 
   /// Saves the (Album) object. If the AlbumId field is null, saves as a new record and returns new AlbumId, if AlbumId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns AlbumId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (AlbumId == null || AlbumId == 0) {
-      AlbumId = await _mnAlbum.insertOrThrow(this);
+      AlbumId = await _mnAlbum.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -834,20 +836,20 @@ class Album extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Album> albums) async {
-    // final results = _mnAlbum.saveAll('INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',albums);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in albums) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < albums.length; i++) {
-      if (albums[i].AlbumId == null) {
-        albums[i].AlbumId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < albums.length; i++) {
+        if (albums[i].AlbumId == null) {
+          albums[i].AlbumId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -858,7 +860,7 @@ class Album extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnAlbum.rawInsert(
-          'INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',
+          'INSERT OR REPLACE INTO Album (AlbumId, Title, ArtistId)  VALUES (?,?,?)',
           [AlbumId, Title, ArtistId]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -885,7 +887,7 @@ class Album extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Album> albums) async {
     final results = await _mnAlbum.rawInsertAll(
-        'INSERT OR REPLACE INTO Album (AlbumId,Title, ArtistId)  VALUES (?,?,?)',
+        'INSERT OR REPLACE INTO Album (AlbumId, Title, ArtistId)  VALUES (?,?,?)',
         albums);
     return results;
   }
@@ -2000,11 +2002,11 @@ class Artist extends TableBase {
   }
 
   /// Saves the (Artist) object. If the ArtistId field is null, saves as a new record and returns new ArtistId, if ArtistId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns ArtistId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (ArtistId == null || ArtistId == 0) {
-      ArtistId = await _mnArtist.insert(this);
+      ArtistId = await _mnArtist.insert(this, ignoreBatch);
     } else {
       // ArtistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnArtist.update(this);
@@ -2014,11 +2016,13 @@ class Artist extends TableBase {
   }
 
   /// Saves the (Artist) object. If the ArtistId field is null, saves as a new record and returns new ArtistId, if ArtistId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns ArtistId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (ArtistId == null || ArtistId == 0) {
-      ArtistId = await _mnArtist.insertOrThrow(this);
+      ArtistId = await _mnArtist.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -2048,20 +2052,20 @@ class Artist extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Artist> artists) async {
-    // final results = _mnArtist.saveAll('INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',artists);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in artists) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < artists.length; i++) {
-      if (artists[i].ArtistId == null) {
-        artists[i].ArtistId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < artists.length; i++) {
+        if (artists[i].ArtistId == null) {
+          artists[i].ArtistId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -2072,7 +2076,7 @@ class Artist extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnArtist.rawInsert(
-          'INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)',
+          'INSERT OR REPLACE INTO Artist (ArtistId, Name)  VALUES (?,?)',
           [ArtistId, Name]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -2099,7 +2103,8 @@ class Artist extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Artist> artists) async {
     final results = await _mnArtist.rawInsertAll(
-        'INSERT OR REPLACE INTO Artist (ArtistId,Name)  VALUES (?,?)', artists);
+        'INSERT OR REPLACE INTO Artist (ArtistId, Name)  VALUES (?,?)',
+        artists);
     return results;
   }
 
@@ -3441,11 +3446,11 @@ class Customer extends TableBase {
   }
 
   /// Saves the (Customer) object. If the CustomerId field is null, saves as a new record and returns new CustomerId, if CustomerId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns CustomerId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (CustomerId == null || CustomerId == 0) {
-      CustomerId = await _mnCustomer.insert(this);
+      CustomerId = await _mnCustomer.insert(this, ignoreBatch);
     } else {
       // CustomerId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnCustomer.update(this);
@@ -3455,11 +3460,13 @@ class Customer extends TableBase {
   }
 
   /// Saves the (Customer) object. If the CustomerId field is null, saves as a new record and returns new CustomerId, if CustomerId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns CustomerId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (CustomerId == null || CustomerId == 0) {
-      CustomerId = await _mnCustomer.insertOrThrow(this);
+      CustomerId = await _mnCustomer.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -3489,20 +3496,20 @@ class Customer extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Customer> customers) async {
-    // final results = _mnCustomer.saveAll('INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',customers);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in customers) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < customers.length; i++) {
-      if (customers[i].CustomerId == null) {
-        customers[i].CustomerId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < customers.length; i++) {
+        if (customers[i].CustomerId == null) {
+          customers[i].CustomerId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -3513,7 +3520,7 @@ class Customer extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnCustomer.rawInsert(
-          'INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO Customer (CustomerId, FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             CustomerId,
             FirstName,
@@ -3555,7 +3562,7 @@ class Customer extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Customer> customers) async {
     final results = await _mnCustomer.rawInsertAll(
-        'INSERT OR REPLACE INTO Customer (CustomerId,FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO Customer (CustomerId, FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
         customers);
     return results;
   }
@@ -5131,11 +5138,11 @@ class Employee extends TableBase {
   }
 
   /// Saves the (Employee) object. If the EmployeeId field is null, saves as a new record and returns new EmployeeId, if EmployeeId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns EmployeeId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (EmployeeId == null || EmployeeId == 0) {
-      EmployeeId = await _mnEmployee.insert(this);
+      EmployeeId = await _mnEmployee.insert(this, ignoreBatch);
     } else {
       // EmployeeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnEmployee.update(this);
@@ -5145,11 +5152,13 @@ class Employee extends TableBase {
   }
 
   /// Saves the (Employee) object. If the EmployeeId field is null, saves as a new record and returns new EmployeeId, if EmployeeId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns EmployeeId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (EmployeeId == null || EmployeeId == 0) {
-      EmployeeId = await _mnEmployee.insertOrThrow(this);
+      EmployeeId = await _mnEmployee.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -5179,20 +5188,20 @@ class Employee extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Employee> employees) async {
-    // final results = _mnEmployee.saveAll('INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',employees);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in employees) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < employees.length; i++) {
-      if (employees[i].EmployeeId == null) {
-        employees[i].EmployeeId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < employees.length; i++) {
+        if (employees[i].EmployeeId == null) {
+          employees[i].EmployeeId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -5203,7 +5212,7 @@ class Employee extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnEmployee.rawInsert(
-          'INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO Employee (EmployeeId, LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             EmployeeId,
             LastName,
@@ -5247,7 +5256,7 @@ class Employee extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Employee> employees) async {
     final results = await _mnEmployee.rawInsertAll(
-        'INSERT OR REPLACE INTO Employee (EmployeeId,LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO Employee (EmployeeId, LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         employees);
     return results;
   }
@@ -6532,11 +6541,11 @@ class Genre extends TableBase {
   }
 
   /// Saves the (Genre) object. If the GenreId field is null, saves as a new record and returns new GenreId, if GenreId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns GenreId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (GenreId == null || GenreId == 0) {
-      GenreId = await _mnGenre.insert(this);
+      GenreId = await _mnGenre.insert(this, ignoreBatch);
     } else {
       // GenreId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnGenre.update(this);
@@ -6546,11 +6555,13 @@ class Genre extends TableBase {
   }
 
   /// Saves the (Genre) object. If the GenreId field is null, saves as a new record and returns new GenreId, if GenreId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns GenreId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (GenreId == null || GenreId == 0) {
-      GenreId = await _mnGenre.insertOrThrow(this);
+      GenreId = await _mnGenre.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -6580,20 +6591,20 @@ class Genre extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Genre> genres) async {
-    // final results = _mnGenre.saveAll('INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',genres);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in genres) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < genres.length; i++) {
-      if (genres[i].GenreId == null) {
-        genres[i].GenreId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < genres.length; i++) {
+        if (genres[i].GenreId == null) {
+          genres[i].GenreId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -6604,7 +6615,7 @@ class Genre extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnGenre.rawInsert(
-          'INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)',
+          'INSERT OR REPLACE INTO Genre (GenreId, Name)  VALUES (?,?)',
           [GenreId, Name]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -6631,7 +6642,7 @@ class Genre extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Genre> genres) async {
     final results = await _mnGenre.rawInsertAll(
-        'INSERT OR REPLACE INTO Genre (GenreId,Name)  VALUES (?,?)', genres);
+        'INSERT OR REPLACE INTO Genre (GenreId, Name)  VALUES (?,?)', genres);
     return results;
   }
 
@@ -7747,7 +7758,7 @@ class Invoice extends TableBase {
 
   List<dynamic> toArgs() {
     return [
-      InvoiceDate,
+      InvoiceDate != null ? InvoiceDate!.millisecondsSinceEpoch : null,
       BillingAddress,
       BillingCity,
       BillingState,
@@ -7761,7 +7772,7 @@ class Invoice extends TableBase {
   List<dynamic> toArgsWithIds() {
     return [
       InvoiceId,
-      InvoiceDate,
+      InvoiceDate != null ? InvoiceDate!.millisecondsSinceEpoch : null,
       BillingAddress,
       BillingCity,
       BillingState,
@@ -7916,11 +7927,11 @@ class Invoice extends TableBase {
   }
 
   /// Saves the (Invoice) object. If the InvoiceId field is null, saves as a new record and returns new InvoiceId, if InvoiceId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns InvoiceId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (InvoiceId == null || InvoiceId == 0) {
-      InvoiceId = await _mnInvoice.insert(this);
+      InvoiceId = await _mnInvoice.insert(this, ignoreBatch);
     } else {
       // InvoiceId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnInvoice.update(this);
@@ -7930,11 +7941,13 @@ class Invoice extends TableBase {
   }
 
   /// Saves the (Invoice) object. If the InvoiceId field is null, saves as a new record and returns new InvoiceId, if InvoiceId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns InvoiceId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (InvoiceId == null || InvoiceId == 0) {
-      InvoiceId = await _mnInvoice.insertOrThrow(this);
+      InvoiceId = await _mnInvoice.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -7964,20 +7977,20 @@ class Invoice extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Invoice> invoices) async {
-    // final results = _mnInvoice.saveAll('INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',invoices);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in invoices) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < invoices.length; i++) {
-      if (invoices[i].InvoiceId == null) {
-        invoices[i].InvoiceId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < invoices.length; i++) {
+        if (invoices[i].InvoiceId == null) {
+          invoices[i].InvoiceId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -7988,10 +8001,10 @@ class Invoice extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnInvoice.rawInsert(
-          'INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO Invoice (InvoiceId, InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
           [
             InvoiceId,
-            InvoiceDate,
+            InvoiceDate != null ? InvoiceDate!.millisecondsSinceEpoch : null,
             BillingAddress,
             BillingCity,
             BillingState,
@@ -8026,7 +8039,7 @@ class Invoice extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Invoice> invoices) async {
     final results = await _mnInvoice.rawInsertAll(
-        'INSERT OR REPLACE INTO Invoice (InvoiceId,InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO Invoice (InvoiceId, InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
         invoices);
     return results;
   }
@@ -9298,11 +9311,11 @@ class InvoiceLine extends TableBase {
   }
 
   /// Saves the (InvoiceLine) object. If the InvoiceLineId field is null, saves as a new record and returns new InvoiceLineId, if InvoiceLineId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns InvoiceLineId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (InvoiceLineId == null || InvoiceLineId == 0) {
-      InvoiceLineId = await _mnInvoiceLine.insert(this);
+      InvoiceLineId = await _mnInvoiceLine.insert(this, ignoreBatch);
     } else {
       // InvoiceLineId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnInvoiceLine.update(this);
@@ -9312,11 +9325,13 @@ class InvoiceLine extends TableBase {
   }
 
   /// Saves the (InvoiceLine) object. If the InvoiceLineId field is null, saves as a new record and returns new InvoiceLineId, if InvoiceLineId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns InvoiceLineId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (InvoiceLineId == null || InvoiceLineId == 0) {
-      InvoiceLineId = await _mnInvoiceLine.insertOrThrow(this);
+      InvoiceLineId = await _mnInvoiceLine.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -9346,20 +9361,20 @@ class InvoiceLine extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines) async {
-    // final results = _mnInvoiceLine.saveAll('INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',invoicelines);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in invoicelines) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < invoicelines.length; i++) {
-      if (invoicelines[i].InvoiceLineId == null) {
-        invoicelines[i].InvoiceLineId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < invoicelines.length; i++) {
+        if (invoicelines[i].InvoiceLineId == null) {
+          invoicelines[i].InvoiceLineId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -9370,7 +9385,7 @@ class InvoiceLine extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnInvoiceLine.rawInsert(
-          'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
+          'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
           [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -9399,7 +9414,7 @@ class InvoiceLine extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<InvoiceLine> invoicelines) async {
     final results = await _mnInvoiceLine.rawInsertAll(
-        'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId,UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
+        'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
         invoicelines);
     return results;
   }
@@ -10536,11 +10551,11 @@ class MediaType extends TableBase {
   }
 
   /// Saves the (MediaType) object. If the MediaTypeId field is null, saves as a new record and returns new MediaTypeId, if MediaTypeId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns MediaTypeId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (MediaTypeId == null || MediaTypeId == 0) {
-      MediaTypeId = await _mnMediaType.insert(this);
+      MediaTypeId = await _mnMediaType.insert(this, ignoreBatch);
     } else {
       // MediaTypeId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnMediaType.update(this);
@@ -10550,11 +10565,13 @@ class MediaType extends TableBase {
   }
 
   /// Saves the (MediaType) object. If the MediaTypeId field is null, saves as a new record and returns new MediaTypeId, if MediaTypeId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns MediaTypeId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (MediaTypeId == null || MediaTypeId == 0) {
-      MediaTypeId = await _mnMediaType.insertOrThrow(this);
+      MediaTypeId = await _mnMediaType.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -10584,20 +10601,20 @@ class MediaType extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<MediaType> mediatypes) async {
-    // final results = _mnMediaType.saveAll('INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',mediatypes);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in mediatypes) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < mediatypes.length; i++) {
-      if (mediatypes[i].MediaTypeId == null) {
-        mediatypes[i].MediaTypeId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < mediatypes.length; i++) {
+        if (mediatypes[i].MediaTypeId == null) {
+          mediatypes[i].MediaTypeId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -10608,7 +10625,7 @@ class MediaType extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnMediaType.rawInsert(
-          'INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',
+          'INSERT OR REPLACE INTO MediaType (MediaTypeId, Name)  VALUES (?,?)',
           [MediaTypeId, Name]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -10636,7 +10653,7 @@ class MediaType extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<MediaType> mediatypes) async {
     final results = await _mnMediaType.rawInsertAll(
-        'INSERT OR REPLACE INTO MediaType (MediaTypeId,Name)  VALUES (?,?)',
+        'INSERT OR REPLACE INTO MediaType (MediaTypeId, Name)  VALUES (?,?)',
         mediatypes);
     return results;
   }
@@ -11730,11 +11747,11 @@ class Playlist extends TableBase {
   }
 
   /// Saves the (Playlist) object. If the PlaylistId field is null, saves as a new record and returns new PlaylistId, if PlaylistId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns PlaylistId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (PlaylistId == null || PlaylistId == 0) {
-      PlaylistId = await _mnPlaylist.insert(this);
+      PlaylistId = await _mnPlaylist.insert(this, ignoreBatch);
     } else {
       // PlaylistId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnPlaylist.update(this);
@@ -11744,11 +11761,13 @@ class Playlist extends TableBase {
   }
 
   /// Saves the (Playlist) object. If the PlaylistId field is null, saves as a new record and returns new PlaylistId, if PlaylistId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns PlaylistId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (PlaylistId == null || PlaylistId == 0) {
-      PlaylistId = await _mnPlaylist.insertOrThrow(this);
+      PlaylistId = await _mnPlaylist.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -11778,20 +11797,20 @@ class Playlist extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Playlist> playlists) async {
-    // final results = _mnPlaylist.saveAll('INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',playlists);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in playlists) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < playlists.length; i++) {
-      if (playlists[i].PlaylistId == null) {
-        playlists[i].PlaylistId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < playlists.length; i++) {
+        if (playlists[i].PlaylistId == null) {
+          playlists[i].PlaylistId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -11802,7 +11821,7 @@ class Playlist extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnPlaylist.rawInsert(
-          'INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',
+          'INSERT OR REPLACE INTO Playlist (PlaylistId, Name)  VALUES (?,?)',
           [PlaylistId, Name]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -11830,7 +11849,7 @@ class Playlist extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Playlist> playlists) async {
     final results = await _mnPlaylist.rawInsertAll(
-        'INSERT OR REPLACE INTO Playlist (PlaylistId,Name)  VALUES (?,?)',
+        'INSERT OR REPLACE INTO Playlist (PlaylistId, Name)  VALUES (?,?)',
         playlists);
     return results;
   }
@@ -13232,11 +13251,11 @@ class Track extends TableBase {
   }
 
   /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns TrackId
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (TrackId == null || TrackId == 0) {
-      TrackId = await _mnTrack.insert(this);
+      TrackId = await _mnTrack.insert(this, ignoreBatch);
     } else {
       // TrackId= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnTrack.update(this);
@@ -13246,11 +13265,13 @@ class Track extends TableBase {
   }
 
   /// Saves the (Track) object. If the TrackId field is null, saves as a new record and returns new TrackId, if TrackId is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns TrackId
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (TrackId == null || TrackId == 0) {
-      TrackId = await _mnTrack.insertOrThrow(this);
+      TrackId = await _mnTrack.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -13280,20 +13301,20 @@ class Track extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Track> tracks) async {
-    // final results = _mnTrack.saveAll('INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',tracks);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in tracks) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-    for (int i = 0; i < tracks.length; i++) {
-      if (tracks[i].TrackId == null) {
-        tracks[i].TrackId = result![i] as int;
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+      for (int i = 0; i < tracks.length; i++) {
+        if (tracks[i].TrackId == null) {
+          tracks[i].TrackId = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -13304,7 +13325,7 @@ class Track extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnTrack.rawInsert(
-          'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO Track (TrackId, Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
           [
             TrackId,
             Name,
@@ -13341,7 +13362,7 @@ class Track extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Track> tracks) async {
     final results = await _mnTrack.rawInsertAll(
-        'INSERT OR REPLACE INTO Track (TrackId,Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO Track (TrackId, Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
         tracks);
     return results;
   }
@@ -15597,13 +15618,13 @@ class PlaylistTrack extends TableBase {
   /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null.
   ///
   /// Call the saveAs() method if you do not want to save it when there is another row with the same TrackId
-
+  ///
   /// <returns>Returns BoolResult
   Future<BoolResult> save() async {
     final result = BoolResult(success: false);
     try {
       await _mnPlaylistTrack.rawInsert(
-          'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+          'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
           toArgsWithIds());
       result.success = true;
       isSaved = true;
@@ -15626,15 +15647,15 @@ class PlaylistTrack extends TableBase {
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(
       List<PlaylistTrack> playlisttracks) async {
-    // final results = _mnPlaylistTrack.saveAll('INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',playlisttracks);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await Chinookdb().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await Chinookdb().batchStart();
     for (final obj in playlisttracks) {
       await obj.save();
     }
-    //    return Chinookdb().batchCommit();
-    final result = await Chinookdb().batchCommit();
-
+    if (!isStartedBatch) {
+      result = await Chinookdb().batchCommit();
+    }
     return result!;
   }
 
@@ -15645,7 +15666,7 @@ class PlaylistTrack extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnPlaylistTrack.rawInsert(
-          'INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+          'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
           [TrackId, PlaylistId]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -15673,7 +15694,7 @@ class PlaylistTrack extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<PlaylistTrack> playlisttracks) async {
     final results = await _mnPlaylistTrack.rawInsertAll(
-        'INSERT OR REPLACE INTO PlaylistTrack (TrackId, PlaylistId)  VALUES (?,?)',
+        'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
         playlisttracks);
     return results;
   }

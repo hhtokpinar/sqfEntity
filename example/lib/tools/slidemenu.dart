@@ -30,9 +30,9 @@ class _SlideMenuState extends State<SlideMenu>
 
   @override
   Widget build(BuildContext context) {
-    final animation =
-        Tween(begin: const Offset(0.0, 0.0), end: const Offset(-0.4, 0.0))
-            .animate(CurveTween(curve: Curves.decelerate).animate(_controller!));
+    final animation = Tween(
+            begin: const Offset(0.0, 0.0), end: const Offset(-0.4, 0.0))
+        .animate(CurveTween(curve: Curves.decelerate).animate(_controller!));
 
     return GestureDetector(
       onHorizontalDragUpdate: (data) {

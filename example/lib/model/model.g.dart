@@ -637,13 +637,13 @@ class Product extends TableBase {
   }
 
   /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
       rownum = await IdentitySequence().nextVal();
 
-      id = await _mnProduct.insert(this);
+      id = await _mnProduct.insert(this, ignoreBatch);
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnProduct.update(this);
@@ -653,13 +653,15 @@ class Product extends TableBase {
   }
 
   /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns id
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
       rownum = await IdentitySequence().nextVal();
 
-      id = await _mnProduct.insertOrThrow(this);
+      id = await _mnProduct.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -689,20 +691,20 @@ class Product extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Product> products) async {
-    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',products);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in products) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-    for (int i = 0; i < products.length; i++) {
-      if (products[i].id == null) {
-        products[i].id = result![i] as int;
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+      for (int i = 0; i < products.length; i++) {
+        if (products[i].id == null) {
+          products[i].id = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -713,7 +715,7 @@ class Product extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnProduct.rawInsert(
-          'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+          'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             id,
             name,
@@ -752,7 +754,7 @@ class Product extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
-        'INSERT OR REPLACE INTO product (id,name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
         products);
     return results;
   }
@@ -1971,11 +1973,11 @@ class Category extends TableBase {
   }
 
   /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnCategory.insert(this);
+      id = await _mnCategory.insert(this, ignoreBatch);
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
       await _mnCategory.update(this);
@@ -1985,11 +1987,13 @@ class Category extends TableBase {
   }
 
   /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns id
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnCategory.insertOrThrow(this);
+      id = await _mnCategory.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
@@ -2019,20 +2023,20 @@ class Category extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Category> categories) async {
-    // final results = _mnCategory.saveAll('INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',categories);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in categories) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-    for (int i = 0; i < categories.length; i++) {
-      if (categories[i].id == null) {
-        categories[i].id = result![i] as int;
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+      for (int i = 0; i < categories.length; i++) {
+        if (categories[i].id == null) {
+          categories[i].id = result![i] as int;
+        }
       }
     }
-
     return result!;
   }
 
@@ -2043,7 +2047,7 @@ class Category extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnCategory.rawInsert(
-          'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
+          'INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',
           [id, name, isActive]);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -2069,7 +2073,7 @@ class Category extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (id,name, isActive)  VALUES (?,?,?)',
+        'INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',
         categories);
     return results;
   }
@@ -3188,11 +3192,11 @@ class Todo extends TableBase {
   }
 
   /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
-  Future<int?> save() async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0 || !isSaved!) {
-      await _mnTodo.insert(this);
+      await _mnTodo.insert(this, ignoreBatch);
       if (saveResult!.success) {
         isSaved = true;
       }
@@ -3205,11 +3209,13 @@ class Todo extends TableBase {
   }
 
   /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
   /// <returns>Returns id
-  Future<int?> saveOrThrow() async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0 || !isSaved!) {
-      await _mnTodo.insertOrThrow(this);
+      await _mnTodo.insertOrThrow(this, ignoreBatch);
       if (saveResult != null && saveResult!.success) {
         isSaved = true;
       }
@@ -3232,15 +3238,15 @@ class Todo extends TableBase {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Todo> todos) async {
-    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',todos);
-    // return results; removed in sqfentity_gen 1.3.0+6
-    await MyDbModel().batchStart();
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await MyDbModel().batchStart();
     for (final obj in todos) {
-      await obj.save();
+      await obj.save(ignoreBatch: false);
     }
-    //    return MyDbModel().batchCommit();
-    final result = await MyDbModel().batchCommit();
-
+    if (!isStartedBatch) {
+      result = await MyDbModel().batchCommit();
+    }
     return result!;
   }
 
@@ -3251,7 +3257,7 @@ class Todo extends TableBase {
   Future<int?> upsert() async {
     try {
       final result = await _mnTodo.rawInsert(
-          'INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
+          'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
           [
             id,
             userId,
@@ -3282,7 +3288,7 @@ class Todo extends TableBase {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
-        'INSERT OR REPLACE INTO todos (id,userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
+        'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
         todos);
     return results;
   }

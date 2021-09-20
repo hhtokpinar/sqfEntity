@@ -4,16 +4,12 @@ import '../sample_advanced_form/productList.dart';
 import '../tools/helper.dart';
 import 'model.dart';
 
-
 class MainController extends StatefulWidget {
-  
   @override
   State<StatefulWidget> createState() => MainControllerState();
 }
 
 class MainControllerState extends State {
-  
-
   Map<String, dynamic> controllers = <String, dynamic>{};
 
   @override

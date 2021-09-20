@@ -83,7 +83,7 @@ class HomeState extends State<Home> {
                 ),
                 value: 2,
               ),
-               PopupMenuItem<int>(
+              PopupMenuItem<int>(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -93,23 +93,23 @@ class HomeState extends State<Home> {
                 ),
                 value: 4,
               ),
-               PopupMenuItem<int>(
+              PopupMenuItem<int>(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Icon(Icons.arrow_right, color: Colors.black),
                     Text('switch to Sample.db'),
                   ],
-                ), 
+                ),
                 value: 5,
               ),
             ],
           )
         ],
       ),
-      body: 
-      //Text('HELLO')
-       MainController(),
+      body:
+          //Text('HELLO')
+          MainController(),
     );
   }
 
@@ -119,16 +119,16 @@ class HomeState extends State<Home> {
         showPopup(context, _aboutSqfEntity(), 'About SqfEntity');
         break;
       case 1:
-      final String modelString =  await createSqfEntityModelString(false);
+        final String modelString = await createSqfEntityModelString(false);
         txtModel.text = modelString;
         showPopup(context, _generetedModelWindow(),
             'Model Entities was created\nsuccessfully');
 
         break;
       case 2:
-          runSamples();
-        UITools(context).alertDialog(
-            'runSamples() ran. Go DEBUG CONSOLE for see results');
+        runSamples();
+        UITools(context)
+            .alertDialog('runSamples() ran. Go DEBUG CONSOLE for see results');
         break;
       case 3:
         txtModel.text = '''import 'dart:convert';
@@ -146,10 +146,10 @@ part 'model.g.dart';
             'Model was generated\nfrom database successfully');
 
         break;
-        case 4:
-        case 5:
+      case 4:
+      case 5:
         setState(() {
-          UITools.selectedDb=value-4;
+          UITools.selectedDb = value - 4;
         });
         break;
       default:
@@ -231,9 +231,6 @@ part 'model.g.dart';
                   'STEP1: Create lib/model/model.dart file in your project and press Ctrl+V to paste the model from the Clipboard.',
                   style: TextStyle(color: Colors.deepPurple),
                 )),
-              
-              
-              
               ],
             ),
             SizedBox(
@@ -253,10 +250,13 @@ part 'model.g.dart';
               height: 30,
             ),
             Flexible(
-
               child: Text(
-                  'STEP 2: To create ORM entities, go to the Terminal Window and run the following command:',
-                  style: TextStyle(color: Colors.deepPurple, ), textAlign: TextAlign.left,),
+                'STEP 2: To create ORM entities, go to the Terminal Window and run the following command:',
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                ),
+                textAlign: TextAlign.left,
+              ),
             ),
             TextField(
               maxLines: 2,

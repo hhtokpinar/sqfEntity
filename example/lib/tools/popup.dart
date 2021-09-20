@@ -18,7 +18,7 @@ class PopupLayout extends ModalRoute {
       this.left,
       this.right});
 
- double? top;
+  double? top;
   double? bottom;
   double? left;
   double? right;
@@ -44,7 +44,6 @@ class PopupLayout extends ModalRoute {
   @override
   bool get maintainState => false;
 
- 
   @override
   Widget buildPage(
     BuildContext context,
@@ -77,10 +76,7 @@ class PopupLayout extends ModalRoute {
   Widget _buildOverlayContent(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
-          bottom: bottom!,
-          left: left!,
-          right: right!,
-          top: top!),
+          bottom: bottom!, left: left!, right: right!, top: top!),
       child: child,
     );
   }
@@ -123,33 +119,35 @@ class _PopupContentState extends State<PopupContent> {
   }
 }
 
-    void showPopup(BuildContext context, Widget widget, String title,
-      {BuildContext? popupContext}) {
-    Navigator.push(
-      context,
-      PopupLayout(
-        top: 30,
-        left: 30,
-        right: 30,
-        bottom: 20,
-        child: PopupContent(
-          content: Scaffold(
-            appBar: AppBar(
-              title: Text(title,style: TextStyle(fontSize: UITools(context).scaleWidth(10)),),
-              leading: Builder(builder: (context) {
-                return IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                      Navigator.pop(context); //close the popup
-                  },
-                );
-              }),
-              brightness: Brightness.light,
+void showPopup(BuildContext context, Widget widget, String title,
+    {BuildContext? popupContext}) {
+  Navigator.push(
+    context,
+    PopupLayout(
+      top: 30,
+      left: 30,
+      right: 30,
+      bottom: 20,
+      child: PopupContent(
+        content: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              title,
+              style: TextStyle(fontSize: UITools(context).scaleWidth(10)),
             ),
-            //resizeToAvoidBottomPadding: true,
-            body: widget,
+            leading: Builder(builder: (context) {
+              return IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context); //close the popup
+                },
+              );
+            }),
           ),
+          //resizeToAvoidBottomPadding: true,
+          body: widget,
         ),
       ),
-    );
-  }
+    ),
+  );
+}

@@ -1,5 +1,3 @@
-
-
 import 'package:source_gen/source_gen.dart';
 import '../sqfentity_gen.dart';
 
@@ -19,4 +17,3 @@ dynamic getTypeValueAnnotation(ConstantReader annotation, String name) =>
         : null;
 bool ifExistAnnotation(ConstantReader annotation, String name) =>
     annotation.read(name).toString().contains('_NullConstant') == false;
-

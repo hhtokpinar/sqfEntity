@@ -21,13 +21,19 @@ class SqfEntityBuilder {
   final SqfEntityModel model;
 }
 
-// REMOVED AFTER sqfentity_gen 1.4.0
-// Just use formTables property in your db model
-// class SqfEntityBuilderForm {
-//   const SqfEntityBuilderForm(this.table);
-//   final SqfEntityTable table;
-// }
-
+/// This class is required for TABLE definitions using in /lib/model/model.dart file
+/// Simple table definition must be below:
+/// ```
+/// const tableCategory = SqfEntityTable(
+/// tableName: 'category',
+/// primaryKeyName: 'id',
+/// primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+/// useSoftDeleting: false,
+/// fields: [
+///   SqfEntityField('name', DbType.text, isNotNull: true),
+///   SqfEntityField('isActive', DbType.bool, defaultValue: true),
+/// ]);
+/// ```
 class SqfEntityTable {
   const SqfEntityTable(
       {this.tableName,
@@ -60,40 +66,27 @@ class SqfEntityTable {
   final String? abstractModelName;
 }
 
-class SqfEntityView {
-  const SqfEntityView(
-      {this.tableName,
-      this.primaryKeyName,
-      this.fields,
-      this.useSoftDeleting,
-      this.primaryKeyType,
-      this.defaultJsonUrl,
-      this.modelName,
-      this.customCode,
-      this.relationType,
-      this.formListTitleField,
-      this.formListSubTitleField,
-      this.abstractModelName});
-  final String? tableName;
-  final String? primaryKeyName;
-  final List<SqfEntityField>? fields;
-  final bool? useSoftDeleting;
-  final PrimaryKeyType? primaryKeyType;
-  final String? modelName;
-  final String? defaultJsonUrl;
-  final String? customCode;
-  final RelationType? relationType;
-  final String? formListTitleField;
-  final String? formListSubTitleField;
-  final String? abstractModelName;
-}
-
+/// sqfentity generator uses this class while recognition table and relatinships between the tables
 class TableCollection {
   const TableCollection(this.childTable, this.childTableField);
   final SqfEntityTable childTable;
   final SqfEntityFieldRelationship childTableField;
 }
 
+/// This class is required for SEQUENCE definitions using in /lib/model/model.dart file
+/// Simple sequence definition must be below:
+/// ```
+/// const mySequence = SqfEntitySequence(
+///   sequenceName: 'identity',
+///   //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+///   //modelName: 'SQEidentity',
+///   /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
+///   //cycle : false,    /* optional. default is false; */
+///   //minValue = 0;     /* optional. default is 0 */
+///   //incrementBy = 1;  /* optional. default is 1 */
+///   // startWith = 0;   /* optional. default is 0 */
+/// );
+/// ```
 class SqfEntitySequence {
   const SqfEntitySequence(
       {this.sequenceName,
@@ -126,6 +119,11 @@ class SqfEntitySequence {
   final String? modelName;
 }
 
+/// This class is required for field definitions using in a table definition
+/// Simple field definition must be below:
+/// ```
+///   SqfEntityField('name', DbType.text, isNotNull: true),
+/// ```
 class SqfEntityField {
   const SqfEntityField(this.fieldName, this.dbType,
       {this.defaultValue,
@@ -156,6 +154,12 @@ class SqfEntityField {
   final String? formLabelText;
 }
 
+/// This class is required for virtual field definitions using in a table definition
+/// Which could generate the field in the table class, but not create a row in the database table.
+/// Simple virtual field definition must be below:
+/// ```
+///   SqfEntityFieldVirtual('fullName', DbType.text),
+/// ```
 class SqfEntityFieldVirtual implements SqfEntityField {
   const SqfEntityFieldVirtual(this.fieldName, this.dbType);
 
@@ -202,14 +206,18 @@ class SqfEntityFieldVirtual implements SqfEntityField {
   String? get formLabelText => null;
 }
 
-class SqfEntityFieldPrimaryKey extends SqfEntityField {
-  const SqfEntityFieldPrimaryKey(
-      this.primaryKeyFieldName, this.primaryKeyDbType)
-      : super(primaryKeyFieldName, primaryKeyDbType);
-  final DbType primaryKeyDbType;
-  final String primaryKeyFieldName;
-}
-
+/// Create a field which has a relation with another table.
+///
+/// So you can see all related children rows or a parent row
+///
+/// Simple virtual field definition must be below:
+/// ```
+///  SqfEntityFieldRelationship(
+///         parentTable: tableCategory,
+///         deleteRule: DeleteRule.CASCADE,
+///         defaultValue: 1,
+///         ),
+/// ```
 class SqfEntityFieldRelationship implements SqfEntityField {
   const SqfEntityFieldRelationship({
     this.parentTable,
@@ -265,20 +273,66 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final String? formLabelText;
 }
 
+/// Perform actions before each insert/update
+/// Example:
+/// ```
+///    @SqfEntityBuilder(myDbModel)
+///    const myDbModel = SqfEntityModel(
+///        ...
+///        preSaveAction: getPreSaveAction,
+///    );
+///    Future<TableBase> getPreSaveAction(String tableName, obj) async {
+///       // Update the lastUpdate column on all records before saving
+///       obj.lastUpdate = DateTime.now()
+///       return obj;
+///    }
+/// ```
 typedef PreSaveAction = Future<TableBase> Function(String tableName, TableBase);
 
+/// Log events on failure of insert/update operation
+///    Example:
+/// ```
+///    @SqfEntityBuilder(myDbModel)
+///    const myDbModel = SqfEntityModel(
+///        ...
+///        logFunction: getLogFunction,
+///    );
+///    getLogFunction(Log log) {
+///       // Report the error to the server here
+///    }
+/// ```
 typedef LogFunction = Function(Log);
 
+/// Log object for LogFunction
 class Log {
-  String msg;
-  bool success;
-  Object? error;
-  StackTrace? stackTrace;
-
-  // ignore: sort_constructors_first
   Log({required this.msg, this.success = false, this.error, this.stackTrace});
+
+  /// Log Message
+  String msg;
+
+  /// true when logging process succeed
+  bool success;
+
+  /// error object
+  Object? error;
+
+  /// Trace some lines those just before occurring error to figure out why
+  StackTrace? stackTrace;
 }
 
+/// This class is required for DB MODEL definitions using in /lib/model/model.dart file
+/// Simple DB Model definition must be below:
+/// ```
+/// @SqfEntityBuilder(myDbModel)
+/// const myDbModel = SqfEntityModel(
+/// modelName: 'MyDbModel',
+/// databaseName: 'sample.db',
+/// databaseTables: [tableProduct, tableCategory, tableTodo],
+/// defaultColumns: [
+///   SqfEntityField('dateCreated', DbType.datetime,
+///       defaultValue: 'DateTime.now()'),
+/// ]);
+/// ```
 class SqfEntityModel {
   const SqfEntityModel(
       {this.databaseName,
@@ -293,21 +347,26 @@ class SqfEntityModel {
       this.defaultColumns,
       this.preSaveAction,
       this.logFunction});
-  // STEPS FOR CREATE YOUR DB CONTEXT
 
-  /// 1. declare your sqlite database name
+  /// Declare your sqlite database name
   final String? databaseName;
 
   /// This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
   final String? bundledDatabasePath;
+
+  /// Password for SQLite encryption (Optional)
   final String? password;
 
-  /// 2. Add the object you defined above to your list of database tables and sequences.
+  /// Add tables that you defined as SqfEntityTable const into
   final List<SqfEntityTable>? databaseTables;
+
+  /// Add tables that you want to generate its add/update forms and list views (Optional)
   final List<SqfEntityTable>? formTables;
+
+  /// Add sequences that you defined as SqfEntitySequence const into
   final List<SqfEntitySequence>? sequences;
 
-  /// set this property to your DBModel.dart path for ex: "import 'MyDbModel.dart';"
+  /// Specify a name of DB Model collection (Optional)
   final String? modelName;
 
   /// You can specify the names of rules to be ignored which are specified in analysis_options.yaml file.
@@ -324,21 +383,25 @@ class SqfEntityModel {
 
   /// Log events on failure of insert/update operation
   final LogFunction? logFunction;
-
-  // that's all.. one more step left for create models.dart file.
-  // ATTENTION: Defining the table here provides automatic processing for database configuration only.
-  // you may call the SqfEntityDbContext.createModel(MyDbModel.databaseTables) function to create your model and use it in your project
 }
 
 // END ANNOTATIONS
 
 // BEGIN CONVERTERS
+
+/// toModelBase() function uses only
 class ConvertedModel extends SqfEntityModelBase {}
 
+/// To get the generated class from the clipboard instead of running build command
+///
+/// to see example:
+///
+/// check createSqfEntityModelString() method in example -> https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/main.dart
 class SqfEntityModelConverter {
   SqfEntityModelConverter(this.model);
   final SqfEntityModel model;
 
+  /// Convert defined constant model into SqfEntityModelBase
   SqfEntityModelBase toModelBase() {
     return ConvertedModel()
       ..databaseName = model.databaseName
@@ -351,6 +414,7 @@ class SqfEntityModelConverter {
       ..init();
   }
 
+  /// Convert defined constant tables into List<SqfEntityTableBase>
   List<SqfEntityTableBase>? toTables() {
     if (model.databaseTables == null) {
       return null;
@@ -362,6 +426,7 @@ class SqfEntityModelConverter {
     return tables;
   }
 
+  /// Convert defined constant tables into SqfEntityTableBase
   SqfEntityTableBase toTable(SqfEntityTable table) {
     return SqfEntityTableBase()
       ..tableName = table.tableName
@@ -377,6 +442,7 @@ class SqfEntityModelConverter {
       ..init();
   }
 
+  /// Convert defined constant tables into SqfEntityFieldType
   List<SqfEntityFieldType>? toFields(SqfEntityTable table) {
     if (table.fields == null) {
       return null;
@@ -1422,23 +1488,24 @@ class SqfEntityObjectBuilder {
     /// 
     /// Returns a <List<BoolResult>>
     static Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
-      // final results = _mn${_table.modelName}.saveAll('INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)',${toPluralName(_table._modelLowerCase)});
-      // return results; removed in sqfentity_gen 1.3.0+6
-      await ${_table.dbModel}().batchStart();
+      List<dynamic>? result = [];
+      // If there is no open transaction, start one
+      final isStartedBatch = await ${_table.dbModel}().batchStart();
           for(final obj in ${toPluralName(_table._modelLowerCase)})
-          { await obj.save(); }
-      //    return ${_table.dbModel}().batchCommit();
-    final result =await ${_table.dbModel}().batchCommit();
+          {
+             await obj.save(${_table.primaryKeyTypes[0].startsWith('int') && _table.primaryKeyNames.length == 1 ? 'ignoreBatch: false' : ''}); 
+          }
+    if (!isStartedBatch) {
+     result =await ${_table.dbModel}().batchCommit();
     ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '''
     for (int i = 0; i < ${toPluralName(_table._modelLowerCase)}.length; i++) {
       if(${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} == null) { 
         ${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} = result![i] as ${_table.primaryKeyTypes[0]}; 
         }
-    }
+      }
     ''' : ''}
-    
+    }
     return result!;
-
       }''';
   }
 
@@ -1471,12 +1538,12 @@ class SqfEntityObjectBuilder {
         ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    
+    /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
     /// <returns>Returns ${_table.primaryKeyNames[0]}
-    Future<int?> ${_hiddenMethod}save() async {
+    Future<int?> ${_hiddenMethod}save({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insert(this, ignoreBatch);
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult!.success) {isSaved = true;}' : ''}
           }
       else {
@@ -1489,12 +1556,14 @@ class SqfEntityObjectBuilder {
         ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    
+    /// 
+    /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+    ///         
     /// <returns>Returns ${_table.primaryKeyNames[0]}
-    Future<int?> ${_hiddenMethod}saveOrThrow() async {
+    Future<int?> ${_hiddenMethod}saveOrThrow({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
-        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this);
+        ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '' : '${_table.primaryKeyNames[0]} ='} await _mn${_table.modelName}.insertOrThrow(this, ignoreBatch);
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult != null && saveResult!.success) {isSaved = true;}' : ''}
         isInsert = true;
           }
@@ -1529,7 +1598,7 @@ class SqfEntityObjectBuilder {
     /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null. 
     /// 
     /// Call the saveAs() method if you do not want to save it when there is another row with the same ${_table.primaryKeyNames[0]}
-    
+    /// 
     /// <returns>Returns BoolResult
     Future<BoolResult> ${_hiddenMethod}save() async {
       final result = BoolResult(success: false);
@@ -1738,10 +1807,6 @@ String __toOnetoOneSaveCode(SqfEntityTableBase _table) {
     return '';
   }
   final retVal = StringBuffer();
-  /*
-  property
-    .._productProductId = productId
-    .._save();*/
 
   for (var tableCollection in _table.collections!) {
     if (tableCollection.childTableField.relationType ==
@@ -3233,15 +3298,15 @@ class SqfEntityTableBase {
         ..write('this.$primaryKeyName');
     }
 
-    if (fields![0].isPrimaryKeyField != true ||
-        relationType == RelationType.MANY_TO_MANY ||
-        withId) {
-      _retVal
-        ..write(',')
-        ..write(fields![0].toConstructureString());
-    }
+    // if (fields![0].isPrimaryKeyField != true ||
+    //     relationType == RelationType.MANY_TO_MANY ||
+    //     withId) {
+    //   _retVal
+    //     ..write(',')
+    //     ..write(fields![0].toConstructureString());
+    // }
 
-    for (int i = 1; i < fields!.length; i++) {
+    for (int i = 0; i < fields!.length; i++) {
       if (fields![i] is SqfEntityFieldVirtualBase ||
           (fields![i].isPrimaryKeyField == true &&
               !withId &&

@@ -28,33 +28,6 @@ import 'package:sqfentity_gen/sqfentity_gen.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 // BEGIN DATABASE PROVIDER
-// class SqfEntityConnectionProvider implements SqfEntityConnectionBase {
-//   SqfEntityConnectionProvider(this.connection) {
-//     if (!Platform.isWindows && !Platform.isLinux) {
-//       connectionProvider = SqfEntityConnectionMobile(connection);
-//     } else {
-//       connectionProvider = SqfEntityConnectionFfi(connection);
-//     }
-//   }
-
-//   @override
-//   SqfEntityConnection connection;
-//   SqfEntityConnectionBase connectionProvider;
-//   @override
-//   void createDb(Database db, int version) {
-//     connectionProvider.createDb(db, version);
-//   }
-
-//   @override
-//   Future<Database> openDb() async {
-//     return await connectionProvider.openDb();
-//   }
-
-//   @override
-//   Future<void> writeDatabase(ByteData data) async {
-//     await connectionProvider.writeDatabase(data);
-//   }
-// }
 
 class SqfEntityProvider extends SqfEntityModelBase {
   SqfEntityProvider(SqfEntityModelProvider dbModel,
@@ -152,13 +125,9 @@ class SqfEntityProvider extends SqfEntityModelBase {
   /// Run sql command List
   Future<BoolCommitResult> execSQLList(List<String> pSql,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
-    bool closeBatch = false;
     final result = BoolCommitResult(success: false);
     // If there is no open transaction, start one
-    if (openedBatch[_dbModel!.databaseName!] == null) {
-      await batchStart();
-      closeBatch = true;
-    }
+    final bool closeBatch = !await batchStart();
     for (String sql in pSql) {
       openedBatch[_dbModel!.databaseName!]!.execute(sql);
     }
@@ -171,13 +140,11 @@ class SqfEntityProvider extends SqfEntityModelBase {
               continueOnError: continueOnError)
           ..success = true;
       } catch (e) {
-        if (closeBatch) {
-          openedBatch[_dbModel!.databaseName!] = null;
-        }
         result.errorMessage = e.toString();
         print('SQFENTITY ERROR while run execSQLList:');
         print(result.toString());
       }
+      openedBatch[_dbModel!.databaseName!] = null;
     } else {
       result.success = true;
     }
@@ -361,10 +328,10 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> insert(dynamic T) async {
+  Future<int?> insert(dynamic T, bool ignoreBatch) async {
     try {
       /// Leave it in this format for Throw to stay in this catch
-      final res = await insertOrThrow(T);
+      final res = await insertOrThrow(T, ignoreBatch);
       return res;
     } catch (error, stackTrace) {
       T.saveResult = BoolResult(
@@ -379,13 +346,13 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> insertOrThrow(dynamic T) async {
+  Future<int?> insertOrThrow(dynamic T, bool ignoreBatch) async {
     if (_dbModel!.preSaveAction != null) {
       T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
     }
     final Map<String, dynamic> data =
         (await T.toMap(forQuery: true) as Map<String, dynamic>);
-    if (openedBatch[_dbModel!.databaseName] == null) {
+    if (openedBatch[_dbModel!.databaseName] == null || ignoreBatch) {
       final Database? db = await this.db;
       final result = await db?.insert(_tableName!, data);
       T.saveResult = BoolResult(
@@ -418,13 +385,8 @@ class SqfEntityProvider extends SqfEntityModelBase {
   Future<BoolCommitResult> rawInsertAll(String pSql, List<dynamic>? params,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final result = BoolCommitResult(success: false);
-    bool closeBatch = false;
-
     // If there is no open transaction, start one
-    if (openedBatch[_dbModel!.databaseName!] == null) {
-      await batchStart();
-      closeBatch = true;
-    }
+    final bool closeBatch = !await batchStart();
 
     for (var t in params!) {
       openedBatch[_dbModel!.databaseName!]!
@@ -440,13 +402,11 @@ class SqfEntityProvider extends SqfEntityModelBase {
               continueOnError: continueOnError)
           ..success = true;
       } catch (e) {
-        if (closeBatch) {
-          openedBatch[_dbModel!.databaseName!] = null;
-        }
         result.errorMessage = e.toString();
         print('SQFENTITY ERROR while run execSQLList:');
         print(result.toString());
       }
+      openedBatch[_dbModel!.databaseName!] = null;
     } else {
       result.success = true;
     }
@@ -497,7 +457,6 @@ class SqfEntityProvider extends SqfEntityModelBase {
         }
       }
     }
-
     return results;
   }
 
@@ -531,13 +490,22 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<void> batchStart() async {
+  /// Start a batch to commit all of the operations in a batch as a single atomic unit
+  Future<bool> batchStart() async {
+    bool isStarted = true;
     if (openedBatch[_dbModel!.databaseName!] == null) {
       final Database db = (await this.db)!;
       openedBatch[_dbModel!.databaseName!] = db.batch();
+      isStarted = false;
     }
+    return isStarted;
   }
 
+  /// Commits all of the operations in this batch as a single atomic unit
+  ///
+  /// The result is a list of the result of each operation in the same order if [noResult] is true, the result list is empty (i.e. the id inserted the count of item changed is not returned.
+  ///
+  /// The batch is stopped if any operation failed If [continueOnError] is true, all the operations in the batch are executed and the failure are ignored (i.e. the result for the given operation will be a DatabaseException)
   Future<List<dynamic>?> batchCommit(
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     if (openedBatch[_dbModel!.databaseName!] != null) {
@@ -552,6 +520,9 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
+  /// Rollback transaction
+  ///
+  /// Cancels all of the operations in this batch
   void batchRollback() async {
     openedBatch[_dbModel!.databaseName!] = null;
   }
@@ -570,7 +541,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
     if (dbSequences.isNotEmpty) {
       final tableSquence = await SqfEntityProvider(this)
           .execDataTable('PRAGMA table_info(sqfentitysequences)');
-      if (tableSquence == null || tableSquence.isEmpty) {
+      if (tableSquence.isEmpty) {
         await SqfEntityProvider(this).execSQL(
             'Create table sqfentitysequences (id text UNIQUE, value integer)');
       }
@@ -578,7 +549,7 @@ abstract class SqfEntityModelProvider extends SqfEntityModelBase {
         final sqRow = await SqfEntityProvider(this).execDataTable(
             'SELECT * FROM sqfentitysequences WHERE id=?',
             [sequence.sequenceName]);
-        if (sqRow!.isEmpty) {
+        if (sqRow.isEmpty) {
           await SqfEntityProvider(this).execSQL(
               'INSERT INTO sqfentitysequences (id, value) VALUES (?,?)',
               [sequence.sequenceName, sequence.startWith]);
@@ -606,7 +577,7 @@ ${table.sqlStatement}'''
             final tableFields = await SqfEntityProvider(this)
                 .execDataTable('PRAGMA table_info(`${table.tableName}`)');
             final List<TableField> existingDBfields = <TableField>[];
-            if (tableFields != null && tableFields.isNotEmpty) {
+            if (tableFields.isNotEmpty) {
               String? primaryKeyName;
               for (final row in tableFields) {
                 if (row['pk'].toString() == '1') {
@@ -687,7 +658,6 @@ ${table.sqlStatement}'''
         }
       }
     }
-
     return true;
   }
 
@@ -768,24 +738,32 @@ ${table.sqlStatement}'''
     return SqfEntityProvider(this).execScalar(sql, arguments);
   }
 
+  /// Get SQLite Database path
   Future<String?> getDatabasePath() async {
     return await getDatabasesPath();
   }
 
-  Future<void> batchStart() async {
-    await SqfEntityProvider(this).batchStart();
+  /// Start a transaction batch to commit all of the operations in a batch as a single atomic unit
+  Future<bool> batchStart() async {
+    return await SqfEntityProvider(this).batchStart();
   }
 
+  /// Commits all of the operations in this batch as a single atomic unit
+  ///
+  /// The result is a list of the result of each operation in the same order if [noResult] is true, the result list is empty (i.e. the id inserted the count of item changed is not returned.
+  ///
+  /// The batch is stopped if any operation failed If [continueOnError] is true, all the operations in the batch are executed and the failure are ignored (i.e. the result for the given operation will be a DatabaseException)
   Future<List<dynamic>?> batchCommit() async {
     return SqfEntityProvider(this).batchCommit();
   }
 
+  /// Cancels all of the operations in this batch
   void batchRollback() async {
     return SqfEntityProvider(this).batchRollback();
   }
 }
 
-/// check all tables is it ready
+/// Check the tables if initialized
 bool checkForIsReadyDatabase(List<SqfEntityTableBase> dbTables) {
   if (dbTables.where((i) => !i.initialized).isEmpty) {
     print('SQFENTITIY: The database is ready for use');
@@ -795,6 +773,7 @@ bool checkForIsReadyDatabase(List<SqfEntityTableBase> dbTables) {
   }
 }
 
+/// Check indexes of the table if exist
 List<String> checkTableIndexes(SqfEntityTableBase table) {
   final alterTableQuery = <String>[];
   final List<String> addedIndexes = <String>[];
@@ -838,6 +817,7 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
   return alterTableQuery;
 }
 
+/// Check table fields if exist
 List<String> checkTableColumns(
     SqfEntityTableBase table, List<TableField> existingDBfields) {
   final alterTableQuery = <String>[];
@@ -892,10 +872,7 @@ List<String> checkTableColumns(
   return alterTableQuery;
 }
 
-class BundledModelBase extends SqfEntityModelProvider {
-  BundledModelBase();
-}
-
+/// Create DB Model from DB
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
     SqfEntityModelProvider model) async {
   final bundledDbModel = SqfEntityProvider(model);
@@ -904,7 +881,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       .execDataTable(
           '''SELECT name,type FROM sqlite_master WHERE type IN ('table','view') ${model.databaseTables != null && model.databaseTables!.isNotEmpty ? " AND name IN ('${model.databaseTables!.join('\',\'')}')" : ""}''');
   print(
-      'SQFENTITY.convertDatabaseToModelBase---------------${tableList!.length} tables and views found in ${model.bundledDatabasePath} database:');
+      'SQFENTITY.convertDatabaseToModelBase---------------${tableList.length} tables and views found in ${model.bundledDatabasePath} database:');
   printList(tableList);
 
   final List<SqfEntityTableBase> tables =
@@ -920,6 +897,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
     ..bundledDatabasePath = null; //bundledDatabasePath;
 }
 
+/// Method for Creating DB Model from DB
 Future<List<SqfEntityTableBase>> getObjects(List objectList,
     SqfEntityProvider bundledDbModel, SqfEntityModelProvider model) async {
   final tables = <SqfEntityTableBase>[];
@@ -944,7 +922,7 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
     final tableFields =
         await bundledDbModel.execDataTable('PRAGMA table_info(`$tableName`)');
     final existingDBfields = <SqfEntityFieldType>[];
-    if (tableFields != null && tableFields.isNotEmpty) {
+    if (tableFields.isNotEmpty) {
       // check primary key in the table
       for (final row in tableFields) {
         if (row['pk'].toString() != '0') {
@@ -965,8 +943,8 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
             .toString();
         sqlStatement = sqlStatement.substring(sqlStatement.indexOf('SELECT'));
       }
-      // convert table fields to SqfEntityField
 
+      /// convert table fields to SqfEntityField
       for (int i = 0; i < tableFields.length; i++) {
         if (tableFields[i]['name'].toString() != primaryKeyName) {
           existingDBfields.add(SqfEntityFieldBase(
@@ -996,7 +974,7 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
     }
   }
 
-  // set RelationShips
+  /// set RelationShips
   for (var table in tables) {
     final relationFields = <SqfEntityFieldRelationshipBase>[];
     final foreignKeys = await bundledDbModel.getForeignKeys(table.tableName!);
@@ -1004,15 +982,12 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
       print(
           'SQFENTITY.convertDatabaseToModelBase---------------${foreignKeys.length} foreign keys found in ${model.bundledDatabasePath}/${table.tableName}:');
       printList(foreignKeys);
-      // Customer:
-      // {id: 0, seq: 0, table: Employee, from: SupportRepId, to: EmployeeId, on_update: NO ACTION, on_delete: NO ACTION, match: NONE}
-      // Employee:
-      // {id: 0, seq: 0, table: Employee, from: ReportsTo, to: EmployeeId, on_update: NO ACTION, on_delete: NO ACTION, match: NONE}
       for (final fKey in foreignKeys) {
         for (final parentTable in tables) {
           if (parentTable.tableName!.toLowerCase() ==
               fKey['table'].toString().toLowerCase()) {
-            // bir foreign key, primary key olarak ayarlanmışsa relationship alanına dönüştür
+            /// bir foreign key, primary key olarak ayarlanmışsa relationship alanına dönüştür
+            /// Set field as Relatianship if it set as primarykey and foreign key
             if (table.primaryKeyName!.toLowerCase() ==
                 fKey['from'].toString().toLowerCase()) {
               relationFields.add(SqfEntityFieldRelationshipBase(
@@ -1038,10 +1013,9 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
           }
         }
         //print(fKey.toString());
-
       }
     } else {
-      // if foreignKeys.isEmpty
+      // if foreignKeys is Empty
       for (final field in table.fields!) {
         if (field.fieldName!.toLowerCase() != 'id' &&
             (field.dbType == DbType.integer ||
@@ -1056,12 +1030,10 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
                         field.fieldName!.toLowerCase()))) {
               print(
                   'relationship column (${field.fieldName}) found on the table ${parentTable.tableName}');
-              //table.fields!.add(
               relationFields.add(SqfEntityFieldRelationshipBase(
                   parentTable, DeleteRule.NO_ACTION)
                 ..fieldName = field.fieldName
                 ..dbType = field.dbType);
-              //table.fields!.remove(field);
             }
           }
         }
@@ -1082,7 +1054,7 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
     }
   }
 
-  // SET MANY TO MANY RELATIONS
+  /// SET MANY TO MANY RELATIONS
   final manyToManyTables = <SqfEntityTableBase>[];
   for (var table in tables) {
     if (table.fields!.length == 2 &&
@@ -1102,6 +1074,7 @@ Future<List<SqfEntityTableBase>> getObjects(List objectList,
   return tables;
 }
 
+/// SQLite Delete Rules
 DeleteRule getDeleteRule(String rule) {
   switch (rule) {
     case 'NO ACTION':
@@ -1117,6 +1090,7 @@ DeleteRule getDeleteRule(String rule) {
   }
 }
 
+/// Print dynamic list
 void printList(List<dynamic>? list) {
   for (final o in list!) {
     print(o.toString());

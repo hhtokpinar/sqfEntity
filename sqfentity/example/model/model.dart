@@ -1,50 +1,68 @@
-import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
 // STEP 1: define your tables as shown in the example Classes below.
-// Define the 'TableCategory' constant as SqfEntityTable.
-const SqfEntityTable tableCategory = SqfEntityTable(
+
+// Define the 'tableCategory' constant as SqfEntityTable for the category table
+const tableCategory = SqfEntityTable(
     tableName: 'category',
     primaryKeyName: 'id',
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-    useSoftDeleting: true,
+    useSoftDeleting: false,
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
     modelName:
         null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
     // declare fields
     fields: [
-      SqfEntityField('name', DbType.text),
+      SqfEntityField('name', DbType.text, isNotNull: true),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
-    ]);
+    ],
+    formListSubTitleField: '');
 
-// Define the 'TableProduct' constant as SqfEntityTable.
-const SqfEntityTable tableProduct = SqfEntityTable(
+// Define the 'tableProduct' constant as SqfEntityTable for the product table
+const tableProduct = SqfEntityTable(
     tableName: 'product',
     primaryKeyName: 'id',
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: true,
     fields: [
-      SqfEntityField('name', DbType.text),
+      SqfEntityField(
+        'name',
+        DbType.text,
+        isNotNull: true,
+      ),
       SqfEntityField('description', DbType.text),
       SqfEntityField('price', DbType.real, defaultValue: 0),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
+
+      /// Relationship column for CategoryId of Product
       SqfEntityFieldRelationship(
           parentTable: tableCategory,
-          deleteRule: DeleteRule.SET_DEFAULT_VALUE,
-          defaultValue: 0), // Relationship column for CategoryId of Product
+          deleteRule: DeleteRule.CASCADE,
+          defaultValue: 1,
+          formDropDownTextField:
+              'name' // displayText of dropdownList for category. 'name' => a text field from the category table
+          ),
       SqfEntityField('rownum', DbType.integer,
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
+      SqfEntityField('datetime', DbType.datetime,
+          defaultValue: 'DateTime.now()',
+          minValue: '2019-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 30))'),
+      SqfEntityField('date', DbType.date,
+          minValue: '2015-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 365))')
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
-const SqfEntityTable tableTodo = SqfEntityTable(
+const tableTodo = SqfEntityTable(
     tableName: 'todos',
     primaryKeyName: 'id',
     useSoftDeleting:
@@ -57,11 +75,11 @@ const SqfEntityTable tableTodo = SqfEntityTable(
     fields: [
       SqfEntityField('userId', DbType.integer),
       SqfEntityField('title', DbType.text),
-      SqfEntityField('completed', DbType.bool, defaultValue: false)
+      SqfEntityField('completed', DbType.bool, defaultValue: false),
     ]);
 
 // Define the 'identity' constant as SqfEntitySequence.
-const SqfEntitySequence seqIdentity = SqfEntitySequence(
+const seqIdentity = SqfEntitySequence(
   sequenceName: 'identity',
   //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
   //modelName: 'SQEidentity',
@@ -76,71 +94,42 @@ const SqfEntitySequence seqIdentity = SqfEntitySequence(
 // Note: SqfEntity provides support for the use of multiple databases.
 // So you can create many Database Models and use them in the application.
 @SqfEntityBuilder(myDbModel)
-const SqfEntityModel myDbModel = SqfEntityModel(
+const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM.db',
+    databaseName: 'sampleORM_v2.1.0+3.db',
+    password:
+        null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
-    databaseTables: [tableCategory, tableProduct, tableTodo],
+    databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property
     formTables: [tableProduct, tableCategory, tableTodo],
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
-    bundledDatabasePath: 'assets/sampleORM.db'
+    dbVersion: 2,
+    bundledDatabasePath: null, //         'assets/sample.db'
     // This value is optional. When bundledDatabasePath is empty then
     // EntityBase creats a new database when initializing the database
-    );
+    defaultColumns: [
+      SqfEntityField('dateCreated', DbType.datetime,
+          defaultValue: 'DateTime.now()'),
+    ]);
 
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs
-  Note: After running the command Please check lib/model/model.g.dart and 
-        lib/model/model.g.view.dart (If formTables parameter is defined in the model)
-  
+  Note: After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If formTables parameter is defined in the model)
   Enjoy.. Huseyin TOKPINAR
 */
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-// **************************************************************************
-// SqfEntityGenerator
-// **************************************************************************
-
-//  These classes was generated by SqfEntity
-//  Copyright (c) 2019, All rights reserved. Use of this source code is governed by a
-//  Apache license that can be found in the LICENSE file.
-
 //  To use these SqfEntity classes do following:
 //  - import model.dart into where to use
-//  - start typing ex:Category.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
+//  - start typing ex:Product.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
 //  - and then just put end of filters / or end of only select()  toSingle() / or toList()
 //  - you can select one or return List<yourObject> by your filters and orders
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
 // BEGIN TABLES
-// Category TABLE
-class TableCategory extends SqfEntityTableBase {
-  TableCategory() {
-    // declare properties of EntityTable
-    tableName = 'category';
-    primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-    useSoftDeleting = true;
-    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
-
-    // declare fields
-    fields = [
-      SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
-    ];
-    super.init();
-  }
-  static SqfEntityTableBase _instance;
-  static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableCategory();
-  }
-}
-
 // Product TABLE
 class TableProduct extends SqfEntityTableBase {
   TableProduct() {
@@ -153,21 +142,82 @@ class TableProduct extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text),
-      SqfEntityFieldBase('description', DbType.text),
-      SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
-      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
+      SqfEntityFieldBase('name', DbType.text,
+          isUnique: false, isNotNull: true, isIndex: false),
+      SqfEntityFieldBase('description', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('price', DbType.real,
+          defaultValue: 0, isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('isActive', DbType.bool,
+          defaultValue: true,
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
       SqfEntityFieldRelationshipBase(
-          TableCategory.getInstance, DeleteRule.SET_DEFAULT_VALUE,
-          defaultValue: 0),
-      SqfEntityFieldBase('rownum', DbType.integer),
-      SqfEntityFieldBase('imageUrl', DbType.text),
+          TableCategory.getInstance, DeleteRule.CASCADE,
+          relationType: RelationType.ONE_TO_MANY,
+          fieldName: 'categoryId',
+          defaultValue: 1,
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
+      SqfEntityFieldBase('rownum', DbType.integer,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('imageUrl', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('datetime', DbType.datetime,
+          defaultValue: DateTime.now(),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('2019-01-01'),
+          maxValue: DateTime.now().add(Duration(days: 30))),
+      SqfEntityFieldBase('date', DbType.date,
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('2015-01-01'),
+          maxValue: DateTime.now().add(Duration(days: 365))),
+      SqfEntityFieldBase('dateCreated', DbType.datetime,
+          defaultValue: DateTime.now(),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableProduct();
+  }
+}
+
+// Category TABLE
+class TableCategory extends SqfEntityTableBase {
+  TableCategory() {
+    // declare properties of EntityTable
+    tableName = 'category';
+    primaryKeyName = 'id';
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    useSoftDeleting = false;
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+
+    // declare fields
+    fields = [
+      SqfEntityFieldBase('name', DbType.text,
+          isUnique: false, isNotNull: true, isIndex: false),
+      SqfEntityFieldBase('isActive', DbType.bool,
+          defaultValue: true,
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
+    ];
+    super.init();
+  }
+  static SqfEntityTableBase? _instance;
+  static SqfEntityTableBase get getInstance {
+    return _instance = _instance ?? TableCategory();
   }
 }
 
@@ -183,13 +233,25 @@ class TableTodo extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('userId', DbType.integer),
-      SqfEntityFieldBase('title', DbType.text),
-      SqfEntityFieldBase('completed', DbType.bool, defaultValue: false),
+      SqfEntityFieldBase('userId', DbType.integer,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('title', DbType.text,
+          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('completed', DbType.bool,
+          defaultValue: false,
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false),
+      SqfEntityFieldBase('dateCreated', DbType.datetime,
+          defaultValue: DateTime.now(),
+          isUnique: false,
+          isNotNull: false,
+          isIndex: false,
+          minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
-  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
     return _instance = _instance ?? TableTodo();
   }
@@ -202,14 +264,14 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
   SequenceIdentitySequence() {
     sequenceName = 'identity';
     maxValue =
-        9223372036854775807; /* optional. default is max int (9.223.372.036.854.775.807) */
+        9007199254740991; /* optional. default is max int (9.223.372.036.854.775.807) */
     cycle = false; /* optional. default is false; */
     minValue = 0; /* optional. default is 0 */
     incrementBy = 1; /* optional. default is 1 */
     startWith = 0; /* optional. default is 0 */
     super.init();
   }
-  static SequenceIdentitySequence _instance;
+  static SequenceIdentitySequence? _instance;
   static SequenceIdentitySequence get getInstance {
     return _instance = _instance ?? SequenceIdentitySequence();
   }
@@ -220,9 +282,13 @@ class SequenceIdentitySequence extends SqfEntitySequenceBase {
 class MyDbModel extends SqfEntityModelProvider {
   MyDbModel() {
     databaseName = myDbModel.databaseName;
+    password = myDbModel.password;
+    dbVersion = myDbModel.dbVersion;
+    preSaveAction = myDbModel.preSaveAction;
+    logFunction = myDbModel.logFunction;
     databaseTables = [
-      TableCategory.getInstance,
       TableProduct.getInstance,
+      TableCategory.getInstance,
       TableTodo.getInstance,
     ];
 
@@ -238,9 +304,9 @@ class MyDbModel extends SqfEntityModelProvider {
 
 // BEGIN ENTITIES
 // region Product
-class Product {
+class Product extends TableBase {
   Product(
-      {this.productId,
+      {this.id,
       this.name,
       this.description,
       this.price,
@@ -250,6 +316,7 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted}) {
     _setDefaultValues();
   }
@@ -263,11 +330,12 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted) {
     _setDefaultValues();
   }
   Product.withId(
-      this.productId,
+      this.id,
       this.name,
       this.description,
       this.price,
@@ -277,72 +345,109 @@ class Product {
       this.imageUrl,
       this.datetime,
       this.date,
+      this.dateCreated,
       this.isDeleted) {
     _setDefaultValues();
   }
-  Product.fromMap(Map<String, dynamic> o) {
-    productId = o['productId'] as int;
-    name = o['name'] as String;
-    description = o['description'] as String;
-    price = double.tryParse(o['price'].toString());
-    isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
-    categoryId = o['categoryId'] as int;
+  // fromMap v2.0
+  Product.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
+    id = int.tryParse(o['id'].toString());
+    if (o['name'] != null) {
+      name = o['name'].toString();
+    }
+    if (o['description'] != null) {
+      description = o['description'].toString();
+    }
+    if (o['price'] != null) {
+      price = double.tryParse(o['price'].toString());
+    }
+    if (o['isActive'] != null) {
+      isActive =
+          o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
+    }
+    categoryId = int.tryParse(o['categoryId'].toString());
 
-    rownum = o['rownum'] as int;
-    imageUrl = o['imageUrl'] as String;
-    datetime = o['datetime'] != null
-        ? int.tryParse(o['datetime'].toString()) != null
-            ? DateTime.fromMillisecondsSinceEpoch(o['datetime'] as int)
-            : DateTime.tryParse(o['datetime'].toString())
+    if (o['rownum'] != null) {
+      rownum = int.tryParse(o['rownum'].toString());
+    }
+    if (o['imageUrl'] != null) {
+      imageUrl = o['imageUrl'].toString();
+    }
+    if (o['datetime'] != null) {
+      datetime = int.tryParse(o['datetime'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['datetime'].toString())!)
+          : DateTime.tryParse(o['datetime'].toString());
+    }
+    if (o['date'] != null) {
+      date = int.tryParse(o['date'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['date'].toString())!)
+          : DateTime.tryParse(o['date'].toString());
+    }
+    if (o['dateCreated'] != null) {
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
+    }
+    isDeleted = o['isDeleted'] != null
+        ? o['isDeleted'] == 1 || o['isDeleted'] == true
         : null;
-    date = o['date'] != null
-        ? int.tryParse(o['date'].toString()) != null
-            ? DateTime.fromMillisecondsSinceEpoch(o['date'] as int)
-            : DateTime.tryParse(o['date'].toString())
+
+    // RELATIONSHIPS FromMAP
+    plCategory = o['category'] != null
+        ? Category.fromMap(o['category'] as Map<String, dynamic>)
         : null;
-    isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
+    // END RELATIONSHIPS FromMAP
   }
   // FIELDS (Product)
-  int productId;
-  String name;
-  String description;
-  double price;
-  bool isActive;
-  int categoryId;
-  int rownum;
-  String imageUrl;
-  DateTime datetime;
-  DateTime date;
-  bool isDeleted;
+  int? id;
+  String? name;
+  String? description;
+  double? price;
+  bool? isActive;
+  int? categoryId;
+  int? rownum;
+  String? imageUrl;
+  DateTime? datetime;
+  DateTime? date;
+  DateTime? dateCreated;
+  bool? isDeleted;
 
-  BoolResult saveResult;
+  BoolResult? saveResult;
   // end FIELDS (Product)
 
 // RELATIONSHIPS (Product)
-  /// get Category By CategoryId
+  /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plCategory', 'plField2'..]) or so on..
+  Category? plCategory;
 
-  Future<Category> getCategory(
-      [VoidCallback Function(Category o) category]) async {
-    final _obj = await Category().getById(categoryId);
-    if (category != null) {
-      category(_obj);
-    }
+  /// get Category By CategoryId
+  Future<Category?> getCategory(
+      {bool loadParents = false, List<String>? loadedFields}) async {
+    final _obj = await Category().getById(categoryId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
   // END RELATIONSHIPS (Product)
 
   static const bool _softDeleteActivated = true;
-  ProductManager __mnProduct;
+  ProductManager? __mnProduct;
 
   ProductManager get _mnProduct {
     return __mnProduct = __mnProduct ?? ProductManager();
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (productId != null) {
-      map['productId'] = productId;
+    if (id != null) {
+      map['id'] = id;
     }
     if (name != null) {
       map['name'] = name;
@@ -357,11 +462,15 @@ class Product {
     }
 
     if (isActive != null) {
-      map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+      map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
     }
 
     if (categoryId != null) {
-      map['categoryId'] = categoryId;
+      map['categoryId'] = forView
+          ? plCategory == null
+              ? categoryId
+              : plCategory!.name
+          : categoryId;
     }
 
     if (rownum != null) {
@@ -374,32 +483,43 @@ class Product {
 
     if (datetime != null) {
       map['datetime'] = forJson
-          ? datetime.toUtc().toString()
+          ? datetime!.toString()
           : forQuery
-              ? datetime.millisecondsSinceEpoch
+              ? datetime!.millisecondsSinceEpoch
               : datetime;
     }
 
     if (date != null) {
       map['date'] = forJson
-          ? '$date.year-$date.month-$date.day'
+          ? '$date!.year-$date!.month-$date!.day'
           : forQuery
-              ? DateTime(date.year, date.month, date.day).millisecondsSinceEpoch
+              ? DateTime(date!.year, date!.month, date!.day)
+                  .millisecondsSinceEpoch
               : date;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     if (isDeleted != null) {
-      map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
+      map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
 
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
+  Future<Map<String, dynamic>> toMapWithChildren(
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (productId != null) {
-      map['productId'] = productId;
+    if (id != null) {
+      map['id'] = id;
     }
     if (name != null) {
       map['name'] = name;
@@ -414,11 +534,15 @@ class Product {
     }
 
     if (isActive != null) {
-      map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+      map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
     }
 
     if (categoryId != null) {
-      map['categoryId'] = categoryId;
+      map['categoryId'] = forView
+          ? plCategory == null
+              ? categoryId
+              : plCategory!.name
+          : categoryId;
     }
 
     if (rownum != null) {
@@ -431,40 +555,48 @@ class Product {
 
     if (datetime != null) {
       map['datetime'] = forJson
-          ? datetime.toUtc().toString()
+          ? datetime!.toString()
           : forQuery
-              ? datetime.millisecondsSinceEpoch
+              ? datetime!.millisecondsSinceEpoch
               : datetime;
     }
 
     if (date != null) {
       map['date'] = forJson
-          ? '$date.year-$date.month-$date.day'
+          ? '$date!.year-$date!.month-$date!.day'
           : forQuery
-              ? DateTime(date.year, date.month, date.day).millisecondsSinceEpoch
+              ? DateTime(date!.year, date!.month, date!.day)
+                  .millisecondsSinceEpoch
               : date;
     }
 
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
+    }
+
     if (isDeleted != null) {
-      map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
+      map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
 
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Product]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Product]
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
     return [
-      productId,
       name,
       description,
       price,
@@ -472,10 +604,44 @@ class Product {
       categoryId,
       rownum,
       imageUrl,
-      datetime != null ? datetime.millisecondsSinceEpoch : null,
-      date != null ? date.millisecondsSinceEpoch : null,
+      datetime != null ? datetime!.millisecondsSinceEpoch : null,
+      date != null ? date!.millisecondsSinceEpoch : null,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
       isDeleted
     ];
+  }
+
+  List<dynamic> toArgsWithIds() {
+    return [
+      id,
+      name,
+      description,
+      price,
+      isActive,
+      categoryId,
+      rownum,
+      imageUrl,
+      datetime != null ? datetime!.millisecondsSinceEpoch : null,
+      date != null ? date!.millisecondsSinceEpoch : null,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
+      isDeleted
+    ];
+  }
+
+  static Future<List<Product>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
+    try {
+      final response = await http.get(uri, headers: headers);
+      return await fromJson(response.body);
+    } catch (e) {
+      print(
+          'SQFENTITY ERROR Product.fromWebUrl: ErrorMessage: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Product>> fromJson(String jsonBody) async {
@@ -491,15 +657,32 @@ class Product {
     return objList;
   }
 
-  static Future<List<Product>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    return await Product.fromMapList(data);
-  }
-
-  static Future<List<Product>> fromMapList(List<dynamic> data) async {
+  static Future<List<Product>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Product> objList = <Product>[];
-    for (final Map map in data as List<Map>) {
-      final obj = Product.fromMap(map as Map<String, dynamic>);
+    loadedFields = loadedFields ?? [];
+    for (final map in data) {
+      final obj = Product.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
+      // final List<String> _loadedFields = List<String>.from(loadedFields);
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD
 
       objList.add(obj);
     }
@@ -507,67 +690,137 @@ class Product {
   }
 
   /// returns Product by ID if exist, otherwise returns null
-  /// <param name='productId'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int? id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Product if exist, otherwise returns null
-  Future<Product> getById(int productid) async {
-    if (productid == null) {
+  Future<Product?> getById(int? id,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    if (id == null) {
       return null;
     }
-    Product obj;
-    final data = await _mnProduct.getById([productid]);
+    Product? obj;
+    final data = await _mnProduct.getById([id]);
     if (data.length != 0) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
+      // final List<String> _loadedFields = loadedFields ?? [];
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
     } else {
       obj = null;
     }
     return obj;
   }
 
-  /// Saves the object. If the productId field is null, saves as a new record and returns new productId, if productId is not null then updates record
+  /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  /// <returns>Returns id
+  Future<int?> save({bool ignoreBatch = true}) async {
+    if (id == null || id == 0) {
+      rownum = await IdentitySequence().nextVal();
 
-  /// <returns>Returns productId
-  Future<int> save() async {
-    if (productId == null || productId == 0) {
-      productId = await _mnProduct.insert(this);
-
-      if (productId != null) {
-        rownum = await IdentitySequence().nextVal();
-        save();
-      }
+      id = await _mnProduct.insert(this, ignoreBatch);
     } else {
-      productId = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnProduct.update(this);
     }
 
-    return productId;
+    return id;
+  }
+
+  /// Saves the (Product) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
+  /// <returns>Returns id
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
+    if (id == null || id == 0) {
+      rownum = await IdentitySequence().nextVal();
+
+      id = await _mnProduct.insertOrThrow(this, ignoreBatch);
+
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnProduct.updateOrThrow(this);
+    }
+
+    return id;
   }
 
   /// saveAs Product. Returns a new Primary Key value of Product
 
   /// <returns>Returns a new Primary Key value of Product
-  Future<int> saveAs() async {
-    productId = null;
+  Future<int?> saveAs() async {
+    id = null;
 
     return save();
   }
 
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Product> products) async {
-    final results = _mnProduct.saveAll(
-        'INSERT OR REPLACE INTO product (productId,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-        products);
-    return results;
+  static Future<List<dynamic>> saveAll(List<Product> products) async {
+    // final results = _mnProduct.saveAll('INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',products);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    await MyDbModel().batchStart();
+    for (final obj in products) {
+      await obj.save(ignoreBatch: false);
+    }
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+    for (int i = 0; i < products.length; i++) {
+      if (products[i].id == null) {
+        products[i].id = result![i] as int;
+      }
+    }
+
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
-  /// <returns>Returns productId
-  Future<int> _upsert() async {
+  /// <returns>Returns id
+
+  Future<int?> upsert() async {
     try {
-      productId = await _mnProduct.rawInsert(
-          'INSERT OR REPLACE INTO product (productId,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+      final result = await _mnProduct.rawInsert(
+          'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
           [
-            productId,
+            id,
             name,
             description,
             price,
@@ -575,28 +828,36 @@ class Product {
             categoryId,
             rownum,
             imageUrl,
-            datetime != null ? datetime.millisecondsSinceEpoch : null,
-            date != null ? date.millisecondsSinceEpoch : null,
+            datetime != null ? datetime!.millisecondsSinceEpoch : null,
+            date != null ? date!.millisecondsSinceEpoch : null,
+            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
             isDeleted
           ]);
-      saveResult = BoolResult(
-          success: true,
-          successMessage: 'Product productId=$productId updated successfuly');
-      return productId;
+      if (result! > 0) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage: 'Product id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Product id=$id did not update');
+      }
+      return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Product Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
   /// inserts or replaces the sent List<<Product>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
+  ///
+  /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Product> products) async {
     final results = await _mnProduct.rawInsertAll(
-        'INSERT OR REPLACE INTO product (productId,  name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
         products);
     return results;
   }
@@ -604,14 +865,15 @@ class Product {
   /// Deletes Product
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Product invoked (productId=$productId)');
-    if (!_softDeleteActivated || hardDelete || isDeleted) {
-      return _mnProduct.delete(
-          QueryParams(whereString: 'productId=?', whereArguments: [productId]));
+    print('SQFENTITIY: delete Product invoked (id=$id)');
+    if (!_softDeleteActivated || hardDelete || isDeleted!) {
+      return _mnProduct
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
       return _mnProduct.updateBatch(
-          QueryParams(whereString: 'productId=?', whereArguments: [productId]),
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
   }
@@ -620,24 +882,23 @@ class Product {
 
   /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
   Future<BoolResult> recover([bool recoverChilds = true]) async {
-    print('SQFENTITIY: recover Product invoked (productId=$productId)');
+    print('SQFENTITIY: recover Product invoked (id=$id)');
     {
       return _mnProduct.updateBatch(
-          QueryParams(whereString: 'productId=?', whereArguments: [productId]),
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 0});
     }
   }
 
-  //private ProductFilterBuilder _Select;
   ProductFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return ProductFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   ProductFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return ProductFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
@@ -646,15 +907,16 @@ class Product {
 
   void _setDefaultValues() {
     price = price ?? 0;
-    isActive = isActive ?? false;
-    categoryId = categoryId ?? 0;
+    isActive = isActive ?? true;
+    categoryId = categoryId ?? 1;
     datetime = datetime ?? DateTime.now();
+    dateCreated = dateCreated ?? DateTime.now();
     isDeleted = isDeleted ?? false;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -670,16 +932,15 @@ class Product {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion product
 
 // region ProductField
 class ProductField extends SearchCriteria {
-  ProductField(this.productFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  ProductField(this.productFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   ProductFilterBuilder productFB;
 
@@ -696,7 +957,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param, SqlSyntax.NotEQuals,
             productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -709,7 +970,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -722,7 +983,7 @@ class ProductField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -736,7 +997,7 @@ class ProductField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           productFB._addedBlocks);
       _waitingNot = '';
-      productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+      productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
           productFB._addedBlocks.retVal;
     }
     return productFB;
@@ -751,9 +1012,9 @@ class ProductField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           productFB._addedBlocks);
       _waitingNot = '';
-      productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+      productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
           productFB._addedBlocks.retVal;
-      productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+      productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
           productFB._addedBlocks.retVal;
     }
     return productFB;
@@ -768,7 +1029,7 @@ class ProductField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           productFB._addedBlocks);
       _waitingNot = '';
-      productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+      productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
           productFB._addedBlocks.retVal;
     }
     return productFB;
@@ -801,7 +1062,7 @@ class ProductField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -814,7 +1075,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param,
             SqlSyntax.LessThanOrEquals, productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -827,7 +1088,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -840,7 +1101,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param, SqlSyntax.LessThan,
             productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -853,7 +1114,7 @@ class ProductField extends SearchCriteria {
         : setCriteria(pValue, productFB.parameters, param,
             SqlSyntax.GreaterThan, productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -866,7 +1127,7 @@ class ProductField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         productFB._addedBlocks);
     _waitingNot = '';
-    productFB._addedBlocks.needEndBlock[productFB._blockIndex] =
+    productFB._addedBlocks.needEndBlock![productFB._blockIndex] =
         productFB._addedBlocks.retVal;
     return productFB;
   }
@@ -877,25 +1138,19 @@ class ProductField extends SearchCriteria {
 class ProductFilterBuilder extends SearchCriteria {
   ProductFilterBuilder(Product obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Product _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Product? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   ProductFilterBuilder get and {
@@ -915,22 +1170,24 @@ class ProductFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   ProductFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  ProductFilterBuilder where(String whereCriteria) {
+  ProductFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -958,11 +1215,11 @@ class ProductFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   ProductFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -977,8 +1234,8 @@ class ProductFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -997,8 +1254,8 @@ class ProductFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -1017,8 +1274,8 @@ class ProductFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -1027,70 +1284,96 @@ class ProductFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  ProductField setField(ProductField field, String colName, DbType dbtype) {
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  ProductFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            havingList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  ProductField setField(ProductField? field, String colName, DbType dbtype) {
     return ProductField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  ProductField _productId;
-  ProductField get productId {
-    return _productId = setField(_productId, 'productId', DbType.integer);
+  ProductField? _id;
+  ProductField get id {
+    return _id = setField(_id, 'id', DbType.integer);
   }
 
-  ProductField _name;
+  ProductField? _name;
   ProductField get name {
     return _name = setField(_name, 'name', DbType.text);
   }
 
-  ProductField _description;
+  ProductField? _description;
   ProductField get description {
     return _description = setField(_description, 'description', DbType.text);
   }
 
-  ProductField _price;
+  ProductField? _price;
   ProductField get price {
     return _price = setField(_price, 'price', DbType.real);
   }
 
-  ProductField _isActive;
+  ProductField? _isActive;
   ProductField get isActive {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
-  ProductField _categoryId;
+  ProductField? _categoryId;
   ProductField get categoryId {
     return _categoryId = setField(_categoryId, 'categoryId', DbType.integer);
   }
 
-  ProductField _rownum;
+  ProductField? _rownum;
   ProductField get rownum {
     return _rownum = setField(_rownum, 'rownum', DbType.integer);
   }
 
-  ProductField _imageUrl;
+  ProductField? _imageUrl;
   ProductField get imageUrl {
     return _imageUrl = setField(_imageUrl, 'imageUrl', DbType.text);
   }
 
-  ProductField _datetime;
+  ProductField? _datetime;
   ProductField get datetime {
     return _datetime = setField(_datetime, 'datetime', DbType.datetime);
   }
 
-  ProductField _date;
+  ProductField? _date;
   ProductField get date {
     return _date = setField(_date, 'date', DbType.date);
   }
 
-  ProductField _isDeleted;
+  ProductField? _dateCreated;
+  ProductField get dateCreated {
+    return _dateCreated =
+        setField(_dateCreated, 'dateCreated', DbType.datetime);
+  }
+
+  ProductField? _isDeleted;
   ProductField get isDeleted {
     return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -1104,19 +1387,25 @@ class ProductFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+        if (param.value is List && !param.hasParameter) {
+          param.value = param.dbType == DbType.text || param.value[0] is String
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
@@ -1135,6 +1424,7 @@ class ProductFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -1145,7 +1435,13 @@ class ProductFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -1170,7 +1466,8 @@ class ProductFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Product> bulk by query
@@ -1179,19 +1476,21 @@ class ProductFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult(success: false);
+
     if (Product._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnProduct.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnProduct.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnProduct.delete(qparams);
+      r = await _obj!._mnProduct.delete(qparams);
     }
     return r;
   }
 
+  /// Recover List<Product> bulk by query
   Future<BoolResult> recover() async {
     _getIsDeleted = true;
     _buildParameters();
     print('SQFENTITIY: recover Product bulk invoked');
-    return _obj._mnProduct.updateBatch(qparams, {'isDeleted': 0});
+    return _obj!._mnProduct.updateBatch(qparams, {'isDeleted': 0});
   }
 
   /// using:
@@ -1201,39 +1500,68 @@ class ProductFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'productId IN (SELECT productId from product ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from product ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnProduct.updateBatch(qparams, values);
+    return _obj!._mnProduct.updateBatch(qparams, values);
   }
 
-  /// This method always returns ProductObj if exist, otherwise returns null
+  /// This method always returns Product Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Product>
-  Future<Product> toSingle([VoidCallback Function(Product o) product]) async {
+  Future<Product?> toSingle(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnProduct.toList(qparams);
+    final objFuture = _obj!._mnProduct.toList(qparams);
     final data = await objFuture;
-    Product obj;
+    Product? obj;
     if (data.isNotEmpty) {
       obj = Product.fromMap(data[0] as Map<String, dynamic>);
+      // final List<String> _loadedFields = loadedFields ?? [];
+
+      // RELATIONSHIPS PRELOAD
+      if (preload || loadParents) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plCategory') && */ (preloadFields ==
+                null ||
+            loadParents ||
+            preloadFields.contains('plCategory'))) {
+          /*_loadedfields!.add('category.plCategory');*/ obj.plCategory = obj
+                  .plCategory ??
+              await obj.getCategory(
+                  loadParents: loadParents /*, loadedFields: _loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD
+
     } else {
       obj = null;
-    }
-    if (product != null) {
-      product(obj);
     }
     return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int. [Product]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) productCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? productCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final productsFuture = await _obj._mnProduct.toList(qparams);
+    final productsFuture = await _obj!._mnProduct.toList(qparams);
     final int count = productsFuture[0]['CNT'] as int;
     if (productCount != null) {
       productCount(count);
@@ -1241,19 +1569,36 @@ class ProductFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Product>.
+  /// This method returns List<Product> [Product]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Product>
   Future<List<Product>> toList(
-      [VoidCallback Function(List<Product> o) productList]) async {
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     final data = await toMapList();
-    final List<Product> productsData = await Product.fromMapList(data);
-    if (productList != null) {
-      productList(productsData);
-    }
+    final List<Product> productsData = await Product.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return productsData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Product]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -1263,31 +1608,31 @@ class ProductFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String. [Product]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>. [Product]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnProduct.toList(qparams);
+    return await _obj!._mnProduct.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Product>>
   Future<List<DropdownMenuItem<Product>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Product>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Product>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final productsFuture = _obj._mnProduct.toList(qparams);
+    final productsFuture = _obj!._mnProduct.toList(qparams);
 
     final data = await productsFuture;
     final int count = data.length;
@@ -1312,11 +1657,11 @@ class ProductFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    qparams.selectColumns = ['productId', displayTextColumn];
-    final productsFuture = _obj._mnProduct.toList(qparams);
+    qparams.selectColumns = ['id', displayTextColumn];
+    final productsFuture = _obj!._mnProduct.toList(qparams);
 
     final data = await productsFuture;
     final int count = data.length;
@@ -1327,7 +1672,7 @@ class ProductFilterBuilder extends SearchCriteria {
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: data[i]['productId'] as int,
+          value: data[i]['id'] as int,
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -1338,40 +1683,51 @@ class ProductFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Product]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `id` FROM product WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) {
       _buildParameters();
     }
-    final List<int> productIdData = <int>[];
-    qparams.selectColumns = ['productId'];
-    final productIdFuture = await _obj._mnProduct.toList(qparams);
+    final List<int> idData = <int>[];
+    qparams.selectColumns = ['id'];
+    final idFuture = await _obj!._mnProduct.toList(qparams);
 
-    final int count = productIdFuture.length;
+    final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
-      productIdData.add(productIdFuture[i]['productId'] as int);
+      idData.add(idFuture[i]['id'] as int);
     }
-    return productIdData;
+    return idData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Product]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback Function(List<dynamic> o) listObject]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnProduct.toList(qparams);
+    final objectFuture = _obj!._mnProduct.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -1380,16 +1736,16 @@ class ProductFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Product.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnProduct.toList(qparams);
+    final objectFuture = _obj!._mnProduct.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -1401,65 +1757,70 @@ class ProductFilterBuilder extends SearchCriteria {
 
 // region ProductFields
 class ProductFields {
-  static TableField _fProductId;
-  static TableField get productId {
-    return _fProductId = _fProductId ??
-        SqlSyntax.setField(_fProductId, 'productid', DbType.integer);
+  static TableField? _fId;
+  static TableField get id {
+    return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
   }
 
-  static TableField _fDescription;
+  static TableField? _fDescription;
   static TableField get description {
     return _fDescription = _fDescription ??
         SqlSyntax.setField(_fDescription, 'description', DbType.text);
   }
 
-  static TableField _fPrice;
+  static TableField? _fPrice;
   static TableField get price {
     return _fPrice =
         _fPrice ?? SqlSyntax.setField(_fPrice, 'price', DbType.real);
   }
 
-  static TableField _fIsActive;
+  static TableField? _fIsActive;
   static TableField get isActive {
     return _fIsActive =
         _fIsActive ?? SqlSyntax.setField(_fIsActive, 'isActive', DbType.bool);
   }
 
-  static TableField _fCategoryId;
+  static TableField? _fCategoryId;
   static TableField get categoryId {
     return _fCategoryId = _fCategoryId ??
         SqlSyntax.setField(_fCategoryId, 'categoryId', DbType.integer);
   }
 
-  static TableField _fRownum;
+  static TableField? _fRownum;
   static TableField get rownum {
     return _fRownum =
         _fRownum ?? SqlSyntax.setField(_fRownum, 'rownum', DbType.integer);
   }
 
-  static TableField _fImageUrl;
+  static TableField? _fImageUrl;
   static TableField get imageUrl {
     return _fImageUrl =
         _fImageUrl ?? SqlSyntax.setField(_fImageUrl, 'imageUrl', DbType.text);
   }
 
-  static TableField _fDatetime;
+  static TableField? _fDatetime;
   static TableField get datetime {
     return _fDatetime = _fDatetime ??
         SqlSyntax.setField(_fDatetime, 'datetime', DbType.datetime);
   }
 
-  static TableField _fDate;
+  static TableField? _fDate;
   static TableField get date {
     return _fDate = _fDate ?? SqlSyntax.setField(_fDate, 'date', DbType.date);
   }
 
-  static TableField _fIsDeleted;
+  static TableField? _fDateCreated;
+  static TableField get dateCreated {
+    return _fDateCreated = _fDateCreated ??
+        SqlSyntax.setField(_fDateCreated, 'dateCreated', DbType.datetime);
+  }
+
+  static TableField? _fIsDeleted;
   static TableField get isDeleted {
     return _fIsDeleted = _fIsDeleted ??
         SqlSyntax.setField(_fIsDeleted, 'isDeleted', DbType.integer);
@@ -1469,117 +1830,152 @@ class ProductFields {
 
 //region ProductManager
 class ProductManager extends SqfEntityProvider {
-  ProductManager() : super(MyDbModel(), tableName: _tableName);
+  ProductManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static final String _tableName = 'product';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion ProductManager
 // region Category
-class Category {
-  Category({this.categoryId, this.name, this.isActive}) {
+class Category extends TableBase {
+  Category({this.id, this.name, this.isActive}) {
     _setDefaultValues();
   }
   Category.withFields(this.name, this.isActive) {
     _setDefaultValues();
   }
-  Category.withId(this.categoryId, this.name, this.isActive) {
+  Category.withId(this.id, this.name, this.isActive) {
     _setDefaultValues();
   }
-  Category.fromMap(Map<String, dynamic> o) {
-    categoryId = o['categoryId'] as int;
-    name = o['name'] as String;
-    isActive = o['isActive'] != null ? o['isActive'] == 1 : null;
+  // fromMap v2.0
+  Category.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
+    id = int.tryParse(o['id'].toString());
+    if (o['name'] != null) {
+      name = o['name'].toString();
+    }
+    if (o['isActive'] != null) {
+      isActive =
+          o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
+    }
   }
   // FIELDS (Category)
-  int categoryId;
-  String name;
-  bool isActive;
+  int? id;
+  String? name;
+  bool? isActive;
 
-  BoolResult saveResult;
+  BoolResult? saveResult;
   // end FIELDS (Category)
 
-// COLLECTIONS (Category)
-  /// get Product(s) filtered by categoryId=categoryId
-  ProductFilterBuilder getProducts(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+// COLLECTIONS & VIRTUALS (Category)
+  /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plProducts', 'plField2'..]) or so on..
+  List<Product>? plProducts;
+
+  /// get Product(s) filtered by id=categoryId
+  ProductFilterBuilder? getProducts(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
+    if (id == null) {
+      return null;
+    }
     return Product()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .categoryId
-        .equals(categoryId)
+        .equals(id)
         .and;
   }
-// END COLLECTIONS (Category)
+
+// END COLLECTIONS & VIRTUALS (Category)
 
   static const bool _softDeleteActivated = false;
-  CategoryManager __mnCategory;
+  CategoryManager? __mnCategory;
 
   CategoryManager get _mnCategory {
     return __mnCategory = __mnCategory ?? CategoryManager();
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (categoryId != null) {
-      map['categoryId'] = categoryId;
+    if (id != null) {
+      map['id'] = id;
     }
     if (name != null) {
       map['name'] = name;
     }
 
     if (isActive != null) {
-      map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+      map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
     }
 
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
+  Future<Map<String, dynamic>> toMapWithChildren(
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (categoryId != null) {
-      map['categoryId'] = categoryId;
+    if (id != null) {
+      map['id'] = id;
     }
     if (name != null) {
       map['name'] = name;
     }
 
     if (isActive != null) {
-      map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+      map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
     }
 
 // COLLECTIONS (Category)
     if (!forQuery) {
-      map['Products'] = await getProducts().toMapList();
+      map['Products'] = await getProducts()!.toMapList();
     }
 // END COLLECTIONS (Category)
 
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Category]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Category]
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
-    return [categoryId, name, isActive];
+    return [name, isActive];
   }
 
-  static Future<List<Category>> fromWebUrl(String url) async {
+  List<dynamic> toArgsWithIds() {
+    return [id, name, isActive];
+  }
+
+  static Future<List<Category>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print(
           'SQFENTITY ERROR Category.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Category>> fromJson(String jsonBody) async {
@@ -1595,15 +1991,33 @@ class Category {
     return objList;
   }
 
-  static Future<List<Category>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    return await Category.fromMapList(data);
-  }
-
-  static Future<List<Category>> fromMapList(List<dynamic> data) async {
+  static Future<List<Category>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Category> objList = <Category>[];
-    for (final Map map in data as List<Map>) {
-      final obj = Category.fromMap(map as Map<String, dynamic>);
+    loadedFields = loadedFields ?? [];
+    for (final map in data) {
+      final obj = Category.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
+      // final List<String> _loadedFields = List<String>.from(loadedFields);
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
 
       objList.add(obj);
     }
@@ -1611,80 +2025,158 @@ class Category {
   }
 
   /// returns Category by ID if exist, otherwise returns null
-  /// <param name='categoryId'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int? id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Category if exist, otherwise returns null
-  Future<Category> getById(int categoryid) async {
-    if (categoryid == null) {
+  Future<Category?> getById(int? id,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    if (id == null) {
       return null;
     }
-    Category obj;
-    final data = await _mnCategory.getById([categoryid]);
+    Category? obj;
+    final data = await _mnCategory.getById([id]);
     if (data.length != 0) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
+      // final List<String> _loadedFields = loadedFields ?? [];
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
     } else {
       obj = null;
     }
     return obj;
   }
 
-  /// Saves the object. If the categoryId field is null, saves as a new record and returns new categoryId, if categoryId is not null then updates record
-
-  /// <returns>Returns categoryId
-  Future<int> save() async {
-    if (categoryId == null || categoryId == 0) {
-      categoryId = await _mnCategory.insert(this);
+  /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  /// <returns>Returns id
+  Future<int?> save({bool ignoreBatch = true}) async {
+    if (id == null || id == 0) {
+      id = await _mnCategory.insert(this, ignoreBatch);
     } else {
-      categoryId = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnCategory.update(this);
     }
 
-    return categoryId;
+    return id;
+  }
+
+  /// Saves the (Category) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
+  /// <returns>Returns id
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
+    if (id == null || id == 0) {
+      id = await _mnCategory.insertOrThrow(this, ignoreBatch);
+
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnCategory.updateOrThrow(this);
+    }
+
+    return id;
   }
 
   /// saveAs Category. Returns a new Primary Key value of Category
 
   /// <returns>Returns a new Primary Key value of Category
-  Future<int> saveAs() async {
-    categoryId = null;
+  Future<int?> saveAs() async {
+    id = null;
 
     return save();
   }
 
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Category> categories) async {
-    final results = _mnCategory.saveAll(
-        'INSERT OR REPLACE INTO category (categoryId,  name, isActive)  VALUES (?,?,?)',
-        categories);
-    return results;
+  static Future<List<dynamic>> saveAll(List<Category> categories) async {
+    // final results = _mnCategory.saveAll('INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',categories);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    await MyDbModel().batchStart();
+    for (final obj in categories) {
+      await obj.save(ignoreBatch: false);
+    }
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+    for (int i = 0; i < categories.length; i++) {
+      if (categories[i].id == null) {
+        categories[i].id = result![i] as int;
+      }
+    }
+
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
-  /// <returns>Returns categoryId
-  Future<int> _upsert() async {
+  /// <returns>Returns id
+
+  Future<int?> upsert() async {
     try {
-      categoryId = await _mnCategory.rawInsert(
-          'INSERT OR REPLACE INTO category (categoryId,  name, isActive)  VALUES (?,?,?)',
-          [categoryId, name, isActive]);
-      saveResult = BoolResult(
-          success: true,
-          successMessage:
-              'Category categoryId=$categoryId updated successfuly');
-      return categoryId;
+      final result = await _mnCategory.rawInsert(
+          'INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',
+          [id, name, isActive]);
+      if (result! > 0) {
+        saveResult = BoolResult(
+            success: true,
+            successMessage: 'Category id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Category id=$id did not update');
+      }
+      return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Category Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
   /// inserts or replaces the sent List<<Category>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
+  ///
+  /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Category> categories) async {
     final results = await _mnCategory.rawInsertAll(
-        'INSERT OR REPLACE INTO category (categoryId,  name, isActive)  VALUES (?,?,?)',
+        'INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',
         categories);
     return results;
   }
@@ -1692,40 +2184,36 @@ class Category {
   /// Deletes Category
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Category invoked (categoryId=$categoryId)');
+    print('SQFENTITIY: delete Category invoked (id=$id)');
     var result = BoolResult(success: false);
     {
-      result = await Product()
-          .select()
-          .categoryId
-          .equals(categoryId)
-          .delete(hardDelete);
+      result =
+          await Product().select().categoryId.equals(id).and.delete(hardDelete);
     }
     if (!result.success) {
       return result;
     }
     if (!_softDeleteActivated || hardDelete) {
-      return _mnCategory.delete(QueryParams(
-          whereString: 'categoryId=?', whereArguments: [categoryId]));
+      return _mnCategory
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
       return _mnCategory.updateBatch(
-          QueryParams(
-              whereString: 'categoryId=?', whereArguments: [categoryId]),
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
   }
 
-  //private CategoryFilterBuilder _Select;
   CategoryFilterBuilder select(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return CategoryFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   CategoryFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return CategoryFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
@@ -1733,12 +2221,12 @@ class Category {
   }
 
   void _setDefaultValues() {
-    isActive = isActive ?? false;
+    isActive = isActive ?? true;
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -1754,16 +2242,15 @@ class Category {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion category
 
 // region CategoryField
 class CategoryField extends SearchCriteria {
-  CategoryField(this.categoryFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  CategoryField(this.categoryFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   CategoryFilterBuilder categoryFB;
 
@@ -1780,7 +2267,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param, SqlSyntax.NotEQuals,
             categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1793,7 +2280,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1806,7 +2293,7 @@ class CategoryField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1820,7 +2307,7 @@ class CategoryField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           categoryFB._addedBlocks);
       _waitingNot = '';
-      categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+      categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
           categoryFB._addedBlocks.retVal;
     }
     return categoryFB;
@@ -1835,9 +2322,9 @@ class CategoryField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           categoryFB._addedBlocks);
       _waitingNot = '';
-      categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+      categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
           categoryFB._addedBlocks.retVal;
-      categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+      categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
           categoryFB._addedBlocks.retVal;
     }
     return categoryFB;
@@ -1852,7 +2339,7 @@ class CategoryField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           categoryFB._addedBlocks);
       _waitingNot = '';
-      categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+      categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
           categoryFB._addedBlocks.retVal;
     }
     return categoryFB;
@@ -1885,7 +2372,7 @@ class CategoryField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1898,7 +2385,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param,
             SqlSyntax.LessThanOrEquals, categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1911,7 +2398,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1924,7 +2411,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param, SqlSyntax.LessThan,
             categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1937,7 +2424,7 @@ class CategoryField extends SearchCriteria {
         : setCriteria(pValue, categoryFB.parameters, param,
             SqlSyntax.GreaterThan, categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1950,7 +2437,7 @@ class CategoryField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         categoryFB._addedBlocks);
     _waitingNot = '';
-    categoryFB._addedBlocks.needEndBlock[categoryFB._blockIndex] =
+    categoryFB._addedBlocks.needEndBlock![categoryFB._blockIndex] =
         categoryFB._addedBlocks.retVal;
     return categoryFB;
   }
@@ -1961,25 +2448,19 @@ class CategoryField extends SearchCriteria {
 class CategoryFilterBuilder extends SearchCriteria {
   CategoryFilterBuilder(Category obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Category _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Category? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   CategoryFilterBuilder get and {
@@ -1999,22 +2480,24 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   CategoryFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  CategoryFilterBuilder where(String whereCriteria) {
+  CategoryFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -2042,11 +2525,11 @@ class CategoryFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   CategoryFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -2061,8 +2544,8 @@ class CategoryFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -2081,8 +2564,8 @@ class CategoryFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -2101,8 +2584,8 @@ class CategoryFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -2111,30 +2594,50 @@ class CategoryFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  CategoryField setField(CategoryField field, String colName, DbType dbtype) {
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  CategoryFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            havingList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  CategoryField setField(CategoryField? field, String colName, DbType dbtype) {
     return CategoryField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  CategoryField _categoryId;
-  CategoryField get categoryId {
-    return _categoryId = setField(_categoryId, 'categoryId', DbType.integer);
+  CategoryField? _id;
+  CategoryField get id {
+    return _id = setField(_id, 'id', DbType.integer);
   }
 
-  CategoryField _name;
+  CategoryField? _name;
   CategoryField get name {
     return _name = setField(_name, 'name', DbType.text);
   }
 
-  CategoryField _isActive;
+  CategoryField? _isActive;
   CategoryField get isActive {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
-  bool _getIsDeleted;
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -2148,19 +2651,25 @@ class CategoryFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+        if (param.value is List && !param.hasParameter) {
+          param.value = param.dbType == DbType.text || param.value[0] is String
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
@@ -2179,6 +2688,7 @@ class CategoryFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -2189,7 +2699,13 @@ class CategoryFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -2214,7 +2730,8 @@ class CategoryFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Category> bulk by query
@@ -2223,17 +2740,21 @@ class CategoryFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult(success: false);
-    final productBycategoryIdidList = await toListPrimaryKey(false);
-    await Product()
+    // Delete sub records where in (Product) according to DeleteRule.CASCADE
+    final idListProductBYcategoryId = toListPrimaryKeySQL(false);
+    final resProductBYcategoryId = await Product()
         .select()
-        .categoryId
-        .inValues(productBycategoryIdidList)
+        .where('categoryId IN (${idListProductBYcategoryId['sql']})',
+            parameterValue: idListProductBYcategoryId['args'])
         .delete(hardDelete);
+    if (!resProductBYcategoryId.success) {
+      return resProductBYcategoryId;
+    }
 
     if (Category._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnCategory.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnCategory.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnCategory.delete(qparams);
+      r = await _obj!._mnCategory.delete(qparams);
     }
     return r;
   }
@@ -2245,40 +2766,69 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'categoryId IN (SELECT categoryId from category ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from category ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnCategory.updateBatch(qparams, values);
+    return _obj!._mnCategory.updateBatch(qparams, values);
   }
 
-  /// This method always returns CategoryObj if exist, otherwise returns null
+  /// This method always returns Category Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Category>
-  Future<Category> toSingle(
-      [VoidCallback Function(Category o) category]) async {
+  Future<Category?> toSingle(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnCategory.toList(qparams);
+    final objFuture = _obj!._mnCategory.toList(qparams);
     final data = await objFuture;
-    Category obj;
+    Category? obj;
     if (data.isNotEmpty) {
       obj = Category.fromMap(data[0] as Map<String, dynamic>);
+      // final List<String> _loadedFields = loadedFields ?? [];
+
+      // RELATIONSHIPS PRELOAD CHILD
+      if (preload) {
+        loadedFields = loadedFields ?? [];
+        if (/*!_loadedfields!.contains('category.plProducts') && */ (preloadFields ==
+                null ||
+            preloadFields.contains('plProducts'))) {
+          /*_loadedfields!.add('category.plProducts'); */ obj.plProducts =
+              obj.plProducts ??
+                  await obj.getProducts()!.toList(
+                      preload: preload,
+                      preloadFields: preloadFields,
+                      loadParents: false /*, loadedFields:_loadedFields*/);
+        }
+      } // END RELATIONSHIPS PRELOAD CHILD
+
     } else {
       obj = null;
-    }
-    if (category != null) {
-      category(obj);
     }
     return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int. [Category]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) categoryCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? categoryCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final categoriesFuture = await _obj._mnCategory.toList(qparams);
+    final categoriesFuture = await _obj!._mnCategory.toList(qparams);
     final int count = categoriesFuture[0]['CNT'] as int;
     if (categoryCount != null) {
       categoryCount(count);
@@ -2286,19 +2836,36 @@ class CategoryFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Category>.
+  /// This method returns List<Category> [Category]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Category>
   Future<List<Category>> toList(
-      [VoidCallback Function(List<Category> o) categoryList]) async {
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     final data = await toMapList();
-    final List<Category> categoriesData = await Category.fromMapList(data);
-    if (categoryList != null) {
-      categoryList(categoriesData);
-    }
+    final List<Category> categoriesData = await Category.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return categoriesData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Category]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2308,31 +2875,31 @@ class CategoryFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String. [Category]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>. [Category]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnCategory.toList(qparams);
+    return await _obj!._mnCategory.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Category>>
   Future<List<DropdownMenuItem<Category>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Category>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Category>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final categoriesFuture = _obj._mnCategory.toList(qparams);
+    final categoriesFuture = _obj!._mnCategory.toList(qparams);
 
     final data = await categoriesFuture;
     final int count = data.length;
@@ -2357,11 +2924,11 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    qparams.selectColumns = ['categoryId', displayTextColumn];
-    final categoriesFuture = _obj._mnCategory.toList(qparams);
+    qparams.selectColumns = ['id', displayTextColumn];
+    final categoriesFuture = _obj!._mnCategory.toList(qparams);
 
     final data = await categoriesFuture;
     final int count = data.length;
@@ -2372,7 +2939,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: data[i]['categoryId'] as int,
+          value: data[i]['id'] as int,
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -2383,40 +2950,51 @@ class CategoryFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Category]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `id` FROM category WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) {
       _buildParameters();
     }
-    final List<int> categoryIdData = <int>[];
-    qparams.selectColumns = ['categoryId'];
-    final categoryIdFuture = await _obj._mnCategory.toList(qparams);
+    final List<int> idData = <int>[];
+    qparams.selectColumns = ['id'];
+    final idFuture = await _obj!._mnCategory.toList(qparams);
 
-    final int count = categoryIdFuture.length;
+    final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
-      categoryIdData.add(categoryIdFuture[i]['categoryId'] as int);
+      idData.add(idFuture[i]['id'] as int);
     }
-    return categoryIdData;
+    return idData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Category]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback Function(List<dynamic> o) listObject]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnCategory.toList(qparams);
+    final objectFuture = _obj!._mnCategory.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -2425,16 +3003,16 @@ class CategoryFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Category.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnCategory.toList(qparams);
+    final objectFuture = _obj!._mnCategory.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -2446,18 +3024,17 @@ class CategoryFilterBuilder extends SearchCriteria {
 
 // region CategoryFields
 class CategoryFields {
-  static TableField _fCategoryId;
-  static TableField get categoryId {
-    return _fCategoryId = _fCategoryId ??
-        SqlSyntax.setField(_fCategoryId, 'categoryid', DbType.integer);
+  static TableField? _fId;
+  static TableField get id {
+    return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
   }
 
-  static TableField _fName;
+  static TableField? _fName;
   static TableField get name {
     return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
   }
 
-  static TableField _fIsActive;
+  static TableField? _fIsActive;
   static TableField get isActive {
     return _fIsActive =
         _fIsActive ?? SqlSyntax.setField(_fIsActive, 'isActive', DbType.bool);
@@ -2467,47 +3044,75 @@ class CategoryFields {
 
 //region CategoryManager
 class CategoryManager extends SqfEntityProvider {
-  CategoryManager() : super(MyDbModel(), tableName: _tableName);
+  CategoryManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static final String _tableName = 'category';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion CategoryManager
 // region Todo
-class Todo {
-  Todo({this.id, this.userId, this.title, this.completed}) {
+class Todo extends TableBase {
+  Todo({this.id, this.userId, this.title, this.completed, this.dateCreated}) {
     _setDefaultValues();
   }
-  Todo.withFields(this.userId, this.title, this.completed) {
+  Todo.withFields(
+      this.id, this.userId, this.title, this.completed, this.dateCreated) {
     _setDefaultValues();
   }
-  Todo.withId(this.id, this.userId, this.title, this.completed) {
+  Todo.withId(
+      this.id, this.userId, this.title, this.completed, this.dateCreated) {
     _setDefaultValues();
   }
-  Todo.fromMap(Map<String, dynamic> o) {
-    id = o['id'] as int;
-    userId = o['userId'] as int;
-    title = o['title'] as String;
-    completed = o['completed'] != null ? o['completed'] == 1 : null;
+  // fromMap v2.0
+  Todo.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+    if (setDefaultValues) {
+      _setDefaultValues();
+    }
+    id = int.tryParse(o['id'].toString());
+    if (o['userId'] != null) {
+      userId = int.tryParse(o['userId'].toString());
+    }
+    if (o['title'] != null) {
+      title = o['title'].toString();
+    }
+    if (o['completed'] != null) {
+      completed = o['completed'].toString() == '1' ||
+          o['completed'].toString() == 'true';
+    }
+    if (o['dateCreated'] != null) {
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
+    }
+
     isSaved = true;
   }
   // FIELDS (Todo)
-  int id;
-  int userId;
-  String title;
-  bool completed;
-  bool isSaved;
-  BoolResult saveResult;
+  int? id;
+  int? userId;
+  String? title;
+  bool? completed;
+  DateTime? dateCreated;
+  bool? isSaved;
+  BoolResult? saveResult;
   // end FIELDS (Todo)
 
   static const bool _softDeleteActivated = false;
-  TodoManager __mnTodo;
+  TodoManager? __mnTodo;
 
   TodoManager get _mnTodo {
     return __mnTodo = __mnTodo ?? TodoManager();
   }
 
   // METHODS
-  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
@@ -2521,14 +3126,24 @@ class Todo {
     }
 
     if (completed != null) {
-      map['completed'] = forQuery ? (completed ? 1 : 0) : completed;
+      map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
+    }
+
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     }
 
     return map;
   }
 
-  Future<Map<String, dynamic>> toMapWithChilds(
-      [bool forQuery = false, bool forJson = false]) async {
+  Future<Map<String, dynamic>> toMapWithChildren(
+      [bool forQuery = false,
+      bool forJson = false,
+      bool forView = false]) async {
     final map = <String, dynamic>{};
     if (id != null) {
       map['id'] = id;
@@ -2542,44 +3157,77 @@ class Todo {
     }
 
     if (completed != null) {
-      map['completed'] = forQuery ? (completed ? 1 : 0) : completed;
+      map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
+    }
+
+    if (dateCreated != null) {
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     }
 
     return map;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Todo]
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Todo]
   Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChilds(false, true));
+    return json.encode(await toMapWithChildren(false, true));
   }
 
   List<dynamic> toArgs() {
-    return [id, userId, title, completed];
+    return [
+      id,
+      userId,
+      title,
+      completed,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+    ];
   }
 
-  static Future<List<Todo>> fromWeb(
-      [VoidCallback Function(List<Todo> o) todoList]) async {
-    final objList =
-        await fromWebUrl('https://jsonplaceholder.typicode.com/todos');
-    if (todoList != null) {
-      todoList(objList);
-    }
+  List<dynamic> toArgsWithIds() {
+    return [
+      id,
+      userId,
+      title,
+      completed,
+      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+    ];
+  }
+
+  static Future<List<Todo>?> fromWeb({Map<String, String>? headers}) async {
+    final objList = await fromWebUrl(
+        Uri.parse('https://jsonplaceholder.typicode.com/todos'),
+        headers: headers);
     return objList;
   }
 
-  static Future<List<Todo>> fromWebUrl(String url) async {
+  Future<http.Response> post({Map<String, String>? headers}) async {
+    final res = await postUrl(
+        Uri.parse('https://jsonplaceholder.typicode.com/todos'),
+        headers: headers);
+    return res;
+  }
+
+  static Future<List<Todo>?> fromWebUrl(Uri uri,
+      {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       print('SQFENTITY ERROR Todo.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
+  }
+
+  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
+    return http.post(uri, headers: headers, body: toJson());
   }
 
   static Future<List<Todo>> fromJson(String jsonBody) async {
@@ -2595,15 +3243,17 @@ class Todo {
     return objList;
   }
 
-  static Future<List<Todo>> fromObjectList(Future<List<dynamic>> o) async {
-    final data = await o;
-    return await Todo.fromMapList(data);
-  }
-
-  static Future<List<Todo>> fromMapList(List<dynamic> data) async {
+  static Future<List<Todo>> fromMapList(List<dynamic> data,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields,
+      bool setDefaultValues = true}) async {
     final List<Todo> objList = <Todo>[];
-    for (final Map map in data as List<Map>) {
-      final obj = Todo.fromMap(map as Map<String, dynamic>);
+    loadedFields = loadedFields ?? [];
+    for (final map in data) {
+      final obj = Todo.fromMap(map as Map<String, dynamic>,
+          setDefaultValues: setDefaultValues);
 
       objList.add(obj);
     }
@@ -2611,13 +3261,30 @@ class Todo {
   }
 
   /// returns Todo by ID if exist, otherwise returns null
-  /// <param name='id'>Primary Key Value</param>
+  ///
+  /// Primary Keys: int? id
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: getById(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>returns Todo if exist, otherwise returns null
-  Future<Todo> getById(int id) async {
+  Future<Todo?> getById(int? id,
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     if (id == null) {
       return null;
     }
-    Todo obj;
+    Todo? obj;
     final data = await _mnTodo.getById([id]);
     if (data.length != 0) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
@@ -2627,63 +3294,104 @@ class Todo {
     return obj;
   }
 
-  /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-
+  /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
-  Future<int> save() async {
-    if (id == null || id == 0 || !isSaved) {
-      id = await _mnTodo.insert(this);
-      isSaved = true;
+  Future<int?> save({bool ignoreBatch = true}) async {
+    if (id == null || id == 0 || !isSaved!) {
+      await _mnTodo.insert(this, ignoreBatch);
+      if (saveResult!.success) {
+        isSaved = true;
+      }
     } else {
-      id = await _upsert();
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTodo.update(this);
     }
 
     return id;
   }
 
-  /// saveAs Todo. Returns a new Primary Key value of Todo
+  /// Saves the (Todo) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  ///
+  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
+  ///
+  /// <returns>Returns id
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
+    if (id == null || id == 0 || !isSaved!) {
+      await _mnTodo.insertOrThrow(this, ignoreBatch);
+      if (saveResult != null && saveResult!.success) {
+        isSaved = true;
+      }
+      isInsert = true;
+    } else {
+      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
+      await _mnTodo.updateOrThrow(this);
+    }
 
-  /// <returns>Returns a new Primary Key value of Todo
-  Future<int> saveAs() async {
-    isSaved = false;
+    return id;
+  }
 
-    return save();
+  void rollbackId() {
+    if (isInsert == true) {
+      id = null;
+    }
   }
 
   /// saveAll method saves the sent List<Todo> as a bulk in one transaction
+  ///
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Todo> todos) async {
-    final results = _mnTodo.saveAll(
-        'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
-        todos);
-    return results;
+  static Future<List<dynamic>> saveAll(List<Todo> todos) async {
+    // final results = _mnTodo.saveAll('INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',todos);
+    // return results; removed in sqfentity_gen 1.3.0+6
+    await MyDbModel().batchStart();
+    for (final obj in todos) {
+      await obj.save(ignoreBatch: false);
+    }
+    //    return MyDbModel().batchCommit();
+    final result = await MyDbModel().batchCommit();
+
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
 
   /// <returns>Returns id
-  Future<int> _upsert() async {
+
+  Future<int?> upsert() async {
     try {
-      id = await _mnTodo.rawInsert(
-          'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
-          [id, userId, title, completed]);
-      saveResult = BoolResult(
-          success: true, successMessage: 'Todo id=$id updated successfuly');
+      final result = await _mnTodo.rawInsert(
+          'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
+          [
+            id,
+            userId,
+            title,
+            completed,
+            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+          ]);
+      if (result! > 0) {
+        saveResult = BoolResult(
+            success: true, successMessage: 'Todo id=$id updated successfully');
+      } else {
+        saveResult = BoolResult(
+            success: false, errorMessage: 'Todo id=$id did not update');
+      }
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
           errorMessage: 'Todo Save failed. Error: ${e.toString()}');
-      return 0;
+      return null;
     }
   }
 
   /// inserts or replaces the sent List<<Todo>> as a bulk in one transaction.
+  ///
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a <List<BoolResult>>
+  ///
+  /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
     final results = await _mnTodo.rawInsertAll(
-        'INSERT OR REPLACE INTO todos (id,  userId, title, completed)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
         todos);
     return results;
   }
@@ -2691,6 +3399,7 @@ class Todo {
   /// Deletes Todo
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+
   Future<BoolResult> delete([bool hardDelete = false]) async {
     print('SQFENTITIY: delete Todo invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete) {
@@ -2703,15 +3412,15 @@ class Todo {
     }
   }
 
-  //private TodoFilterBuilder _Select;
-  TodoFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+  TodoFilterBuilder select(
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return TodoFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
   TodoFilterBuilder distinct(
-      {List<String> columnsToSelect, bool getIsDeleted}) {
+      {List<String>? columnsToSelect, bool? getIsDeleted}) {
     return TodoFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
@@ -2721,11 +3430,12 @@ class Todo {
   void _setDefaultValues() {
     isSaved = false;
     completed = completed ?? false;
+    dateCreated = dateCreated ?? DateTime.now();
   }
   // END METHODS
-  // CUSTOM CODES
+  // BEGIN CUSTOM CODE
   /*
-      you must define customCode property of your SqfEntityTable constant for ex:
+      you can define customCode property of your SqfEntityTable constant. For example:
       const tablePerson = SqfEntityTable(
       tableName: 'person',
       primaryKeyName: 'id',
@@ -2741,16 +3451,15 @@ class Todo {
        }
       ''');
      */
-  // END CUSTOM CODES
+  // END CUSTOM CODE
 }
 // endregion todo
 
 // region TodoField
 class TodoField extends SearchCriteria {
-  TodoField(this.todoFB) {
-    param = DbParameter();
-  }
-  DbParameter param;
+  TodoField(this.todoFB);
+  // { param = DbParameter(); }
+  DbParameter param = DbParameter();
   String _waitingNot = '';
   TodoFilterBuilder todoFB;
 
@@ -2767,7 +3476,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param, SqlSyntax.NotEQuals,
             todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2780,7 +3489,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param,
             SqlSyntax.NotEQualsOrNull, todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2793,7 +3502,7 @@ class TodoField extends SearchCriteria {
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2807,7 +3516,7 @@ class TodoField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           todoFB._addedBlocks);
       _waitingNot = '';
-      todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+      todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
           todoFB._addedBlocks.retVal;
     }
     return todoFB;
@@ -2822,9 +3531,9 @@ class TodoField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           todoFB._addedBlocks);
       _waitingNot = '';
-      todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+      todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
           todoFB._addedBlocks.retVal;
-      todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+      todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
           todoFB._addedBlocks.retVal;
     }
     return todoFB;
@@ -2839,7 +3548,7 @@ class TodoField extends SearchCriteria {
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
           todoFB._addedBlocks);
       _waitingNot = '';
-      todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+      todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
           todoFB._addedBlocks.retVal;
     }
     return todoFB;
@@ -2872,7 +3581,7 @@ class TodoField extends SearchCriteria {
       }
     }
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2885,7 +3594,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param,
             SqlSyntax.LessThanOrEquals, todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2898,7 +3607,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param,
             SqlSyntax.GreaterThanOrEquals, todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2911,7 +3620,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param, SqlSyntax.LessThan,
             todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2924,7 +3633,7 @@ class TodoField extends SearchCriteria {
         : setCriteria(pValue, todoFB.parameters, param, SqlSyntax.GreaterThan,
             todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2937,7 +3646,7 @@ class TodoField extends SearchCriteria {
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
         todoFB._addedBlocks);
     _waitingNot = '';
-    todoFB._addedBlocks.needEndBlock[todoFB._blockIndex] =
+    todoFB._addedBlocks.needEndBlock![todoFB._blockIndex] =
         todoFB._addedBlocks.retVal;
     return todoFB;
   }
@@ -2948,25 +3657,19 @@ class TodoField extends SearchCriteria {
 class TodoFilterBuilder extends SearchCriteria {
   TodoFilterBuilder(Todo obj) {
     whereString = '';
-    qparams = QueryParams();
-    parameters = <DbParameter>[];
-    orderByList = <String>[];
     groupByList = <String>[];
-    _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
-    _addedBlocks.needEndBlock.add(false);
-    _addedBlocks.waitingStartBlock.add(false);
-    _pagesize = 0;
-    _page = 0;
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
     _obj = obj;
   }
-  AddedBlocks _addedBlocks;
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
   int _blockIndex = 0;
-  List<DbParameter> parameters;
-  List<String> orderByList;
-  Todo _obj;
-  QueryParams qparams;
-  int _pagesize;
-  int _page;
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  Todo? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
 
   /// put the sql keyword 'AND'
   TodoFilterBuilder get and {
@@ -2986,22 +3689,24 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// open parentheses
   TodoFilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock.add(true);
-    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
     _blockIndex++;
     if (_blockIndex > 1) {
-      _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
     }
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  TodoFilterBuilder where(String whereCriteria) {
+  TodoFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter();
-      _addedBlocks =
-          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
     }
     return this;
   }
@@ -3029,11 +3734,11 @@ class TodoFilterBuilder extends SearchCriteria {
 
   /// close parentheses
   TodoFilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock[_blockIndex]) {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
-    _addedBlocks.needEndBlock.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
     _blockIndex--;
     return this;
   }
@@ -3048,8 +3753,8 @@ class TodoFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add(argFields);
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s ');
           }
         }
@@ -3068,8 +3773,8 @@ class TodoFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             orderByList.add(' $s desc ');
           }
         }
@@ -3088,8 +3793,8 @@ class TodoFilterBuilder extends SearchCriteria {
       if (argFields is String) {
         groupByList.add(' $argFields ');
       } else {
-        for (String s in argFields as List<String>) {
-          if (s != null && s != '') {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
             groupByList.add(' $s ');
           }
         }
@@ -3098,35 +3803,61 @@ class TodoFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  TodoField setField(TodoField field, String colName, DbType dbtype) {
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  TodoFilterBuilder having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            havingList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  TodoField setField(TodoField? field, String colName, DbType dbtype) {
     return TodoField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
-          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+          wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
   }
 
-  TodoField _id;
+  TodoField? _id;
   TodoField get id {
     return _id = setField(_id, 'id', DbType.integer);
   }
 
-  TodoField _userId;
+  TodoField? _userId;
   TodoField get userId {
     return _userId = setField(_userId, 'userId', DbType.integer);
   }
 
-  TodoField _title;
+  TodoField? _title;
   TodoField get title {
     return _title = setField(_title, 'title', DbType.text);
   }
 
-  TodoField _completed;
+  TodoField? _completed;
   TodoField get completed {
     return _completed = setField(_completed, 'completed', DbType.bool);
   }
 
-  bool _getIsDeleted;
+  TodoField? _dateCreated;
+  TodoField get dateCreated {
+    return _dateCreated =
+        setField(_dateCreated, 'dateCreated', DbType.datetime);
+  }
+
+  bool _getIsDeleted = false;
 
   void _buildParameters() {
     if (_page > 0 && _pagesize > 0) {
@@ -3140,19 +3871,25 @@ class TodoFilterBuilder extends SearchCriteria {
     }
     for (DbParameter param in parameters) {
       if (param.columnName != null) {
-        if (param.value is List) {
-          param.value = param.value
-              .toString()
-              .replaceAll('[', '')
-              .replaceAll(']', '')
-              .toString();
+        if (param.value is List && !param.hasParameter) {
+          param.value = param.dbType == DbType.text || param.value[0] is String
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
           whereString += param.whereString
-              .replaceAll('{field}', param.columnName)
+              .replaceAll('{field}', param.columnName!)
               .replaceAll('?', param.value.toString());
           param.value = null;
         } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
           whereString +=
-              param.whereString.replaceAll('{field}', param.columnName);
+              param.whereString.replaceAll('{field}', param.columnName!);
         }
         if (!param.whereString.contains('?')) {
         } else {
@@ -3171,6 +3908,7 @@ class TodoFilterBuilder extends SearchCriteria {
               break;
             case DbType.date:
             case DbType.datetime:
+            case DbType.datetimeUtc:
               param.value = param.value == null
                   ? null
                   : (param.value as DateTime).millisecondsSinceEpoch;
@@ -3181,7 +3919,13 @@ class TodoFilterBuilder extends SearchCriteria {
             default:
           }
           if (param.value != null) {
-            whereArguments.add(param.value);
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
           }
           if (param.value2 != null) {
             whereArguments.add(param.value2);
@@ -3206,7 +3950,8 @@ class TodoFilterBuilder extends SearchCriteria {
     qparams
       ..whereArguments = whereArguments
       ..groupBy = groupByList.join(',')
-      ..orderBy = orderByList.join(',');
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
   }
 
   /// Deletes List<Todo> bulk by query
@@ -3215,10 +3960,11 @@ class TodoFilterBuilder extends SearchCriteria {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult(success: false);
+
     if (Todo._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnTodo.updateBatch(qparams, {'isDeleted': 1});
+      r = await _obj!._mnTodo.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnTodo.delete(qparams);
+      r = await _obj!._mnTodo.delete(qparams);
     }
     return r;
   }
@@ -3230,39 +3976,52 @@ class TodoFilterBuilder extends SearchCriteria {
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
   Future<BoolResult> update(Map<String, dynamic> values) {
     _buildParameters();
-    if (qparams.limit > 0 || qparams.offset > 0) {
+    if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'id IN (SELECT id from todos ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from todos ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnTodo.updateBatch(qparams, values);
+    return _obj!._mnTodo.updateBatch(qparams, values);
   }
 
-  /// This method always returns TodoObj if exist, otherwise returns null
+  /// This method always returns Todo Obj if exist, otherwise returns null
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Todo>
-  Future<Todo> toSingle([VoidCallback Function(Todo o) todo]) async {
+  Future<Todo?> toSingle(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnTodo.toList(qparams);
+    final objFuture = _obj!._mnTodo.toList(qparams);
     final data = await objFuture;
-    Todo obj;
+    Todo? obj;
     if (data.isNotEmpty) {
       obj = Todo.fromMap(data[0] as Map<String, dynamic>);
     } else {
       obj = null;
     }
-    if (todo != null) {
-      todo(obj);
-    }
     return obj;
   }
 
-  /// This method always returns int.
+  /// This method returns int. [Todo]
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback Function(int c) todoCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? todoCount]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final todosFuture = await _obj._mnTodo.toList(qparams);
+    final todosFuture = await _obj!._mnTodo.toList(qparams);
     final int count = todosFuture[0]['CNT'] as int;
     if (todoCount != null) {
       todoCount(count);
@@ -3270,19 +4029,36 @@ class TodoFilterBuilder extends SearchCriteria {
     return count;
   }
 
-  /// This method always returns List<Todo>.
+  /// This method returns List<Todo> [Todo]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toList(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
   /// <returns>List<Todo>
   Future<List<Todo>> toList(
-      [VoidCallback Function(List<Todo> o) todoList]) async {
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
     final data = await toMapList();
-    final List<Todo> todosData = await Todo.fromMapList(data);
-    if (todoList != null) {
-      todoList(todosData);
-    }
+    final List<Todo> todosData = await Todo.fromMapList(data,
+        preload: preload,
+        preloadFields: preloadFields,
+        loadParents: loadParents,
+        loadedFields: loadedFields,
+        setDefaultValues: qparams.selectColumns == null);
     return todosData;
   }
 
-  /// This method always returns Json String
+  /// This method returns Json String [Todo]
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -3292,30 +4068,30 @@ class TodoFilterBuilder extends SearchCriteria {
     return json.encode(list);
   }
 
-  /// This method always returns Json String.
+  /// This method returns Json String. [Todo]
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
     for (var o in data) {
-      list.add(await o.toMapWithChilds(false, true));
+      list.add(await o.toMapWithChildren(false, true));
     }
     return json.encode(list);
   }
 
-  /// This method always returns List<dynamic>.
+  /// This method returns List<dynamic>. [Todo]
   ///
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnTodo.toList(qparams);
+    return await _obj!._mnTodo.toList(qparams);
   }
 
   /// Returns List<DropdownMenuItem<Todo>>
   Future<List<DropdownMenuItem<Todo>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Todo>> o)
+      [VoidCallback Function(List<DropdownMenuItem<Todo>> o)?
           dropDownMenu]) async {
     _buildParameters();
-    final todosFuture = _obj._mnTodo.toList(qparams);
+    final todosFuture = _obj!._mnTodo.toList(qparams);
 
     final data = await todosFuture;
     final int count = data.length;
@@ -3340,11 +4116,11 @@ class TodoFilterBuilder extends SearchCriteria {
   /// Returns List<DropdownMenuItem<int>>
   Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)
+      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
           dropDownMenu]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final todosFuture = _obj._mnTodo.toList(qparams);
+    final todosFuture = _obj!._mnTodo.toList(qparams);
 
     final data = await todosFuture;
     final int count = data.length;
@@ -3366,7 +4142,22 @@ class TodoFilterBuilder extends SearchCriteria {
     return items;
   }
 
-  /// This method always returns Primary Key List<int>.
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Todo]
+  ///
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  ///
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    if (buildParameters) {
+      _buildParameters();
+    }
+    _retVal['sql'] = 'SELECT `id` FROM todos WHERE ${qparams.whereString}';
+    _retVal['args'] = qparams.whereArguments;
+    return _retVal;
+  }
+
+  /// This method returns Primary Key List<int>.
   /// <returns>List<int>
   Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
     if (buildParameters) {
@@ -3374,7 +4165,7 @@ class TodoFilterBuilder extends SearchCriteria {
     }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
-    final idFuture = await _obj._mnTodo.toList(qparams);
+    final idFuture = await _obj!._mnTodo.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -3383,23 +4174,19 @@ class TodoFilterBuilder extends SearchCriteria {
     return idData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Todo]
   ///
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  Future<List<dynamic>> toListObject(
-      [VoidCallback Function(List<dynamic> o) listObject]) async {
+  Future<List<dynamic>> toListObject() async {
     _buildParameters();
 
-    final objectFuture = _obj._mnTodo.toList(qparams);
+    final objectFuture = _obj!._mnTodo.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
       objectsData.add(data[i]);
-    }
-    if (listObject != null) {
-      listObject(objectsData);
     }
     return objectsData;
   }
@@ -3408,16 +4195,16 @@ class TodoFilterBuilder extends SearchCriteria {
   ///
   /// Sample usage: await Todo.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o) listString]) async {
+      [VoidCallback Function(List<String> o)? listString]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnTodo.toList(qparams);
+    final objectFuture = _obj!._mnTodo.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
     final int count = data.length;
     for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+      objectsData.add(data[i][qparams.selectColumns![0]].toString());
     }
     if (listString != null) {
       listString(objectsData);
@@ -3429,35 +4216,47 @@ class TodoFilterBuilder extends SearchCriteria {
 
 // region TodoFields
 class TodoFields {
-  static TableField _fId;
+  static TableField? _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
   }
 
-  static TableField _fUserId;
+  static TableField? _fUserId;
   static TableField get userId {
     return _fUserId =
         _fUserId ?? SqlSyntax.setField(_fUserId, 'userId', DbType.integer);
   }
 
-  static TableField _fTitle;
+  static TableField? _fTitle;
   static TableField get title {
     return _fTitle =
         _fTitle ?? SqlSyntax.setField(_fTitle, 'title', DbType.text);
   }
 
-  static TableField _fCompleted;
+  static TableField? _fCompleted;
   static TableField get completed {
     return _fCompleted = _fCompleted ??
         SqlSyntax.setField(_fCompleted, 'completed', DbType.bool);
+  }
+
+  static TableField? _fDateCreated;
+  static TableField get dateCreated {
+    return _fDateCreated = _fDateCreated ??
+        SqlSyntax.setField(_fDateCreated, 'dateCreated', DbType.datetime);
   }
 }
 // endregion TodoFields
 
 //region TodoManager
 class TodoManager extends SqfEntityProvider {
-  TodoManager() : super(MyDbModel(), tableName: _tableName);
+  TodoManager()
+      : super(MyDbModel(),
+            tableName: _tableName,
+            primaryKeyList: _primaryKeyList,
+            whereStr: _whereStr);
   static final String _tableName = 'todos';
+  static final List<String> _primaryKeyList = ['id'];
+  static final String _whereStr = 'id=?';
 }
 
 //endregion TodoManager
@@ -3465,7 +4264,7 @@ class TodoManager extends SqfEntityProvider {
 class IdentitySequence {
   /// Assigns a new value when it is triggered and returns the new value
   /// returns Future<int>
-  Future<int> nextVal([VoidCallback Function(int o) nextval]) async {
+  Future<int> nextVal([VoidCallback Function(int o)? nextval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, true);
     if (nextval != null) {
@@ -3476,7 +4275,7 @@ class IdentitySequence {
 
   /// Get the current value
   /// returns Future<int>
-  Future<int> currentVal([VoidCallback Function(int o) currentval]) async {
+  Future<int> currentVal([VoidCallback Function(int o)? currentval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, false);
     if (currentval != null) {
@@ -3487,7 +4286,7 @@ class IdentitySequence {
 
   /// Reset sequence to start value
   /// returns start value
-  Future<int> reset([VoidCallback Function(int o) currentval]) async {
+  Future<int> reset([VoidCallback Function(int o)? currentval]) async {
     final val = await MyDbModelSequenceManager()
         .sequence(SequenceIdentitySequence.getInstance, false, reset: true);
     if (currentval != null) {
