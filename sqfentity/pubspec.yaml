@@ -13,12 +13,13 @@ dependencies:
   sqflite_sqlcipher: ^2.0.0
   synchronized: ^3.0.0
   path: ^1.8.0
-  sqfentity_gen: '>=2.1.2 <3.0.0'
+  sqfentity_gen: #'>=2.1.2 <3.0.0'
+    path: ../sqfentity_gen
   sqflite_common: ^2.0.1+1
   sqflite_common_ffi: ^2.0.0+3
   meta: ^1.7.0
   
 
-# dependency_overrides:
-#  sqfentity_gen:
-#    path: ../sqfentity_gen
+dependency_overrides:
+ sqfentity_gen:
+   path: ../sqfentity_gen

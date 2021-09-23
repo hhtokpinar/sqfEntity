@@ -184,7 +184,8 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName,
         getListValue(obj, 'fields')!,
         dbModelName //keepFieldNamesAsOriginal
         ,
-        _tableName)
+        _tableName,
+        defaultColumns: defaultColumns)
     ..primaryKeyType = getTypeValue(obj, 'primaryKeyType') as PrimaryKeyType?
     ..objectType = getTypeValue(obj, 'objectType') as ObjectType?
     ..defaultJsonUrl = getStringValue(obj, 'defaultJsonUrl')
@@ -259,10 +260,8 @@ SqfEntityFieldType getFieldProperties(
   return _retVal;
 }
 
-SqfEntityFieldType toField(
-  DartObject obj,
-  String dbModelName,
-) {
+SqfEntityFieldType toField(DartObject obj, String dbModelName,
+    {List<SqfEntityFieldType>? defaultColumns}) {
   final fieldName =
       ifExist(obj, 'fieldName') ? getStringValue(obj, 'fieldName') : null;
   if (fieldName != null && forbiddenNames.contains(fieldName)) {
@@ -275,9 +274,8 @@ SqfEntityFieldType toField(
     return SqfEntityFieldVirtualBase(fieldName!, dbType);
   } else if (obj.toString().startsWith('SqfEntityFieldRelationship')) {
     final parentTable = toSqfEntityTable(
-      obj.getField('parentTable')!,
-      dbModelName,
-    );
+        obj.getField('parentTable')!, dbModelName,
+        defaultColumns: defaultColumns);
     // final SqfEntityFieldRelationshipBase retVal = SqfEntityFieldRelationshipBase(
     //     parentTable, getTypeValue(obj, 'deleteRule') as DeleteRule)
     //   ..formDropDownTextField = getStringValue(obj, 'formDropDownTextField')
@@ -311,18 +309,16 @@ SqfEntityFieldType toField(
 }
 
 List<SqfEntityFieldType>? toFields(List<DartObject>? objFields,
-    String dbModelName, String tableName //bool keepFieldNamesAsOriginal
-    ) {
+    String dbModelName, String tableName, //bool keepFieldNamesAsOriginal
+    {List<SqfEntityFieldType>? defaultColumns}) {
   final sqfEntityFieldList = <SqfEntityFieldType>[];
   // print('--------RECOGNIZING FIELDS:');
   if (objFields == null) {
     return <SqfEntityFieldType>[];
   }
   for (var obj in objFields) {
-    sqfEntityFieldList.add(toField(
-      obj,
-      dbModelName,
-    ));
+    sqfEntityFieldList
+        .add(toField(obj, dbModelName, defaultColumns: defaultColumns));
   }
   return sqfEntityFieldList;
 }
