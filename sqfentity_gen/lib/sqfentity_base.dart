@@ -775,7 +775,7 @@ class SqfEntityObjectBuilder {
         final response = await http.get(uri, headers:headers);
         return await fromJson(response.body);
       } catch (e) {
-        print('SQFENTITY ERROR ${_table.modelName}.fromWebUrl: ErrorMessage: \${e.toString()}');
+        debugPrint('SQFENTITY ERROR ${_table.modelName}.fromWebUrl: ErrorMessage: \${e.toString()}');
         return null;
       }
     }
@@ -789,7 +789,7 @@ class SqfEntityObjectBuilder {
       try {
         objList = list.map((${_table._modelLowerCase}) => ${_table.modelName}.fromMap(${_table._modelLowerCase} as Map<String, dynamic>)).toList();
       } catch (e) {
-        print('SQFENTITY ERROR ${_table.modelName}.fromJson: ErrorMessage: \${e.toString()}');
+        debugPrint('SQFENTITY ERROR ${_table.modelName}.fromJson: ErrorMessage: \${e.toString()}');
       }
       return objList;
     }
@@ -868,7 +868,7 @@ class SqfEntityObjectBuilder {
     /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
     ${_table.abstractModelName != null ? '@override' : ''}
     Future<BoolResult> delete([bool hardDelete=false]) async {
-      print('SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
+      debugPrint('SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
       $_deleteMethodSingle
     }
       $_recoverMethodSingle
@@ -1474,7 +1474,7 @@ class SqfEntityObjectBuilder {
       
       /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
       Future<BoolResult> recover([bool recoverChilds=true]) async {
-      print('SQFENTITIY: recover ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
+      debugPrint('SQFENTITIY: recover ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
           $retVal 
       }''';
   }
@@ -1857,9 +1857,9 @@ class ${_table.modelName}Manager extends SqfEntityProvider {
   ${_table.modelName}Manager() : super(${_table.dbModel}(),tableName: _tableName,
   primaryKeyList: _primaryKeyList,
   whereStr : _whereStr);
-  static final String _tableName = '${_table.tableName}';
-  static final List<String> _primaryKeyList = ['${_table.primaryKeyNames.join('\',\'')}'];
-  static final String _whereStr = '${__getByIdWhereStr(_table).toString()}';
+  static const String _tableName = '${_table.tableName}';
+  static const List<String> _primaryKeyList = ['${_table.primaryKeyNames.join('\',\'')}'];
+  static const String _whereStr = '${__getByIdWhereStr(_table).toString()}';
 }
 //endregion ${_table.modelName}Manager''';
 
@@ -2611,7 +2611,8 @@ Future<List<String>> toListString([VoidCallback Function(List<String> o)? listSt
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         !_table.primaryKeyName!.startsWith('_')) {
-      retVal.writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
+      retVal
+          .writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
 ${_table.modelName}Field get ${_table.primaryKeyNames[0]} {
 return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
 }''');
@@ -2677,7 +2678,7 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
   Future<BoolResult> recover() async {
   _getIsDeleted = true;
   _buildParameters();
-  print('SQFENTITIY: recover ${_table.modelName} bulk invoked');
+  debugPrint('SQFENTITIY: recover ${_table.modelName} bulk invoked');
   ${retVal.toString()} 
   }''';
   }
