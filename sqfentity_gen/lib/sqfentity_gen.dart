@@ -228,6 +228,8 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName,
         print(
             'added: ${defaultField.fieldName}, defaultField table=${defaultField.table != null ? defaultField.table!.tableName : 'null'}');
         newTable.fields!.add(newField);
+      } else {
+        print('The field [${defaultField.fieldName}] has not been added due to conflicts with other columns with the same name in the table.');
       }
     }
   }
@@ -590,7 +592,8 @@ const ${tocamelCase(_m.modelName)} = SqfEntityModel(
         continue;
       }
       addedTables.add(table.modelName!);
-      strTables.writeln('''
+      strTables.writeln(
+          '''
 // ${table.modelName} TABLE      
 class Table${table.modelName} extends SqfEntityTableBase {
   Table${table.modelName}() {
@@ -628,7 +631,8 @@ class Table${table.modelName} extends SqfEntityTableBase {
     final strTables = StringBuffer()..writeln('// BEGIN TABLES');
     for (final table in _m.databaseTables!
         .where((table) => table.relationType != RelationType.MANY_TO_MANY)) {
-      strTables.writeln('''
+      strTables.writeln(
+          '''
 
 const table${toCamelCase(table.tableName)} = SqfEntityTable(
     tableName: '${table.tableName}' 
@@ -649,7 +653,8 @@ const table${toCamelCase(table.tableName)} = SqfEntityTable(
     }
     strSequences.writeln('// BEGIN SEQUENCES');
     for (var seq in _m.sequences!) {
-      strSequences.writeln('''
+      strSequences.writeln(
+          '''
 // ${seq.sequenceName} SEQUENCE
 class Sequence${seq.modelName} extends SqfEntitySequenceBase {
   Sequence${seq.modelName}() {
