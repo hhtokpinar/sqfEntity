@@ -432,9 +432,19 @@ class CategoryAddState extends State {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtName = TextEditingController();
 
+  final TextEditingController txtDateCreated = TextEditingController();
+  final TextEditingController txtTimeForDateCreated = TextEditingController();
+
   @override
   void initState() {
     txtName.text = category.name == null ? '' : category.name.toString();
+
+    txtDateCreated.text = category.dateCreated == null
+        ? ''
+        : UITools.convertDate(category.dateCreated!);
+    txtTimeForDateCreated.text = category.dateCreated == null
+        ? ''
+        : UITools.convertTime(category.dateCreated!);
 
     super.initState();
   }
@@ -460,6 +470,7 @@ class CategoryAddState extends State {
                   children: <Widget>[
                     buildRowName(),
                     buildRowIsActive(),
+                    buildRowDateCreated(),
                     TextButton(
                       child: saveButton(),
                       onPressed: () {
@@ -510,6 +521,67 @@ class CategoryAddState extends State {
     );
   }
 
+  Widget buildRowDateCreated() {
+    return Row(children: <Widget>[
+      Expanded(
+        flex: 1,
+        child: TextFormField(
+          onTap: () => DatePicker.showDatePicker(context,
+              showTitleActions: true,
+              theme: UITools.mainDatePickerTheme,
+              minTime: DateTime.parse('1900-01-01'),
+              onConfirm: (sqfSelectedDate) {
+            txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
+            txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+            setState(() {
+              final d = DateTime.tryParse(txtDateCreated.text) ??
+                  category.dateCreated ??
+                  DateTime.now();
+              category.dateCreated = DateTime(sqfSelectedDate.year,
+                      sqfSelectedDate.month, sqfSelectedDate.day)
+                  .add(Duration(
+                      hours: d.hour, minutes: d.minute, seconds: d.second));
+            });
+          },
+              currentTime: DateTime.tryParse(txtDateCreated.text) ??
+                  category.dateCreated ??
+                  DateTime.now(),
+              locale: UITools.mainDatePickerLocaleType),
+          controller: txtDateCreated,
+          decoration: InputDecoration(labelText: 'DateCreated'),
+        ),
+      ),
+      Expanded(
+          flex: 1,
+          child: TextFormField(
+            onTap: () => DatePicker.showTimePicker(context,
+                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+                onConfirm: (sqfSelectedDate) {
+              txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
+              setState(() {
+                final d = DateTime.tryParse(txtDateCreated.text) ??
+                    category.dateCreated ??
+                    DateTime.now();
+                category.dateCreated = DateTime(d.year, d.month, d.day).add(
+                    Duration(
+                        hours: sqfSelectedDate.hour,
+                        minutes: sqfSelectedDate.minute,
+                        seconds: sqfSelectedDate.second));
+                txtDateCreated.text =
+                    UITools.convertDate(category.dateCreated!);
+              });
+            },
+                currentTime: DateTime.tryParse(
+                        '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
+                    category.dateCreated ??
+                    DateTime.now(),
+                locale: UITools.mainDatePickerLocaleType),
+            controller: txtTimeForDateCreated,
+            decoration: InputDecoration(labelText: ''),
+          ))
+    ]);
+  }
+
   Container saveButton() {
     return Container(
       padding: const EdgeInsets.all(7.0),
@@ -525,7 +597,18 @@ class CategoryAddState extends State {
   }
 
   void save() async {
-    category..name = txtName.text;
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    if (_dateCreated != null && _dateCreatedTime != null) {
+      _dateCreated = _dateCreated.add(Duration(
+          hours: _dateCreatedTime.hour,
+          minutes: _dateCreatedTime.minute,
+          seconds: _dateCreatedTime.second));
+    }
+
+    category
+      ..name = txtName.text
+      ..dateCreated = _dateCreated;
     await category.save();
     if (category.saveResult!.success) {
       Navigator.pop(context, true);
