@@ -21,20 +21,20 @@ class SqfEntityBuilder {
   final SqfEntityModel model;
 }
 
-/// This class is required for TABLE definitions using in /lib/model/model.dart file
-/// Simple table definition must be below:
-/// ```
-/// const tableCategory = SqfEntityTable(
-/// tableName: 'category',
-/// primaryKeyName: 'id',
-/// primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-/// useSoftDeleting: false,
-/// fields: [
-///   SqfEntityField('name', DbType.text, isNotNull: true),
-///   SqfEntityField('isActive', DbType.bool, defaultValue: true),
-/// ]);
-/// ```
 class SqfEntityTable {
+  /// This class is required for TABLE definitions using in /lib/model/model.dart file
+  /// Simple table definition must be below:
+  /// ```
+  /// const tableCategory = SqfEntityTable(
+  /// tableName: 'category',
+  /// primaryKeyName: 'id',
+  /// primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+  /// useSoftDeleting: false,
+  /// fields: [
+  ///   SqfEntityField('name', DbType.text, isNotNull: true),
+  ///   SqfEntityField('isActive', DbType.bool, defaultValue: true),
+  /// ]);
+  /// ```
   const SqfEntityTable(
       {this.tableName,
       this.primaryKeyName,
@@ -73,21 +73,21 @@ class TableCollection {
   final SqfEntityFieldRelationship childTableField;
 }
 
-/// This class is required for SEQUENCE definitions using in /lib/model/model.dart file
-/// Simple sequence definition must be below:
-/// ```
-/// const mySequence = SqfEntitySequence(
-///   sequenceName: 'identity',
-///   //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
-///   //modelName: 'SQEidentity',
-///   /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
-///   //cycle : false,    /* optional. default is false; */
-///   //minValue = 0;     /* optional. default is 0 */
-///   //incrementBy = 1;  /* optional. default is 1 */
-///   // startWith = 0;   /* optional. default is 0 */
-/// );
-/// ```
 class SqfEntitySequence {
+  /// This class is required for SEQUENCE definitions using in /lib/model/model.dart file
+  /// Simple sequence definition must be below:
+  /// ```
+  ///   const mySequence = SqfEntitySequence(
+  ///   sequenceName: 'identity',
+  ///   //maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
+  ///   //modelName: 'SQEidentity',
+  ///   /* optional. SqfEntity will set it to sequenceName automatically when the modelName is null*/
+  ///   //cycle : false,    /* optional. default is false; */
+  ///   //minValue = 0;     /* optional. default is 0 */
+  ///   //incrementBy = 1;  /* optional. default is 1 */
+  ///   // startWith = 0;   /* optional. default is 0 */
+  /// );
+  /// ```
   const SqfEntitySequence(
       {this.sequenceName,
       this.startWith,
@@ -119,12 +119,12 @@ class SqfEntitySequence {
   final String? modelName;
 }
 
-/// This class is required for field definitions using in a table definition
-/// Simple field definition must be below:
-/// ```
-///   SqfEntityField('name', DbType.text, isNotNull: true),
-/// ```
 class SqfEntityField {
+  /// This class is required for field definitions using in a table definition
+  /// Simple field definition must be below:
+  /// ```
+  ///   SqfEntityField('name', DbType.text, isNotNull: true),
+  /// ```
   const SqfEntityField(this.fieldName, this.dbType,
       {this.defaultValue,
       this.minValue,
@@ -163,62 +163,76 @@ class SqfEntityField {
 class SqfEntityFieldVirtual implements SqfEntityField {
   const SqfEntityFieldVirtual(this.fieldName, this.dbType);
 
+  /// Set property type
   @override
   final DbType dbType;
 
-  @override
-  dynamic get defaultValue => null;
-
+  /// Set property's name
   @override
   final String fieldName;
 
+  /// this property is always null in virtual fields
+  @override
+  dynamic get defaultValue => null;
+
+  /// this property is always null in virtual fields
   @override
   dynamic get maxValue => null;
 
+  /// this property is always null in virtual fields
   @override
   dynamic get minValue => null;
 
+  /// this property is always null in virtual fields
   @override
   SqfEntitySequence? get sequencedBy => null;
 
+  /// this property is always null in virtual fields
   @override
   bool? get isPrimaryKeyField => null;
 
+  /// this property is always null in virtual fields
   @override
   String? get checkCondition => null;
 
+  /// this property is always null in virtual fields
   @override
   bool? get isNotNull => null;
 
+  /// this property is always null in virtual fields
   @override
   bool? get isUnique => null;
 
+  /// this property is always null in virtual fields
   @override
   bool? get isIndex => null;
 
+  /// this property is always null in virtual fields
   @override
   int? get isIndexGroup => null;
 
+  /// this property is always null in virtual fields
   @override
   Collate? get collate => null;
 
+  /// this property is always null in virtual fields
   @override
   String? get formLabelText => null;
 }
 
-/// Create a field which has a relation with another table.
-///
-/// So you can see all related children rows or a parent row
-///
-/// Simple virtual field definition must be below:
-/// ```
-///  SqfEntityFieldRelationship(
-///         parentTable: tableCategory,
-///         deleteRule: DeleteRule.CASCADE,
-///         defaultValue: 1,
-///         ),
-/// ```
 class SqfEntityFieldRelationship implements SqfEntityField {
+  /// Create a field which has a relation with another table.
+  ///
+  /// So you can see all related children rows or a parent row
+  ///
+  /// Simple virtual field definition must be below:
+  /// ```
+  ///  SqfEntityFieldRelationship(
+  ///         parentTable: tableCategory,
+  ///         deleteRule: DeleteRule.CASCADE,
+  ///         defaultValue: 1,
+  ///         ),
+  /// ```
   const SqfEntityFieldRelationship({
     this.parentTable,
     this.deleteRule,
@@ -238,33 +252,77 @@ class SqfEntityFieldRelationship implements SqfEntityField {
     this.checkCondition,
     this.collate,
   });
+
+  /// Table column name that will be created
   @override
   final String? fieldName;
+
+  /// set a default value before the save action if it is past null
   @override
   final dynamic defaultValue;
+
+  /// set minimum value both SQLite rule & form input limit
   @override
   final dynamic minValue;
+
+  /// set maximum value both SQLite rule & form input limit
   @override
   final dynamic maxValue;
+
+  /// you are able to set the table name of created that MANY-TO-MANY Relationship needs
   final String? manyToManyTableName;
+
+  /// Set a delete rule to avoid damaging the rows related to each other
   final DeleteRule? deleteRule;
+
+  /// Set a relation type between the tables which are related to each other
   final RelationType? relationType;
+
+  /// Specify a table which you want to relate to
   final SqfEntityTable? parentTable;
+
+  /// Specify a field to use in DropDown control as a Text field. Value field is set automatically as a primary key field
   final String? formDropDownTextField;
+
+  /// Set field as a primary key. You can set more than one fields as a primary key field
   @override
   final bool? isPrimaryKeyField;
+
+  /// Set a sequence to increase value of the field automatically according to the assigned sequence
   @override
   SqfEntitySequence? get sequencedBy => null;
+
+  /// Set type of field
   @override
   DbType? get dbType => null;
+
+  /// Use SQLite CHECH Constraint. if the condition phrase is:
+  ///
+  /// CHECK (length(phone) >= 10)
+  ///
+  /// chechCondition string must be:
+  ///
+  /// checkCondition = 'length(phone) >= 10'
+  ///
+  /// for more information: https://www.sqlitetutorial.net/sqlite-check-constraint/
   @override
   final String? checkCondition;
+
+  /// if true, you can't pass null
   @override
   final bool? isNotNull;
+
+  /// if true, each value must be unique
   @override
   final bool? isUnique;
+
+  /// Set as a INDEX field
   @override
   final bool? isIndex;
+
+  /// Set an indexed field as a group index to set indexes more than one and grouped.
+  ///
+  /// If you want to search people by FirstName & LastName, it is better to set these fields' property isIndex:true and isIndexGroup:1
   @override
   final int? isIndexGroup;
   @override
@@ -273,20 +331,6 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final String? formLabelText;
 }
 
-/// Perform actions before each insert/update
-/// Example:
-/// ```
-///    @SqfEntityBuilder(myDbModel)
-///    const myDbModel = SqfEntityModel(
-///        ...
-///        preSaveAction: getPreSaveAction,
-///    );
-///    Future<TableBase> getPreSaveAction(String tableName, obj) async {
-///       // Update the lastUpdate column on all records before saving
-///       obj.lastUpdate = DateTime.now()
-///       return obj;
-///    }
-/// ```
 typedef PreSaveAction = Future<TableBase> Function(String tableName, TableBase);
 
 /// Log events on failure of insert/update operation
@@ -320,20 +364,20 @@ class Log {
   StackTrace? stackTrace;
 }
 
-/// This class is required for DB MODEL definitions using in /lib/model/model.dart file
-/// Simple DB Model definition must be below:
-/// ```
-/// @SqfEntityBuilder(myDbModel)
-/// const myDbModel = SqfEntityModel(
-/// modelName: 'MyDbModel',
-/// databaseName: 'sample.db',
-/// databaseTables: [tableProduct, tableCategory, tableTodo],
-/// defaultColumns: [
-///   SqfEntityField('dateCreated', DbType.datetime,
-///       defaultValue: 'DateTime.now()'),
-/// ]);
-/// ```
 class SqfEntityModel {
+  /// This class is required for DB MODEL definitions using in /lib/model/model.dart file
+  /// Simple DB Model definition must be below:
+  /// ```
+  /// @SqfEntityBuilder(myDbModel)
+  /// const myDbModel = SqfEntityModel(
+  /// modelName: 'MyDbModel',
+  /// databaseName: 'sample.db',
+  /// databaseTables: [tableProduct, tableCategory, tableTodo],
+  /// defaultColumns: [
+  ///   SqfEntityField('dateCreated', DbType.datetime,
+  ///       defaultValue: 'DateTime.now()'),
+  /// ]);
+  /// ```
   const SqfEntityModel(
       {this.databaseName,
       this.databaseTables,
@@ -378,7 +422,21 @@ class SqfEntityModel {
   /// Indicates columns that will be added to all tables by default
   final List<SqfEntityField>? defaultColumns;
 
-  /// Action Execute pre save
+  /// Action Execute pre save. (Perform actions before each insert/update)
+  ///
+  /// Example:
+  /// ```
+  ///    @SqfEntityBuilder(myDbModel)
+  ///    const myDbModel = SqfEntityModel(
+  ///        ...
+  ///        preSaveAction: getPreSaveAction,
+  ///    );
+  ///    Future<TableBase> getPreSaveAction(String tableName, obj) async {
+  ///       // Update the lastUpdate column on all records before saving
+  ///       obj.lastUpdate = DateTime.now()
+  ///       return obj;
+  ///    }
+  /// ```
   final PreSaveAction? preSaveAction;
 
   /// Log events on failure of insert/update operation
@@ -468,6 +526,7 @@ class SqfEntityModelConverter {
     return fields;
   }
 
+  /// Assign field properties from defined constant field
   SqfEntityFieldType getFieldProperties(
       SqfEntityField field, SqfEntityFieldType toField) {
     return toField
@@ -484,6 +543,7 @@ class SqfEntityModelConverter {
           field.sequencedBy == null ? null : toSequence(field.sequencedBy!);
   }
 
+  /// Convert defined constant sequences into List<SqfEntitySequenceBase>
   List<SqfEntitySequenceBase>? toSequences() {
     if (model.sequences == null) {
       return null;
@@ -495,6 +555,7 @@ class SqfEntityModelConverter {
     return sequenceList;
   }
 
+  /// Convert sent constant sequences into SqfEntitySequenceBase
   SqfEntitySequenceBase? toSequence(SqfEntitySequence? seq) {
     if (seq == null) {
       return null;
@@ -3878,15 +3939,16 @@ abstract class SqfEntityModelBase {
       // CHECK AND CONFIGURE MANY_TO_MANY RELATIONS
       for (final field
           in table.fields!.whereType<SqfEntityFieldRelationshipBase>()) {
-        if (field.relationType == RelationType.ONE_TO_MANY_VICEVERSA) {
-          field.relationType = RelationType.ONE_TO_MANY;
-          databaseTables!
-              .singleWhere((t) => t.tableName == field.table!.tableName!)
-            ..fields!.add(SqfEntityFieldRelationshipBase(
-                table, field.deleteRule,
-                relationType: RelationType.ONE_TO_MANY));
-          field.table!.init();
-        } else if (field.relationType == RelationType.MANY_TO_MANY) {
+        // if (field.relationType == RelationType.ONE_TO_MANY_VICEVERSA) {
+        //   field.relationType = RelationType.ONE_TO_MANY;
+        //   databaseTables!
+        //       .singleWhere((t) => t.tableName == field.table!.tableName!)
+        //     ..fields!.add(SqfEntityFieldRelationshipBase(
+        //         table, field.deleteRule,
+        //         relationType: RelationType.ONE_TO_MANY));
+        //   field.table!.init();
+        // } else
+        if (field.relationType == RelationType.MANY_TO_MANY) {
           print('found RelationShip ManyToMany');
           final many2ManyTableName = field.manyToManyTableName ??
               '${table.tableName}${toCamelCase(field.table!.tableName!)}';
@@ -3983,6 +4045,7 @@ abstract class SqfEntityModelBase {
   }
 }
 
+/// SQFENTITY recognise tables that related to each other
 List<TableCollectionBase> _getCollections(
     SqfEntityTableBase table, SqfEntityModelBase _m) {
   final collectionList = <TableCollectionBase>[];
@@ -4003,30 +4066,35 @@ List<TableCollectionBase> _getCollections(
   return collectionList;
 }
 
+/// Converts field name to CamelCase format
 String toCamelCase(String? fieldName) => fieldName != null
     ? fieldName.length == 1
         ? fieldName.toUpperCase()
         : fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1)
     : '';
 
+/// Converts field name to camelCase format
 String tocamelCase(String? fieldName) => fieldName != null
     ? fieldName.length == 1
         ? fieldName.toLowerCase()
         : fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1)
     : '';
 
+/// Convert singular field name to plural format
 String toPluralName(String s) => s.endsWith('y')
     ? '${s.substring(0, s.length - 1)}ies'
     : (s.endsWith('s') || s.endsWith('o '))
         ? '${s}es'
         : '${s}s';
 
+/// Convert field name to lowercase plural format
 String toPluralLowerName(String s) => s.endsWith('y')
     ? '${s.substring(0, s.length - 1).toLowerCase()}ies'
     : (s.endsWith('s') || s.endsWith('o '))
         ? '${s.toLowerCase()}es'
         : '${s.toLowerCase()}s';
 
+/// Convert field name to singular format
 String toSingularName(String s) => s.endsWith('ies')
     ? '${s.substring(0, s.length - 3)}y'
     : s.endsWith('ses') || s.endsWith('oes')
@@ -4035,6 +4103,7 @@ String toSingularName(String s) => s.endsWith('ies')
             ? s.substring(0, s.length - 1)
             : s;
 
+/// Convert field name to lowercase singular format
 String toSingularLowerName(String s) => s.endsWith('ies')
     ? '${s.substring(0, s.length - 3).toLowerCase()}y'
     : s.endsWith('ses') || s.endsWith('oes')
@@ -4043,11 +4112,13 @@ String toSingularLowerName(String s) => s.endsWith('ies')
             ? s.substring(0, s.length - 1).toLowerCase()
             : s.toLowerCase();
 
+/// Set model name by defined if the model name set null
 String toModelName(String? modelName, String definedName) =>
     modelName == null || modelName.isEmpty
         ? toCamelCase(toSingularName(definedName))
         : toCamelCase(modelName);
 
+/// Add preload comment
 const String commentPreload =
     '''/// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
     /// 
@@ -4094,7 +4165,7 @@ SQLite KEYWORDS
 
 */
 
-// List<String> dartType: each element of the list corresponds to the DbType enum index
+/// List<String> dartType: each element of the list corresponds to the DbType enum index
 const List<String> dartType = [
   'int', // 0
   'String', // 1
@@ -4121,15 +4192,54 @@ const List<String> sqLiteType = [
   'datetimeutc', // 9
   'text', // 10
 ];
+
+/// A foreign key with delete rules
+///
+/// CASCADE: means that if a record in the parent table is deleted, then the corresponding records in the child table will automatically be deleted.
+///
+/// SET_DEFAULT_VALUE: means that if a record in the parent table is deleted, then the corresponding records will be set to the default value automatically without deleting.
+///
+/// SET_NULL: means that if a record in the parent table is deleted, then the corresponding records will be set NULL automatically without deleting.
+///
+/// NO_ACTION: means if there is a row in the CHILD table, you are not able to delete its PARENT row without breaking referential integrity, so the Delete will be rolled back (fail by NO ACTION)
 enum DeleteRule { CASCADE, SET_DEFAULT_VALUE, SET_NULL, NO_ACTION }
+
+/// At the time of comparison of two strings, in SQLite, it uses a collating sequence or collating function to understand which string is greater or whether the two strings are equal. SQLite has three built-in collating functions
+/// BINARY: Compares string data using memcmp(), regardless of text encoding.
+///
+/// NOCASE: It is almost same as binary, except the 26 upper case characters of ASCII are folded to their lower case equivalents before the comparison is performed.
+///
+/// RTRIM: The same as binary, except that trailing space characters, are ignored.
 enum Collate { BINARY, NOCASE, RTRIM }
+
+/// Relation Types:
+///
+/// ONE-TO-ONE: Each record may have zero or only one child record. Ex: Customer -> Customer Profile (only one profile)
+///
+/// ONE-TO-MANY: Each record may have zero, one or multiple children records. Ex: Customer ->> Orders (more than one orders)
+///
+/// MANY-TO-MANY: Each independent records has multiple instances on both sides of the relationship. Ex: Items <<->> Properties
+///
+/// In this case, you can filter Items which have the same property, or filter properties which have the same Item
 enum RelationType {
   ONE_TO_ONE,
   ONE_TO_MANY,
   MANY_TO_MANY,
-  ONE_TO_MANY_VICEVERSA
+//  ONE_TO_MANY_VICEVERSA
 }
+
+/// SQLite Primary key types:
+///
+/// integer_auto_incremental: you do not need to set primary key value in this case
+///
+/// text: you must set a text/or hash value
+///
+/// integer_unique: You must set an integer & unique value
 enum PrimaryKeyType { integer_auto_incremental, text, integer_unique }
+
+/// If the class belong to a view, set this property as a view
+///
+/// Visit here to see example view VIEW_tracks: https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/model/chinook.dart#L184
 enum ObjectType { table, view }
 //enum DefaultValues { date_now, datetime_now }
 enum DbType {

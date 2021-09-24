@@ -180,7 +180,7 @@ Future<String> createSqfEntityModelString([bool setClipboard = true]) async {
   // Create Entity Model String of model from file at '/lib/model/model.dart'
   /// and set the Clipboard (After debugging, press Ctrl+V to paste the model from the Clipboard into `model.g.dart`)
 
-  final model = SqfEntityModelConverter(chinookdb).toModelBase();
+  final model = SqfEntityModelConverter(myDbModel).toModelBase();
   final strModel = StringBuffer()
     ..writeln('part of \'model.dart\';')
     ..writeln(SqfEntityConverter(model).createModelDatabase())

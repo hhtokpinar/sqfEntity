@@ -229,6 +229,9 @@ SqfEntityTableBase? toSqfEntityTable(DartObject obj, String dbModelName,
         print(
             'added: ${defaultField.fieldName}, defaultField table=${defaultField.table != null ? defaultField.table!.tableName : 'null'}');
         newTable.fields!.add(newField);
+      } else {
+        print(
+            'The field [${defaultField.fieldName}] has not been added due to conflicts with other columns with the same name in the table.');
       }
     }
   }

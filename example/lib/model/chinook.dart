@@ -181,7 +181,7 @@ const tableTrack = SqfEntityTable(
           manyToManyTableName: 'PlaylistTrack'),
     ]);
 
-const tableV_tracks = SqfEntityTable(
+const VIEW_tracks = SqfEntityTable(
   tableName: 'VTracks',
   objectType: ObjectType.view,
   fields: [
@@ -227,7 +227,7 @@ const chinookdb = SqfEntityModel(
       tableMediaType,
       tablePlaylist,
       tableTrack,
-      tableV_tracks
+      VIEW_tracks
     ],
     formTables: [
       tableAlbum,
