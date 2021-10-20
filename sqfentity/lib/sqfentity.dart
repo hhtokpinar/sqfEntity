@@ -366,7 +366,8 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> rawInsert(String pSql, List<dynamic>? params) async {
+  Future<int?> rawInsert(
+      String pSql, List<dynamic>? params, bool ignoreBatch) async {
     int result = 0;
     try {
       if (openedBatch[_dbModel!.databaseName!] == null) {

@@ -721,7 +721,7 @@ class Product extends TableBase {
 
   /// <returns>Returns id
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnProduct.rawInsert(
           'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -738,7 +738,8 @@ class Product extends TableBase {
             date != null ? date!.millisecondsSinceEpoch : null,
             dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
             isDeleted
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -2086,7 +2087,7 @@ class Category extends TableBase {
 
   /// <returns>Returns id
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnCategory.rawInsert(
           'INSERT OR REPLACE INTO category (id, name, isActive, dateCreated)  VALUES (?,?,?,?)',
@@ -2095,7 +2096,8 @@ class Category extends TableBase {
             name,
             isActive,
             dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -3316,7 +3318,7 @@ class Todo extends TableBase {
 
   /// <returns>Returns id
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnTodo.rawInsert(
           'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
@@ -3326,7 +3328,8 @@ class Todo extends TableBase {
             title,
             completed,
             dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true, successMessage: 'Todo id=$id updated successfully');

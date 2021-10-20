@@ -905,10 +905,10 @@ class SqfEntityObjectBuilder {
     
     /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
     ${_table.abstractModelName != null ? '@override' : ''}
-    Future<int?> upsert() async {
+    Future<int?> upsert({bool ignoreBatch = true}) async {
        try {
          final result = await _mn${_table.modelName}.rawInsert( 
-          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', [${_table.createListParameterForQueryWithId.replaceAll('this.', '')}]); if( result! > 0) 
+          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', [${_table.createListParameterForQueryWithId.replaceAll('this.', '')}], ignoreBatch); if( result! > 0) 
           {
           saveResult = BoolResult(success: true, successMessage: '${_table.modelName} ${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]} updated successfully');
           } else {
@@ -1661,11 +1661,11 @@ class SqfEntityObjectBuilder {
     /// Call the saveAs() method if you do not want to save it when there is another row with the same ${_table.primaryKeyNames[0]}
     /// 
     /// <returns>Returns BoolResult
-    Future<BoolResult> ${_hiddenMethod}save() async {
+    Future<BoolResult> ${_hiddenMethod}save({bool ignoreBatch = true}) async {
       final result = BoolResult(success: false);
       try {         
         await _mn${_table.modelName}.rawInsert( 
-       'INSERT ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '\${isSaved! ? \'OR REPLACE\':\'\'}' : 'OR REPLACE'} INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll("this.", "")})  VALUES ($_createConstructureArgsWithId)', toArgsWithIds());
+       'INSERT ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '\${isSaved! ? \'OR REPLACE\':\'\'}' : 'OR REPLACE'} INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll("this.", "")})  VALUES ($_createConstructureArgsWithId)', toArgsWithIds(), ignoreBatch);
         result.success=true;
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'isSaved = true;' : ''}
         
@@ -3343,8 +3343,12 @@ class SqfEntityTableBase {
     }
     if (primaryKeyName == null || primaryKeyName!.isEmpty) {
       createTableSQL = createTableSQL.substring(1);
+      createTableSQL = 'Create table $tableName ($createTableSQL)';
+    } else {
+      createTableSQL =
+          'Create table $tableName ($primaryKeyName $createTableSQL)';
     }
-    return 'Create table $tableName ($primaryKeyName $createTableSQL)';
+    return createTableSQL;
   }
 
   String __createConstructure(bool isQuery, bool withId) {

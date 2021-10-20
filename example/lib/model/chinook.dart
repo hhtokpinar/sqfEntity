@@ -207,7 +207,6 @@ INNER JOIN album ON Album.AlbumId = track.AlbumId
 INNER JOIN mediatype ON mediatype.MediaTypeId = track.MediaTypeId
 INNER JOIN genre ON genre.GenreId = track.GenreId''',
 );
-
 // END TABLES
 
 // BEGIN DATABASE MODEL
