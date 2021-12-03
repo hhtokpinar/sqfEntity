@@ -54,7 +54,7 @@ Some files in the project:
     11. LICENSE.txt                   : see this file for License Terms
 
 
-### dependencies:
+## dependencies:
 Note: You do not need **flutter_datetime_picker** if you do not want to use the Form Generator property
 
     dependencies:
@@ -68,7 +68,7 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
       build_verify: ^1.1.0
 
 
-## REQUIRED (sqlcipher for Android)
+### REQUIRED (sqlcipher for Android)
 Flutter now enables code shrinking by default when building an APK in release mode, so you need to add the following ProGuard rules to the file android/app/proguard-rules.pro. If it does not exist, create it:
 
        -keep class net.sqlcipher.** { *; }
