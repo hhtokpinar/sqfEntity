@@ -1,4 +1,4 @@
-## 2.1.2+1
+## 2.1.2+3
 Added an optional parameter **ignoreBatch** into save() method that sent true as a default to fix issue [214](https://github.com/hhtokpinar/sqfEntity/issues/214) 
 Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
 

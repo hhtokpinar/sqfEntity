@@ -861,11 +861,12 @@ class Album extends TableBase {
 
   /// <returns>Returns AlbumId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnAlbum.rawInsert(
           'INSERT OR REPLACE INTO Album (AlbumId, Title, ArtistId)  VALUES (?,?,?)',
-          [AlbumId, Title, ArtistId]);
+          [AlbumId, Title, ArtistId],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -2079,11 +2080,12 @@ class Artist extends TableBase {
 
   /// <returns>Returns ArtistId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnArtist.rawInsert(
           'INSERT OR REPLACE INTO Artist (ArtistId, Name)  VALUES (?,?)',
-          [ArtistId, Name]);
+          [ArtistId, Name],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -3524,7 +3526,7 @@ class Customer extends TableBase {
 
   /// <returns>Returns CustomerId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnCustomer.rawInsert(
           'INSERT OR REPLACE INTO Customer (CustomerId, FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -3542,7 +3544,8 @@ class Customer extends TableBase {
             Fax,
             Email,
             SupportRepId
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -5217,7 +5220,7 @@ class Employee extends TableBase {
 
   /// <returns>Returns EmployeeId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnEmployee.rawInsert(
           'INSERT OR REPLACE INTO Employee (EmployeeId, LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -5237,7 +5240,8 @@ class Employee extends TableBase {
             Fax,
             Email,
             ReportsTo
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -6622,11 +6626,12 @@ class Genre extends TableBase {
 
   /// <returns>Returns GenreId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnGenre.rawInsert(
           'INSERT OR REPLACE INTO Genre (GenreId, Name)  VALUES (?,?)',
-          [GenreId, Name]);
+          [GenreId, Name],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -8009,7 +8014,7 @@ class Invoice extends TableBase {
 
   /// <returns>Returns InvoiceId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnInvoice.rawInsert(
           'INSERT OR REPLACE INTO Invoice (InvoiceId, InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -8023,7 +8028,8 @@ class Invoice extends TableBase {
             BillingPostalCode,
             Total,
             CustomerId
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -9393,11 +9399,12 @@ class InvoiceLine extends TableBase {
 
   /// <returns>Returns InvoiceLineId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnInvoiceLine.rawInsert(
           'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
-          [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId]);
+          [InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -10633,11 +10640,12 @@ class MediaType extends TableBase {
 
   /// <returns>Returns MediaTypeId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnMediaType.rawInsert(
           'INSERT OR REPLACE INTO MediaType (MediaTypeId, Name)  VALUES (?,?)',
-          [MediaTypeId, Name]);
+          [MediaTypeId, Name],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -11831,11 +11839,12 @@ class Playlist extends TableBase {
 
   /// <returns>Returns PlaylistId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnPlaylist.rawInsert(
           'INSERT OR REPLACE INTO Playlist (PlaylistId, Name)  VALUES (?,?)',
-          [PlaylistId, Name]);
+          [PlaylistId, Name],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -13337,7 +13346,7 @@ class Track extends TableBase {
 
   /// <returns>Returns TrackId
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnTrack.rawInsert(
           'INSERT OR REPLACE INTO Track (TrackId, Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
@@ -13351,7 +13360,8 @@ class Track extends TableBase {
             MediaTypeId,
             GenreId,
             AlbumId
-          ]);
+          ],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -15637,12 +15647,13 @@ class PlaylistTrack extends TableBase {
   /// Call the saveAs() method if you do not want to save it when there is another row with the same TrackId
   ///
   /// <returns>Returns BoolResult
-  Future<BoolResult> save() async {
+  Future<BoolResult> save({bool ignoreBatch = true}) async {
     final result = BoolResult(success: false);
     try {
       await _mnPlaylistTrack.rawInsert(
           'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
-          toArgsWithIds());
+          toArgsWithIds(),
+          ignoreBatch);
       result.success = true;
       isSaved = true;
     } catch (e) {
@@ -15680,11 +15691,12 @@ class PlaylistTrack extends TableBase {
 
   /// <returns>Returns 1
 
-  Future<int?> upsert() async {
+  Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnPlaylistTrack.rawInsert(
           'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
-          [TrackId, PlaylistId]);
+          [TrackId, PlaylistId],
+          ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,

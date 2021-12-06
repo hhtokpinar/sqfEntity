@@ -832,7 +832,8 @@ class Product extends TableBase {
             date != null ? date!.millisecondsSinceEpoch : null,
             dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
             isDeleted
-          ]);
+          ],
+          true);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -2151,7 +2152,8 @@ class Category extends TableBase {
     try {
       final result = await _mnCategory.rawInsert(
           'INSERT OR REPLACE INTO category (id, name, isActive)  VALUES (?,?,?)',
-          [id, name, isActive]);
+          [id, name, isActive],
+          true);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
@@ -3367,7 +3369,8 @@ class Todo extends TableBase {
             title,
             completed,
             dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
-          ]);
+          ],
+          true);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true, successMessage: 'Todo id=$id updated successfully');
