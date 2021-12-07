@@ -512,8 +512,10 @@ class SqfEntityModelConverter {
         _field = SqfEntityFieldRelationshipBase(
             field.parentTable == null ? null : toTable(field.parentTable!),
             field.deleteRule!)
-          ..relationType = field.relationType!
-          ..manyToManyTableName = field.manyToManyTableName!
+          ..relationType = field.relationType == null
+              ? RelationType.ONE_TO_MANY
+              : field.relationType!
+          ..manyToManyTableName = field.manyToManyTableName
           ..fieldName = field.fieldName
           ..init();
         getFieldProperties(field, _field);
@@ -561,13 +563,13 @@ class SqfEntityModelConverter {
       return null;
     } else {
       return SqfEntitySequenceBase()
-        ..sequenceName = seq.sequenceName!
-        ..modelName = seq.modelName!
-        ..minValue = seq.minValue!
-        ..maxValue = seq.maxValue!
-        ..startWith = seq.startWith!
-        ..incrementBy = seq.incrementBy!
-        ..cycle = seq.cycle!
+        ..sequenceName = seq.sequenceName
+        ..modelName = seq.modelName
+        ..minValue = seq.minValue == null ? 0 : seq.minValue!
+        ..maxValue = seq.maxValue == null ? 9223372036854775807 : seq.maxValue!
+        ..startWith = seq.startWith == null ? 1 : seq.startWith!
+        ..incrementBy = seq.incrementBy == null ? 1 : seq.incrementBy!
+        ..cycle = seq.cycle
         ..init();
     }
   }
@@ -1086,7 +1088,7 @@ class SqfEntityObjectBuilder {
         _table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty) {
       _retVal.writeln(
-          'if (${_table.primaryKeyNames[0]} != null) {map[\'${_table.primaryKeyNames[0]}\'] = ${_table.primaryKeyNames[0]};}');
+          'map[\'${_table.primaryKeyNames[0]}\'] = ${_table.primaryKeyNames[0]};');
     }
     for (var field in _table.fields!) {
       if (field is SqfEntityFieldVirtualBase ||
@@ -1099,7 +1101,7 @@ class SqfEntityObjectBuilder {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.ONE_TO_MANY) {
         _retVal.writeln(
-            'if (${field.fieldName} != null) {map[\'${field.fieldName}\'] = forView ? pl${field.relationshipName} == null ? ${field.fieldName} : pl${field.relationshipName}!.${field.formDropDownTextField} : ${field.fieldName};}\n');
+            'if (${field.fieldName} != null) {map[\'${field.fieldName}\'] = forView ? pl${field.relationshipName} == null ? ${field.fieldName} : pl${field.relationshipName}!.${field.formDropDownTextField} : ${field.fieldName};} else {map[\'${field.fieldName}\'] = null;}');
       } else {
         _retVal.writeln('    ${field.toMapString()}');
       }
@@ -1732,8 +1734,7 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
   final relations = <String>[];
   for (final field
       in _table.fields!.whereType<SqfEntityFieldRelationshipBase>()) {
-    if (field is SqfEntityFieldRelationshipBase &&
-        field.relationType == RelationType.ONE_TO_MANY) {
+    if (field.relationType == RelationType.ONE_TO_MANY) {
       final modelName = field.relationshipName ?? _table.modelName!;
       String funcName = modelName;
       if (relations.contains(funcName)) {
@@ -3543,18 +3544,18 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
   String toMapString() {
     switch (dbType) {
       case DbType.bool:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] =  forQuery? ($fieldName ! ? 1 : 0) : $fieldName;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] =  forQuery? ($fieldName ! ? 1 : 0) : $fieldName;} else {map[\'$fieldName\'] = null;}';
       case DbType.date:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? \'\$$fieldName!.year-\$$fieldName!.month-\$$fieldName!.day\' : forQuery? DateTime($fieldName!.year,$fieldName!.month, $fieldName!.day).millisecondsSinceEpoch : $fieldName;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? \'\$$fieldName!.year-\$$fieldName!.month-\$$fieldName!.day\' : forQuery? DateTime($fieldName!.year,$fieldName!.month, $fieldName!.day).millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
       case DbType.datetime:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
       case DbType.datetimeUtc:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
       case DbType.time:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';} else {map[\'$fieldName\'] = null;}';
       default:
         {
-          return 'if ($fieldName != null) {map[\'$fieldName\'] = $fieldName;}\n';
+          return 'map[\'$fieldName\'] = $fieldName;';
         }
     }
   }
@@ -3849,9 +3850,9 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
   String toMapString() {
     switch (dbType) {
       case DbType.bool:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forQuery ? ($fieldName! ? 1 : 0) : $fieldName;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forQuery ? ($fieldName! ? 1 : 0) : $fieldName;} else {map[\'$fieldName\'] = null;}\n';
       default:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = $fieldName;}\n';
+        return 'map[\'$fieldName\'] = $fieldName;';
     }
   }
 
@@ -4030,8 +4031,7 @@ abstract class SqfEntityModelBase {
               }
             }
           }
-        } else if (field is SqfEntityFieldRelationshipBase &&
-            field.relationType == RelationType.ONE_TO_ONE &&
+        } else if (field.relationType == RelationType.ONE_TO_ONE &&
             (field.table != null && field.table != table)) {
           table.relationType = RelationType.ONE_TO_ONE;
         }

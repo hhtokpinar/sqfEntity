@@ -235,8 +235,7 @@ class ${modelName}AddState extends State {
     }
     for (final field in table.fields!) {
       if (field is! SqfEntityFieldRelationshipBase ||
-          (field is SqfEntityFieldRelationshipBase &&
-              field.relationType == RelationType.ONE_TO_MANY)) {
+          field.relationType == RelationType.ONE_TO_MANY) {
         retVal.writeln(toFormBuildRowCodeField(field));
       }
     }
@@ -257,8 +256,7 @@ class ${modelName}AddState extends State {
     }
     for (final field in table.fields!) {
       if (field is! SqfEntityFieldRelationshipBase ||
-          (field is SqfEntityFieldRelationshipBase &&
-              field.relationType == RelationType.ONE_TO_MANY)) {
+          field.relationType == RelationType.ONE_TO_MANY) {
         retVal.writeln(toFormDeclarationCodeField(field));
       }
     }

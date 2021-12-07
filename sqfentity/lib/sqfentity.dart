@@ -73,9 +73,6 @@ class SqfEntityProvider extends SqfEntityModelBase {
     if (_dbMap![_dbModel!.databaseName!] == null) {
       _dbMap![_dbModel!.databaseName!] = await _connectionBase!.openDb();
       await _dbModel!.initializeDB();
-      // if (!await _dbModel!.initializeDB()) {
-      //   _dbMap[_dbModel!.databaseName!] = null;
-      //  }
       // Unfortunately SQLite doesn't support the ADD CONSTRAINT variant of the ALTER TABLE. Therefore we had to comment line below
       //await _dbModel!.initializeForeignKeys();
     }
@@ -87,12 +84,18 @@ class SqfEntityProvider extends SqfEntityModelBase {
     await _connectionBase!.writeDatabase(data);
   }
 
+  Future<void> closeDatabase() async {
+    if (_dbMap != null && _dbMap![_dbModel!.databaseName!] != null) {
+      await _dbMap![_dbModel!.databaseName!]!.close();
+      _dbMap![_dbModel!.databaseName!] = null;
+    }
+  }
+
   Future<dynamic> getById(List<dynamic>? ids) async {
     if (ids == null) {
       return null;
     }
     final Database db = (await this.db)!;
-
     final query = 'Select * from $_tableName where $_whereStr';
     final result = await db.rawQuery(query, ids);
     return result;
@@ -675,20 +678,18 @@ ${table.sqlStatement}'''
         final fKeys =
             await SqfEntityProvider(this).getForeignKeys(table.tableName!);
         for (final rfield in rfields) {
-          if (rfield is SqfEntityFieldRelationshipBase) {
-            final fkeyExist = fKeys.isEmpty
-                ? null
-                : fKeys.singleWhere((f) => f['from'] == rfield.fieldName);
-            if (fkeyExist == null) {
-              final String? tableName = rfield.table == null
-                  ? table.tableName
-                  : rfield.table!.tableName;
-              final String? primaryKey = rfield.table == null
-                  ? table.primaryKeyName
-                  : rfield.table!.primaryKeyName;
-              alterTableQuery.add(
-                  'ALTER TABLE ${table.tableName} ADD CONSTRAINT fk_${table.tableName}_${rfield.fieldName} FOREIGN KEY (${rfield.fieldName}) REFERENCES $tableName($primaryKey) ON DELETE ${rfield.deleteRule.toString().replaceAll('_VALUE', '').replaceAll('_', ' ').replaceAll('DeleteRule.', '')}');
-            }
+          final fkeyExist = fKeys.isEmpty
+              ? null
+              : fKeys.singleWhere((f) => f['from'] == rfield.fieldName);
+          if (fkeyExist == null) {
+            final String? tableName = rfield.table == null
+                ? table.tableName
+                : rfield.table!.tableName;
+            final String? primaryKey = rfield.table == null
+                ? table.primaryKeyName
+                : rfield.table!.primaryKeyName;
+            alterTableQuery.add(
+                'ALTER TABLE ${table.tableName} ADD CONSTRAINT fk_${table.tableName}_${rfield.fieldName} FOREIGN KEY (${rfield.fieldName}) REFERENCES $tableName($primaryKey) ON DELETE ${rfield.deleteRule.toString().replaceAll('_VALUE', '').replaceAll('_', ' ').replaceAll('DeleteRule.', '')}');
           }
         }
       }
@@ -747,6 +748,10 @@ ${table.sqlStatement}'''
   /// Start a transaction batch to commit all of the operations in a batch as a single atomic unit
   Future<bool> batchStart() async {
     return await SqfEntityProvider(this).batchStart();
+  }
+
+  Future<void> closeDatabase() async {
+    await SqfEntityProvider(this).closeDatabase();
   }
 
   /// Commits all of the operations in this batch as a single atomic unit

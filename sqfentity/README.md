@@ -54,7 +54,7 @@ Some files in the project:
     11. LICENSE.txt                   : see this file for License Terms
 
 
-### dependencies:
+## dependencies:
 Note: You do not need **flutter_datetime_picker** if you do not want to use the Form Generator property
 
     dependencies:
@@ -67,7 +67,13 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
       build_runner: ^1.6.5
       build_verify: ^1.1.0
 
-  
+
+### REQUIRED (sqlcipher for Android)
+Flutter now enables code shrinking by default when building an APK in release mode, so you need to add the following ProGuard rules to the file android/app/proguard-rules.pro. If it does not exist, create it:
+
+       -keep class net.sqlcipher.** { *; }
+click to see: https://github.com/davidmartos96/sqflite_sqlcipher/blob/master/sqflite/README.md#android
+
 # Create a new Database Model
 
 First, You need to:
@@ -135,6 +141,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
         SqfEntityField('isActive', DbType.bool, defaultValue: true),
         SqfEntityFieldRelationship(
             parentTable: tableCategory,
+            relationType: RelationType.ONE_TO_MANY,
             deleteRule: DeleteRule.CASCADE,
             defaultValue: 0), // Relationship column for CategoryId of Product
         SqfEntityField('rownum', DbType.integer,
@@ -265,9 +272,12 @@ Run this script with this parameters.
 
 **bundledDatabasePath:** File path of your copied database
 
-    final bundledDbModel = await convertDatabaseToModelBase(
-        databaseName: 'chinook.db',  
-        bundledDatabasePath: 'assets/chinook.sqlite');
+    class BundledDbModel extends SqfEntityModelProvider {}
+
+    final bundledDbModel = await convertDatabaseToModelBase(BundledDbModel()
+    ..databaseName = 'chinook.db'
+    ..bundledDatabasePath = 'assets/chinook.sqlite');
+
 
 *STEP 3*
 

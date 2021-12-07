@@ -33,48 +33,26 @@ class TableProduct extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text,
-          isUnique: false, isNotNull: true, isIndex: false),
-      SqfEntityFieldBase('description', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('price', DbType.real,
-          defaultValue: 0, isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('isActive', DbType.bool,
-          defaultValue: true,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+      SqfEntityFieldBase('name', DbType.text, isNotNull: true),
+      SqfEntityFieldBase('description', DbType.text),
+      SqfEntityFieldBase('price', DbType.real, defaultValue: 0),
+      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldRelationshipBase(
           TableCategory.getInstance, DeleteRule.CASCADE,
           relationType: RelationType.ONE_TO_MANY,
           fieldName: 'categoryId',
-          defaultValue: 1,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
-      SqfEntityFieldBase('rownum', DbType.integer,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('imageUrl', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+          defaultValue: 1),
+      SqfEntityFieldBase('rownum', DbType.integer),
+      SqfEntityFieldBase('imageUrl', DbType.text),
       SqfEntityFieldBase('datetime', DbType.datetime,
           defaultValue: DateTime.now(),
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
           minValue: DateTime.parse('2019-01-01'),
           maxValue: DateTime.now().add(Duration(days: 30))),
       SqfEntityFieldBase('date', DbType.date,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
           minValue: DateTime.parse('2015-01-01'),
           maxValue: DateTime.now().add(Duration(days: 365))),
       SqfEntityFieldBase('dateCreated', DbType.datetime,
-          defaultValue: DateTime.now(),
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
-          minValue: DateTime.parse('1900-01-01')),
+          defaultValue: DateTime.now(), minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
@@ -96,19 +74,10 @@ class TableCategory extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('name', DbType.text,
-          isUnique: false, isNotNull: true, isIndex: false),
-      SqfEntityFieldBase('isActive', DbType.bool,
-          defaultValue: true,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+      SqfEntityFieldBase('name', DbType.text, isNotNull: true),
+      SqfEntityFieldBase('isActive', DbType.bool, defaultValue: true),
       SqfEntityFieldBase('dateCreated', DbType.datetime,
-          defaultValue: DateTime.now(),
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
-          minValue: DateTime.parse('1900-01-01')),
+          defaultValue: DateTime.now(), minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
@@ -130,21 +99,11 @@ class TableTodo extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('userId', DbType.integer,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('title', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('completed', DbType.bool,
-          defaultValue: false,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+      SqfEntityFieldBase('userId', DbType.integer),
+      SqfEntityFieldBase('title', DbType.text),
+      SqfEntityFieldBase('completed', DbType.bool, defaultValue: false),
       SqfEntityFieldBase('dateCreated', DbType.datetime,
-          defaultValue: DateTime.now(),
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
-          minValue: DateTime.parse('1900-01-01')),
+          defaultValue: DateTime.now(), minValue: DateTime.parse('1900-01-01')),
     ];
     super.init();
   }
@@ -351,49 +310,35 @@ class Product extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (name != null) {
-      map['name'] = name;
-    }
-
-    if (description != null) {
-      map['description'] = description;
-    }
-
-    if (price != null) {
-      map['price'] = price;
-    }
-
+    map['id'] = id;
+    map['name'] = name;
+    map['description'] = description;
+    map['price'] = price;
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
+    } else {
+      map['isActive'] = null;
     }
-
     if (categoryId != null) {
       map['categoryId'] = forView
           ? plCategory == null
               ? categoryId
               : plCategory!.name
           : categoryId;
+    } else {
+      map['categoryId'] = null;
     }
-
-    if (rownum != null) {
-      map['rownum'] = rownum;
-    }
-
-    if (imageUrl != null) {
-      map['imageUrl'] = imageUrl;
-    }
-
+    map['rownum'] = rownum;
+    map['imageUrl'] = imageUrl;
     if (datetime != null) {
       map['datetime'] = forJson
           ? datetime!.toString()
           : forQuery
               ? datetime!.millisecondsSinceEpoch
               : datetime;
+    } else {
+      map['datetime'] = null;
     }
-
     if (date != null) {
       map['date'] = forJson
           ? '$date!.year-$date!.month-$date!.day'
@@ -401,16 +346,18 @@ class Product extends TableBase {
               ? DateTime(date!.year, date!.month, date!.day)
                   .millisecondsSinceEpoch
               : date;
+    } else {
+      map['date'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
-
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
@@ -423,49 +370,35 @@ class Product extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (name != null) {
-      map['name'] = name;
-    }
-
-    if (description != null) {
-      map['description'] = description;
-    }
-
-    if (price != null) {
-      map['price'] = price;
-    }
-
+    map['id'] = id;
+    map['name'] = name;
+    map['description'] = description;
+    map['price'] = price;
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
+    } else {
+      map['isActive'] = null;
     }
-
     if (categoryId != null) {
       map['categoryId'] = forView
           ? plCategory == null
               ? categoryId
               : plCategory!.name
           : categoryId;
+    } else {
+      map['categoryId'] = null;
     }
-
-    if (rownum != null) {
-      map['rownum'] = rownum;
-    }
-
-    if (imageUrl != null) {
-      map['imageUrl'] = imageUrl;
-    }
-
+    map['rownum'] = rownum;
+    map['imageUrl'] = imageUrl;
     if (datetime != null) {
       map['datetime'] = forJson
           ? datetime!.toString()
           : forQuery
               ? datetime!.millisecondsSinceEpoch
               : datetime;
+    } else {
+      map['datetime'] = null;
     }
-
     if (date != null) {
       map['date'] = forJson
           ? '$date!.year-$date!.month-$date!.day'
@@ -473,16 +406,18 @@ class Product extends TableBase {
               ? DateTime(date!.year, date!.month, date!.day)
                   .millisecondsSinceEpoch
               : date;
+    } else {
+      map['date'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
-
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted! ? 1 : 0) : isDeleted;
     }
@@ -1819,23 +1754,21 @@ class Category extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (name != null) {
-      map['name'] = name;
-    }
-
+    map['id'] = id;
+    map['name'] = name;
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
+    } else {
+      map['isActive'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
 
     return map;
@@ -1846,23 +1779,21 @@ class Category extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (name != null) {
-      map['name'] = name;
-    }
-
+    map['id'] = id;
+    map['name'] = name;
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive! ? 1 : 0) : isActive;
+    } else {
+      map['isActive'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
 
 // COLLECTIONS (Category)
@@ -3073,27 +3004,22 @@ class Todo extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (userId != null) {
-      map['userId'] = userId;
-    }
-
-    if (title != null) {
-      map['title'] = title;
-    }
-
+    map['id'] = id;
+    map['userId'] = userId;
+    map['title'] = title;
     if (completed != null) {
       map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
+    } else {
+      map['completed'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
 
     return map;
@@ -3104,27 +3030,22 @@ class Todo extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (id != null) {
-      map['id'] = id;
-    }
-    if (userId != null) {
-      map['userId'] = userId;
-    }
-
-    if (title != null) {
-      map['title'] = title;
-    }
-
+    map['id'] = id;
+    map['userId'] = userId;
+    map['title'] = title;
     if (completed != null) {
       map['completed'] = forQuery ? (completed! ? 1 : 0) : completed;
+    } else {
+      map['completed'] = null;
     }
-
     if (dateCreated != null) {
       map['dateCreated'] = forJson
           ? dateCreated!.toString()
           : forQuery
               ? dateCreated!.millisecondsSinceEpoch
               : dateCreated;
+    } else {
+      map['dateCreated'] = null;
     }
 
     return map;

@@ -33,15 +33,10 @@ class TableAlbum extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Title', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Title', DbType.text),
       SqfEntityFieldRelationshipBase(
           TableArtist.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'ArtistId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'ArtistId'),
     ];
     super.init();
   }
@@ -63,8 +58,7 @@ class TableArtist extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
     ];
     super.init();
   }
@@ -86,35 +80,20 @@ class TableCustomer extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('FirstName', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('LastName', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Company', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Address', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('City', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('State', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Country', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('PostalCode', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Phone', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Fax', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Email', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('FirstName', DbType.text),
+      SqfEntityFieldBase('LastName', DbType.text),
+      SqfEntityFieldBase('Company', DbType.text),
+      SqfEntityFieldBase('Address', DbType.text),
+      SqfEntityFieldBase('City', DbType.text),
+      SqfEntityFieldBase('State', DbType.text),
+      SqfEntityFieldBase('Country', DbType.text),
+      SqfEntityFieldBase('PostalCode', DbType.text),
+      SqfEntityFieldBase('Phone', DbType.text),
+      SqfEntityFieldBase('Fax', DbType.text),
+      SqfEntityFieldBase('Email', DbType.text),
       SqfEntityFieldRelationshipBase(
           TableEmployee.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'SupportRepId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'SupportRepId'),
     ];
     super.init();
   }
@@ -136,44 +115,23 @@ class TableEmployee extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('LastName', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('FirstName', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Title', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('LastName', DbType.text),
+      SqfEntityFieldBase('FirstName', DbType.text),
+      SqfEntityFieldBase('Title', DbType.text),
       SqfEntityFieldBase('BirthDate', DbType.datetime,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
           minValue: DateTime.parse('1900-01-01')),
       SqfEntityFieldBase('HireDate', DbType.datetime,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
           minValue: DateTime.parse('1900-01-01')),
-      SqfEntityFieldBase('Address', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('City', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('State', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Country', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('PostalCode', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Phone', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Fax', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Email', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Address', DbType.text),
+      SqfEntityFieldBase('City', DbType.text),
+      SqfEntityFieldBase('State', DbType.text),
+      SqfEntityFieldBase('Country', DbType.text),
+      SqfEntityFieldBase('PostalCode', DbType.text),
+      SqfEntityFieldBase('Phone', DbType.text),
+      SqfEntityFieldBase('Fax', DbType.text),
+      SqfEntityFieldBase('Email', DbType.text),
       SqfEntityFieldRelationshipBase(null, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'ReportsTo',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'ReportsTo'),
     ];
     super.init();
   }
@@ -195,8 +153,7 @@ class TableGenre extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
     ];
     super.init();
   }
@@ -219,29 +176,16 @@ class TableInvoice extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('InvoiceDate', DbType.datetime,
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false,
           minValue: DateTime.parse('1900-01-01')),
-      SqfEntityFieldBase('BillingAddress', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('BillingCity', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('BillingState', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('BillingCountry', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('BillingPostalCode', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Total', DbType.real,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('BillingAddress', DbType.text),
+      SqfEntityFieldBase('BillingCity', DbType.text),
+      SqfEntityFieldBase('BillingState', DbType.text),
+      SqfEntityFieldBase('BillingCountry', DbType.text),
+      SqfEntityFieldBase('BillingPostalCode', DbType.text),
+      SqfEntityFieldBase('Total', DbType.real),
       SqfEntityFieldRelationshipBase(
           TableCustomer.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'CustomerId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'CustomerId'),
     ];
     super.init();
   }
@@ -263,24 +207,14 @@ class TableInvoiceLine extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('UnitPrice', DbType.real,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Quantity', DbType.integer,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('UnitPrice', DbType.real),
+      SqfEntityFieldBase('Quantity', DbType.integer),
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'TrackId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'TrackId'),
       SqfEntityFieldRelationshipBase(
           TableInvoice.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'InvoiceId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'InvoiceId'),
     ];
     super.init();
   }
@@ -302,8 +236,7 @@ class TableMediaType extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
     ];
     super.init();
   }
@@ -325,8 +258,7 @@ class TablePlaylist extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
     ];
     super.init();
   }
@@ -348,37 +280,20 @@ class TableTrack extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Composer', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Milliseconds', DbType.integer,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('Bytes', DbType.integer,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('UnitPrice', DbType.real,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('Composer', DbType.text),
+      SqfEntityFieldBase('Milliseconds', DbType.integer),
+      SqfEntityFieldBase('Bytes', DbType.integer),
+      SqfEntityFieldBase('UnitPrice', DbType.real),
       SqfEntityFieldRelationshipBase(
           TableMediaType.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'MediaTypeId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'MediaTypeId'),
       SqfEntityFieldRelationshipBase(
           TableGenre.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'GenreId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'GenreId'),
       SqfEntityFieldRelationshipBase(
           TableAlbum.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'AlbumId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'AlbumId'),
     ];
     super.init();
   }
@@ -400,21 +315,13 @@ class TableVTrack extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldBase('Name', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('album', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('media', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
-      SqfEntityFieldBase('genres', DbType.text,
-          isUnique: false, isNotNull: false, isIndex: false),
+      SqfEntityFieldBase('Name', DbType.text),
+      SqfEntityFieldBase('album', DbType.text),
+      SqfEntityFieldBase('media', DbType.text),
+      SqfEntityFieldBase('genres', DbType.text),
       SqfEntityFieldRelationshipBase(
           TableTrack.getInstance, DeleteRule.NO_ACTION,
-          relationType: RelationType.ONE_TO_MANY,
-          fieldName: 'TrackId',
-          isUnique: false,
-          isNotNull: false,
-          isIndex: false),
+          relationType: RelationType.ONE_TO_MANY, fieldName: 'TrackId'),
     ];
     super.init();
   }
@@ -582,19 +489,16 @@ class Album extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (AlbumId != null) {
-      map['AlbumId'] = AlbumId;
-    }
-    if (Title != null) {
-      map['Title'] = Title;
-    }
-
+    map['AlbumId'] = AlbumId;
+    map['Title'] = Title;
     if (ArtistId != null) {
       map['ArtistId'] = forView
           ? plArtist == null
               ? ArtistId
               : plArtist!.Name
           : ArtistId;
+    } else {
+      map['ArtistId'] = null;
     }
 
     return map;
@@ -605,19 +509,16 @@ class Album extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (AlbumId != null) {
-      map['AlbumId'] = AlbumId;
-    }
-    if (Title != null) {
-      map['Title'] = Title;
-    }
-
+    map['AlbumId'] = AlbumId;
+    map['Title'] = Title;
     if (ArtistId != null) {
       map['ArtistId'] = forView
           ? plArtist == null
               ? ArtistId
               : plArtist!.Name
           : ArtistId;
+    } else {
+      map['ArtistId'] = null;
     }
 
 // COLLECTIONS (Album)
@@ -1845,12 +1746,8 @@ class Artist extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (ArtistId != null) {
-      map['ArtistId'] = ArtistId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['ArtistId'] = ArtistId;
+    map['Name'] = Name;
 
     return map;
   }
@@ -1860,12 +1757,8 @@ class Artist extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (ArtistId != null) {
-      map['ArtistId'] = ArtistId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['ArtistId'] = ArtistId;
+    map['Name'] = Name;
 
 // COLLECTIONS (Artist)
     if (!forQuery) {
@@ -3140,59 +3033,26 @@ class Customer extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (CustomerId != null) {
-      map['CustomerId'] = CustomerId;
-    }
-    if (FirstName != null) {
-      map['FirstName'] = FirstName;
-    }
-
-    if (LastName != null) {
-      map['LastName'] = LastName;
-    }
-
-    if (Company != null) {
-      map['Company'] = Company;
-    }
-
-    if (Address != null) {
-      map['Address'] = Address;
-    }
-
-    if (City != null) {
-      map['City'] = City;
-    }
-
-    if (State != null) {
-      map['State'] = State;
-    }
-
-    if (Country != null) {
-      map['Country'] = Country;
-    }
-
-    if (PostalCode != null) {
-      map['PostalCode'] = PostalCode;
-    }
-
-    if (Phone != null) {
-      map['Phone'] = Phone;
-    }
-
-    if (Fax != null) {
-      map['Fax'] = Fax;
-    }
-
-    if (Email != null) {
-      map['Email'] = Email;
-    }
-
+    map['CustomerId'] = CustomerId;
+    map['FirstName'] = FirstName;
+    map['LastName'] = LastName;
+    map['Company'] = Company;
+    map['Address'] = Address;
+    map['City'] = City;
+    map['State'] = State;
+    map['Country'] = Country;
+    map['PostalCode'] = PostalCode;
+    map['Phone'] = Phone;
+    map['Fax'] = Fax;
+    map['Email'] = Email;
     if (SupportRepId != null) {
       map['SupportRepId'] = forView
           ? plEmployee == null
               ? SupportRepId
               : plEmployee!.LastName
           : SupportRepId;
+    } else {
+      map['SupportRepId'] = null;
     }
 
     return map;
@@ -3203,59 +3063,26 @@ class Customer extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (CustomerId != null) {
-      map['CustomerId'] = CustomerId;
-    }
-    if (FirstName != null) {
-      map['FirstName'] = FirstName;
-    }
-
-    if (LastName != null) {
-      map['LastName'] = LastName;
-    }
-
-    if (Company != null) {
-      map['Company'] = Company;
-    }
-
-    if (Address != null) {
-      map['Address'] = Address;
-    }
-
-    if (City != null) {
-      map['City'] = City;
-    }
-
-    if (State != null) {
-      map['State'] = State;
-    }
-
-    if (Country != null) {
-      map['Country'] = Country;
-    }
-
-    if (PostalCode != null) {
-      map['PostalCode'] = PostalCode;
-    }
-
-    if (Phone != null) {
-      map['Phone'] = Phone;
-    }
-
-    if (Fax != null) {
-      map['Fax'] = Fax;
-    }
-
-    if (Email != null) {
-      map['Email'] = Email;
-    }
-
+    map['CustomerId'] = CustomerId;
+    map['FirstName'] = FirstName;
+    map['LastName'] = LastName;
+    map['Company'] = Company;
+    map['Address'] = Address;
+    map['City'] = City;
+    map['State'] = State;
+    map['Country'] = Country;
+    map['PostalCode'] = PostalCode;
+    map['Phone'] = Phone;
+    map['Fax'] = Fax;
+    map['Email'] = Email;
     if (SupportRepId != null) {
       map['SupportRepId'] = forView
           ? plEmployee == null
               ? SupportRepId
               : plEmployee!.LastName
           : SupportRepId;
+    } else {
+      map['SupportRepId'] = null;
     }
 
 // COLLECTIONS (Customer)
@@ -4775,75 +4602,44 @@ class Employee extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (EmployeeId != null) {
-      map['EmployeeId'] = EmployeeId;
-    }
-    if (LastName != null) {
-      map['LastName'] = LastName;
-    }
-
-    if (FirstName != null) {
-      map['FirstName'] = FirstName;
-    }
-
-    if (Title != null) {
-      map['Title'] = Title;
-    }
-
+    map['EmployeeId'] = EmployeeId;
+    map['LastName'] = LastName;
+    map['FirstName'] = FirstName;
+    map['Title'] = Title;
     if (BirthDate != null) {
       map['BirthDate'] = forJson
           ? BirthDate!.toString()
           : forQuery
               ? BirthDate!.millisecondsSinceEpoch
               : BirthDate;
+    } else {
+      map['BirthDate'] = null;
     }
-
     if (HireDate != null) {
       map['HireDate'] = forJson
           ? HireDate!.toString()
           : forQuery
               ? HireDate!.millisecondsSinceEpoch
               : HireDate;
+    } else {
+      map['HireDate'] = null;
     }
-
-    if (Address != null) {
-      map['Address'] = Address;
-    }
-
-    if (City != null) {
-      map['City'] = City;
-    }
-
-    if (State != null) {
-      map['State'] = State;
-    }
-
-    if (Country != null) {
-      map['Country'] = Country;
-    }
-
-    if (PostalCode != null) {
-      map['PostalCode'] = PostalCode;
-    }
-
-    if (Phone != null) {
-      map['Phone'] = Phone;
-    }
-
-    if (Fax != null) {
-      map['Fax'] = Fax;
-    }
-
-    if (Email != null) {
-      map['Email'] = Email;
-    }
-
+    map['Address'] = Address;
+    map['City'] = City;
+    map['State'] = State;
+    map['Country'] = Country;
+    map['PostalCode'] = PostalCode;
+    map['Phone'] = Phone;
+    map['Fax'] = Fax;
+    map['Email'] = Email;
     if (ReportsTo != null) {
       map['ReportsTo'] = forView
           ? plEmployee == null
               ? ReportsTo
               : plEmployee!.LastName
           : ReportsTo;
+    } else {
+      map['ReportsTo'] = null;
     }
 
     return map;
@@ -4854,75 +4650,44 @@ class Employee extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (EmployeeId != null) {
-      map['EmployeeId'] = EmployeeId;
-    }
-    if (LastName != null) {
-      map['LastName'] = LastName;
-    }
-
-    if (FirstName != null) {
-      map['FirstName'] = FirstName;
-    }
-
-    if (Title != null) {
-      map['Title'] = Title;
-    }
-
+    map['EmployeeId'] = EmployeeId;
+    map['LastName'] = LastName;
+    map['FirstName'] = FirstName;
+    map['Title'] = Title;
     if (BirthDate != null) {
       map['BirthDate'] = forJson
           ? BirthDate!.toString()
           : forQuery
               ? BirthDate!.millisecondsSinceEpoch
               : BirthDate;
+    } else {
+      map['BirthDate'] = null;
     }
-
     if (HireDate != null) {
       map['HireDate'] = forJson
           ? HireDate!.toString()
           : forQuery
               ? HireDate!.millisecondsSinceEpoch
               : HireDate;
+    } else {
+      map['HireDate'] = null;
     }
-
-    if (Address != null) {
-      map['Address'] = Address;
-    }
-
-    if (City != null) {
-      map['City'] = City;
-    }
-
-    if (State != null) {
-      map['State'] = State;
-    }
-
-    if (Country != null) {
-      map['Country'] = Country;
-    }
-
-    if (PostalCode != null) {
-      map['PostalCode'] = PostalCode;
-    }
-
-    if (Phone != null) {
-      map['Phone'] = Phone;
-    }
-
-    if (Fax != null) {
-      map['Fax'] = Fax;
-    }
-
-    if (Email != null) {
-      map['Email'] = Email;
-    }
-
+    map['Address'] = Address;
+    map['City'] = City;
+    map['State'] = State;
+    map['Country'] = Country;
+    map['PostalCode'] = PostalCode;
+    map['Phone'] = Phone;
+    map['Fax'] = Fax;
+    map['Email'] = Email;
     if (ReportsTo != null) {
       map['ReportsTo'] = forView
           ? plEmployee == null
               ? ReportsTo
               : plEmployee!.LastName
           : ReportsTo;
+    } else {
+      map['ReportsTo'] = null;
     }
 
 // COLLECTIONS (Employee)
@@ -6391,12 +6156,8 @@ class Genre extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (GenreId != null) {
-      map['GenreId'] = GenreId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['GenreId'] = GenreId;
+    map['Name'] = Name;
 
     return map;
   }
@@ -6406,12 +6167,8 @@ class Genre extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (GenreId != null) {
-      map['GenreId'] = GenreId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['GenreId'] = GenreId;
+    map['Name'] = Name;
 
 // COLLECTIONS (Genre)
     if (!forQuery) {
@@ -7658,47 +7415,30 @@ class Invoice extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (InvoiceId != null) {
-      map['InvoiceId'] = InvoiceId;
-    }
+    map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
       map['InvoiceDate'] = forJson
           ? InvoiceDate!.toString()
           : forQuery
               ? InvoiceDate!.millisecondsSinceEpoch
               : InvoiceDate;
+    } else {
+      map['InvoiceDate'] = null;
     }
-
-    if (BillingAddress != null) {
-      map['BillingAddress'] = BillingAddress;
-    }
-
-    if (BillingCity != null) {
-      map['BillingCity'] = BillingCity;
-    }
-
-    if (BillingState != null) {
-      map['BillingState'] = BillingState;
-    }
-
-    if (BillingCountry != null) {
-      map['BillingCountry'] = BillingCountry;
-    }
-
-    if (BillingPostalCode != null) {
-      map['BillingPostalCode'] = BillingPostalCode;
-    }
-
-    if (Total != null) {
-      map['Total'] = Total;
-    }
-
+    map['BillingAddress'] = BillingAddress;
+    map['BillingCity'] = BillingCity;
+    map['BillingState'] = BillingState;
+    map['BillingCountry'] = BillingCountry;
+    map['BillingPostalCode'] = BillingPostalCode;
+    map['Total'] = Total;
     if (CustomerId != null) {
       map['CustomerId'] = forView
           ? plCustomer == null
               ? CustomerId
               : plCustomer!.FirstName
           : CustomerId;
+    } else {
+      map['CustomerId'] = null;
     }
 
     return map;
@@ -7709,47 +7449,30 @@ class Invoice extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (InvoiceId != null) {
-      map['InvoiceId'] = InvoiceId;
-    }
+    map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
       map['InvoiceDate'] = forJson
           ? InvoiceDate!.toString()
           : forQuery
               ? InvoiceDate!.millisecondsSinceEpoch
               : InvoiceDate;
+    } else {
+      map['InvoiceDate'] = null;
     }
-
-    if (BillingAddress != null) {
-      map['BillingAddress'] = BillingAddress;
-    }
-
-    if (BillingCity != null) {
-      map['BillingCity'] = BillingCity;
-    }
-
-    if (BillingState != null) {
-      map['BillingState'] = BillingState;
-    }
-
-    if (BillingCountry != null) {
-      map['BillingCountry'] = BillingCountry;
-    }
-
-    if (BillingPostalCode != null) {
-      map['BillingPostalCode'] = BillingPostalCode;
-    }
-
-    if (Total != null) {
-      map['Total'] = Total;
-    }
-
+    map['BillingAddress'] = BillingAddress;
+    map['BillingCity'] = BillingCity;
+    map['BillingState'] = BillingState;
+    map['BillingCountry'] = BillingCountry;
+    map['BillingPostalCode'] = BillingPostalCode;
+    map['Total'] = Total;
     if (CustomerId != null) {
       map['CustomerId'] = forView
           ? plCustomer == null
               ? CustomerId
               : plCustomer!.FirstName
           : CustomerId;
+    } else {
+      map['CustomerId'] = null;
     }
 
 // COLLECTIONS (Invoice)
@@ -9115,31 +8838,26 @@ class InvoiceLine extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (InvoiceLineId != null) {
-      map['InvoiceLineId'] = InvoiceLineId;
-    }
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
-    if (Quantity != null) {
-      map['Quantity'] = Quantity;
-    }
-
+    map['InvoiceLineId'] = InvoiceLineId;
+    map['UnitPrice'] = UnitPrice;
+    map['Quantity'] = Quantity;
     if (TrackId != null) {
       map['TrackId'] = forView
           ? plTrack == null
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
-
     if (InvoiceId != null) {
       map['InvoiceId'] = forView
           ? plInvoice == null
               ? InvoiceId
               : plInvoice!.BillingAddress
           : InvoiceId;
+    } else {
+      map['InvoiceId'] = null;
     }
 
     return map;
@@ -9150,31 +8868,26 @@ class InvoiceLine extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (InvoiceLineId != null) {
-      map['InvoiceLineId'] = InvoiceLineId;
-    }
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
-    if (Quantity != null) {
-      map['Quantity'] = Quantity;
-    }
-
+    map['InvoiceLineId'] = InvoiceLineId;
+    map['UnitPrice'] = UnitPrice;
+    map['Quantity'] = Quantity;
     if (TrackId != null) {
       map['TrackId'] = forView
           ? plTrack == null
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
-
     if (InvoiceId != null) {
       map['InvoiceId'] = forView
           ? plInvoice == null
               ? InvoiceId
               : plInvoice!.BillingAddress
           : InvoiceId;
+    } else {
+      map['InvoiceId'] = null;
     }
 
     return map;
@@ -10404,12 +10117,8 @@ class MediaType extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (MediaTypeId != null) {
-      map['MediaTypeId'] = MediaTypeId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['MediaTypeId'] = MediaTypeId;
+    map['Name'] = Name;
 
     return map;
   }
@@ -10419,12 +10128,8 @@ class MediaType extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (MediaTypeId != null) {
-      map['MediaTypeId'] = MediaTypeId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['MediaTypeId'] = MediaTypeId;
+    map['Name'] = Name;
 
 // COLLECTIONS (MediaType)
     if (!forQuery) {
@@ -11604,12 +11309,8 @@ class Playlist extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (PlaylistId != null) {
-      map['PlaylistId'] = PlaylistId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['PlaylistId'] = PlaylistId;
+    map['Name'] = Name;
 
     return map;
   }
@@ -11619,12 +11320,8 @@ class Playlist extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (PlaylistId != null) {
-      map['PlaylistId'] = PlaylistId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
+    map['PlaylistId'] = PlaylistId;
+    map['Name'] = Name;
 
 // COLLECTIONS (Playlist)
     if (!forQuery) {
@@ -12906,51 +12603,38 @@ class Track extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (TrackId != null) {
-      map['TrackId'] = TrackId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (Composer != null) {
-      map['Composer'] = Composer;
-    }
-
-    if (Milliseconds != null) {
-      map['Milliseconds'] = Milliseconds;
-    }
-
-    if (Bytes != null) {
-      map['Bytes'] = Bytes;
-    }
-
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
+    map['TrackId'] = TrackId;
+    map['Name'] = Name;
+    map['Composer'] = Composer;
+    map['Milliseconds'] = Milliseconds;
+    map['Bytes'] = Bytes;
+    map['UnitPrice'] = UnitPrice;
     if (MediaTypeId != null) {
       map['MediaTypeId'] = forView
           ? plMediaType == null
               ? MediaTypeId
               : plMediaType!.Name
           : MediaTypeId;
+    } else {
+      map['MediaTypeId'] = null;
     }
-
     if (GenreId != null) {
       map['GenreId'] = forView
           ? plGenre == null
               ? GenreId
               : plGenre!.Name
           : GenreId;
+    } else {
+      map['GenreId'] = null;
     }
-
     if (AlbumId != null) {
       map['AlbumId'] = forView
           ? plAlbum == null
               ? AlbumId
               : plAlbum!.Title
           : AlbumId;
+    } else {
+      map['AlbumId'] = null;
     }
 
     return map;
@@ -12961,51 +12645,38 @@ class Track extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (TrackId != null) {
-      map['TrackId'] = TrackId;
-    }
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (Composer != null) {
-      map['Composer'] = Composer;
-    }
-
-    if (Milliseconds != null) {
-      map['Milliseconds'] = Milliseconds;
-    }
-
-    if (Bytes != null) {
-      map['Bytes'] = Bytes;
-    }
-
-    if (UnitPrice != null) {
-      map['UnitPrice'] = UnitPrice;
-    }
-
+    map['TrackId'] = TrackId;
+    map['Name'] = Name;
+    map['Composer'] = Composer;
+    map['Milliseconds'] = Milliseconds;
+    map['Bytes'] = Bytes;
+    map['UnitPrice'] = UnitPrice;
     if (MediaTypeId != null) {
       map['MediaTypeId'] = forView
           ? plMediaType == null
               ? MediaTypeId
               : plMediaType!.Name
           : MediaTypeId;
+    } else {
+      map['MediaTypeId'] = null;
     }
-
     if (GenreId != null) {
       map['GenreId'] = forView
           ? plGenre == null
               ? GenreId
               : plGenre!.Name
           : GenreId;
+    } else {
+      map['GenreId'] = null;
     }
-
     if (AlbumId != null) {
       map['AlbumId'] = forView
           ? plAlbum == null
               ? AlbumId
               : plAlbum!.Title
           : AlbumId;
+    } else {
+      map['AlbumId'] = null;
     }
 
 // COLLECTIONS (Track)
@@ -14478,28 +14149,18 @@ class VTrack extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (album != null) {
-      map['album'] = album;
-    }
-
-    if (media != null) {
-      map['media'] = media;
-    }
-
-    if (genres != null) {
-      map['genres'] = genres;
-    }
-
+    map['Name'] = Name;
+    map['album'] = album;
+    map['media'] = media;
+    map['genres'] = genres;
     if (TrackId != null) {
       map['TrackId'] = forView
           ? plTrack == null
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
 
     return map;
@@ -14510,28 +14171,18 @@ class VTrack extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
-    if (Name != null) {
-      map['Name'] = Name;
-    }
-
-    if (album != null) {
-      map['album'] = album;
-    }
-
-    if (media != null) {
-      map['media'] = media;
-    }
-
-    if (genres != null) {
-      map['genres'] = genres;
-    }
-
+    map['Name'] = Name;
+    map['album'] = album;
+    map['media'] = media;
+    map['genres'] = genres;
     if (TrackId != null) {
       map['TrackId'] = forView
           ? plTrack == null
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
 
     return map;
@@ -15456,14 +15107,17 @@ class PlaylistTrack extends TableBase {
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
-
     if (PlaylistId != null) {
       map['PlaylistId'] = forView
           ? plPlaylist == null
               ? PlaylistId
               : plPlaylist!.Name
           : PlaylistId;
+    } else {
+      map['PlaylistId'] = null;
     }
 
     return map;
@@ -15480,14 +15134,17 @@ class PlaylistTrack extends TableBase {
               ? TrackId
               : plTrack!.Name
           : TrackId;
+    } else {
+      map['TrackId'] = null;
     }
-
     if (PlaylistId != null) {
       map['PlaylistId'] = forView
           ? plPlaylist == null
               ? PlaylistId
               : plPlaylist!.Name
           : PlaylistId;
+    } else {
+      map['PlaylistId'] = null;
     }
 
     return map;
