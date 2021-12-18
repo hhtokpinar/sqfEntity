@@ -896,11 +896,14 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   //  tables.remove(table);
   //}
 
-  return ConvertedModel()
-    ..databaseName = model.databaseName
-    ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
-    ..databaseTables = tables
-    ..bundledDatabasePath = null; //bundledDatabasePath;
+  return
+    ConvertedModel()
+      ..databaseName = model.databaseName
+      ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
+      ..databaseTables = tables
+      ..password = model.password
+      ..bundledDatabasePath = null
+  ;
 }
 
 /// Method for Creating DB Model from DB
