@@ -570,7 +570,7 @@ $__createModelTablesConst
 const ${tocamelCase(_m.modelName)} = SqfEntityModel(
     modelName: '${_m.modelName}',
     databaseName: '${_m.databaseName}',
-    password = ${_m.password == null ? 'null' : '\'${_m.password}\''},
+    password: ${_m.password == null ? 'null' : '\'${_m.password}\''},
     bundledDatabasePath: ${_m.bundledDatabasePath == null ? 'null' : '\'${_m.bundledDatabasePath}\''},
     databaseTables: [$__tableViewListConst],
     formTables: [$__tableListConst]

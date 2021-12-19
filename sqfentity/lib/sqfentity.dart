@@ -905,6 +905,7 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       ..databaseName = model.databaseName
       ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
       ..databaseTables = tables
+      ..password = model.password
       ..bundledDatabasePath = bundledDatabasePath
       ..databasePath = databasePath
   ;
