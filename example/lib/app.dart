@@ -36,6 +36,7 @@ class HomeState extends State<Home> {
         elevation: 0.1,
         backgroundColor: Color.fromRGBO(95, 66, 119, 1.0),
         title: Text(CONSTANTS.APP_TITLE),
+        
         actions: <Widget>[
           PopupMenuButton<int>(
             onSelected: select,

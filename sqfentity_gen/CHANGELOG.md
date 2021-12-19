@@ -1,5 +1,8 @@
+## 2.1.2+7
+Add custom bundledDatabasePath and databasePath parameters to convertDatabaseToModelBase
+
 ## 2.1.2+6
-Added closeDatabase() function
+Add closeDatabase() function
 
 **How to disconnect from database?**
 

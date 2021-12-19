@@ -185,7 +185,7 @@ packages:
       path: "../sqfentity_gen"
       relative: true
     source: path
-    version: "2.1.2+5"
+    version: "2.1.2+7"
   sqflite_common:
     dependency: "direct main"
     description:
