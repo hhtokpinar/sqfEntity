@@ -880,7 +880,11 @@ List<String> checkTableColumns(
 
 /// Create DB Model from DB
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
-    SqfEntityModelProvider model) async {
+    SqfEntityModelProvider model , {
+      String? bundledDatabasePath,
+      String? databasePath
+    }
+  ) async {
   final bundledDbModel = SqfEntityProvider(model);
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
@@ -902,7 +906,8 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
       ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
       ..databaseTables = tables
       ..password = model.password
-      ..bundledDatabasePath = null
+      ..bundledDatabasePath = bundledDatabasePath
+      ..databasePath = databasePath
   ;
 }
 
