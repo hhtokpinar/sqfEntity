@@ -1390,7 +1390,7 @@ class AlbumFilterBuilder extends SearchCriteria {
     return _obj!._mnAlbum.updateBatch(qparams, values);
   }
 
-  /// This method always returns Album Obj if exist, otherwise returns null
+  /// This method always returns [Album] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -1403,7 +1403,7 @@ class AlbumFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Album>
+  /// <returns> Album?
   Future<Album?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -1451,6 +1451,33 @@ class AlbumFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Album]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Album?
+  Future<Album> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Album();
   }
 
   /// This method returns int. [Album]
@@ -2596,7 +2623,7 @@ class ArtistFilterBuilder extends SearchCriteria {
     return _obj!._mnArtist.updateBatch(qparams, values);
   }
 
-  /// This method always returns Artist Obj if exist, otherwise returns null
+  /// This method always returns [Artist] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -2609,7 +2636,7 @@ class ArtistFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Artist>
+  /// <returns> Artist?
   Future<Artist?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -2643,6 +2670,33 @@ class ArtistFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Artist]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Artist?
+  Future<Artist> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Artist();
   }
 
   /// This method returns int. [Artist]
@@ -4049,7 +4103,7 @@ class CustomerFilterBuilder extends SearchCriteria {
     return _obj!._mnCustomer.updateBatch(qparams, values);
   }
 
-  /// This method always returns Customer Obj if exist, otherwise returns null
+  /// This method always returns [Customer] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -4062,7 +4116,7 @@ class CustomerFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Customer>
+  /// <returns> Customer?
   Future<Customer?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -4110,6 +4164,33 @@ class CustomerFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Customer]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Customer?
+  Future<Customer> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Customer();
   }
 
   /// This method returns int. [Customer]
@@ -5718,7 +5799,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
     return _obj!._mnEmployee.updateBatch(qparams, values);
   }
 
-  /// This method always returns Employee Obj if exist, otherwise returns null
+  /// This method always returns [Employee] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -5731,7 +5812,7 @@ class EmployeeFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Employee>
+  /// <returns> Employee?
   Future<Employee?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -5789,6 +5870,33 @@ class EmployeeFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Employee]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Employee?
+  Future<Employee> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Employee();
   }
 
   /// This method returns int. [Employee]
@@ -7005,7 +7113,7 @@ class GenreFilterBuilder extends SearchCriteria {
     return _obj!._mnGenre.updateBatch(qparams, values);
   }
 
-  /// This method always returns Genre Obj if exist, otherwise returns null
+  /// This method always returns [Genre] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -7018,7 +7126,7 @@ class GenreFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Genre>
+  /// <returns> Genre?
   Future<Genre?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -7052,6 +7160,33 @@ class GenreFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Genre]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Genre?
+  Future<Genre> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Genre();
   }
 
   /// This method returns int. [Genre]
@@ -8411,7 +8546,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
     return _obj!._mnInvoice.updateBatch(qparams, values);
   }
 
-  /// This method always returns Invoice Obj if exist, otherwise returns null
+  /// This method always returns [Invoice] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -8424,7 +8559,7 @@ class InvoiceFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Invoice>
+  /// <returns> Invoice?
   Future<Invoice?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -8473,6 +8608,33 @@ class InvoiceFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Invoice]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Invoice?
+  Future<Invoice> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Invoice();
   }
 
   /// This method returns int. [Invoice]
@@ -9753,7 +9915,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
     return _obj!._mnInvoiceLine.updateBatch(qparams, values);
   }
 
-  /// This method always returns InvoiceLine Obj if exist, otherwise returns null
+  /// This method always returns [InvoiceLine] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -9766,7 +9928,7 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<InvoiceLine>
+  /// <returns> InvoiceLine?
   Future<InvoiceLine?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -9807,6 +9969,33 @@ class InvoiceLineFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [InvoiceLine]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> InvoiceLine?
+  Future<InvoiceLine> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        InvoiceLine();
   }
 
   /// This method returns int. [InvoiceLine]
@@ -10974,7 +11163,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
     return _obj!._mnMediaType.updateBatch(qparams, values);
   }
 
-  /// This method always returns MediaType Obj if exist, otherwise returns null
+  /// This method always returns [MediaType] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -10987,7 +11176,7 @@ class MediaTypeFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<MediaType>
+  /// <returns> MediaType?
   Future<MediaType?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -11021,6 +11210,33 @@ class MediaTypeFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [MediaType]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> MediaType?
+  Future<MediaType> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        MediaType();
   }
 
   /// This method returns int. [MediaType]
@@ -12141,7 +12357,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
     return _obj!._mnPlaylist.updateBatch(qparams, values);
   }
 
-  /// This method always returns Playlist Obj if exist, otherwise returns null
+  /// This method always returns [Playlist] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -12154,7 +12370,7 @@ class PlaylistFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Playlist>
+  /// <returns> Playlist?
   Future<Playlist?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -12188,6 +12404,33 @@ class PlaylistFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Playlist]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Playlist?
+  Future<Playlist> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Playlist();
   }
 
   /// This method returns int. [Playlist]
@@ -13707,7 +13950,7 @@ class TrackFilterBuilder extends SearchCriteria {
     return _obj!._mnTrack.updateBatch(qparams, values);
   }
 
-  /// This method always returns Track Obj if exist, otherwise returns null
+  /// This method always returns [Track] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -13720,7 +13963,7 @@ class TrackFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Track>
+  /// <returns> Track?
   Future<Track?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -13804,6 +14047,33 @@ class TrackFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Track]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Track?
+  Future<Track> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Track();
   }
 
   /// This method returns int. [Track]
@@ -14806,7 +15076,7 @@ class VTrackFilterBuilder extends SearchCriteria {
       ..having = havingList.join(',');
   }
 
-  /// This method always returns VTrack Obj if exist, otherwise returns null
+  /// This method always returns [VTrack] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -14819,7 +15089,7 @@ class VTrackFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<VTrack>
+  /// <returns> VTrack?
   Future<VTrack?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -14851,6 +15121,33 @@ class VTrackFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [VTrack]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> VTrack?
+  Future<VTrack> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        VTrack();
   }
 
   /// This method returns int. [VTrack]
@@ -15975,7 +16272,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
     return _obj!._mnPlaylistTrack.updateBatch(qparams, values);
   }
 
-  /// This method always returns PlaylistTrack Obj if exist, otherwise returns null
+  /// This method always returns [PlaylistTrack] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -15988,7 +16285,7 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<PlaylistTrack>
+  /// <returns> PlaylistTrack?
   Future<PlaylistTrack?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -16029,6 +16326,33 @@ class PlaylistTrackFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [PlaylistTrack]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> PlaylistTrack?
+  Future<PlaylistTrack> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        PlaylistTrack();
   }
 
   /// This method returns int. [PlaylistTrack]

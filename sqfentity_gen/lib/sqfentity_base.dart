@@ -880,7 +880,7 @@ class SqfEntityObjectBuilder {
     /// 
     ${commentPreload.replaceAll('methodname', 'getById')}
     /// 
-    /// <returns>returns ${_table.modelName} if exist, otherwise returns null
+    /// <returns>returns [${_table.modelName}] if exist, otherwise returns null
     Future<${_table.modelName}?> getById($_getByIdParametersWithTypes, {bool preload=false, List<String>? preloadFields,bool loadParents=false, List<String>? loadedFields}) async{
       if(${_table.primaryKeyNames[0]}==null){return null;}
       ${_table.modelName}? obj;
@@ -2453,11 +2453,11 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     }
      return _obj!._mn${_table.modelName}.updateBatch(qparams, values);
   }''' : ''}
-  /// This method always returns ${_table.modelName} Obj if exist, otherwise returns null 
+  /// This method always returns [${_table.modelName}] Obj if exist, otherwise returns null 
   /// 
   ${commentPreload.replaceAll('methodname', 'toSingle')}
   /// 
-  /// <returns>List<${_table.modelName}>
+  /// <returns> ${_table.modelName}?
   Future<${_table.modelName}?> toSingle({bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields}) async{
     _pagesize = 1;
     _buildParameters();
@@ -2473,7 +2473,19 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     return obj;
   }
   
-
+/// This method always returns [${_table.modelName}]  
+  /// 
+  ${commentPreload.replaceAll('methodname', 'toSingle')}
+  /// 
+  /// <returns> ${_table.modelName}?
+  Future<${_table.modelName}> toSingleOrDefault({bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields}) async{
+   return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        ${_table.modelName}();
+  } 
   /// This method returns int. [${_table.modelName}]
   /// 
   /// <returns>int
@@ -2673,7 +2685,8 @@ Future<List<String>> toListString([VoidCallback Function(List<String> o)? listSt
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         !_table.primaryKeyName!.startsWith('_')) {
-      retVal.writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
+      retVal
+          .writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
 ${_table.modelName}Field get ${_table.primaryKeyNames[0]} {
 return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
 }''');

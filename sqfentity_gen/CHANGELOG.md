@@ -1,3 +1,6 @@
+## 2.1.2+8
+Add toSingleOrDefault() method
+
 ## 2.1.2+7
 Add custom bundledDatabasePath and databasePath parameters to convertDatabaseToModelBase
 

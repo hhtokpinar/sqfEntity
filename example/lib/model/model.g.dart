@@ -1349,7 +1349,7 @@ class ProductFilterBuilder extends SearchCriteria {
     return _obj!._mnProduct.updateBatch(qparams, values);
   }
 
-  /// This method always returns Product Obj if exist, otherwise returns null
+  /// This method always returns [Product] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -1362,7 +1362,7 @@ class ProductFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Product>
+  /// <returns> Product?
   Future<Product?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -1395,6 +1395,33 @@ class ProductFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Product]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Product?
+  Future<Product> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Product();
   }
 
   /// This method returns int. [Product]
@@ -2657,7 +2684,7 @@ class CategoryFilterBuilder extends SearchCriteria {
     return _obj!._mnCategory.updateBatch(qparams, values);
   }
 
-  /// This method always returns Category Obj if exist, otherwise returns null
+  /// This method always returns [Category] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -2670,7 +2697,7 @@ class CategoryFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Category>
+  /// <returns> Category?
   Future<Category?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -2704,6 +2731,33 @@ class CategoryFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Category]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Category?
+  Future<Category> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Category();
   }
 
   /// This method returns int. [Category]
@@ -3866,7 +3920,7 @@ class TodoFilterBuilder extends SearchCriteria {
     return _obj!._mnTodo.updateBatch(qparams, values);
   }
 
-  /// This method always returns Todo Obj if exist, otherwise returns null
+  /// This method always returns [Todo] Obj if exist, otherwise returns null
   ///
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   ///
@@ -3879,7 +3933,7 @@ class TodoFilterBuilder extends SearchCriteria {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>List<Todo>
+  /// <returns> Todo?
   Future<Todo?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
@@ -3896,6 +3950,33 @@ class TodoFilterBuilder extends SearchCriteria {
       obj = null;
     }
     return obj;
+  }
+
+  /// This method always returns [Todo]
+  ///
+  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
+  ///
+  /// ex: toSingle(preload:true) -> Loads all related objects
+  ///
+  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
+  ///
+  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
+  ///
+  /// bool loadParents: if true, loads all parent objects until the object has no parent
+
+  ///
+  /// <returns> Todo?
+  Future<Todo> toSingleOrDefault(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields}) async {
+    return await toSingle(
+            preload: preload,
+            preloadFields: preloadFields,
+            loadParents: loadParents,
+            loadedFields: loadedFields) ??
+        Todo();
   }
 
   /// This method returns int. [Todo]
