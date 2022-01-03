@@ -58,7 +58,7 @@ const tableProduct = SqfEntityTable(
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
-      SqfEntityField('datetime', DbType.datetime,
+      SqfEntityField('datetime', DbType.datetime, isNotNull: true,
           defaultValue: 'DateTime.now()',
           minValue: '2019-01-01',
           maxValue: 'DateTime.now().add(Duration(days: 30))'),
@@ -83,6 +83,7 @@ const tableTodo = SqfEntityTable(
       SqfEntityField('title', DbType.text),
       SqfEntityField('completed', DbType.bool, defaultValue: false),
     ]);
+
 
 // Define the 'identity' constant as SqfEntitySequence.
 const seqIdentity = SqfEntitySequence(

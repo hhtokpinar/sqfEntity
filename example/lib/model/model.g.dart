@@ -46,6 +46,7 @@ class TableProduct extends SqfEntityTableBase {
       SqfEntityFieldBase('imageUrl', DbType.text),
       SqfEntityFieldBase('datetime', DbType.datetime,
           defaultValue: DateTime.now(),
+          isNotNull: true,
           minValue: DateTime.parse('2019-01-01'),
           maxValue: DateTime.now().add(Duration(days: 30))),
       SqfEntityFieldBase('date', DbType.date,
@@ -545,7 +546,7 @@ class Product extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Product if exist, otherwise returns null
+  /// <returns>returns [Product] if exist, otherwise returns null
   Future<Product?> getById(int? id,
       {bool preload = false,
       List<String>? preloadFields,
@@ -619,10 +620,10 @@ class Product extends TableBase {
   /// saveAs Product. Returns a new Primary Key value of Product
 
   /// <returns>Returns a new Primary Key value of Product
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     id = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -1937,7 +1938,7 @@ class Category extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Category if exist, otherwise returns null
+  /// <returns>returns [Category] if exist, otherwise returns null
   Future<Category?> getById(int? id,
       {bool preload = false,
       List<String>? preloadFields,
@@ -2008,10 +2009,10 @@ class Category extends TableBase {
   /// saveAs Category. Returns a new Primary Key value of Category
 
   /// <returns>Returns a new Primary Key value of Category
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     id = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -3211,7 +3212,7 @@ class Todo extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Todo if exist, otherwise returns null
+  /// <returns>returns [Todo] if exist, otherwise returns null
   Future<Todo?> getById(int? id,
       {bool preload = false,
       List<String>? preloadFields,

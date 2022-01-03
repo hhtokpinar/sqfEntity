@@ -1646,11 +1646,11 @@ class SqfEntityObjectBuilder {
             '''/// saveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
     
     /// <returns>Returns a new Primary Key value of ${_table.modelName}
-    Future<int?> ${_hiddenMethod}saveAs() async {
+    Future<int?> ${_hiddenMethod}saveAs({bool ignoreBatch = true}) async {
       ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'isSaved = false;' : ''}
       ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '${_table.primaryKeyNames[0]} = null;' : ''}
       $_toOnetoOneSaveAsCode
-      return ${_hiddenMethod}save();
+      return ${_hiddenMethod}save(ignoreBatch: ignoreBatch);
     }''');
       }
     } else {

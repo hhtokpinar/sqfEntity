@@ -373,7 +373,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
       String pSql, List<dynamic>? params, bool ignoreBatch) async {
     int result = 0;
     try {
-      if (openedBatch[_dbModel!.databaseName!] == null) {
+      if (openedBatch[_dbModel!.databaseName!] == null || ignoreBatch) {
         final Database db = (await this.db)!;
         result = await db.rawInsert(pSql, params);
       } else {

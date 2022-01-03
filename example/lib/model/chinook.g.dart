@@ -640,7 +640,7 @@ class Album extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Album if exist, otherwise returns null
+  /// <returns>returns [Album] if exist, otherwise returns null
   Future<Album?> getById(int? AlbumId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -725,10 +725,10 @@ class Album extends TableBase {
   /// saveAs Album. Returns a new Primary Key value of Album
 
   /// <returns>Returns a new Primary Key value of Album
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     AlbumId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -1892,7 +1892,7 @@ class Artist extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Artist if exist, otherwise returns null
+  /// <returns>returns [Artist] if exist, otherwise returns null
   Future<Artist?> getById(int? ArtistId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -1963,10 +1963,10 @@ class Artist extends TableBase {
   /// saveAs Artist. Returns a new Primary Key value of Artist
 
   /// <returns>Returns a new Primary Key value of Artist
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     ArtistId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -3285,7 +3285,7 @@ class Customer extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Customer if exist, otherwise returns null
+  /// <returns>returns [Customer] if exist, otherwise returns null
   Future<Customer?> getById(int? CustomerId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -3370,10 +3370,10 @@ class Customer extends TableBase {
   /// saveAs Customer. Returns a new Primary Key value of Customer
 
   /// <returns>Returns a new Primary Key value of Customer
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     CustomerId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -4934,7 +4934,7 @@ class Employee extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Employee if exist, otherwise returns null
+  /// <returns>returns [Employee] if exist, otherwise returns null
   Future<Employee?> getById(int? EmployeeId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -5029,10 +5029,10 @@ class Employee extends TableBase {
   /// saveAs Employee. Returns a new Primary Key value of Employee
 
   /// <returns>Returns a new Primary Key value of Employee
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     EmployeeId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -6383,7 +6383,7 @@ class Genre extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Genre if exist, otherwise returns null
+  /// <returns>returns [Genre] if exist, otherwise returns null
   Future<Genre?> getById(int? GenreId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -6454,10 +6454,10 @@ class Genre extends TableBase {
   /// saveAs Genre. Returns a new Primary Key value of Genre
 
   /// <returns>Returns a new Primary Key value of Genre
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     GenreId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -7749,7 +7749,7 @@ class Invoice extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Invoice if exist, otherwise returns null
+  /// <returns>returns [Invoice] if exist, otherwise returns null
   Future<Invoice?> getById(int? InvoiceId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -7835,10 +7835,10 @@ class Invoice extends TableBase {
   /// saveAs Invoice. Returns a new Primary Key value of Invoice
 
   /// <returns>Returns a new Primary Key value of Invoice
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     InvoiceId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -9159,7 +9159,7 @@ class InvoiceLine extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns InvoiceLine if exist, otherwise returns null
+  /// <returns>returns [InvoiceLine] if exist, otherwise returns null
   Future<InvoiceLine?> getById(int? InvoiceLineId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -9237,10 +9237,10 @@ class InvoiceLine extends TableBase {
   /// saveAs InvoiceLine. Returns a new Primary Key value of InvoiceLine
 
   /// <returns>Returns a new Primary Key value of InvoiceLine
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     InvoiceLineId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -10426,7 +10426,7 @@ class MediaType extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns MediaType if exist, otherwise returns null
+  /// <returns>returns [MediaType] if exist, otherwise returns null
   Future<MediaType?> getById(int? MediaTypeId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -10497,10 +10497,10 @@ class MediaType extends TableBase {
   /// saveAs MediaType. Returns a new Primary Key value of MediaType
 
   /// <returns>Returns a new Primary Key value of MediaType
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     MediaTypeId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -11644,7 +11644,7 @@ class Playlist extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Playlist if exist, otherwise returns null
+  /// <returns>returns [Playlist] if exist, otherwise returns null
   Future<Playlist?> getById(int? PlaylistId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -11715,10 +11715,10 @@ class Playlist extends TableBase {
   /// saveAs Playlist. Returns a new Primary Key value of Playlist
 
   /// <returns>Returns a new Primary Key value of Playlist
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     PlaylistId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -13102,7 +13102,7 @@ class Track extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns Track if exist, otherwise returns null
+  /// <returns>returns [Track] if exist, otherwise returns null
   Future<Track?> getById(int? TrackId,
       {bool preload = false,
       List<String>? preloadFields,
@@ -13223,10 +13223,10 @@ class Track extends TableBase {
   /// saveAs Track. Returns a new Primary Key value of Track
 
   /// <returns>Returns a new Primary Key value of Track
-  Future<int?> saveAs() async {
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
     TrackId = null;
 
-    return save();
+    return save(ignoreBatch: ignoreBatch);
   }
 
   void rollbackId() {
@@ -15551,7 +15551,7 @@ class PlaylistTrack extends TableBase {
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
   ///
-  /// <returns>returns PlaylistTrack if exist, otherwise returns null
+  /// <returns>returns [PlaylistTrack] if exist, otherwise returns null
   Future<PlaylistTrack?> getById(int? TrackId, int? PlaylistId,
       {bool preload = false,
       List<String>? preloadFields,

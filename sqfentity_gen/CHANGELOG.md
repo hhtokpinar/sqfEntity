@@ -1,3 +1,6 @@
+## 2.1.2+9
+Fix UI
+
 ## 2.1.2+8
 Add toSingleOrDefault() method
 
