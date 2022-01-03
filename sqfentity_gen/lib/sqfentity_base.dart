@@ -1046,7 +1046,7 @@ class SqfEntityObjectBuilder {
   }
 
   String __createConstructureArgs(bool withId) {
-    final _retVal = StringBuffer('?');
+    final _retVal = StringBuffer('');
     //  for (var i = 1; i < _table.primaryKeyNames.length; i++) {
     //   _retVal.write(',?');
     // }
@@ -1058,7 +1058,10 @@ class SqfEntityObjectBuilder {
             _table.primaryKeyType != PrimaryKeyType.integer_auto_incremental)) {
       _retVal.write(',?');
     }
-    for (var i = 1; i < _table.fields!.length; i++) {
+    for (var i = 1; i < _table.primaryKeyNames.length; i++) {
+      _retVal.write(',?');
+    }
+    for (var i = 0; i < _table.fields!.length; i++) {
       //if (_table.fields![i] is SqfEntityFieldVirtualBase) continue;
       if (_table.fields![i] is SqfEntityFieldVirtualBase ||
           (_table.fields![i].isPrimaryKeyField == true &&
@@ -1079,7 +1082,7 @@ class SqfEntityObjectBuilder {
     if (_table.useSoftDeleting != null && _table.useSoftDeleting!) {
       _retVal.write(',?');
     }
-    return _retVal.toString(); //.substring(1);
+    return _retVal.toString().substring(1);
   }
 
   String __toMapString() {
@@ -1688,11 +1691,11 @@ class SqfEntityObjectBuilder {
     /// Use this method if you do not want to update existing row when conflicts another row that have the same ${_table.primaryKeyNames[0]}
     
     /// Returns a BoolResult
-    Future<BoolResult> ${_hiddenMethod}saveAs() async {
+    Future<BoolResult> ${_hiddenMethod}saveAs({bool ignoreBatch = true}) async {
       final result = BoolResult(success: false);
       try {         
         await _mn${_table.modelName}.rawInsert(
-          'INSERT INTO ${_table.tableName} (${_table.createConstructure.replaceAll("this.", "")})  VALUES ($_createConstructureArgs)', [${_table.createConstructure.replaceAll("this.", "")}]);
+          'INSERT INTO ${_table.tableName} (${_table.createConstructure.replaceAll("this.", "")})  VALUES ($_createConstructureArgs)', [${_table.createConstructure.replaceAll("this.", "")}], ignoreBatch);
       ${seq.toString()}              
         result.success=true;
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'isSaved = true;' : ''}
@@ -3386,10 +3389,12 @@ class SqfEntityTableBase {
     // }
 
     for (int i = 0; i < fields!.length; i++) {
-      if (fields![i] is SqfEntityFieldVirtualBase ||
-          (fields![i].isPrimaryKeyField == true &&
-              !withId &&
-              relationType != RelationType.MANY_TO_MANY)) {
+      if (fields![i] is SqfEntityFieldVirtualBase
+          // ||
+          //     (fields![i].isPrimaryKeyField == true &&
+          //         !withId &&
+          //         relationType != RelationType.MANY_TO_MANY)
+          ) {
         continue;
       }
       if (fields![i] is SqfEntityFieldRelationshipBase) {
