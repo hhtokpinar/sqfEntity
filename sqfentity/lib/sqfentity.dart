@@ -288,13 +288,13 @@ class SqfEntityProvider extends SqfEntityModelBase {
     return retVal;
   }
 
-  Future<int?> update(dynamic T) async {
+  Future<int?> update<T extends TableBase>(T obj) async {
     try {
       /// Leave it in this format for Throw to stay in this catch
-      final res = await updateOrThrow(T);
+      final res = await updateOrThrow(obj);
       return res;
     } catch (error, stackTrace) {
-      T.saveResult = BoolResult(
+      obj.saveResult = BoolResult(
           success: false,
           errorMessage:
               '$_tableName-> Save failed. Error: ${error.toString()}');
@@ -306,17 +306,16 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> updateOrThrow(dynamic T) async {
+  Future<int?> updateOrThrow<T extends TableBase>(T obj) async {
     if (_dbModel!.preSaveAction != null) {
-      T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
+      obj = await _dbModel!.preSaveAction!(_tableName!, obj) as T;
     }
-    final Map<String, dynamic> data =
-        (await T.toMap(forQuery: true) as Map<String, dynamic>);
+    final data = obj.toMap(forQuery: true);
     if (openedBatch[_dbModel!.databaseName] == null) {
       final Database? db = await this.db;
       final result = await db?.update(_tableName!, data,
           where: _whereStr, whereArgs: buildWhereArgs(data));
-      T.saveResult = BoolResult(
+      obj.saveResult = BoolResult(
           success: true,
           successMessage:
               '$_tableName-> ${_primaryKeyList![0]} = ${data[_primaryKeyList![0]]} saved successfully');
@@ -324,20 +323,20 @@ class SqfEntityProvider extends SqfEntityModelBase {
     } else {
       openedBatch[_dbModel!.databaseName]?.update(_tableName!, data,
           where: _whereStr, whereArgs: buildWhereArgs(data));
-      T.saveResult = BoolResult(
+      obj.saveResult = BoolResult(
           success: true,
           successMessage: '$_tableName-> update: added to batch successfully');
       return 0;
     }
   }
 
-  Future<int?> insert(dynamic T, bool ignoreBatch) async {
+  Future<int?> insert<T extends TableBase>(T obj, bool ignoreBatch) async {
     try {
       /// Leave it in this format for Throw to stay in this catch
-      final res = await insertOrThrow(T, ignoreBatch);
+      final res = await insertOrThrow(obj, ignoreBatch);
       return res;
     } catch (error, stackTrace) {
-      T.saveResult = BoolResult(
+      obj.saveResult = BoolResult(
           success: false,
           errorMessage:
               '$_tableName-> Save failed. Error: ${error.toString()}');
@@ -349,16 +348,16 @@ class SqfEntityProvider extends SqfEntityModelBase {
     }
   }
 
-  Future<int?> insertOrThrow(dynamic T, bool ignoreBatch) async {
+  Future<int?> insertOrThrow<T extends TableBase>(
+      T obj, bool ignoreBatch) async {
     if (_dbModel!.preSaveAction != null) {
-      T = await _dbModel!.preSaveAction!(_tableName!, T as TableBase);
+      obj = await _dbModel!.preSaveAction!(_tableName!, obj) as T;
     }
-    final Map<String, dynamic> data =
-        (await T.toMap(forQuery: true) as Map<String, dynamic>);
+    final Map<String, dynamic> data = obj.toMap(forQuery: true);
     if (openedBatch[_dbModel!.databaseName] == null || ignoreBatch) {
       final Database? db = await this.db;
       final result = await db?.insert(_tableName!, data);
-      T.saveResult = BoolResult(
+      obj.saveResult = BoolResult(
           success: true,
           successMessage:
               '$_tableName-> ${_primaryKeyList![0]}=$result saved successfully');
@@ -418,24 +417,22 @@ class SqfEntityProvider extends SqfEntityModelBase {
     return result;
   }
 
-  Future<List<BoolResult>> saveAll(String pSql, List T) async {
+  Future<List<BoolResult>> saveAll(String pSql, List<TableBase> objList) async {
     final results = <BoolResult>[];
     if (openedBatch[_dbModel!.databaseName!] == null) {
       final Database db = (await this.db)!;
-      for (var t in T) {
+      for (var t in objList) {
         final result = BoolResult(success: false);
         try {
-          final o = await t.toMap(forQuery: true);
+          final o = t.toMap(forQuery: true);
           if (o[_primaryKeyList![0]] != null) {
-            final uresult =
-                await db.rawInsert(pSql, t.toArgsWithIds() as List<dynamic>);
+            final uresult = await db.rawInsert(pSql, t.toArgsWithIds());
             if (uresult > 0) {
               result.successMessage =
                   'id=${o[_primaryKeyList![0]].toString()} upserted successfully';
             }
           } else {
-            final iresult =
-                await db.insert(_tableName!, o as Map<String, dynamic>);
+            final iresult = await db.insert(_tableName!, o);
             if (iresult > 0) {
               result.successMessage =
                   'id=${iresult.toString()} inserted  successfully';
@@ -450,14 +447,12 @@ class SqfEntityProvider extends SqfEntityModelBase {
         results.add(result);
       }
     } else {
-      for (var t in T) {
-        final o = await t.toMap(forQuery: true);
+      for (var t in objList) {
+        final o = t.toMap(forQuery: true);
         if (o[_primaryKeyList![0]] != null) {
-          openedBatch[_dbModel!.databaseName!]!
-              .update(_tableName!, o as Map<String, dynamic>);
+          openedBatch[_dbModel!.databaseName!]!.update(_tableName!, o);
         } else {
-          openedBatch[_dbModel!.databaseName!]!
-              .insert(_tableName!, o as Map<String, dynamic>);
+          openedBatch[_dbModel!.databaseName!]!.insert(_tableName!, o);
         }
       }
     }
@@ -880,11 +875,9 @@ List<String> checkTableColumns(
 
 /// Create DB Model from DB
 Future<SqfEntityModelBase> convertDatabaseToModelBase(
-    SqfEntityModelProvider model , {
-      String? bundledDatabasePath,
-      String? databasePath
-    }
-  ) async {
+    SqfEntityModelProvider model,
+    {String? bundledDatabasePath,
+    String? databasePath}) async {
   final bundledDbModel = SqfEntityProvider(model);
   final tableList = await bundledDbModel
       //.execDataTable('SELECT name,type FROM sqlite_master WHERE type=\'table\' or type=\'view\'');
@@ -900,15 +893,13 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
   //  tables.remove(table);
   //}
 
-  return
-    ConvertedModel()
-      ..databaseName = model.databaseName
-      ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
-      ..databaseTables = tables
-      ..password = model.password
-      ..bundledDatabasePath = bundledDatabasePath
-      ..databasePath = databasePath
-  ;
+  return ConvertedModel()
+    ..databaseName = model.databaseName
+    ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
+    ..databaseTables = tables
+    ..password = model.password
+    ..bundledDatabasePath = bundledDatabasePath
+    ..databasePath = databasePath;
 }
 
 /// Method for Creating DB Model from DB

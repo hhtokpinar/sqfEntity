@@ -222,6 +222,7 @@ Future<void> samples1() async {
 
   var productList = await Product()
       .select()
+      .and
       .orderBy('name')
       .orderByDesc('price')
       .orderBy('id')
@@ -241,13 +242,16 @@ Future<void> samples1() async {
 
   productList = await Product()
       .select(columnsToSelect: ['name', 'price'])
+      .categoryId
+      .equals(1)
+      .and
       .orderByDesc('price')
       .toList();
 
   // PRINT RESULTS TO DEBUG CONSOLE
   print('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    print(productList[i].toMap(forView: true));
   }
   print('---------------------------------------------------------------');
 }

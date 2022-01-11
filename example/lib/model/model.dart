@@ -58,7 +58,8 @@ const tableProduct = SqfEntityTable(
           sequencedBy:
               seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
-      SqfEntityField('datetime', DbType.datetime, isNotNull: true,
+      SqfEntityField('datetime', DbType.datetime,
+          isNotNull: true,
           defaultValue: 'DateTime.now()',
           minValue: '2019-01-01',
           maxValue: 'DateTime.now().add(Duration(days: 30))'),
@@ -79,11 +80,10 @@ const tableTodo = SqfEntityTable(
 
     // declare fields
     fields: [
-      SqfEntityField('userId', DbType.integer),
+      SqfEntityField('userId', DbType.integer, isIndex: true),
       SqfEntityField('title', DbType.text),
       SqfEntityField('completed', DbType.bool, defaultValue: false),
     ]);
-
 
 // Define the 'identity' constant as SqfEntitySequence.
 const seqIdentity = SqfEntitySequence(
@@ -103,7 +103,7 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_v2.1.2+35.db',
+    databaseName: 'sampleORM_v2.1.2+38.db',
     password:
         null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.

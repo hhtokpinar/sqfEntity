@@ -28,16 +28,15 @@ import 'sqfentity_connection_base.dart';
 // BEGIN DATABASE CONNECTION
 
 class SqfEntityConnectionMobile extends SqfEntityConnectionBase {
-  SqfEntityConnectionMobile(this.connection);
+  SqfEntityConnectionMobile(SqfEntityConnection? connection)
+      : super(connection);
   @override
   Future<void> writeDatabase(ByteData data) async {
     final List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     try {
-      final path = join(
-        getFinalDatabasePath(await getDatabasesPath()),
-        connection!.databaseName
-      );
+      final path = join(getFinalDatabasePath(await getDatabasesPath()),
+          connection!.databaseName);
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
         if (File('$path-wal').existsSync()) {
@@ -57,10 +56,8 @@ class SqfEntityConnectionMobile extends SqfEntityConnectionBase {
     final lock = Lock();
     Database? _db;
     await lock.synchronized(() async {
-      final path = join(
-        getFinalDatabasePath(await getDatabasesPath()),
-        connection!.databaseName
-      );
+      final path = join(getFinalDatabasePath(await getDatabasesPath()),
+          connection!.databaseName);
       final file = File(path);
 
       // check if file exists
@@ -79,8 +76,7 @@ class SqfEntityConnectionMobile extends SqfEntityConnectionBase {
       _db = await openDatabase(path,
           version: connection!.dbVersion,
           onCreate: createDb,
-          password: connection!.password
-      ); // SQLChipher
+          password: connection!.password); // SQLChipher
 
       // uncomment line below if you want to use sqflite
       // _db = await openDatabase(path, version: connection!.dbVersion, onCreate: createDb); // SQFLite
@@ -99,7 +95,4 @@ class SqfEntityConnectionMobile extends SqfEntityConnectionBase {
     print(
         'Your database ${connection!.databaseName} v:$version created successfully');
   }
-
-  @override
-  SqfEntityConnection? connection;
 }

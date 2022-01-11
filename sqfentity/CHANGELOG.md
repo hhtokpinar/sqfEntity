@@ -1,3 +1,91 @@
+## 2.2.0+1.pre
+- Reduced generated models 20% less
+- TableBase class and FilterBuilder classes have been abstracted as below
+
+### Added CrudOperationsBase abstract class and collected some CRUD operations below
+
+      abstract class CrudOperationsBase {
+
+       Future<dynamic>          save({bool ignoreBatch = true})
+       Future<dynamic>          saveOrThrow({bool ignoreBatch = true}) 
+       Future<dynamic>          saveAs({bool ignoreBatch = true})
+       Future<int?>             upsert({bool ignoreBatch = true}) 
+       Future<BoolCommitResult> upsertAll(covariant List<dynamic> objList)
+       Future<BoolResult>       delete([bool hardDelete = false])
+       Future<BoolResult>       recover([bool recoverChilds = true])
+
+      }
+
+### In addition to CrudOperationBase some string functions are collected in TableBase class as below 
+
+      abstract class TableBase extends CrudOperationsBase {
+
+      Map<String, dynamic>         toMap({bool forQuery = false, bool forJson = false, bool forView = false});
+      Future<Map<String, dynamic>> toMapWithChildren([bool forQuery = false, bool forJson = false, bool forView = false]);
+      String                       toJson();
+      Future<String>               toJsonWithChilds();
+      List<dynamic>                toArgs();
+      List<dynamic                 toArgsWithIds();
+      ConjunctionBase                select({List<String>? columnsToSelect, bool? getIsDeleted});
+      ConjunctionBase                distinct({List<String>? columnsToSelect, bool? getIsDeleted});
+      
+      }
+
+### Added ConjunctionBase abstract class and collected all Conjunction Keywords & toList/Single methods below
+
+     abstract class ConjunctionBase extends FluentBase {
+
+         ConjunctionBase   and
+         ConjunctionBase   or
+         ConjunctionBase   startBlock
+         ConjunctionBase   endBlock
+         ConjunctionBase   where(String? whereCriteria, {dynamic parameterValue})
+         ConjunctionBase   page(int page, int pagesize)
+         ConjunctionBase   top(int count)
+         ConjunctionBase   orderBy(dynamic argFields)
+         ConjunctionBase   orderByDesc(dynamic argFields)
+         ConjunctionBase   groupBy(dynamic argFields)
+         ConjunctionBase   having(dynamic argFields)
+
+ 
+      /// Methods
+      
+         Future<List<TableBase>> toList()
+         Future<BoolResult>      delete([bool hardDelete = false])
+         Future<BoolResult>      recover();
+         Future<BoolResult>      update(Map<String, dynamic> values);
+         Future<TableBase?>      toSingle();
+         Future<TableBase>       toSingleOrDefault();
+         Future<int>             toCount();
+         Future<String>          toJson();
+         Future<String>          toJsonWithChilds();
+         Future<List<dynamic>>   toMapList();
+         Map<String, dynamic>    toListPrimaryKeySQL([bool buildParams = true]);
+         Future<List<int>>       toListPrimaryKey([bool buildParams = true]);
+         Future<List<dynamic>>   toListObject();
+         Future<List<String>>    toListString();
+     }
+
+
+### Added FilterBase class and collected Filter Keywords below
+
+      class FilterBase extends FluentBase {
+
+         ConjunctionBase equals(dynamic pValue)
+         ConjunctionBase equalsOrNull(dynamic pValue)
+         ConjunctionBase isNull()
+         ConjunctionBase contains(dynamic pValue)
+         ConjunctionBase startsWith(dynamic pValue)
+         ConjunctionBase endsWith(dynamic pValue)
+         ConjunctionBase between(dynamic pFirst, dynamic pLast)
+         ConjunctionBase greaterThan(dynamic pValue)
+         ConjunctionBase lessThan(dynamic pValue)
+         ConjunctionBase greaterThanOrEquals(dynamic pValue)
+         ConjunctionBase lessThanOrEquals(dynamic pValue)
+         ConjunctionBase inValues(dynamic pValue)
+
+      }
+
 ## 2.1.2+9
 Fix UI
 

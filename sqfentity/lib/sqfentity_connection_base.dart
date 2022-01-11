@@ -35,22 +35,24 @@ class SqfEntityConnection {
 }
 
 abstract class SqfEntityConnectionBase {
-  SqfEntityConnectionBase({this.connection});
+  SqfEntityConnectionBase(this.connection);
   static Map<String, Database>? dbMap;
   SqfEntityConnection? connection;
   Future<void> writeDatabase(ByteData data);
   Future<Database> openDb();
   void createDb(Database db, int version);
-  
+
   String getFinalDatabasePath(String defaultDatabasePath) {
-    if(connection!.databasePath == null) {
+    if (connection!.databasePath == null) {
       return defaultDatabasePath;
     }
     String seperator = '/';
-    if(Platform.isWindows) {
+    if (Platform.isWindows) {
       seperator = '\\';
     }
-    if(connection!.databasePath!.substring(connection!.databasePath!.length - 1) == seperator) {
+    if (connection!.databasePath!
+            .substring(connection!.databasePath!.length - 1) ==
+        seperator) {
       return connection!.databasePath!;
     }
     return connection!.databasePath! + seperator;

@@ -222,9 +222,7 @@ class SqfEntityFieldVirtual implements SqfEntityField {
 
 class SqfEntityFieldRelationship implements SqfEntityField {
   /// Create a field which has a relation with another table.
-  ///
   /// So you can see all related children rows or a parent row
-  ///
   /// Simple virtual field definition must be below:
   /// ```
   ///  SqfEntityFieldRelationship(
@@ -297,13 +295,9 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   DbType? get dbType => null;
 
   /// Use SQLite CHECH Constraint. if the condition phrase is:
-  ///
   /// CHECK (length(phone) >= 10)
-  ///
   /// chechCondition string must be:
-  ///
   /// checkCondition = 'length(phone) >= 10'
-  ///
   /// for more information: https://www.sqlitetutorial.net/sqlite-check-constraint/
   @override
   final String? checkCondition;
@@ -321,7 +315,6 @@ class SqfEntityFieldRelationship implements SqfEntityField {
   final bool? isIndex;
 
   /// Set an indexed field as a group index to set indexes more than one and grouped.
-  ///
   /// If you want to search people by FirstName & LastName, it is better to set these fields' property isIndex:true and isIndexGroup:1
   @override
   final int? isIndexGroup;
@@ -779,7 +772,7 @@ class SqfEntityObjectBuilder {
     final String toString = '''
   // region ${_table.modelName}
   class ${_table.modelName} extends TableBase ${_table.abstractModelName != null ? 'implements ${_table.abstractModelName}' : ''} {
-    ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues();}
+    ${_table.modelName}({$_createBaseConstructure}) { _setDefaultValues(); softDeleteActivated = ${_table.useSoftDeleting.toString()};}
     ${_table.modelName}.withFields(${_table.createConstructure}){ _setDefaultValues();}
     ${_table.modelName}.withId(${_table.createConstructureWithId}){ _setDefaultValues();}
     // fromMap v2.0
@@ -792,7 +785,7 @@ class SqfEntityObjectBuilder {
     $_createProperties      // end FIELDS (${_table.modelName})
     $_createObjectRelations
     $_createObjectCollections
-    static const bool _softDeleteActivated=${_table.useSoftDeleting.toString()};
+    ${_table.objectType == ObjectType.table ? 'static const bool _softDeleteActivated=${_table.useSoftDeleting.toString()};' : ''} 
     ${_table.modelName}Manager? __mn${_table.modelName};
   
     ${_table.modelName}Manager get _mn${_table.modelName} {
@@ -800,13 +793,14 @@ class SqfEntityObjectBuilder {
     }
   
     // METHODS
+    @override
     Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false, bool forView=false}) {
       final map = <String, dynamic>{};
       $_toMapString
       return map;
       }
   
-    
+    @override
     Future<Map<String, dynamic>> toMapWithChildren([bool forQuery = false, bool forJson=false, bool forView=false]) async {
       final map = <String, dynamic>{};
       $_toMapString
@@ -815,19 +809,22 @@ class SqfEntityObjectBuilder {
       }
   
     /// This method returns Json String [${_table.modelName}]
+    @override
     String toJson() {
       return json.encode(toMap(forJson: true));
     }
     
     /// This method returns Json String [${_table.modelName}]
+    @override
     Future<String> toJsonWithChilds() async {
       return json.encode(await toMapWithChildren(false,true));
     }
   
-  
+    @override
     List<dynamic> toArgs() {
       return[${_table.createListParameterForQuery.replaceAll('this.', '')}];   
     }  
+    @override
     List<dynamic> toArgsWithIds() {
       return[${_table.createListParameterForQueryWithId.replaceAll('this.', '')}];   
     }  
@@ -856,7 +853,6 @@ class SqfEntityObjectBuilder {
       }
       return objList;
     }
-  
     static Future<List<${_table.modelName}>> fromMapList(List<dynamic> data,{bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields, bool setDefaultValues=true}) async{
       final List<${_table.modelName}> objList = <${_table.modelName}>[];
       loadedFields = loadedFields ?? [];
@@ -875,11 +871,8 @@ class SqfEntityObjectBuilder {
     ${_table.primaryKeyNames.isEmpty ? '' : ''' 
     
     /// returns ${_table.modelName} by ID if exist, otherwise returns null
-    /// 
     /// Primary Keys: $_getByIdParametersWithTypes
-    /// 
     ${commentPreload.replaceAll('methodname', 'getById')}
-    /// 
     /// <returns>returns [${_table.modelName}] if exist, otherwise returns null
     Future<${_table.modelName}?> getById($_getByIdParametersWithTypes, {bool preload=false, List<String>? preloadFields,bool loadParents=false, List<String>? loadedFields}) async{
       if(${_table.primaryKeyNames[0]}==null){return null;}
@@ -887,7 +880,6 @@ class SqfEntityObjectBuilder {
       final data = await _mn${_table.modelName}.getById([$_getByIdParameters]);
       if (data.length != 0) 
           {obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-          ${_table.collections!.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? '// final List<String> _loadedFields = loadedFields ?? [];' : ''}
             $_toOnetoOneCollections
             $_toOnetoManyCollections
             $_createObjectRelationsPreLoad
@@ -904,9 +896,8 @@ class SqfEntityObjectBuilder {
     $_saveAllMethod
 
     /// Updates if the record exists, otherwise adds a new row
-    
     /// <returns>Returns ${_table.primaryKeyType == null || _table.primaryKeyType == PrimaryKeyType.text ? '1' : _table.primaryKeyNames[0]}
-    ${_table.abstractModelName != null ? '@override' : ''}
+    ${_table.abstractModelName != null ? '@override' : '@override'}
     Future<int?> upsert({bool ignoreBatch = true}) async {
        try {
          final result = await _mn${_table.modelName}.rawInsert( 
@@ -928,8 +919,8 @@ class SqfEntityObjectBuilder {
   
     /// Deletes ${_table.modelName}
     
-    /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
-    ${_table.abstractModelName != null ? '@override' : ''}
+    /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
+    ${_table.abstractModelName != null ? '@override' : '@override'}
     Future<BoolResult> delete([bool hardDelete=false]) async {
       debugPrint('SQFENTITIY: delete ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
       $_deleteMethodSingle
@@ -937,18 +928,16 @@ class SqfEntityObjectBuilder {
       $_recoverMethodSingle
 
     ''' : ''}
-    ${_table.abstractModelName != null ? '@override' : ''}
+    ${_table.abstractModelName != null ? '@override' : '@override'}
     ${_table.modelName}FilterBuilder select(
         {List<String>? columnsToSelect, bool? getIsDeleted}) {
-      return ${_table.modelName}FilterBuilder(this)
-      .._getIsDeleted = getIsDeleted==true
+      return ${_table.modelName}FilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect;
     }
-  
+    @override
     ${_table.modelName}FilterBuilder distinct(
         {List<String>? columnsToSelect, bool? getIsDeleted}) {
-      return ${_table.modelName}FilterBuilder(this)
-      .._getIsDeleted = getIsDeleted==true
+      return ${_table.modelName}FilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
     }
@@ -1008,8 +997,7 @@ class SqfEntityObjectBuilder {
                   _table.primaryKeyName == null ||
                   _table.primaryKeyName!.isEmpty
               ? 'bool? isSaved;'
-              : '')
-      ..writeln('BoolResult? saveResult;');
+              : '');
     return _retVal.toString();
   }
 
@@ -1104,7 +1092,7 @@ class SqfEntityObjectBuilder {
       if (field is SqfEntityFieldRelationshipBase &&
           field.relationType == RelationType.ONE_TO_MANY) {
         _retVal.writeln(
-            'if (${field.fieldName} != null) {map[\'${field.fieldName}\'] = forView ? pl${field.relationshipName} == null ? ${field.fieldName} : pl${field.relationshipName}!.${field.formDropDownTextField} : ${field.fieldName};} else {map[\'${field.fieldName}\'] = null;}');
+            'if (${field.fieldName} != null) {map[\'${field.fieldName}\'] = forView ? pl${field.relationshipName} == null ? ${field.fieldName} : pl${field.relationshipName}!.${field.formDropDownTextField} : ${field.fieldName};} else if (${field.fieldName} != null || !forView){map[\'${field.fieldName}\'] = null;}');
       } else {
         _retVal.writeln('    ${field.toMapString()}');
       }
@@ -1503,7 +1491,13 @@ class SqfEntityObjectBuilder {
       return '';
     }
     if (_table.useSoftDeleting == null || !_table.useSoftDeleting!) {
-      return '';
+      return '''@override
+  Future<BoolResult> recover([bool recoverChilds = true]) {
+    // not implemented because:
+     final msg = 'set useSoftDeleting:true in the table definition of [${_table.modelName}] to use this feature';
+    throw UnimplementedError(msg);
+  }
+      ''';
     }
     var retVal = '';
     final varResult = 'var result= BoolResult(success: false);';
@@ -1536,9 +1530,10 @@ class SqfEntityObjectBuilder {
 
     return '''
     
-      /// Recover ${_table.modelName}>
+      /// Recover ${_table.modelName}
       
       /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
+      @override
       Future<BoolResult> recover([bool recoverChilds=true]) async {
       debugPrint('SQFENTITIY: recover ${_table.modelName} invoked (${_table.primaryKeyNames[0]}=\$${_table.primaryKeyNames[0]})');
           $retVal 
@@ -1551,7 +1546,6 @@ class SqfEntityObjectBuilder {
         : '''
   
     /// saveAll method saves the sent List<${_table.modelName}> as a bulk in one transaction 
-    /// 
     /// Returns a <List<BoolResult>>
     static Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
       List<dynamic>? result = [];
@@ -1579,10 +1573,9 @@ class SqfEntityObjectBuilder {
     return _table.primaryKeyType == PrimaryKeyType.text || _hiddenMethod == '_'
         ? ''
         : '''      /// inserts or replaces the sent List<<${_table.modelName}>> as a bulk in one transaction.
-    ///    
     /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-    /// 
     /// Returns a BoolCommitResult 
+    @override
     Future<BoolCommitResult> ${_hiddenMethod}upsertAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
       final results = await _mn${_table.modelName}.rawInsertAll(
           'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', ${toPluralName(_table._modelLowerCase)});
@@ -1606,6 +1599,7 @@ class SqfEntityObjectBuilder {
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
     /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
     /// <returns>Returns ${_table.primaryKeyNames[0]}
+    @override
     Future<int?> ${_hiddenMethod}save({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
@@ -1613,7 +1607,6 @@ class SqfEntityObjectBuilder {
         ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'if (saveResult!.success) {isSaved = true;}' : ''}
           }
       else {
-        // ${_table.primaryKeyNames[0]}= await _upsert(); // removed in sqfentity_gen 1.3.0+6
         await _mn${_table.modelName}.update(this);
          }
         $_toOnetoOneSaveCode
@@ -1622,10 +1615,9 @@ class SqfEntityObjectBuilder {
         ..write('''
   
     /// Saves the (${_table.modelName}) object. If the ${_table.primaryKeyNames[0]} field is null, saves as a new record and returns new ${_table.primaryKeyNames[0]}, if ${_table.primaryKeyNames[0]} is not null then updates record
-    /// 
     /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
-    ///         
     /// <returns>Returns ${_table.primaryKeyNames[0]}
+    @override 
     Future<int?> ${_hiddenMethod}saveOrThrow({bool ignoreBatch = true}) async {
       if (${_table.primaryKeyNames[0]} == null || ${_table.primaryKeyNames[0]} == 0 ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? '|| !isSaved!' : ''}) {
         ${seq.toString()}
@@ -1649,6 +1641,7 @@ class SqfEntityObjectBuilder {
             '''/// saveAs ${_table.modelName}. Returns a new Primary Key value of ${_table.modelName}
     
     /// <returns>Returns a new Primary Key value of ${_table.modelName}
+    @override
     Future<int?> ${_hiddenMethod}saveAs({bool ignoreBatch = true}) async {
       ${_table.primaryKeyType != PrimaryKeyType.integer_auto_incremental || _table.primaryKeyName == null || _table.primaryKeyName!.isEmpty ? 'isSaved = false;' : ''}
       ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '${_table.primaryKeyNames[0]} = null;' : ''}
@@ -1660,12 +1653,10 @@ class SqfEntityObjectBuilder {
       retVal.write('''
   
     /// Saves the (${_table.modelName}) object. If the Primary Key (${_table.primaryKeyNames[0]}) field is null, returns Error. 
-    /// 
     /// INSERTS (If not exist) OR REPLACES (If exist) data while Primary Key is not null. 
-    /// 
     /// Call the saveAs() method if you do not want to save it when there is another row with the same ${_table.primaryKeyNames[0]}
-    /// 
     /// <returns>Returns BoolResult
+    @override
     Future<BoolResult> ${_hiddenMethod}save({bool ignoreBatch = true}) async {
       final result = BoolResult(success: false);
       try {         
@@ -1691,6 +1682,7 @@ class SqfEntityObjectBuilder {
     /// Use this method if you do not want to update existing row when conflicts another row that have the same ${_table.primaryKeyNames[0]}
     
     /// Returns a BoolResult
+    @override
     Future<BoolResult> ${_hiddenMethod}saveAs({bool ignoreBatch = true}) async {
       final result = BoolResult(success: false);
       try {         
@@ -1747,7 +1739,7 @@ String __createObjectRelationsPreLoad(SqfEntityTableBase _table) {
         }
       }
       retVal.writeln(
-          'if (/*!_loadedfields!.contains(\'${field.table!.tableName}.pl$funcName\') && */ (preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {/*_loadedfields!.add(\'${field.table!.tableName}.pl$funcName\');*/ obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents /*, loadedFields: _loadedFields*/);}');
+          'if ((preloadFields == null || loadParents || preloadFields.contains(\'pl$funcName\'))) {obj.pl$funcName = obj.pl$funcName ?? await obj.get$funcName(loadParents: loadParents);}');
       relations.add(funcName);
     }
   }
@@ -1980,191 +1972,62 @@ class SqfEntityObjectField {
   @override
   String toString() {
     final String toString = '''// region ${_table.modelName}Field
-class ${_table.modelName}Field extends SearchCriteria {
-  ${_table.modelName}Field(this.${_table._modelLowerCase}FB);
-   // { param = DbParameter(); }
-  DbParameter param = DbParameter();
-  String _waitingNot = '';
-  ${_table.modelName}FilterBuilder ${_table._modelLowerCase}FB;
+class ${_table.modelName}Field extends FilterBase {
+  ${_table.modelName}Field(${_table.modelName}FilterBuilder ${_table._modelLowerCase}FB) : super(${_table._modelLowerCase}FB);
   
-  ${_table.modelName}Field get not {
-    _waitingNot = ' NOT ';
-    return this;
-  }
-
+  @override
   ${_table.modelName}FilterBuilder equals(dynamic pValue) {
-    param.expression = '=';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.EQuals,
-            ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.NotEQuals,
-            ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.equals(pValue) as ${_table.modelName}FilterBuilder;
   }
+  @override
   ${_table.modelName}FilterBuilder equalsOrNull(dynamic pValue) {
-    param.expression = '=';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.EQualsOrNull,
-            ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.NotEQualsOrNull,
-            ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.equalsOrNull(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder isNull() {
-    ${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-        0,
-        ${_table._modelLowerCase}FB.parameters,
-        param,
-        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.isNull() as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder contains(dynamic pValue) {
-     if(pValue != null){${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-        '%\${pValue.toString()}%',
-        ${_table._modelLowerCase}FB.parameters,
-        param,
-        SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;}
-    return ${_table._modelLowerCase}FB;
+    return super.contains(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder startsWith(dynamic pValue) {
-     if(pValue != null){${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-        '\${pValue.toString()}%',
-        ${_table._modelLowerCase}FB.parameters,
-        param,
-        SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;}
-    return ${_table._modelLowerCase}FB;
+    return super.startsWith(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder endsWith(dynamic pValue) {
-     if(pValue != null){${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-        '%\${pValue.toString()}',
-        ${_table._modelLowerCase}FB.parameters,
-        param,
-        SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;}
-    return ${_table._modelLowerCase}FB;
+    return super.endsWith(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder between(dynamic pFirst, dynamic pLast) {
-    if (pFirst != null && pLast != null) {
-      ${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-          pFirst,
-          ${_table._modelLowerCase}FB.parameters,
-          param,
-          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          ${_table._modelLowerCase}FB._addedBlocks,
-          pLast);
-    } else if (pFirst != null) {
-      if (_waitingNot != '') {
-        ${_table._modelLowerCase}FB._addedBlocks = setCriteria(pFirst, ${_table._modelLowerCase}FB.parameters,
-            param, SqlSyntax.LessThan, ${_table._modelLowerCase}FB._addedBlocks); }
-      else {
-        ${_table._modelLowerCase}FB._addedBlocks = setCriteria(pFirst, ${_table._modelLowerCase}FB.parameters,
-            param, SqlSyntax.GreaterThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks); }
-    } else if (pLast != null) {
-      if (_waitingNot != '') {
-        ${_table._modelLowerCase}FB._addedBlocks = setCriteria(pLast, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.GreaterThan, ${_table._modelLowerCase}FB._addedBlocks);}
-      else {
-        ${_table._modelLowerCase}FB._addedBlocks = setCriteria(pLast, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.LessThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks); }
-    }
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.between(pFirst, pLast) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder greaterThan(dynamic pValue) {
-    param.expression = '>';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.GreaterThan, ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.LessThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.greaterThan(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder lessThan(dynamic pValue) {
-    param.expression = '<';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.LessThan,
-            ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.lessThan(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder greaterThanOrEquals(dynamic pValue) {
-    param.expression = '>=';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param, SqlSyntax.LessThan,
-            ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.greaterThanOrEquals(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder lessThanOrEquals(dynamic pValue) {
-    param.expression = '<=';
-    ${_table._modelLowerCase}FB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.LessThanOrEquals, ${_table._modelLowerCase}FB._addedBlocks)
-        : setCriteria(pValue, ${_table._modelLowerCase}FB.parameters, param,
-            SqlSyntax.GreaterThan, ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.lessThanOrEquals(pValue) as ${_table.modelName}FilterBuilder;
   }
-
+  @override
   ${_table.modelName}FilterBuilder inValues(dynamic pValue) {
-    ${_table._modelLowerCase}FB._addedBlocks = setCriteria(
-        pValue,
-        ${_table._modelLowerCase}FB.parameters,
-        param,
-        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        ${_table._modelLowerCase}FB._addedBlocks);
-    _waitingNot = '';
-    ${_table._modelLowerCase}FB._addedBlocks.needEndBlock![${_table._modelLowerCase}FB._blockIndex] =
-        ${_table._modelLowerCase}FB._addedBlocks.retVal;
-    return ${_table._modelLowerCase}FB;
+    return super.inValues(pValue) as ${_table.modelName}FilterBuilder;
   }
+  @override
+  ${_table.modelName}Field get not {
+    return super.not as ${_table.modelName}Field;
+  }
+  
 }
 // endregion ${_table.modelName}Field
 ''';
@@ -2187,288 +2050,153 @@ class SqfEntityObjectFilterBuilder {
   String toString() {
     final String toString = '''
        // region ${_table.modelName}FilterBuilder
-class ${_table.modelName}FilterBuilder extends SearchCriteria {
-  ${_table.modelName}FilterBuilder(${_table.modelName} obj) {
-    whereString = '';
-    groupByList = <String>[];
-    _addedBlocks.needEndBlock!.add(false);
-    _addedBlocks.waitingStartBlock!.add(false);
-    _obj = obj;
+class ${_table.modelName}FilterBuilder extends ConjunctionBase {
+  ${_table.modelName}FilterBuilder(${_table.modelName} obj, bool? getIsDeleted) : super(obj,getIsDeleted) {
+    _mn${_table.modelName} = obj._mn${_table.modelName};
+    ${_table.objectType == ObjectType.table ? '_softDeleteActivated = obj.softDeleteActivated;' : ''} 
   }
-  AddedBlocks _addedBlocks= AddedBlocks(<bool>[], <bool>[]);
-  int _blockIndex = 0;
-  List<DbParameter> parameters= <DbParameter>[];
-  List<String> orderByList= <String>[];
-  ${_table.modelName}? _obj;
-  QueryParams qparams= QueryParams();
-  int _pagesize=0;
-  int _page=0;
 
+  ${_table.objectType == ObjectType.table ? 'bool _softDeleteActivated = false;' : ''} 
+  ${_table.modelName}Manager? _mn${_table.modelName};
 
   /// put the sql keyword 'AND'
+  @override
   ${_table.modelName}FilterBuilder get and {
-    if (parameters.isNotEmpty)
-      {parameters[parameters.length - 1].wOperator = ' AND ';}
+    super.and;
     return this;
   }
 
   /// put the sql keyword 'OR'
+  @override
   ${_table.modelName}FilterBuilder get or {
-    if (parameters.isNotEmpty)
-      {parameters[parameters.length - 1].wOperator = ' OR ';}
+    super.or;
     return this;
   }
 
   /// open parentheses
+  @override
   ${_table.modelName}FilterBuilder get startBlock {
-    _addedBlocks.waitingStartBlock!.add(true);
-    _addedBlocks.needEndBlock!.add(false);
-    _blockIndex++;
-    if (_blockIndex > 1) 
-    {_addedBlocks.needEndBlock![_blockIndex - 1] = true;}
+    super.startBlock;
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
+  @override
   ${_table.modelName}FilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
-    if (whereCriteria != null && whereCriteria != '') {
-      final DbParameter param = DbParameter(columnName: parameterValue == null ? null : '', hasParameter: parameterValue != null);
-      _addedBlocks = setCriteria(
-          parameterValue ?? 0, parameters, param, '(\$whereCriteria)', _addedBlocks);
-      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
-    }
+    super.where(whereCriteria, parameterValue: parameterValue);
     return this;
   }
 
+
+
   /// page = page number,
-  /// 
   /// pagesize = row(s) per page
+  @override
   ${_table.modelName}FilterBuilder page(int page, int pagesize) {
-    if (page > 0) 
-    {_page = page;}
-    if (pagesize > 0) 
-    {_pagesize = pagesize;}
+    super.page(page,pagesize);
     return this;
   }
 
   /// int count = LIMIT
+  @override
   ${_table.modelName}FilterBuilder top(int count) {
-    if (count > 0) {
-      _pagesize = count;
-    }
+    super.top(count);
     return this;
   }
 
   /// close parentheses
+  @override
   ${_table.modelName}FilterBuilder get endBlock {
-    if (_addedBlocks.needEndBlock![_blockIndex]) {
-      parameters[parameters.length - 1].whereString += ' ) ';
-    }
-    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
-    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
-    _blockIndex--;
+    super.endBlock;
     return this;
   }
 
   /// argFields might be String or List<String>.
-  /// 
   /// Example 1: argFields='name, date' 
-  /// 
   /// Example 2: argFields = ['name', 'date']
+  @override
   ${_table.modelName}FilterBuilder orderBy(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        orderByList.add(argFields); }
-      else {
-        for (String? s in argFields as List<String?>) {
-          if (s!.isNotEmpty) {
-          orderByList.add(' \$s ');}
-        } }
-    }
+    super.orderBy(argFields);
     return this;
   }
   
 
   /// argFields might be String or List<String>.
-  /// 
   /// Example 1: argFields='field1, field2' 
-  /// 
   /// Example 2: argFields = ['field1', 'field2']
+  @override
   ${_table.modelName}FilterBuilder orderByDesc(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        orderByList.add('\$argFields desc '); }
-      else {
-        for (String? s in argFields as List<String?>) {
-          if (s!.isNotEmpty)
-          {orderByList.add(' \$s desc ');}
-        } }
-    }
+    super.orderByDesc(argFields);
     return this;
   }
 
   /// argFields might be String or List<String>.
-  /// 
   /// Example 1: argFields='field1, field2' 
-  /// 
   /// Example 2: argFields = ['field1', 'field2']
+  @override
   ${_table.modelName}FilterBuilder groupBy(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        groupByList.add(' \$argFields '); }
-      else {
-        for (String? s in argFields as List<String?>) {
-          if (s!.isNotEmpty)
-          {groupByList.add(' \$s ');}
-        } }
-    }
+    super.groupBy(argFields);
     return this;
   }
 
   /// argFields might be String or List<String>.
-  /// 
   /// Example 1: argFields='name, date' 
-  /// 
   /// Example 2: argFields = ['name', 'date']
+  @override
   ${_table.modelName}FilterBuilder having(dynamic argFields) {
-    if (argFields != null) {
-      if (argFields is String) {
-        havingList.add(argFields); }
-      else {
-        for (String? s in argFields as List<String?>) {
-          if (s!.isNotEmpty) {
-          havingList.add(' \$s ');}
-        } }
-    }
+    super.having(argFields);
     return this;
   }
-  ${_table.modelName}Field setField(${_table.modelName}Field? field, String colName, DbType dbtype) {
+  ${_table.modelName}Field _setField(${_table.modelName}Field? field, String colName, DbType dbtype) {
     return ${_table.modelName}Field(this)
     ..param = DbParameter(
         dbType: dbtype,
         columnName: colName,
-        wStartBlock: _addedBlocks.waitingStartBlock![_blockIndex]);
+        wStartBlock: openedBlock);
   }
 
   $_createObjectFieldProperty
 
-  bool _getIsDeleted = false;
-
-  void _buildParameters() {
-     if (_page > 0 && _pagesize > 0) {
-      qparams
-      ..limit = _pagesize
-      ..offset = (_page - 1) * _pagesize;
-    } else {
-      qparams
-      ..limit = _pagesize
-      ..offset = _page;
-    }
-    for (DbParameter param in parameters) {
-      if (param.columnName != null) {
-        if (param.value is List && !param.hasParameter) {
-          param.value = param.dbType == DbType.text || param.value[0] is String
-              ? '\\'\${param.value.join('\\',\\'')}\\''
-              : param.value.join(',');
-          whereString += param.whereString
-              .replaceAll('{field}', param.columnName!)
-              .replaceAll('?', param.value.toString());
-          param.value = null;
-        } else {
-          if (param.value is Map<String, dynamic> &&
-              param.value['sql'] != null) {
-            param
-            ..whereString = param.whereString
-                .replaceAll('?', param.value['sql'].toString())
-                ..dbType = DbType.integer
-                ..value = param.value['args'];
-          }
-          whereString +=
-              param.whereString.replaceAll('{field}', param.columnName!); }
-        if (!param.whereString.contains('?')) {} else 
-        {
-          switch (param.dbType) {
-            case DbType.bool:
-              param.value = param.value == null ? null : param.value == true ? 1 : 0;
-              param.value2 = param.value2 == null ? null : param.value2 == true ? 1 : 0;
-              break;
-              case DbType.date:
-              case DbType.datetime:
-              case DbType.datetimeUtc:
-            param.value = param.value == null ? null :  (param.value as DateTime).millisecondsSinceEpoch ;
-              param.value2 = param.value2 == null ? null :  (param.value2 as DateTime).millisecondsSinceEpoch ;
-              break;
-            default:
-          }
-        if (param.value != null) {if (param.value is List) {
-              for (var p in param.value) {
-                whereArguments.add(p);
-              }
-            } else {
-              whereArguments.add(param.value);
-            }}
-        if (param.value2 != null) {whereArguments.add(param.value2);}
-        }
-      } else {
-        whereString += param.whereString;
-        }
-    }
-    if (${_table.modelName}._softDeleteActivated) {
-      if (whereString != '') {
-        whereString = '\${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} (\$whereString)';}
-      else if (!_getIsDeleted) {whereString = 'ifnull(isDeleted,0)=0';}
-    }
-
-    if (whereString != '') {qparams.whereString = whereString;}
-        qparams
-    ..whereArguments = whereArguments
-    ..groupBy = groupByList.join(',')
-    ..orderBy = orderByList.join(',')
-    ..having = havingList.join(',');
-  }
 
 ${_table.objectType == ObjectType.table ? '''  
 
 /// Deletes List<${_table.modelName}> bulk by query 
 /// 
-/// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+/// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
+@override
 Future<BoolResult> delete([bool hardDelete=false]) async {
-  _buildParameters();
+  buildParameters();
   var r = BoolResult(success: false);
   $_deleteMethodList
-    if(${_table.modelName}._softDeleteActivated && !hardDelete) {
-      r = await _obj!._mn${_table.modelName}.updateBatch(qparams,{'isDeleted':1}); }
+    if(_softDeleteActivated && !hardDelete) {
+      r = await _mn${_table.modelName}!.updateBatch(qparams,{'isDeleted':1}); }
   else {
-      r = await _obj!._mn${_table.modelName}.delete(qparams); }
+      r = await _mn${_table.modelName}!.delete(qparams); }
   return r;    
 }
   $_recoverMethodList
 
   /// using:
-  /// 
   /// update({'fieldName': Value})
-  /// 
   /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
+  @override
   Future<BoolResult> update(Map<String, dynamic> values) {
-    _buildParameters();
+    buildParameters();
     if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString = '${_table.primaryKeyNames[0]} IN (SELECT ${_table.primaryKeyNames[0]} from ${_table.tableName} \${qparams.whereString!.isNotEmpty ? 'WHERE \${qparams.whereString}': ''}\${qparams.limit!>0 ? ' LIMIT \${qparams.limit}':''}\${qparams.offset!>0 ? ' OFFSET \${qparams.offset}':''})';
     }
-     return _obj!._mn${_table.modelName}.updateBatch(qparams, values);
+     return _mn${_table.modelName}!.updateBatch(qparams, values);
   }''' : ''}
   /// This method always returns [${_table.modelName}] Obj if exist, otherwise returns null 
-  /// 
   ${commentPreload.replaceAll('methodname', 'toSingle')}
-  /// 
   /// <returns> ${_table.modelName}?
+  @override
   Future<${_table.modelName}?> toSingle({bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields}) async{
-    _pagesize = 1;
-    _buildParameters();
-    final objFuture = _obj!._mn${_table.modelName}.toList(qparams);
+    buildParameters(pSize: 1);
+    final objFuture = _mn${_table.modelName}!.toList(qparams);
     final data = await objFuture;
     ${_table.modelName}? obj;
     if (data.isNotEmpty) { obj = ${_table.modelName}.fromMap(data[0] as Map<String, dynamic>);
-    ${_table.collections!.isNotEmpty || _createObjectRelationsPreLoad.isNotEmpty ? '// final List<String> _loadedFields = loadedFields ?? [];' : ''}
     $_toOnetoOneCollections
     $_toOnetoManyCollections
     $_createObjectRelationsPreLoad
@@ -2477,10 +2205,9 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
   
 /// This method always returns [${_table.modelName}]  
-  /// 
   ${commentPreload.replaceAll('methodname', 'toSingle')}
-  /// 
   /// <returns> ${_table.modelName}?
+  @override
   Future<${_table.modelName}> toSingleOrDefault({bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields}) async{
    return await toSingle(
             preload: preload,
@@ -2490,22 +2217,21 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
         ${_table.modelName}();
   } 
   /// This method returns int. [${_table.modelName}]
-  /// 
   /// <returns>int
+  @override
   Future<int> toCount([VoidCallback Function(int c)? ${_table._modelLowerCase}Count]) async {
-    _buildParameters();
+    buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];   
-    final ${toPluralLowerName(_table._modelLowerCase)}Future = await _obj!._mn${_table.modelName}.toList(qparams);
+    final ${toPluralLowerName(_table._modelLowerCase)}Future = await _mn${_table.modelName}!.toList(qparams);
     final int count = ${toPluralLowerName(_table._modelLowerCase)}Future[0]['CNT'] as int;
     if(${_table._modelLowerCase}Count != null) {${_table._modelLowerCase}Count (count);}
     return count;
   }
   
   /// This method returns List<${_table.modelName}> [${_table.modelName}] 
-  /// 
   ${commentPreload.replaceAll('methodname', 'toList')}
-  /// 
   /// <returns>List<${_table.modelName}>
+  @override
   Future<List<${_table.modelName}>> toList({bool preload=false, List<String>? preloadFields, bool loadParents=false, List<String>? loadedFields}) async {
     final data = await toMapList();
     final List<${_table.modelName}> ${toPluralLowerName(_table._modelLowerCase)}Data = await ${_table.modelName}.fromMapList(data,preload: preload, preloadFields: preloadFields, loadParents: loadParents, loadedFields:loadedFields, setDefaultValues: qparams.selectColumns == null);
@@ -2513,6 +2239,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
 
   /// This method returns Json String [${_table.modelName}]
+  @override
   Future<String> toJson() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2523,6 +2250,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
 
   /// This method returns Json String. [${_table.modelName}]
+  @override
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
     final data = await toList();
@@ -2533,19 +2261,19 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
 
   /// This method returns List<dynamic>. [${_table.modelName}]
-  /// 
   /// <returns>List<dynamic>
+  @override
   Future<List<dynamic>> toMapList() async {
-    _buildParameters();
-    return await _obj!._mn${_table.modelName}.toList(qparams);
+    buildParameters();
+    return await _mn${_table.modelName}!.toList(qparams);
   } 
  
   ${_isFormTable ? '''/// Returns List<DropdownMenuItem<${_table.modelName}>>
   Future<List<DropdownMenuItem<${_table.modelName}>>> toDropDownMenu(
       String displayTextColumn,
       [VoidCallback Function(List<DropdownMenuItem<${_table.modelName}>> o)? dropDownMenu]) async {
-    _buildParameters();
-    final ${toPluralLowerName(_table._modelLowerCase)}Future = _obj!._mn${_table.modelName}.toList(qparams);
+    buildParameters();
+    final ${toPluralLowerName(_table._modelLowerCase)}Future = _mn${_table.modelName}!.toList(qparams);
 
     final data = await ${toPluralLowerName(_table._modelLowerCase)}Future;
     final int count = data.length;
@@ -2571,9 +2299,9 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   Future<List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>>> toDropDownMenuInt(
       String displayTextColumn,
 	  [VoidCallback Function(List<DropdownMenuItem<${_table.primaryKeyTypes[0]}>> o)? dropDownMenu]) async {
-    _buildParameters();
+    buildParameters();
     qparams.selectColumns=['${_table.primaryKeyNames[0]}',displayTextColumn];
-    final ${toPluralLowerName(_table._modelLowerCase)}Future = _obj!._mn${_table.modelName}.toList(qparams);
+    final ${toPluralLowerName(_table._modelLowerCase)}Future = _mn${_table.modelName}!.toList(qparams);
 
     final data = await ${toPluralLowerName(_table._modelLowerCase)}Future;
     final int count = data.length;
@@ -2597,14 +2325,13 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
   ''' : ''}
   /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [${_table.modelName}]
-  /// 
   /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
-  /// 
   /// <returns>List<String>
-  Map<String,dynamic> toListPrimaryKeySQL([bool buildParameters = true]) {
+  @override
+  Map<String,dynamic> toListPrimaryKeySQL([bool buildParams = true]) {
    final Map<String,dynamic> _retVal = <String,dynamic>{};
-    if (buildParameters) {
-      _buildParameters();
+    if (buildParams) {
+      buildParameters();
     }
     _retVal['sql'] = 'SELECT `${_table.primaryKeyNames.join('`')}` FROM ${_table.tableName} WHERE \${qparams.whereString}';
     _retVal['args'] = qparams.whereArguments;
@@ -2612,22 +2339,24 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
   }
   ${_table.primaryKeyNames.length > 1 ? '''/// This method returns Primary Key List<${_table.primaryKeyNames.join(',')}> [${_table.modelName}]
   /// <returns>List<${_table.primaryKeyNames.join(',')}>
+  @override
   Future<List<${_table.modelName}>> toListPrimaryKey(
-      [bool buildParameters = true]) async {
-    if (buildParameters) 
-    {_buildParameters();}
+      [bool buildParams = true]) async {
+    if (buildParams) 
+    {buildParameters();}
     qparams.selectColumns = ['${_table.primaryKeyNames.join('\',\'')}'];
     final ${_table._modelLowerCase}Future =
-        await _obj!._mn${_table.modelName}.toList(qparams);
+        await _mn${_table.modelName}!.toList(qparams);
     return await ${_table.modelName}.fromMapList(${_table._modelLowerCase}Future);
   }''' : _table.primaryKeyNames.length == 1 ? '''/// This method returns Primary Key List<${_table.primaryKeyTypes[0]}>. 
 /// <returns>List<${_table.primaryKeyTypes[0]}>
-Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParameters=true]) async {
-  if(buildParameters) 
-  {_buildParameters();}
+@override
+Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParams=true]) async {
+  if(buildParams) 
+  {buildParameters();}
   final List<${_table.primaryKeyTypes[0]}> ${_table.primaryKeyNames[0]}Data = <${_table.primaryKeyTypes[0]}>[];
   qparams.selectColumns= ['${_table.primaryKeyNames[0]}'];
-  final ${_table.primaryKeyNames[0]}Future = await _obj!._mn${_table.modelName}.toList(qparams);
+  final ${_table.primaryKeyNames[0]}Future = await _mn${_table.modelName}!.toList(qparams);
 
 
     final int count = ${_table.primaryKeyNames[0]}Future.length;
@@ -2640,12 +2369,12 @@ Future<List<${_table.primaryKeyTypes[0]}>> toListPrimaryKey([bool buildParameter
 
 
 /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [${_table.modelName}]
-/// 
 /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)  
+@override
 Future<List<dynamic>> toListObject() async {
-  _buildParameters();
+  buildParameters();
 
-  final objectFuture = _obj!._mn${_table.modelName}.toList(qparams);
+  final objectFuture = _mn${_table.modelName}!.toList(qparams);
 
   final List<dynamic> objectsData = <dynamic>[];
   final data = await objectFuture;
@@ -2657,12 +2386,12 @@ Future<List<dynamic>> toListObject() async {
 }
 
 /// Returns List<String> for selected first column
-/// 
 /// Sample usage: await ${_table.modelName}.select(columnsToSelect: ['columnName']).toListString()
+@override
 Future<List<String>> toListString([VoidCallback Function(List<String> o)? listString]) async {
-  _buildParameters();
+  buildParameters();
 
-  final objectFuture = _obj!._mn${_table.modelName}.toList(qparams);
+  final objectFuture = _mn${_table.modelName}!.toList(qparams);
 
   final List<String> objectsData = <String>[];
   final data = await objectFuture;
@@ -2688,10 +2417,9 @@ Future<List<String>> toListString([VoidCallback Function(List<String> o)? listSt
     if (_table.primaryKeyName != null &&
         _table.primaryKeyName!.isNotEmpty &&
         !_table.primaryKeyName!.startsWith('_')) {
-      retVal
-          .writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
+      retVal.writeln('''${_table.modelName}Field? _${_table.primaryKeyNames[0]};
 ${_table.modelName}Field get ${_table.primaryKeyNames[0]} {
-return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
+return _${_table.primaryKeyNames[0]} = _setField(_${_table.primaryKeyNames[0]}, '${_table.primaryKeyNames[0]}', ${DbType.integer.toString()});
 }''');
     }
     for (SqfEntityFieldType field in _table.fields!) {
@@ -2703,13 +2431,13 @@ return _${_table.primaryKeyNames[0]} = setField(_${_table.primaryKeyNames[0]}, '
       }
       retVal.writeln('''${_table.modelName}Field? _${field.fieldName};
 ${_table.modelName}Field get ${field.fieldName} {
-return _${field.fieldName} = setField(_${field.fieldName}, '${field.fieldName}', ${field.dbType});
+return _${field.fieldName} = _setField(_${field.fieldName}, '${field.fieldName}', ${field.dbType});
 }''');
     }
     if (_table.useSoftDeleting != null && _table.useSoftDeleting!) {
       retVal.writeln('''${_table.modelName}Field? _isDeleted;
 ${_table.modelName}Field get isDeleted {
-return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
+return _isDeleted = _setField(_isDeleted, 'isDeleted', DbType.bool);
 }''');
     }
 
@@ -2748,13 +2476,13 @@ return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
       }
     }
     retVal.writeln('''
-            return _obj!._mn${_table.modelName}.updateBatch(qparams,{'isDeleted':0});
+            return _mn${_table.modelName}!.updateBatch(qparams,{'isDeleted':0});
       ''');
     return '''
     /// Recover List<${_table.modelName}> bulk by query 
+  @override
   Future<BoolResult> recover() async {
-  _getIsDeleted = true;
-  _buildParameters();
+  buildParameters(getIsDeleted: true);
   debugPrint('SQFENTITIY: recover ${_table.modelName} bulk invoked');
   ${retVal.toString()} 
   }''';
@@ -3067,11 +2795,588 @@ class QueryParams {
   bool? distinct;
 }
 
-abstract class SearchCriteria {
+/// Container of Filter Keywords below
+///
+/// ConjunctionBase equals(dynamic pValue)
+/// ConjunctionBase equalsOrNull(dynamic pValue)
+/// ConjunctionBase isNull()
+/// ConjunctionBase contains(dynamic pValue)
+/// ConjunctionBase startsWith(dynamic pValue)
+/// ConjunctionBase endsWith(dynamic pValue)
+/// ConjunctionBase between(dynamic pFirst, dynamic pLast)
+/// ConjunctionBase greaterThan(dynamic pValue)
+/// ConjunctionBase lessThan(dynamic pValue)
+/// ConjunctionBase greaterThanOrEquals(dynamic pValue)
+/// ConjunctionBase lessThanOrEquals(dynamic pValue)
+/// ConjunctionBase inValues(dynamic pValue)
+///
+class FilterBase extends FluentBase {
+  FilterBase(this.filterBuilder);
+  ConjunctionBase filterBuilder;
+  DbParameter param = DbParameter();
+  String _waitingNot = '';
+
+  FilterBase get not {
+    _waitingNot = ' NOT ';
+    return this;
+  }
+
+  ConjunctionBase equals(dynamic pValue) {
+    param.expression = '=';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param, SqlSyntax.EQuals,
+            filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.NotEQuals, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase equalsOrNull(dynamic pValue) {
+    param.expression = '=';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.EQualsOrNull, filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.NotEQualsOrNull, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase isNull() {
+    filterBuilder._addedBlocks = setCriteria(
+        0,
+        filterBuilder.parameters,
+        param,
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase contains(dynamic pValue) {
+    if (pValue != null) {
+      filterBuilder._addedBlocks = setCriteria(
+          '%${pValue.toString()}%',
+          filterBuilder.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          filterBuilder._addedBlocks);
+      _waitingNot = '';
+      filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+          filterBuilder._addedBlocks.retVal;
+    }
+    return filterBuilder;
+  }
+
+  ConjunctionBase startsWith(dynamic pValue) {
+    if (pValue != null) {
+      filterBuilder._addedBlocks = setCriteria(
+          '${pValue.toString()}%',
+          filterBuilder.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          filterBuilder._addedBlocks);
+      _waitingNot = '';
+      filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+          filterBuilder._addedBlocks.retVal;
+      filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+          filterBuilder._addedBlocks.retVal;
+    }
+    return filterBuilder;
+  }
+
+  ConjunctionBase endsWith(dynamic pValue) {
+    if (pValue != null) {
+      filterBuilder._addedBlocks = setCriteria(
+          '%${pValue.toString()}',
+          filterBuilder.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          filterBuilder._addedBlocks);
+      _waitingNot = '';
+      filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+          filterBuilder._addedBlocks.retVal;
+    }
+    return filterBuilder;
+  }
+
+  ConjunctionBase between(dynamic pFirst, dynamic pLast) {
+    if (pFirst != null && pLast != null) {
+      filterBuilder._addedBlocks = setCriteria(
+          pFirst,
+          filterBuilder.parameters,
+          param,
+          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          filterBuilder._addedBlocks,
+          pLast);
+    } else if (pFirst != null) {
+      if (_waitingNot != '') {
+        filterBuilder._addedBlocks = setCriteria(
+            pFirst,
+            filterBuilder.parameters,
+            param,
+            SqlSyntax.LessThan,
+            filterBuilder._addedBlocks);
+      } else {
+        filterBuilder._addedBlocks = setCriteria(
+            pFirst,
+            filterBuilder.parameters,
+            param,
+            SqlSyntax.GreaterThanOrEquals,
+            filterBuilder._addedBlocks);
+      }
+    } else if (pLast != null) {
+      if (_waitingNot != '') {
+        filterBuilder._addedBlocks = setCriteria(
+            pLast,
+            filterBuilder.parameters,
+            param,
+            SqlSyntax.GreaterThan,
+            filterBuilder._addedBlocks);
+      } else {
+        filterBuilder._addedBlocks = setCriteria(
+            pLast,
+            filterBuilder.parameters,
+            param,
+            SqlSyntax.LessThanOrEquals,
+            filterBuilder._addedBlocks);
+      }
+    }
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase greaterThan(dynamic pValue) {
+    param.expression = '>';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.GreaterThan, filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.LessThanOrEquals, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase lessThan(dynamic pValue) {
+    param.expression = '<';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.LessThan, filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase greaterThanOrEquals(dynamic pValue) {
+    param.expression = '>=';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.LessThan, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase lessThanOrEquals(dynamic pValue) {
+    param.expression = '<=';
+    filterBuilder._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.LessThanOrEquals, filterBuilder._addedBlocks)
+        : setCriteria(pValue, filterBuilder.parameters, param,
+            SqlSyntax.GreaterThan, filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+
+  ConjunctionBase inValues(dynamic pValue) {
+    filterBuilder._addedBlocks = setCriteria(
+        pValue,
+        filterBuilder.parameters,
+        param,
+        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        filterBuilder._addedBlocks);
+    _waitingNot = '';
+    filterBuilder._addedBlocks.needEndBlock![filterBuilder._blockIndex] =
+        filterBuilder._addedBlocks.retVal;
+    return filterBuilder;
+  }
+}
+
+/// Container of Conjunction Keywords & toList/Single methods below
+///
+/// ConjunctionBase and
+/// ConjunctionBase or
+/// ConjunctionBase startBlock
+/// ConjunctionBase endBlock
+/// ConjunctionBase where(String? whereCriteria, {dynamic parameterValue})
+/// ConjunctionBase page(int page, int pagesize)
+/// ConjunctionBase top(int count)
+/// ConjunctionBase orderBy(dynamic argFields)
+/// ConjunctionBase orderByDesc(dynamic argFields)
+/// ConjunctionBase groupBy(dynamic argFields)
+/// ConjunctionBase having(dynamic argFields)
+///
+/// Methods
+///
+/// Future<List<TableBase>> toList()
+/// Future<BoolResult>      delete([bool hardDelete = false])
+/// Future<BoolResult>      recover();
+/// Future<BoolResult>      update(Map<String, dynamic> values);
+/// Future<TableBase?>      toSingle();
+/// Future<TableBase>       toSingleOrDefault();
+/// Future<int>             toCount();
+/// Future<String>          toJson();
+/// Future<String>          toJsonWithChilds();
+/// Future<List<dynamic>>   toMapList();
+/// Map<String, dynamic>    toListPrimaryKeySQL([bool buildParams = true]);
+/// Future<List<int>>       toListPrimaryKey([bool buildParams = true]);
+/// Future<List<dynamic>>   toListObject();
+/// Future<List<String>>    toListString();
+///
+abstract class ConjunctionBase extends FluentBase {
+  ConjunctionBase(TableBase obj, bool? getIsDeleted) {
+    whereString = '';
+    groupByList = <String>[];
+    _addedBlocks.needEndBlock!.add(false);
+    _addedBlocks.waitingStartBlock!.add(false);
+    _tableObj = obj;
+    _getIsDeleted = getIsDeleted ?? false;
+  }
+
+  AddedBlocks _addedBlocks = AddedBlocks(<bool>[], <bool>[]);
+  int _blockIndex = 0;
+
+  /// protected
+  /// The member 'openedBlock' can only be used within instance members
+  @protected
+  bool get openedBlock => _addedBlocks.waitingStartBlock![_blockIndex];
+  List<DbParameter> parameters = <DbParameter>[];
+  List<String> orderByList = <String>[];
+  TableBase? _tableObj; // Product? _obj;
+  QueryParams qparams = QueryParams();
+  int _pagesize = 0;
+  int _page = 0;
+  bool _getIsDeleted = false;
+
+  /// put the sql keyword 'AND'
+  ConjunctionBase get and {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' AND ';
+    }
+    return this;
+  }
+
+  /// put the sql keyword 'OR'
+  ConjunctionBase get or {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' OR ';
+    }
+    return this;
+  }
+
+  /// open parentheses
+  ConjunctionBase get startBlock {
+    _addedBlocks.waitingStartBlock!.add(true);
+    _addedBlocks.needEndBlock!.add(false);
+    _blockIndex++;
+    if (_blockIndex > 1) {
+      _addedBlocks.needEndBlock![_blockIndex - 1] = true;
+    }
+    return this;
+  }
+
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
+  ConjunctionBase where(String? whereCriteria, {dynamic parameterValue}) {
+    if (whereCriteria != null && whereCriteria != '') {
+      final DbParameter param = DbParameter(
+          columnName: parameterValue == null ? null : '',
+          hasParameter: parameterValue != null);
+      _addedBlocks = setCriteria(parameterValue ?? 0, parameters, param,
+          '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock![_blockIndex] = _addedBlocks.retVal;
+    }
+    return this;
+  }
+
+  /// page = page number,
+  /// pagesize = row(s) per page
+  ConjunctionBase page(int page, int pagesize) {
+    if (page > 0) {
+      _page = page;
+    }
+    if (pagesize > 0) {
+      _pagesize = pagesize;
+    }
+    return this;
+  }
+
+  /// int count = LIMIT
+  ConjunctionBase top(int count) {
+    if (count > 0) {
+      _pagesize = count;
+    }
+    return this;
+  }
+
+  /// close parentheses
+  ConjunctionBase get endBlock {
+    if (_addedBlocks.needEndBlock![_blockIndex]) {
+      parameters[parameters.length - 1].whereString += ' ) ';
+    }
+    _addedBlocks.needEndBlock!.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock!.removeAt(_blockIndex);
+    _blockIndex--;
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  /// Example 1: argFields='name, date'
+  /// Example 2: argFields = ['name', 'date']
+  ConjunctionBase orderBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add(argFields);
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            orderByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  /// Example 1: argFields='field1, field2'
+  /// Example 2: argFields = ['field1', 'field2']
+  ConjunctionBase orderByDesc(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add('$argFields desc ');
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            orderByList.add(' $s desc ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  /// Example 1: argFields='field1, field2'
+  /// Example 2: argFields = ['field1', 'field2']
+  ConjunctionBase groupBy(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        groupByList.add(' $argFields ');
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            groupByList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  /// Example 1: argFields='name, date'
+  /// Example 2: argFields = ['name', 'date']
+  ConjunctionBase having(dynamic argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        havingList.add(argFields);
+      } else {
+        for (String? s in argFields as List<String?>) {
+          if (s!.isNotEmpty) {
+            havingList.add(' $s ');
+          }
+        }
+      }
+    }
+    return this;
+  }
+
+  /// METHODS
+
+  /// Deletes List<Product> bulk by query
+  /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
+  Future<BoolResult> delete([bool hardDelete = false]) {
+    final msg = 'delete method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  /// Recover List<Product> bulk by query
+  Future<BoolResult> recover() async {
+    return BoolResult(success: false);
+  }
+
+  /// update({'fieldName': Value})
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
+  Future<BoolResult> update(Map<String, dynamic> values) {
+    final msg = 'update method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  Future<TableBase?> toSingle();
+  Future<TableBase> toSingleOrDefault();
+  Future<int> toCount();
+  Future<List<TableBase>> toList(
+      {bool preload = false,
+      List<String>? preloadFields,
+      bool loadParents = false,
+      List<String>? loadedFields});
+  Future<String> toJson();
+  Future<String> toJsonWithChilds();
+  Future<List<dynamic>> toMapList();
+
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>.
+  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
+  /// <returns>List<String>
+  Map<String, dynamic> toListPrimaryKeySQL([bool buildParams = true]);
+
+  /// This method returns Primary Key List<int>.
+  /// <returns>List<int>
+  Future<List<dynamic>> toListPrimaryKey([bool buildParams = true]) {
+    final msg =
+        'toListPrimaryKey method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
+  Future<List<dynamic>> toListObject();
+
+  /// Returns List<String> for selected first column
+  /// Sample usage: await Product.select(columnsToSelect: ['columnName']).toListString()
+  Future<List<String>> toListString();
+
+  @protected
+  void buildParameters({bool? getIsDeleted, int? pSize}) {
+    _pagesize = pSize ?? _pagesize;
+    _getIsDeleted = getIsDeleted ?? _getIsDeleted;
+    if (_page > 0 && _pagesize > 0) {
+      qparams
+        ..limit = _pagesize
+        ..offset = (_page - 1) * _pagesize;
+    } else {
+      qparams
+        ..limit = _pagesize
+        ..offset = _page;
+    }
+    for (DbParameter param in parameters) {
+      if (param.columnName != null) {
+        if (param.value is List && !param.hasParameter) {
+          param.value = param.dbType == DbType.text || param.value[0] is String
+              ? '\'${param.value.join('\',\'')}\''
+              : param.value.join(',');
+          whereString += param.whereString
+              .replaceAll('{field}', param.columnName!)
+              .replaceAll('?', param.value.toString());
+          param.value = null;
+        } else {
+          if (param.value is Map<String, dynamic> &&
+              param.value['sql'] != null) {
+            param
+              ..whereString = param.whereString
+                  .replaceAll('?', param.value['sql'].toString())
+              ..dbType = DbType.integer
+              ..value = param.value['args'];
+          }
+          whereString +=
+              param.whereString.replaceAll('{field}', param.columnName!);
+        }
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value = param.value == null
+                  ? null
+                  : param.value == true
+                      ? 1
+                      : 0;
+              param.value2 = param.value2 == null
+                  ? null
+                  : param.value2 == true
+                      ? 1
+                      : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+            case DbType.datetimeUtc:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            if (param.value is List) {
+              for (var p in param.value) {
+                whereArguments.add(p);
+              }
+            } else {
+              whereArguments.add(param.value);
+            }
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
+        }
+      } else {
+        whereString += param.whereString;
+      }
+    }
+    if (_tableObj!.softDeleteActivated) {
+      if (whereString != '') {
+        whereString =
+            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
+      } else if (!_getIsDeleted) {
+        whereString = 'ifnull(isDeleted,0)=0';
+      }
+    }
+
+    if (whereString != '') {
+      qparams.whereString = whereString;
+    }
+    qparams
+      ..whereArguments = whereArguments
+      ..groupBy = groupByList.join(',')
+      ..orderBy = orderByList.join(',')
+      ..having = havingList.join(',');
+  }
+}
+
+abstract class FluentBase {
   BoolResult? result;
   List<String> groupByList = <String>[];
   List<String> havingList = <String>[];
-
   List<dynamic> whereArguments = <dynamic>[];
   String whereString = '';
 
@@ -3562,18 +3867,18 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
   String toMapString() {
     switch (dbType) {
       case DbType.bool:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] =  forQuery? ($fieldName ! ? 1 : 0) : $fieldName;} else {map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] =  forQuery? ($fieldName ! ? 1 : 0) : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.date:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? \'\$$fieldName!.year-\$$fieldName!.month-\$$fieldName!.day\' : forQuery? DateTime($fieldName!.year,$fieldName!.month, $fieldName!.day).millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? \'\$$fieldName!.year-\$$fieldName!.month-\$$fieldName!.day\' : forQuery? DateTime($fieldName!.year,$fieldName!.month, $fieldName!.day).millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.datetime:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.datetimeUtc:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else {map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.time:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';} else {map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       default:
         {
-          return 'map[\'$fieldName\'] = $fieldName;';
+          return 'if ($fieldName != null || !forView) { map[\'$fieldName\'] = $fieldName; }';
         }
     }
   }
@@ -3868,7 +4173,7 @@ class SqfEntityFieldRelationshipBase implements SqfEntityFieldType {
   String toMapString() {
     switch (dbType) {
       case DbType.bool:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = forQuery ? ($fieldName! ? 1 : 0) : $fieldName;} else {map[\'$fieldName\'] = null;}\n';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forQuery ? ($fieldName! ? 1 : 0) : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}\n';
       default:
         return 'map[\'$fieldName\'] = $fieldName;';
     }
@@ -4142,13 +4447,9 @@ String toModelName(String? modelName, String definedName) =>
 /// Add preload comment
 const String commentPreload =
     '''/// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-    /// 
     /// ex: methodname(preload:true) -> Loads all related objects
-    /// 
     /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true") 
-    /// 
     /// ex: methodname(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-    /// 
     /// bool loadParents: if true, loads all parent objects until the object has no parent
 ''';
 
@@ -4345,9 +4646,100 @@ DbType parseDbType(String val) {
   return DbType.unknown;
 }
 
-abstract class TableBase {
+/// Container some CRUD operations below
+///
+/// Future<dynamic>          save({bool ignoreBatch = true})
+/// Future<dynamic>          saveOrThrow({bool ignoreBatch = true})
+/// Future<dynamic>          saveAs({bool ignoreBatch = true})
+/// Future<int?>             upsert({bool ignoreBatch = true})
+/// Future<BoolCommitResult> upsertAll(covariant List<dynamic> objList)
+/// Future<BoolResult>       delete([bool hardDelete = false])
+/// Future<BoolResult>       recover([bool recoverChilds = true])
+///
+abstract class CrudOperationsBase {
+  Future<dynamic> save({bool ignoreBatch = true}) {
+    final msg = 'upsert method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  Future<dynamic> saveOrThrow({bool ignoreBatch = true}) {
+    final msg =
+        'saveOrThrow method requires a table which has an auto incremented primaryKey';
+    throw UnimplementedError(msg);
+  }
+
+  Future<dynamic> saveAs({bool ignoreBatch = true}) {
+    // implementation saveAs()
+    final msg =
+        'saveAs method requires a table which has an auto incremented primaryKey';
+    throw UnimplementedError(msg);
+  }
+
+  /// Updates if the record exists, otherwise adds a new row
+  /// <returns>Returns id
+  Future<int?> upsert({bool ignoreBatch = true}) {
+    final msg = 'upsert method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  /// inserts or replaces the sent List<<Product>> as a bulk in one transaction.
+  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
+  /// Returns a BoolCommitResult
+  Future<BoolCommitResult> upsertAll(covariant List<dynamic> objList) {
+    final msg =
+        'upsertAll method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  /// Deletes Object
+  /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
+  Future<BoolResult> delete([bool hardDelete = false]) {
+    final msg = 'delete method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+
+  /// Recover Object
+  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
+  Future<BoolResult> recover([bool recoverChilds = true]) {
+    final msg = 'recover method can be implemented in tables not view objects';
+    throw UnimplementedError(msg);
+  }
+}
+
+/// Collected some string functions below
+///
+/// Map<String, dynamic>         toMap({bool forQuery = false, bool forJson = false, bool forView = false});
+/// Future<Map<String, dynamic>> toMapWithChildren([bool forQuery = false, bool forJson = false, bool forView = false]);
+/// String                       toJson();
+/// Future<String>               toJsonWithChilds();
+/// List<dynamic>                toArgs();
+/// List<dynamic                 toArgsWithIds();
+/// ConjunctionBase              select({List<String>? columnsToSelect, bool? getIsDeleted});
+/// ConjunctionBase              distinct({List<String>? columnsToSelect, bool? getIsDeleted});
+abstract class TableBase extends CrudOperationsBase {
   /// Indicates whether an insertion was made or not
   bool isInsert = false;
+  bool softDeleteActivated = false;
+  BoolResult? saveResult;
+  Map<String, dynamic> toMap(
+      {bool forQuery = false, bool forJson = false, bool forView = false});
+  Future<Map<String, dynamic>> toMapWithChildren(
+      [bool forQuery = false, bool forJson = false, bool forView = false]);
+
+  /// This method returns Json String
+  String toJson();
+
+  /// This method returns Json String [Product]
+  Future<String> toJsonWithChilds();
+
+  List<dynamic> toArgs();
+  List<dynamic> toArgsWithIds();
+
+  // not implemented due to tables with multiple primarykeys and different types
+  // Future<TableBase?> getById(int id, {bool preload = false, List<String>? preloadFields, bool loadParents = false, List<String>? loadedFields});
+
+  ConjunctionBase select({List<String>? columnsToSelect, bool? getIsDeleted});
+  ConjunctionBase distinct({List<String>? columnsToSelect, bool? getIsDeleted});
 }
 
 // END ENUMS, CLASSES AND ABSTRACTS

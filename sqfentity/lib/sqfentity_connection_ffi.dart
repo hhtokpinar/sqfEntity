@@ -27,8 +27,7 @@ import 'package:synchronized/synchronized.dart';
 
 // BEGIN DATABASE CONNECTION
 class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
-  
-  SqfEntityConnectionFfi(this.connection);
+  SqfEntityConnectionFfi(SqfEntityConnection? connection) : super(connection);
 
   @override
   Future<void> writeDatabase(ByteData data) async {
@@ -38,9 +37,8 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
       final databaseFactory = databaseFactoryFfi;
       sqfliteFfiInit();
       final path = join(
-        getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
-        connection!.databaseName
-      );
+          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          connection!.databaseName);
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
         if (File('$path-wal').existsSync()) {
@@ -63,9 +61,8 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
       final databaseFactory = databaseFactoryFfi;
       sqfliteFfiInit();
       final path = join(
-        getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
-        connection!.databaseName
-      );
+          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          connection!.databaseName);
       final file = File(path);
 
       // check if file exists
@@ -89,16 +86,15 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
 
       _db = await databaseFactory.openDatabase(path,
           options: OpenDatabaseOptions(
-              version: connection!.dbVersion,
-              onCreate: createDb,
-              onConfigure: (db) async {
-                if(connection!.password != null) {
-                  //https://github.com/davidmartos96/sqflite_sqlcipher/issues/28
-                  await db.rawQuery("PRAGMA KEY='${connection!.password!}'");
-                }
-              },
-          )
-      );
+            version: connection!.dbVersion,
+            onCreate: createDb,
+            onConfigure: (db) async {
+              if (connection!.password != null) {
+                //https://github.com/davidmartos96/sqflite_sqlcipher/issues/28
+                await db.rawQuery("PRAGMA KEY='${connection!.password!}'");
+              }
+            },
+          ));
       //  }
     });
     //}
@@ -115,7 +111,4 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
     print(
         'Your database ${connection!.databaseName} v:$version created successfully');
   }
-
-  @override
-  SqfEntityConnection? connection;
 }
