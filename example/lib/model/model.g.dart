@@ -155,6 +155,7 @@ class MyDbModel extends SqfEntityModelProvider {
 
     bundledDatabasePath = myDbModel
         .bundledDatabasePath; //'assets/sample.db'; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    databasePath = myDbModel.databasePath;
   }
   Map<String, dynamic> getControllers() {
     final controllers = <String, dynamic>{};

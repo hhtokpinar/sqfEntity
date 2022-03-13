@@ -24,4 +24,4 @@ Builder sqfentityFormBuilder(BuilderOptions options) => LibraryBuilder(SqfEntity
 Builder sqfentityFormBuilderTest(BuilderOptions options) => LibraryBuilder(
     // change extension to refresh changes (Testing)
     SqfEntityFormGenerator(),
-    generatedExtension: '.t0.view.dart');
+    generatedExtension: '.t.view.dart');

@@ -1,3 +1,16 @@
+## 2.2.0+4.pre
+- Added databasePath parameter into dbModel
+
+      const myDbModel = SqfEntityModel(
+      modelName: 'MyDbModel',
+      databaseName: 'sampleORM.db',
+      databaseTables: [tableProduct, tableCategory, tableTodo],
+      
+      // This value is optional. When databasePath is null then
+      // EntityBase uses the default path from sqflite.getDatabasesPath()
+      databasePath: '/Volumes/Repo/MyProject/db'
+      )     
+
 ## 2.2.0+3.pre
 - Reduced generated models 20% less
 - TableBase class and FilterBuilder classes have been abstracted as below

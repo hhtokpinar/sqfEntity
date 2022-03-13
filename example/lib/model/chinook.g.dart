@@ -388,6 +388,7 @@ class Chinookdb extends SqfEntityModelProvider {
 
     bundledDatabasePath = chinookdb
         .bundledDatabasePath; //'assets/sample.db'; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    databasePath = chinookdb.databasePath;
   }
   Map<String, dynamic> getControllers() {
     final controllers = <String, dynamic>{};

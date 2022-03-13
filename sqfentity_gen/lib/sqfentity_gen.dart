@@ -66,6 +66,7 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
         dbModelName,
       )
       ..bundledDatabasePath = getStringValue(model, 'bundledDatabasePath')
+      ..databasePath = getStringValue(model, 'databasePath')
       ..ignoreForFile = toListString(getListValue(model, 'ignoreForFile'))
       ..init();
     return dbModel;
@@ -494,6 +495,7 @@ class ${_m.modelName} extends SqfEntityModelProvider {
     $__sequenceList
     bundledDatabasePath =
         $_bundledDbName; //'assets/sample.db'; // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
+    $_databasePath
   }
   Map<String, dynamic> getControllers() {
     final controllers= <String, dynamic>{};
@@ -525,6 +527,12 @@ class ${_m.modelName} extends SqfEntityModelProvider {
       : _m.bundledDatabasePath == null
           ? 'null'
           : '\'${_m.bundledDatabasePath}\'';
+
+  String get _databasePath => _m.instanceName != null
+      ? 'databasePath = ${_m.instanceName}.databasePath;'
+      : _m.databasePath == null
+          ? ''
+          : 'databasePath = \'${_m.databasePath}\';';
   String createConstDatabase() {
     _m.modelName = toModelName(_m.modelName, 'MyDbModel');
     return '''

@@ -376,13 +376,17 @@ class SqfEntityModel {
       this.dbVersion,
       this.defaultColumns,
       this.preSaveAction,
-      this.logFunction});
+      this.logFunction,
+      this.databasePath});
 
   /// Declare your sqlite database name
   final String? databaseName;
 
   /// This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing database
   final String? bundledDatabasePath;
+
+  /// This value is optional. When databasePath is empty then EntityBase uses the path from sqflite.getDatabasesPath() 
+  final String? databasePath;
 
   /// Password for SQLite encryption (Optional)
   final String? password;

@@ -124,7 +124,7 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.2"
+    version: "0.1.3"
   meta:
     dependency: "direct main"
     description:
@@ -182,10 +182,10 @@ packages:
   sqfentity_gen:
     dependency: "direct main"
     description:
-      path: "../sqfentity_gen"
-      relative: true
-    source: path
-    version: "2.2.0+1.pre"
+      name: sqfentity_gen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0+4.pre"
   sqflite_common:
     dependency: "direct main"
     description:
