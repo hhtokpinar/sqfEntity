@@ -1,6 +1,7 @@
-## 2.2.0+1.pre
+## 2.2.0+3.pre
 - Reduced generated models 20% less
 - TableBase class and FilterBuilder classes have been abstracted as below
+- bug fix
 
 ### Added CrudOperationsBase abstract class and collected some CRUD operations below
 

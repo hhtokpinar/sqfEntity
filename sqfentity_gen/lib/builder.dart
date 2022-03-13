@@ -17,13 +17,11 @@ import 'package:source_gen/source_gen.dart';
 import 'package:sqfentity_gen/src/sqfentity_formgenerator.dart';
 import 'package:sqfentity_gen/src/sqfentity_generator.dart';
 
-Builder sqfentityBuilder(BuilderOptions options) =>
-    SharedPartBuilder([SqfEntityGenerator()], 'sqfentity');
+Builder sqfentityBuilder(BuilderOptions options) => SharedPartBuilder([SqfEntityGenerator()], 'sqfentity');
 
-Builder sqfentityFormBuilder(BuilderOptions options) =>
-    LibraryBuilder(SqfEntityFormGenerator(),
-        generatedExtension: '.g.view.dart');
+Builder sqfentityFormBuilder(BuilderOptions options) => LibraryBuilder(SqfEntityFormGenerator(), generatedExtension: '.g.view.dart');
 
-Builder sqfentityFormBuilderTest(BuilderOptions options) =>
-    LibraryBuilder(SqfEntityFormGenerator(),
-        generatedExtension: '.t.view.dart');
+Builder sqfentityFormBuilderTest(BuilderOptions options) => LibraryBuilder(
+    // change extension to refresh changes (Testing)
+    SqfEntityFormGenerator(),
+    generatedExtension: '.t0.view.dart');

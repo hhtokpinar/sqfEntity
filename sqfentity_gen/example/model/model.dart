@@ -383,8 +383,6 @@ class Product extends TableBase {
   DateTime? date;
   DateTime? dateCreated;
   bool? isDeleted;
-
-  BoolResult? saveResult;
   // end FIELDS (Product)
 
 // RELATIONSHIPS (Product)
@@ -1598,8 +1596,6 @@ class Category extends TableBase {
   String? name;
   bool? isActive;
   DateTime? dateCreated;
-
-  BoolResult? saveResult;
   // end FIELDS (Category)
 
 // COLLECTIONS & VIRTUALS (Category)
@@ -2653,7 +2649,6 @@ class Todo extends TableBase {
   bool? completed;
   DateTime? dateCreated;
   bool? isSaved;
-  BoolResult? saveResult;
   // end FIELDS (Todo)
 
   static const bool _softDeleteActivated = false;
