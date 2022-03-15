@@ -3,13 +3,13 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-31.0.0",
+      "rootUri": "file:///Users/reni/Downloads/Programas/flutter/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-31.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.8.0",
+      "rootUri": "file:///Users/reni/Downloads/Programas/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.8.0",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -87,7 +87,7 @@
     },
     {
       "name": "characters",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.2.0",
+      "rootUri": "file:///Users/reni/Downloads/Programas/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -225,7 +225,7 @@
     },
     {
       "name": "material_color_utilities",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/material_color_utilities-0.1.3",
+      "rootUri": "file:///Users/reni/Downloads/Programas/flutter/.pub-cache/hosted/pub.dartlang.org/material_color_utilities-0.1.3",
       "packageUri": "lib/",
       "languageVersion": "2.13"
     },
@@ -405,7 +405,7 @@
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///USERS/huseyintokpunar/development/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.1",
+      "rootUri": "file:///Users/reni/Downloads/Programas/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -446,7 +446,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-03-13T09:54:12.049208Z",
+  "generated": "2022-03-15T16:49:06.728176Z",
   "generator": "pub",
   "generatorVersion": "2.16.1"
 }

@@ -956,6 +956,16 @@ class SqfEntityObjectBuilder {
     void _setDefaultValues() {
       $_createDefaultValues
     }
+    
+    @override
+    void rollbackPk() {
+      ${_table.primaryKeyNames.isNotEmpty ? '''
+      if (isInsert == true) {
+        ${_table.primaryKeyNames.map((e) => '$e = null;').join('\n')}
+      }
+      ''' : ''}
+    }
+    
     // END METHODS
     // BEGIN CUSTOM CODE
     ${_table.customCode != null ? _table.customCode : '''/*
@@ -1725,15 +1735,6 @@ class SqfEntityObjectBuilder {
     ''');
       }
     }
-    retVal.write('''
-    void rollbackId() {
-      if (isInsert == true) {
-        ${_table.primaryKeyNames[0]} = null;
-      }
-    }
-
-    ''');
-
     return retVal.toString();
   }
 }
@@ -4769,6 +4770,9 @@ abstract class TableBase extends CrudOperationsBase {
 
   ConjunctionBase select({List<String>? columnsToSelect, bool? getIsDeleted});
   ConjunctionBase distinct({List<String>? columnsToSelect, bool? getIsDeleted});
+
+  /// If an insertion was made with the object, it cancels the PK
+  void rollbackPk();
 }
 
 // END ENUMS, CLASSES AND ABSTRACTS
