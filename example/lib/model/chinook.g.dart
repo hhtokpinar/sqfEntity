@@ -728,12 +728,6 @@ class Album extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      AlbumId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Album> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Album> albums) async {
@@ -838,6 +832,14 @@ class Album extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      AlbumId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -1655,12 +1657,6 @@ class Artist extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      ArtistId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Artist> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Artist> artists) async {
@@ -1765,6 +1761,14 @@ class Artist extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      ArtistId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -2789,12 +2793,6 @@ class Customer extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      CustomerId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Customer> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Customer> customers) async {
@@ -2916,6 +2914,14 @@ class Customer extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      CustomerId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -4172,12 +4178,6 @@ class Employee extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      EmployeeId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Employee> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Employee> employees) async {
@@ -4313,6 +4313,14 @@ class Employee extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      EmployeeId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -5287,12 +5295,6 @@ class Genre extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      GenreId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Genre> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Genre> genres) async {
@@ -5396,6 +5398,14 @@ class Genre extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      GenreId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -6374,12 +6384,6 @@ class Invoice extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      InvoiceId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Invoice> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Invoice> invoices) async {
@@ -6496,6 +6500,14 @@ class Invoice extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      InvoiceId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -7461,12 +7473,6 @@ class InvoiceLine extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      InvoiceLineId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<InvoiceLine> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines) async {
@@ -7569,6 +7575,14 @@ class InvoiceLine extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      InvoiceLineId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -8394,12 +8408,6 @@ class MediaType extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      MediaTypeId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<MediaType> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<MediaType> mediatypes) async {
@@ -8508,6 +8516,14 @@ class MediaType extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      MediaTypeId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -9306,12 +9322,6 @@ class Playlist extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      PlaylistId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Playlist> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Playlist> playlists) async {
@@ -9412,6 +9422,14 @@ class Playlist extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      PlaylistId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -10509,12 +10527,6 @@ class Track extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      TrackId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Track> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Track> tracks) async {
@@ -10636,6 +10648,14 @@ class Track extends TableBase {
   }
 
   void _setDefaultValues() {}
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      TrackId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -11538,6 +11558,10 @@ class VTrack extends TableBase {
   void _setDefaultValues() {
     isSaved = false;
   }
+
+  @override
+  void rollbackPk() {}
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -12268,12 +12292,6 @@ class PlaylistTrack extends TableBase {
     return result;
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      TrackId = null;
-    }
-  }
-
   /// saveAll method saves the sent List<PlaylistTrack> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(
@@ -12374,6 +12392,15 @@ class PlaylistTrack extends TableBase {
   void _setDefaultValues() {
     isSaved = false;
   }
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      TrackId = null;
+      PlaylistId = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*

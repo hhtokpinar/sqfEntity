@@ -639,12 +639,6 @@ class Product extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      id = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Product> products) async {
@@ -767,6 +761,14 @@ class Product extends TableBase {
     dateCreated = dateCreated ?? DateTime.now();
     isDeleted = isDeleted ?? false;
   }
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -1711,12 +1713,6 @@ class Category extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      id = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Category> categories) async {
@@ -1830,6 +1826,14 @@ class Category extends TableBase {
     isActive = isActive ?? true;
     dateCreated = dateCreated ?? DateTime.now();
   }
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*
@@ -2661,12 +2665,6 @@ class Todo extends TableBase {
     return id;
   }
 
-  void rollbackId() {
-    if (isInsert == true) {
-      id = null;
-    }
-  }
-
   /// saveAll method saves the sent List<Todo> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Todo> todos) async {
@@ -2768,6 +2766,14 @@ class Todo extends TableBase {
     completed = completed ?? false;
     dateCreated = dateCreated ?? DateTime.now();
   }
+
+  @override
+  void rollbackPk() {
+    if (isInsert == true) {
+      id = null;
+    }
+  }
+
   // END METHODS
   // BEGIN CUSTOM CODE
   /*

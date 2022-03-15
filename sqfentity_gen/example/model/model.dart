@@ -734,7 +734,8 @@ class Product extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
+  @override
+  void rollbackPk() {
     if (isInsert == true) {
       id = null;
     }
@@ -1871,7 +1872,8 @@ class Category extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  void rollbackId() {
+  @override
+  void rollbackPk() {
     if (isInsert == true) {
       id = null;
     }
@@ -2879,7 +2881,8 @@ class Todo extends TableBase {
     return id;
   }
 
-  void rollbackId() {
+  @override
+  void rollbackPk() {
     if (isInsert == true) {
       id = null;
     }

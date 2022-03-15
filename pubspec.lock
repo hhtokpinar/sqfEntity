@@ -395,7 +395,7 @@ packages:
       path: sqfentity_gen
       relative: true
     source: path
-    version: "2.2.0+2.pre"
+    version: "2.2.0+4.pre"
   stack_trace:
     dependency: transitive
     description:
