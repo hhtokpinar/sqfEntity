@@ -185,7 +185,7 @@ packages:
       name: sqfentity_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0+4.pre"
+    version: "2.2.0+5"
   sqflite_common:
     dependency: "direct main"
     description:

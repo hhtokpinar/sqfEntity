@@ -1,4 +1,4 @@
-## 2.2.0+4.pre
+## 2.2.0+5
 - Added databasePath parameter into dbModel
 
       const myDbModel = SqfEntityModel(
