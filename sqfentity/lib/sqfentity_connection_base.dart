@@ -17,8 +17,8 @@
 //    limitations under the License.
 
 import 'dart:async' show Future;
+import 'dart:io';
 import 'package:flutter/services.dart';
-//import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class SqfEntityConnection {
@@ -35,10 +35,26 @@ class SqfEntityConnection {
 }
 
 abstract class SqfEntityConnectionBase {
-  SqfEntityConnectionBase({this.connection});
+  SqfEntityConnectionBase(this.connection);
   static Map<String, Database>? dbMap;
   SqfEntityConnection? connection;
   Future<void> writeDatabase(ByteData data);
   Future<Database> openDb();
   void createDb(Database db, int version);
+
+  String getFinalDatabasePath(String defaultDatabasePath) {
+    if (connection!.databasePath == null) {
+      return defaultDatabasePath;
+    }
+    String seperator = '/';
+    if (Platform.isWindows) {
+      seperator = '\\';
+    }
+    if (connection!.databasePath!
+            .substring(connection!.databasePath!.length - 1) ==
+        seperator) {
+      return connection!.databasePath!;
+    }
+    return connection!.databasePath! + seperator;
+  }
 }

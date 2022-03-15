@@ -192,7 +192,7 @@ class ProductListState extends State {
             ),
           ),
           title: Text(
-            product.name ?? '',
+            product.name!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

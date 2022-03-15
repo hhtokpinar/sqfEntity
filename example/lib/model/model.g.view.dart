@@ -250,6 +250,12 @@ class ProductAddState extends State {
                   product.datetime ??
                   DateTime.now(),
               locale: UITools.mainDatePickerLocaleType),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter Datetime';
+            }
+            return null;
+          },
           controller: txtDatetime,
           decoration: InputDecoration(labelText: 'Datetime'),
         ),

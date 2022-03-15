@@ -105,7 +105,7 @@ packages:
       name: characters
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   charcode:
     dependency: transitive
     description:
@@ -279,6 +279,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.11"
+  material_color_utilities:
+    dependency: transitive
+    description:
+      name: material_color_utilities
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   meta:
     dependency: transitive
     description:
@@ -465,14 +472,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.1.2+3"
+    version: "2.2.0+4.pre"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../../sqfentity_gen"
       relative: true
     source: path
-    version: "2.1.2+3"
+    version: "2.2.0+4.pre"
   sqflite_common:
     dependency: transitive
     description:
@@ -584,7 +591,7 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   vm_service:
     dependency: transitive
     description:

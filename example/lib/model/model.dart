@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
@@ -22,8 +21,7 @@ const tableCategory = SqfEntityTable(
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
-    modelName:
-        null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
+    modelName: null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
     // declare fields
     fields: [
       SqfEntityField('name', DbType.text, isNotNull: true),
@@ -52,20 +50,13 @@ const tableProduct = SqfEntityTable(
           parentTable: tableCategory,
           deleteRule: DeleteRule.CASCADE,
           defaultValue: 1,
-          formDropDownTextField:
-              'name' // displayText of dropdownList for category. 'name' => a text field from the category table
+          formDropDownTextField: 'name' // displayText of dropdownList for category. 'name' => a text field from the category table
           ),
-      SqfEntityField('rownum', DbType.integer,
-          sequencedBy:
-              seqIdentity /*Example of linking a column to a sequence */),
+      SqfEntityField('rownum', DbType.integer, sequencedBy: seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
       SqfEntityField('datetime', DbType.datetime,
-          defaultValue: 'DateTime.now()',
-          minValue: '2019-01-01',
-          maxValue: 'DateTime.now().add(Duration(days: 30))'),
-      SqfEntityField('date', DbType.date,
-          minValue: '2015-01-01',
-          maxValue: 'DateTime.now().add(Duration(days: 365))')
+          isNotNull: true, defaultValue: 'DateTime.now()', minValue: '2019-01-01', maxValue: 'DateTime.now().add(Duration(days: 30))'),
+      SqfEntityField('date', DbType.date, minValue: '2015-01-01', maxValue: 'DateTime.now().add(Duration(days: 365))')
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
@@ -75,12 +66,11 @@ const tableTodo = SqfEntityTable(
     useSoftDeleting:
         false, // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
     primaryKeyType: PrimaryKeyType.integer_unique,
-    defaultJsonUrl:
-        'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
+    defaultJsonUrl: 'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
 
     // declare fields
     fields: [
-      SqfEntityField('userId', DbType.integer),
+      SqfEntityField('userId', DbType.integer, isIndex: true),
       SqfEntityField('title', DbType.text),
       SqfEntityField('completed', DbType.bool, defaultValue: false),
     ]);
@@ -103,9 +93,8 @@ const seqIdentity = SqfEntitySequence(
 @SqfEntityBuilder(myDbModel)
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
-    databaseName: 'sampleORM_v2.1.2+33.db',
-    password:
-        null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
+    databaseName: 'sampleORM_v2.1.2+38.db',
+    password: null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property
@@ -113,12 +102,14 @@ const myDbModel = SqfEntityModel(
     // put defined sequences into the sequences list.
     sequences: [seqIdentity],
     dbVersion: 2,
-    bundledDatabasePath: null, //         'assets/sample.db'
     // This value is optional. When bundledDatabasePath is empty then
     // EntityBase creats a new database when initializing the database
+    bundledDatabasePath: null, //         'assets/sample.db'
+    // This value is optional. When databasePath is null then
+    // EntityBase uses the default path from sqflite.getDatabasesPath()
+    databasePath: '/Volumes/Repo/MyProject/db',
     defaultColumns: [
-      SqfEntityField('dateCreated', DbType.datetime,
-          defaultValue: 'DateTime.now()'),
+      SqfEntityField('dateCreated', DbType.datetime, defaultValue: 'DateTime.now()'),
     ]);
 
 /* STEP 3: That's All.. 

@@ -18,28 +18,27 @@
 
 import 'dart:async' show Future;
 import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqfentity/sqfentity_connection_base.dart';
+import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-//import 'package:sqflite_common/sqlite_api.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 
 // BEGIN DATABASE CONNECTION
-class SqfEntityConnectionFfi implements SqfEntityConnectionBase {
-  SqfEntityConnectionFfi(this.connection);
+class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
+  SqfEntityConnectionFfi(SqfEntityConnection? connection) : super(connection);
 
   @override
   Future<void> writeDatabase(ByteData data) async {
     final List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     try {
-      sqfliteFfiInit();
       final databaseFactory = databaseFactoryFfi;
-      final dbpath = await databaseFactory.getDatabasesPath();
-      final path = '$dbpath/${connection!.databaseName}';
+      sqfliteFfiInit();
+      final path = join(
+          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          connection!.databaseName);
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
         if (File('$path-wal').existsSync()) {
@@ -59,10 +58,11 @@ class SqfEntityConnectionFfi implements SqfEntityConnectionBase {
     final lock = Lock();
     Database? _db;
     await lock.synchronized(() async {
-      sqfliteFfiInit();
       final databaseFactory = databaseFactoryFfi;
-      final databasesPath = await databaseFactory.getDatabasesPath();
-      final path = join(databasesPath, connection!.databaseName);
+      sqfliteFfiInit();
+      final path = join(
+          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          connection!.databaseName);
       final file = File(path);
 
       // check if file exists
@@ -86,8 +86,15 @@ class SqfEntityConnectionFfi implements SqfEntityConnectionBase {
 
       _db = await databaseFactory.openDatabase(path,
           options: OpenDatabaseOptions(
-              version: connection!.dbVersion, onCreate: createDb));
-
+            version: connection!.dbVersion,
+            onCreate: createDb,
+            onConfigure: (db) async {
+              if (connection!.password != null) {
+                //https://github.com/davidmartos96/sqflite_sqlcipher/issues/28
+                await db.rawQuery("PRAGMA KEY='${connection!.password!}'");
+              }
+            },
+          ));
       //  }
     });
     //}
@@ -104,7 +111,4 @@ class SqfEntityConnectionFfi implements SqfEntityConnectionBase {
     print(
         'Your database ${connection!.databaseName} v:$version created successfully');
   }
-
-  @override
-  SqfEntityConnection? connection;
 }

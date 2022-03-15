@@ -13,8 +13,7 @@ class ProductFilterWindowState extends State {
   ProductFilterWindowState();
 
   List<DropdownMenuItem<int>> _dropdownMenuItems = <DropdownMenuItem<int>>[];
-  int? _selectedCategoryId =
-      SearchFilterProduct.getValues.selectedCategoryId ?? 0;
+  int? _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
   int nameRadioValue = SearchFilterProduct.getValues.nameRadioValue ?? 1;
   bool? isActive = SearchFilterProduct.getValues.isActive ?? false;
   bool? isNotActive = SearchFilterProduct.getValues.isNotActive ?? false;
@@ -32,15 +31,6 @@ class ProductFilterWindowState extends State {
   // Option 2
   @override
   void initState() {
-    /*
-    _dropdownMenuItems = List<DropdownMenuItem<Category>>();
-    _dropdownMenuItems.add(DropdownMenuItem(
-      value: Category(),
-      child: Text('Select Category'),
-    ));
-    _selectedCategory = _dropdownMenuItems[0].value;
-*/
-
     txtName.text = SearchFilterProduct.getValues.txtNameText ?? '';
     txtDescription.text =
         SearchFilterProduct.getValues.descriptionContains ?? '';
@@ -64,7 +54,7 @@ class ProductFilterWindowState extends State {
           await Category().select().toDropDownMenuInt('name');
       setState(() {
         _dropdownMenuItems = dropdownMenuItems;
-        _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId!;
+        _selectedCategoryId = SearchFilterProduct.getValues.selectedCategoryId;
       });
     }
 
