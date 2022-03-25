@@ -667,9 +667,7 @@ class EmployeeAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtBirthDate.text = UITools.convertDate(sqfSelectedDate);
@@ -686,8 +684,7 @@ class EmployeeAddState extends State {
           },
               currentTime: DateTime.tryParse(txtBirthDate.text) ??
                   employee.BirthDate ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtBirthDate,
           decoration: InputDecoration(labelText: 'BirthDate'),
         ),
@@ -695,8 +692,7 @@ class EmployeeAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForBirthDate.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -714,8 +710,7 @@ class EmployeeAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForBirthDate.text}') ??
                     employee.BirthDate ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForBirthDate,
             decoration: InputDecoration(labelText: ''),
           ))
@@ -727,9 +722,7 @@ class EmployeeAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtHireDate.text = UITools.convertDate(sqfSelectedDate);
@@ -746,8 +739,7 @@ class EmployeeAddState extends State {
           },
               currentTime: DateTime.tryParse(txtHireDate.text) ??
                   employee.HireDate ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtHireDate,
           decoration: InputDecoration(labelText: 'HireDate'),
         ),
@@ -755,8 +747,7 @@ class EmployeeAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForHireDate.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -774,8 +765,7 @@ class EmployeeAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForHireDate.text}') ??
                     employee.HireDate ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForHireDate,
             decoration: InputDecoration(labelText: ''),
           ))
@@ -1132,9 +1122,7 @@ class InvoiceAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtInvoiceDate.text = UITools.convertDate(sqfSelectedDate);
@@ -1151,8 +1139,7 @@ class InvoiceAddState extends State {
           },
               currentTime: DateTime.tryParse(txtInvoiceDate.text) ??
                   invoice.InvoiceDate ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtInvoiceDate,
           decoration: InputDecoration(labelText: 'InvoiceDate'),
         ),
@@ -1160,8 +1147,7 @@ class InvoiceAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForInvoiceDate.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -1179,8 +1165,7 @@ class InvoiceAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForInvoiceDate.text}') ??
                     invoice.InvoiceDate ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForInvoiceDate,
             decoration: InputDecoration(labelText: ''),
           ))

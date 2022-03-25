@@ -228,9 +228,7 @@ class ProductAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('2019-01-01'),
               maxTime: DateTime.now().add(Duration(days: 30)),
               onConfirm: (sqfSelectedDate) {
@@ -248,8 +246,7 @@ class ProductAddState extends State {
           },
               currentTime: DateTime.tryParse(txtDatetime.text) ??
                   product.datetime ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter Datetime';
@@ -263,8 +260,7 @@ class ProductAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForDatetime.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -282,8 +278,7 @@ class ProductAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForDatetime.text}') ??
                     product.datetime ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForDatetime,
             decoration: InputDecoration(labelText: ''),
           ))
@@ -292,9 +287,7 @@ class ProductAddState extends State {
 
   Widget buildRowDate() {
     return TextFormField(
-      onTap: () => DatePicker.showDatePicker(context,
-          showTitleActions: true,
-          theme: UITools.mainDatePickerTheme,
+      onTap: () => UITools.showDateTimePicker(context,
           minTime: DateTime.parse('2015-01-01'),
           maxTime: DateTime.now().add(Duration(days: 365)),
           onConfirm: (sqfSelectedDate) {
@@ -303,9 +296,9 @@ class ProductAddState extends State {
           product.date = sqfSelectedDate;
         });
       },
-          currentTime:
-              DateTime.tryParse(txtDate.text) ?? product.date ?? DateTime.now(),
-          locale: UITools.mainDatePickerLocaleType),
+          currentTime: DateTime.tryParse(txtDate.text) ??
+              product.date ??
+              DateTime.now()),
       controller: txtDate,
       decoration: InputDecoration(labelText: 'Date'),
     );
@@ -316,9 +309,7 @@ class ProductAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
@@ -335,8 +326,7 @@ class ProductAddState extends State {
           },
               currentTime: DateTime.tryParse(txtDateCreated.text) ??
                   product.dateCreated ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtDateCreated,
           decoration: InputDecoration(labelText: 'DateCreated'),
         ),
@@ -344,8 +334,7 @@ class ProductAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -363,8 +352,7 @@ class ProductAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
                     product.dateCreated ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForDateCreated,
             decoration: InputDecoration(labelText: ''),
           ))
@@ -532,9 +520,7 @@ class CategoryAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
@@ -551,8 +537,7 @@ class CategoryAddState extends State {
           },
               currentTime: DateTime.tryParse(txtDateCreated.text) ??
                   category.dateCreated ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtDateCreated,
           decoration: InputDecoration(labelText: 'DateCreated'),
         ),
@@ -560,8 +545,7 @@ class CategoryAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -580,8 +564,7 @@ class CategoryAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
                     category.dateCreated ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForDateCreated,
             decoration: InputDecoration(labelText: ''),
           ))
@@ -758,9 +741,7 @@ class TodoAddState extends State {
       Expanded(
         flex: 1,
         child: TextFormField(
-          onTap: () => DatePicker.showDatePicker(context,
-              showTitleActions: true,
-              theme: UITools.mainDatePickerTheme,
+          onTap: () => UITools.showDateTimePicker(context,
               minTime: DateTime.parse('1900-01-01'),
               onConfirm: (sqfSelectedDate) {
             txtDateCreated.text = UITools.convertDate(sqfSelectedDate);
@@ -777,8 +758,7 @@ class TodoAddState extends State {
           },
               currentTime: DateTime.tryParse(txtDateCreated.text) ??
                   todos.dateCreated ??
-                  DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+                  DateTime.now()),
           controller: txtDateCreated,
           decoration: InputDecoration(labelText: 'DateCreated'),
         ),
@@ -786,8 +766,7 @@ class TodoAddState extends State {
       Expanded(
           flex: 1,
           child: TextFormField(
-            onTap: () => DatePicker.showTimePicker(context,
-                showTitleActions: true, theme: UITools.mainDatePickerTheme,
+            onTap: () => UITools.showDateTimePicker(context,
                 onConfirm: (sqfSelectedDate) {
               txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -805,8 +784,7 @@ class TodoAddState extends State {
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
                     todos.dateCreated ??
-                    DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                    DateTime.now()),
             controller: txtTimeForDateCreated,
             decoration: InputDecoration(labelText: ''),
           ))

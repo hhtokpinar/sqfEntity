@@ -1,4 +1,29 @@
-## 2.2.0+5
+## 2.2.0+7
+- Removed dependency of flutter_datetime_picker
+
+created UITools.showDateTimePicker() method to support another package using instead
+
+Just create a static method as follow to call from anywhere in UITools class and customize
+
+         static Future<DateTime?> showDateTimePicker(BuildContext context,
+                  {DateTime? currentTime,
+                  DateTime? minTime,
+                  DateTime? maxTime,
+                  DateChangedCallback? onChanged,
+                  DateChangedCallback? onConfirm,
+                  DateCancelledCallback? onCancel}) =>
+               DatePicker.showDatePicker(context,
+                  showTitleActions: true,
+                  minTime: minTime,
+                  maxTime: maxTime,
+                  onChanged: onChanged,
+                  onConfirm: onConfirm,
+                  onCancel: onCancel,
+                  locale: UITools.mainDatePickerLocaleType,
+                  currentTime: currentTime,
+                  theme: UITools.mainDatePickerTheme);
+
+## 2.2.0+6
 - Added databasePath parameter into dbModel
 
       const myDbModel = SqfEntityModel(

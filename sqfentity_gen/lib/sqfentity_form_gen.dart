@@ -453,7 +453,7 @@ class ${modelName}AddState extends State {
       case DbType.date:
         retVal.writeln('return TextFormField(');
         retVal.writeln(
-            '''onTap: () => DatePicker.showDatePicker(context, showTitleActions: true, theme: UITools.mainDatePickerTheme
+            '''onTap: () => UITools.showDateTimePicker(context
           ${_getNullableValueField(field.minValue, 'minTime')}
           ${_getNullableValueField(field.maxValue, 'maxTime')}
           , onConfirm: (sqfSelectedDate) {
@@ -461,13 +461,13 @@ class ${modelName}AddState extends State {
         setState(() {
           $tablename.${field.fieldName} = sqfSelectedDate;
         });
-      }, currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now(), locale: UITools.mainDatePickerLocaleType),
+      }, currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now()),
       ''');
         break;
       case DbType.datetime:
       case DbType.datetimeUtc:
         retVal.writeln(
-            '''return Row(children: <Widget>[Expanded(flex: 1, child: TextFormField(onTap: () => DatePicker.showDatePicker(context, showTitleActions: true, theme: UITools.mainDatePickerTheme
+            '''return Row(children: <Widget>[Expanded(flex: 1, child: TextFormField(onTap: () => UITools.showDateTimePicker(context
           ${_getNullableValueField(field.minValue, 'minTime')}
           ${_getNullableValueField(field.maxValue, 'maxTime')}
           , onConfirm: (sqfSelectedDate) {
@@ -478,14 +478,13 @@ class ${modelName}AddState extends State {
                 $tablename.${field.fieldName} = DateTime(sqfSelectedDate.year, sqfSelectedDate.month, sqfSelectedDate.day).add(Duration(hours: d.hour,minutes: d.minute,seconds: d.second));
             });
           },
-              currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now(),
-              locale: UITools.mainDatePickerLocaleType),
+              currentTime: DateTime.tryParse(txt$ccName.text) ?? $tablename.${field.fieldName} ?? DateTime.now()),
           ${field.isNotNull != null && field.isNotNull! ? 'validator: (value) { if (value == null || value.isEmpty) { return \'Please enter $ccName\'; } return null;},' : ''}
           controller: txt$ccName,
           decoration: InputDecoration(labelText: '$ccName'),
         ),
       ),
-      Expanded(flex: 1,child: TextFormField(onTap: () => DatePicker.showTimePicker(context,showTitleActions: true,theme: UITools.mainDatePickerTheme, 
+      Expanded(flex: 1,child: TextFormField(onTap: () => UITools.showDateTimePicker(context,
       onConfirm: (sqfSelectedDate) {
               txtTimeFor$ccName.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
@@ -494,8 +493,8 @@ class ${modelName}AddState extends State {
                 txt$ccName.text = UITools.convertDate($tablename.${field.fieldName}!);
               });
             },
-                currentTime: DateTime.tryParse('\${UITools.convertDate(DateTime.now())} \${txtTimeFor$ccName.text}') ?? $tablename.${field.fieldName} ?? DateTime.now(),
-                locale: UITools.mainDatePickerLocaleType),
+                currentTime: DateTime.tryParse('\${UITools.convertDate(DateTime.now())} \${txtTimeFor$ccName.text}') ?? $tablename.${field.fieldName} ?? DateTime.now()),
+               
             controller: txtTimeFor$ccName,
             decoration: InputDecoration(labelText: ''),
           ))
