@@ -12279,7 +12279,7 @@ class PlaylistTrack extends TableBase {
     final result = BoolResult(success: false);
     try {
       await _mnPlaylistTrack.rawInsert(
-          'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES ()',
+          'INSERT ${isSaved! ? 'OR REPLACE' : ''} INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
           toArgsWithIds(),
           ignoreBatch);
       result.success = true;
@@ -12314,7 +12314,7 @@ class PlaylistTrack extends TableBase {
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnPlaylistTrack.rawInsert(
-          'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES ()',
+          'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
           [TrackId, PlaylistId],
           ignoreBatch);
       if (result! > 0) {
@@ -12342,7 +12342,7 @@ class PlaylistTrack extends TableBase {
   @override
   Future<BoolCommitResult> upsertAll(List<PlaylistTrack> playlisttracks) async {
     final results = await _mnPlaylistTrack.rawInsertAll(
-        'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES ()',
+        'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
         playlisttracks);
     return results;
   }

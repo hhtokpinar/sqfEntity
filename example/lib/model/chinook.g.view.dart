@@ -712,7 +712,7 @@ class EmployeeAddState extends State {
                     employee.BirthDate ??
                     DateTime.now()),
             controller: txtTimeForBirthDate,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }
@@ -767,7 +767,7 @@ class EmployeeAddState extends State {
                     employee.HireDate ??
                     DateTime.now()),
             controller: txtTimeForHireDate,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }
@@ -1167,7 +1167,7 @@ class InvoiceAddState extends State {
                     invoice.InvoiceDate ??
                     DateTime.now()),
             controller: txtTimeForInvoiceDate,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }

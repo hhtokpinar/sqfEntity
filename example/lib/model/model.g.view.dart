@@ -280,7 +280,7 @@ class ProductAddState extends State {
                     product.datetime ??
                     DateTime.now()),
             controller: txtTimeForDatetime,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }
@@ -354,7 +354,7 @@ class ProductAddState extends State {
                     product.dateCreated ??
                     DateTime.now()),
             controller: txtTimeForDateCreated,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }
@@ -566,7 +566,7 @@ class CategoryAddState extends State {
                     category.dateCreated ??
                     DateTime.now()),
             controller: txtTimeForDateCreated,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }
@@ -786,7 +786,7 @@ class TodoAddState extends State {
                     todos.dateCreated ??
                     DateTime.now()),
             controller: txtTimeForDateCreated,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
   }

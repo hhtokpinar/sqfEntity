@@ -1126,8 +1126,8 @@ class ProductFilterBuilder extends ConjunctionBase {
 
   /// This method returns int. [Product]
   /// <returns>int
-  @override
-  Future<int> toCount([VoidCallback Function(int c)? productCount]) async {
+  
+  Future<void> toCount2([VoidCallback Function(int c)? productCount]) async {
     buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
     final productsFuture = await _mnProduct!.toList(qparams);
@@ -1135,7 +1135,7 @@ class ProductFilterBuilder extends ConjunctionBase {
     if (productCount != null) {
       productCount(count);
     }
-    return count;
+   // return count;
   }
 
   /// This method returns List<Product> [Product]
@@ -1317,6 +1317,12 @@ class ProductFilterBuilder extends ConjunctionBase {
       listString(objectsData);
     }
     return objectsData;
+  }
+
+  @override
+  Future<int> toCount() {
+    // TODO: implement toCount
+    throw UnimplementedError();
   }
 }
 // endregion ProductFilterBuilder

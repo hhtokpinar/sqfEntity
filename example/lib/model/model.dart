@@ -106,7 +106,9 @@ const myDbModel = SqfEntityModel(
     bundledDatabasePath: null, //         'assets/sample.db'
     // This value is optional. When databasePath is null then
     // EntityBase uses the default path from sqflite.getDatabasesPath()
-    databasePath: '/Volumes/Repo/MyProject/db',
+    // If you want to set a physically path just set a directory like: '/Volumes/Repo/MyProject/db',
+    databasePath: null,
+                
     defaultColumns: [
       SqfEntityField('dateCreated', DbType.datetime, defaultValue: 'DateTime.now()'),
     ]);

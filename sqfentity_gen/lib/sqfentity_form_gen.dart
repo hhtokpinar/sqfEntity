@@ -496,7 +496,7 @@ class ${modelName}AddState extends State {
                 currentTime: DateTime.tryParse('\${UITools.convertDate(DateTime.now())} \${txtTimeFor$ccName.text}') ?? $tablename.${field.fieldName} ?? DateTime.now()),
                
             controller: txtTimeFor$ccName,
-            decoration: InputDecoration(labelText: ''),
+            decoration: InputDecoration(labelText: 'time'),
           ))
     ]);
 }''');
