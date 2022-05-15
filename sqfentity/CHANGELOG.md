@@ -1,3 +1,8 @@
+## 2.2.0+6
+- Added optional parameters into saveAll method for batchCommit 
+
+   saveAll({bool? exclusive, bool? noResult, bool? continueOnError})
+
 ## 2.2.0+5
 - Added databasePath parameter into dbModel
 

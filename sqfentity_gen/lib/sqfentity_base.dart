@@ -1495,7 +1495,7 @@ class SqfEntityObjectBuilder {
   
     /// saveAll method saves the sent List<${_table.modelName}> as a bulk in one transaction 
     /// Returns a <List<BoolResult>>
-    static Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
+    static Future<List<dynamic>> saveAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}, {bool? exclusive, bool? noResult, bool? continueOnError}) async {
       List<dynamic>? result = [];
       // If there is no open transaction, start one
       final isStartedBatch = await ${_table.dbModel}().batchStart();
@@ -1504,7 +1504,7 @@ class SqfEntityObjectBuilder {
              await obj.save(${_table.primaryKeyTypes[0].startsWith('int') && _table.primaryKeyNames.length == 1 ? 'ignoreBatch: false' : ''}); 
           }
     if (!isStartedBatch) {
-     result =await ${_table.dbModel}().batchCommit();
+     result =await ${_table.dbModel}().batchCommit(exclusive: exclusive, noResult: noResult, continueOnError: continueOnError);
     ${_table.primaryKeyType == PrimaryKeyType.integer_auto_incremental ? '''
     for (int i = 0; i < ${toPluralName(_table._modelLowerCase)}.length; i++) {
       if(${toPluralName(_table._modelLowerCase)}[i].${_table.primaryKeyNames[0]} == null) { 

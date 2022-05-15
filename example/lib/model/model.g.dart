@@ -641,7 +641,8 @@ class Product extends TableBase {
 
   /// saveAll method saves the sent List<Product> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Product> products) async {
+  static Future<List<dynamic>> saveAll(List<Product> products,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await MyDbModel().batchStart();
@@ -649,7 +650,10 @@ class Product extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await MyDbModel().batchCommit();
+      result = await MyDbModel().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < products.length; i++) {
         if (products[i].id == null) {
           products[i].id = result![i] as int;
@@ -1126,8 +1130,8 @@ class ProductFilterBuilder extends ConjunctionBase {
 
   /// This method returns int. [Product]
   /// <returns>int
-  
-  Future<void> toCount2([VoidCallback Function(int c)? productCount]) async {
+  @override
+  Future<int> toCount([VoidCallback Function(int c)? productCount]) async {
     buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
     final productsFuture = await _mnProduct!.toList(qparams);
@@ -1135,7 +1139,7 @@ class ProductFilterBuilder extends ConjunctionBase {
     if (productCount != null) {
       productCount(count);
     }
-   // return count;
+    return count;
   }
 
   /// This method returns List<Product> [Product]
@@ -1317,12 +1321,6 @@ class ProductFilterBuilder extends ConjunctionBase {
       listString(objectsData);
     }
     return objectsData;
-  }
-
-  @override
-  Future<int> toCount() {
-    // TODO: implement toCount
-    throw UnimplementedError();
   }
 }
 // endregion ProductFilterBuilder
@@ -1721,7 +1719,8 @@ class Category extends TableBase {
 
   /// saveAll method saves the sent List<Category> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Category> categories) async {
+  static Future<List<dynamic>> saveAll(List<Category> categories,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await MyDbModel().batchStart();
@@ -1729,7 +1728,10 @@ class Category extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await MyDbModel().batchCommit();
+      result = await MyDbModel().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < categories.length; i++) {
         if (categories[i].id == null) {
           categories[i].id = result![i] as int;
@@ -2673,7 +2675,8 @@ class Todo extends TableBase {
 
   /// saveAll method saves the sent List<Todo> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Todo> todos) async {
+  static Future<List<dynamic>> saveAll(List<Todo> todos,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await MyDbModel().batchStart();
@@ -2681,7 +2684,10 @@ class Todo extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await MyDbModel().batchCommit();
+      result = await MyDbModel().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
     }
     return result!;
   }

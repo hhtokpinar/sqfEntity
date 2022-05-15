@@ -730,7 +730,8 @@ class Album extends TableBase {
 
   /// saveAll method saves the sent List<Album> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Album> albums) async {
+  static Future<List<dynamic>> saveAll(List<Album> albums,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -738,7 +739,10 @@ class Album extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < albums.length; i++) {
         if (albums[i].AlbumId == null) {
           albums[i].AlbumId = result![i] as int;
@@ -1659,7 +1663,8 @@ class Artist extends TableBase {
 
   /// saveAll method saves the sent List<Artist> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Artist> artists) async {
+  static Future<List<dynamic>> saveAll(List<Artist> artists,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -1667,7 +1672,10 @@ class Artist extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < artists.length; i++) {
         if (artists[i].ArtistId == null) {
           artists[i].ArtistId = result![i] as int;
@@ -2795,7 +2803,8 @@ class Customer extends TableBase {
 
   /// saveAll method saves the sent List<Customer> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Customer> customers) async {
+  static Future<List<dynamic>> saveAll(List<Customer> customers,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -2803,7 +2812,10 @@ class Customer extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < customers.length; i++) {
         if (customers[i].CustomerId == null) {
           customers[i].CustomerId = result![i] as int;
@@ -4180,7 +4192,8 @@ class Employee extends TableBase {
 
   /// saveAll method saves the sent List<Employee> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Employee> employees) async {
+  static Future<List<dynamic>> saveAll(List<Employee> employees,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -4188,7 +4201,10 @@ class Employee extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < employees.length; i++) {
         if (employees[i].EmployeeId == null) {
           employees[i].EmployeeId = result![i] as int;
@@ -5297,7 +5313,8 @@ class Genre extends TableBase {
 
   /// saveAll method saves the sent List<Genre> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Genre> genres) async {
+  static Future<List<dynamic>> saveAll(List<Genre> genres,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -5305,7 +5322,10 @@ class Genre extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < genres.length; i++) {
         if (genres[i].GenreId == null) {
           genres[i].GenreId = result![i] as int;
@@ -6386,7 +6406,8 @@ class Invoice extends TableBase {
 
   /// saveAll method saves the sent List<Invoice> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Invoice> invoices) async {
+  static Future<List<dynamic>> saveAll(List<Invoice> invoices,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -6394,7 +6415,10 @@ class Invoice extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < invoices.length; i++) {
         if (invoices[i].InvoiceId == null) {
           invoices[i].InvoiceId = result![i] as int;
@@ -7475,7 +7499,8 @@ class InvoiceLine extends TableBase {
 
   /// saveAll method saves the sent List<InvoiceLine> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines) async {
+  static Future<List<dynamic>> saveAll(List<InvoiceLine> invoicelines,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -7483,7 +7508,10 @@ class InvoiceLine extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < invoicelines.length; i++) {
         if (invoicelines[i].InvoiceLineId == null) {
           invoicelines[i].InvoiceLineId = result![i] as int;
@@ -8410,7 +8438,8 @@ class MediaType extends TableBase {
 
   /// saveAll method saves the sent List<MediaType> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<MediaType> mediatypes) async {
+  static Future<List<dynamic>> saveAll(List<MediaType> mediatypes,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -8418,7 +8447,10 @@ class MediaType extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < mediatypes.length; i++) {
         if (mediatypes[i].MediaTypeId == null) {
           mediatypes[i].MediaTypeId = result![i] as int;
@@ -9324,7 +9356,8 @@ class Playlist extends TableBase {
 
   /// saveAll method saves the sent List<Playlist> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Playlist> playlists) async {
+  static Future<List<dynamic>> saveAll(List<Playlist> playlists,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -9332,7 +9365,10 @@ class Playlist extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < playlists.length; i++) {
         if (playlists[i].PlaylistId == null) {
           playlists[i].PlaylistId = result![i] as int;
@@ -10529,7 +10565,8 @@ class Track extends TableBase {
 
   /// saveAll method saves the sent List<Track> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Track> tracks) async {
+  static Future<List<dynamic>> saveAll(List<Track> tracks,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -10537,7 +10574,10 @@ class Track extends TableBase {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
       for (int i = 0; i < tracks.length; i++) {
         if (tracks[i].TrackId == null) {
           tracks[i].TrackId = result![i] as int;
@@ -12294,8 +12334,8 @@ class PlaylistTrack extends TableBase {
 
   /// saveAll method saves the sent List<PlaylistTrack> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(
-      List<PlaylistTrack> playlisttracks) async {
+  static Future<List<dynamic>> saveAll(List<PlaylistTrack> playlisttracks,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await Chinookdb().batchStart();
@@ -12303,7 +12343,10 @@ class PlaylistTrack extends TableBase {
       await obj.save();
     }
     if (!isStartedBatch) {
-      result = await Chinookdb().batchCommit();
+      result = await Chinookdb().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
     }
     return result!;
   }

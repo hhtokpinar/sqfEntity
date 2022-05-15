@@ -1,3 +1,8 @@
+## 2.2.0+11
+- Added optional parameters into saveAll method for batchCommit 
+
+   saveAll({bool? exclusive, bool? noResult, bool? continueOnError})
+
 ## 2.2.0+8
 - Removed dependency of flutter_datetime_picker
 
