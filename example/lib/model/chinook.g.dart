@@ -783,10 +783,14 @@ class Album extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Album> albums) async {
+  Future<BoolCommitResult> upsertAll(List<Album> albums,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnAlbum.rawInsertAll(
         'INSERT OR REPLACE INTO Album (AlbumId, Title, ArtistId)  VALUES (?,?,?)',
-        albums);
+        albums,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -1716,10 +1720,13 @@ class Artist extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Artist> artists) async {
+  Future<BoolCommitResult> upsertAll(List<Artist> artists,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnArtist.rawInsertAll(
-        'INSERT OR REPLACE INTO Artist (ArtistId, Name)  VALUES (?,?)',
-        artists);
+        'INSERT OR REPLACE INTO Artist (ArtistId, Name)  VALUES (?,?)', artists,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -2871,10 +2878,14 @@ class Customer extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Customer> customers) async {
+  Future<BoolCommitResult> upsertAll(List<Customer> customers,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnCustomer.rawInsertAll(
         'INSERT OR REPLACE INTO Customer (CustomerId, FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        customers);
+        customers,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -4262,10 +4273,14 @@ class Employee extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Employee> employees) async {
+  Future<BoolCommitResult> upsertAll(List<Employee> employees,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnEmployee.rawInsertAll(
         'INSERT OR REPLACE INTO Employee (EmployeeId, LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email, ReportsTo)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        employees);
+        employees,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -5366,9 +5381,13 @@ class Genre extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Genre> genres) async {
+  Future<BoolCommitResult> upsertAll(List<Genre> genres,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnGenre.rawInsertAll(
-        'INSERT OR REPLACE INTO Genre (GenreId, Name)  VALUES (?,?)', genres);
+        'INSERT OR REPLACE INTO Genre (GenreId, Name)  VALUES (?,?)', genres,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -6470,10 +6489,14 @@ class Invoice extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Invoice> invoices) async {
+  Future<BoolCommitResult> upsertAll(List<Invoice> invoices,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnInvoice.rawInsertAll(
         'INSERT OR REPLACE INTO Invoice (InvoiceId, InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total, CustomerId)  VALUES (?,?,?,?,?,?,?,?,?)',
-        invoices);
+        invoices,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -7554,10 +7577,14 @@ class InvoiceLine extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<InvoiceLine> invoicelines) async {
+  Future<BoolCommitResult> upsertAll(List<InvoiceLine> invoicelines,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnInvoiceLine.rawInsertAll(
         'INSERT OR REPLACE INTO InvoiceLine (InvoiceLineId, UnitPrice, Quantity, TrackId, InvoiceId)  VALUES (?,?,?,?,?)',
-        invoicelines);
+        invoicelines,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -8492,10 +8519,14 @@ class MediaType extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<MediaType> mediatypes) async {
+  Future<BoolCommitResult> upsertAll(List<MediaType> mediatypes,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnMediaType.rawInsertAll(
         'INSERT OR REPLACE INTO MediaType (MediaTypeId, Name)  VALUES (?,?)',
-        mediatypes);
+        mediatypes,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -9410,10 +9441,14 @@ class Playlist extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Playlist> playlists) async {
+  Future<BoolCommitResult> upsertAll(List<Playlist> playlists,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnPlaylist.rawInsertAll(
         'INSERT OR REPLACE INTO Playlist (PlaylistId, Name)  VALUES (?,?)',
-        playlists);
+        playlists,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -10628,10 +10663,14 @@ class Track extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Track> tracks) async {
+  Future<BoolCommitResult> upsertAll(List<Track> tracks,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnTrack.rawInsertAll(
         'INSERT OR REPLACE INTO Track (TrackId, Name, Composer, Milliseconds, Bytes, UnitPrice, MediaTypeId, GenreId, AlbumId)  VALUES (?,?,?,?,?,?,?,?,?)',
-        tracks);
+        tracks,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -12383,10 +12422,14 @@ class PlaylistTrack extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<PlaylistTrack> playlisttracks) async {
+  Future<BoolCommitResult> upsertAll(List<PlaylistTrack> playlisttracks,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnPlaylistTrack.rawInsertAll(
         'INSERT OR REPLACE INTO PlaylistTrack ( TrackId, PlaylistId)  VALUES (?,?)',
-        playlisttracks);
+        playlisttracks,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 

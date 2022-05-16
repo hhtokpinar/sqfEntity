@@ -1524,9 +1524,9 @@ class SqfEntityObjectBuilder {
     /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
     /// Returns a BoolCommitResult 
     @override
-    Future<BoolCommitResult> ${_hiddenMethod}upsertAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}) async {
+    Future<BoolCommitResult> ${_hiddenMethod}upsertAll(List<${_table.modelName}> ${toPluralName(_table._modelLowerCase)}, {bool? exclusive, bool? noResult, bool? continueOnError}) async {
       final results = await _mn${_table.modelName}.rawInsertAll(
-          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', ${toPluralName(_table._modelLowerCase)});
+          'INSERT OR REPLACE INTO ${_table.tableName} (${_table.createConstructureWithId.replaceAll('this.', '')})  VALUES ($_createConstructureArgsWithId)', ${toPluralName(_table._modelLowerCase)},exclusive: exclusive, noResult: noResult, continueOnError: continueOnError);
       return results;
     }''';
   }

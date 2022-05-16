@@ -706,10 +706,14 @@ class Product extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Product> products) async {
+  Future<BoolCommitResult> upsertAll(List<Product> products,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnProduct.rawInsertAll(
         'INSERT OR REPLACE INTO product (id, name, description, price, isActive, categoryId, rownum, imageUrl, datetime, date, dateCreated,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-        products);
+        products,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -1776,10 +1780,14 @@ class Category extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Category> categories) async {
+  Future<BoolCommitResult> upsertAll(List<Category> categories,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnCategory.rawInsertAll(
         'INSERT OR REPLACE INTO category (id, name, isActive, dateCreated)  VALUES (?,?,?,?)',
-        categories);
+        categories,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 
@@ -2727,10 +2735,14 @@ class Todo extends TableBase {
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Todo> todos) async {
+  Future<BoolCommitResult> upsertAll(List<Todo> todos,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     final results = await _mnTodo.rawInsertAll(
         'INSERT OR REPLACE INTO todos (id, userId, title, completed, dateCreated)  VALUES (?,?,?,?,?)',
-        todos);
+        todos,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
     return results;
   }
 

@@ -1,3 +1,6 @@
+## 2.2.0+12
+- Added optional parameters into upsertAll method for batchCommit 
+
 ## 2.2.0+11
 - Added optional parameters into saveAll method for batchCommit 
 
