@@ -56,7 +56,7 @@ Some files in the project:
 
 ## dependencies:
 Note: You do not need **flutter_datetime_picker** if you do not want to use the Form Generator property
-
+```yaml
     dependencies:
       flutter_datetime_picker: ^1.2.8  
       sqfentity: ^1.2.3
@@ -66,7 +66,7 @@ Note: You do not need **flutter_datetime_picker** if you do not want to use the 
     dev_dependencies:
       build_runner: ^1.6.5
       build_verify: ^1.1.0
-
+```
 
 ### REQUIRED (sqlcipher for Android)
 Flutter now enables code shrinking by default when building an APK in release mode, so you need to add the following ProGuard rules to the file android/app/proguard-rules.pro. If it does not exist, create it:
@@ -80,7 +80,7 @@ First, You need to:
 1. Copy these two files into your /lib/model folder: [view.list.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/model/view.list.dart) and [view.detail.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/model/view.detail.dart)
 2. And copy this file [helper.dart](https://github.com/hhtokpinar/sqfEntity/blob/master/example/lib/tools/helper.dart) into your /lib/tools folder
 3. Create your **model.dart** file in **lib/model/** folder to define your model and import sqfentity and other necessary packages
-
+```dart
        import 'dart:convert';
        import 'dart:typed_data';
        import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -90,13 +90,13 @@ First, You need to:
        import 'package:sqfentity_gen/sqfentity_gen.dart';
        import '../tools/helper.dart';
        import 'view.list.dart';
-
+```
 
 4. Write the following statement for the file to be created 
-
+```dart
        part 'model.g.dart';
        part 'model.g.view.dart'; // you do not need this part if you do not want to use the Form Generator property
-    
+```
 
 Our model file is ready to use. Define your tables as shown in the example below.
 
@@ -106,7 +106,7 @@ Our model file is ready to use. Define your tables as shown in the example below
 
 *Table 1: Category*  
 
-   
+```dart   
     // Define the 'tableCategory' constant as SqfEntityTable for the category table.
     const tableCategory = SqfEntityTable(
       tableName: 'category',
@@ -119,7 +119,7 @@ Our model file is ready to use. Define your tables as shown in the example below
         SqfEntityField('isActive', DbType.bool, defaultValue: true),
       ]
     );
-
+```
 
 If **useSoftDeleting** is true then, The builder engine creates a field named "isDeleted" on the table.
 When item was deleted then this field value is changed to "1"  (does not hard delete)
@@ -127,7 +127,7 @@ in this case it is possible to recover a deleted item using the recover() method
 If the **modelName** (class name) is null then EntityBase uses TableName instead of modelName
 
 *Table 2: Product*
-      
+```dart      
     // Define the 'tableProduct' constant as SqfEntityTable for the product table.
     const tableProduct = SqfEntityTable(
       tableName: 'product',
@@ -149,7 +149,7 @@ If the **modelName** (class name) is null then EntityBase uses TableName instead
                 seqIdentity /*Example of linking a column to a sequence */),
         SqfEntityField('imageUrl', DbType.text)
     ]);
-
+```
 
 If this table (Product) is the child of a parent table (Category), you must declare the SqfEntityFieldRelationship column into fields for Object Relational Mapping.
 You can choose one of the following for DeleteRule: **CASCADE, NO ACTION, SET NULL, SET DEFAULT VALUE**
@@ -158,7 +158,7 @@ For more information about the rules [Click here](https://www.mssqltips.com/sqls
 *Table 3: Todo*
 
 This table is for creating a synchronization with json data from the web url
-
+```dart
     const tableTodo = SqfEntityTable(
       tableName: 'todos',
       primaryKeyName: 'id',
@@ -173,11 +173,11 @@ This table is for creating a synchronization with json data from the web url
         SqfEntityField('title', DbType.text),
         SqfEntityField('completed', DbType.bool, defaultValue: false)
     ]);
-
+```
 
 
 *And add a Sequence for samples*
-
+```dart
     const seqIdentity = SqfEntitySequence(
       sequenceName: 'identity',
       // maxValue:  10000, /* optional. default is max int (9.223.372.036.854.775.807) */
@@ -188,9 +188,9 @@ This table is for creating a synchronization with json data from the web url
       // incrementBy = 1; /* optional. default is 1 */
       // startWith = 0;   /* optional. default is 0 */
     );
-
+```
 *And add a View for samples*
-
+```dart
         const tableV_tracks = SqfEntityTable(
             tableName: 'VTracks',
             objectType: ObjectType.view,
@@ -217,13 +217,13 @@ This table is for creating a synchronization with json data from the web url
         INNER JOIN mediatype ON mediatype.MediaTypeId = track.MediaTypeId
         INNER JOIN genre ON genre.GenreId = track.GenreId''',
         );
-
+```
 ### 2. Add your table objects you defined above to your dbModel
 
 **STEP 2**: Create your Database Model to be instanced from SqfEntityModel
 *Note:* SqfEntity provides support for the use of **multiple databases**.
 So you can create many Database Models and use them in your application.
-
+```dart
     @SqfEntityBuilder(myDbModel)
     const myDbModel = SqfEntityModel(
         modelName: 'MyDbModel', // optional
@@ -240,12 +240,12 @@ So you can create many Database Models and use them in your application.
         bundledDatabasePath:
             null // 'assets/sample.db' // This value is optional. When bundledDatabasePath is empty then EntityBase creats a new database when initializing the database
     );
-
+```dart
 That's all.. one more step left for create models.dart file.
 Go Terminal Window and run command below
-
+```bash
     flutter pub run build_runner build --delete-conflicting-outputs
-
+```
 After running the command Please check lib/model/model.g.dart and lib/model/model.g.view.dart (If formTables parameter is defined in the model)
 
 
@@ -258,11 +258,11 @@ After running the command Please check lib/model/model.g.dart and lib/model/mode
 *STEP 1*
 
 Copy your existing database in /assets folder (in this sample we have copied chinook.sqlite database) and define your asset database in pubspec.yaml as below
-
+```yaml
     flutter:
       assets:
         - assets/chinook.sqlite
-
+```
 
 *STEP 2*
 
@@ -271,38 +271,38 @@ Run this script with this parameters.
 **databaseName:** Specify a name for your database to use for the database connection
 
 **bundledDatabasePath:** File path of your copied database
-
+```dart
     class BundledDbModel extends SqfEntityModelProvider {}
 
     final bundledDbModel = await convertDatabaseToModelBase(BundledDbModel()
     ..databaseName = 'chinook.db'
     ..bundledDatabasePath = 'assets/chinook.sqlite');
-
+```
 
 *STEP 3*
 
 Run this function to convert the model to annotation
-
+```dart
     final String modelConstString =
         SqfEntityConverter(bundledDbModel).createConstDatabase();
-  
+```  
 That's all. Set clipboard to paste codes
-
+```dart
       await Clipboard.setData(ClipboardData(text: modelConstString));
-
+```
 
 Model were created succesfuly and set to the Clipboard. 
 
 
 Open model.dart file in lib/model folder and paste models after following line
-
+```dart
     part 'model.g.dart';
-
+```
 
 Go Terminal Window and run command below
-
+```bash
     flutter pub run build_runner build --delete-conflicting-outputs
-
+```
 Your Entity models will be created in lib/model/model.g.dart
 
 Note: You can see this sample import in the createModelFromDatabaseSample() function in main.dart
@@ -315,39 +315,39 @@ Note: You can see this sample import in the createModelFromDatabaseSample() func
 ### Database initializer async method
 When the application was initialize, initializeDB() method is performed automatically
 initilizeDb method runs that CREATE TABLE / ALTER TABLE ADD COLUMN queries for you.
-
+```dart
     void main(List<String> args) async {
         runSamples();
         // If the database is not initialized, something went wrong. Check DEBUG CONSOLE for alerts
       }
     }
-    
+```    
 
 ## That's Great! now we can use our created new models
 
 Let's add some record to the "Category" table
 
 *Note: save() method returns the primary id of the added record*
-
+```dart
     final notebookCategoryId = await Category(name: "Notebooks", isActive: true).save();
     
     // or another way to define a category is Category.withField
     final ultrabookCategoryId = await Category.withFields("Ultrabooks", true, false).save();
-
+```
 
 ## Let's add some record to the "Product" table
 
 You can add record as follow:
-
+```dart
     final product = Product();
     product.name = "Notebook 12\"";
     product.description = "128 GB SSD i7";
     product.price = 6899;
     product.categoryId = notebookCategoryId;
     await product.save();
-    
+```
 You can also add records quickly as follows:
-
+```dart
     await Product.withFields( "Notebook 12\"", "128 GB SSD i7", 6899, true, notebookCategoryId, 0, false).save();
     await Product.withFields( "Notebook 12\"", "256 GB SSD i7", 8244, true, notebookCategoryId, 0, false).save();
     await Product.withFields( "Notebook 12\"", "512 GB SSD i7", 9214, true, notebookCategoryId, 0, false).save();
@@ -364,19 +364,19 @@ You can also add records quickly as follows:
     await Product.withFields( "Ultrabook 15\"", "128 GB SSD i7", 11000, true, ultrabookCategoryId, 0, false).save();
     await Product.withFields( "Ultrabook 15\"", "256 GB SSD i7", 12000, true, ultrabookCategoryId, 0, false).save();
     await Product.withFields( "Ultrabook 15\"", "512 GB SSD i7", 14000, true, ultrabookCategoryId, 0, false).save();
-
+```
 ### See sample usage of sqf below
 
 
 To run this statement "SELECT * FROM PRODUCTS"
 Try below: 
-      
+```dart      
     final productList = await Product().select().toList();
     
     for (int i = 0; i < productList.length; i++) {
         print(productList[i].toMap());
     }
-
+```
        
 To run this statement "SELECT * FROM PRODUCTS WHERE id=5"
 There are two way for this statement 
