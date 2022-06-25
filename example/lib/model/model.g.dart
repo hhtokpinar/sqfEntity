@@ -244,22 +244,13 @@ class Product extends TableBase {
       imageUrl = o['imageUrl'].toString();
     }
     if (o['datetime'] != null) {
-      datetime = int.tryParse(o['datetime'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['datetime'].toString())!)
-          : DateTime.tryParse(o['datetime'].toString());
+      datetime = tryParseDateTime(o['datetime']!.toString());
     }
     if (o['date'] != null) {
-      date = int.tryParse(o['date'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['date'].toString())!)
-          : DateTime.tryParse(o['date'].toString());
+      date = tryParseDate(o['date']!.toString());
     }
     if (o['dateCreated'] != null) {
-      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['dateCreated'].toString())!)
-          : DateTime.tryParse(o['dateCreated'].toString());
+      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
     }
     isDeleted = o['isDeleted'] != null
         ? o['isDeleted'] == 1 || o['isDeleted'] == true
@@ -344,30 +335,17 @@ class Product extends TableBase {
       map['imageUrl'] = imageUrl;
     }
     if (datetime != null) {
-      map['datetime'] = forJson
-          ? datetime!.toString()
-          : forQuery
-              ? datetime!.millisecondsSinceEpoch
-              : datetime;
+      map['datetime'] = defaultDateTimeFormat.format(datetime!);
     } else if (datetime != null || !forView) {
       map['datetime'] = null;
     }
     if (date != null) {
-      map['date'] = forJson
-          ? '$date!.year-$date!.month-$date!.day'
-          : forQuery
-              ? DateTime(date!.year, date!.month, date!.day)
-                  .millisecondsSinceEpoch
-              : date;
+      map['date'] = defaultDateFormat.format(date!);
     } else if (date != null || !forView) {
       map['date'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -415,30 +393,17 @@ class Product extends TableBase {
       map['imageUrl'] = imageUrl;
     }
     if (datetime != null) {
-      map['datetime'] = forJson
-          ? datetime!.toString()
-          : forQuery
-              ? datetime!.millisecondsSinceEpoch
-              : datetime;
+      map['datetime'] = defaultDateTimeFormat.format(datetime!);
     } else if (datetime != null || !forView) {
       map['datetime'] = null;
     }
     if (date != null) {
-      map['date'] = forJson
-          ? '$date!.year-$date!.month-$date!.day'
-          : forQuery
-              ? DateTime(date!.year, date!.month, date!.day)
-                  .millisecondsSinceEpoch
-              : date;
+      map['date'] = defaultDateFormat.format(date!);
     } else if (date != null || !forView) {
       map['date'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -1441,10 +1406,7 @@ class Category extends TableBase {
           o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
     }
     if (o['dateCreated'] != null) {
-      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['dateCreated'].toString())!)
-          : DateTime.tryParse(o['dateCreated'].toString());
+      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
     }
   }
   // FIELDS (Category)
@@ -1497,11 +1459,7 @@ class Category extends TableBase {
       map['isActive'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -1525,11 +1483,7 @@ class Category extends TableBase {
       map['isActive'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -2438,10 +2392,7 @@ class Todo extends TableBase {
           o['completed'].toString() == 'true';
     }
     if (o['dateCreated'] != null) {
-      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['dateCreated'].toString())!)
-          : DateTime.tryParse(o['dateCreated'].toString());
+      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
     }
 
     isSaved = true;
@@ -2480,11 +2431,7 @@ class Todo extends TableBase {
       map['completed'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -2511,11 +2458,7 @@ class Todo extends TableBase {
       map['completed'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = forJson
-          ? dateCreated!.toString()
-          : forQuery
-              ? dateCreated!.millisecondsSinceEpoch
-              : dateCreated;
+      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }

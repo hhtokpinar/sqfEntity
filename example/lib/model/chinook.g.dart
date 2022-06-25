@@ -3689,16 +3689,10 @@ class Employee extends TableBase {
       Title = o['Title'].toString();
     }
     if (o['BirthDate'] != null) {
-      BirthDate = int.tryParse(o['BirthDate'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['BirthDate'].toString())!)
-          : DateTime.tryParse(o['BirthDate'].toString());
+      BirthDate = tryParseDateTime(o['BirthDate']!.toString());
     }
     if (o['HireDate'] != null) {
-      HireDate = int.tryParse(o['HireDate'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['HireDate'].toString())!)
-          : DateTime.tryParse(o['HireDate'].toString());
+      HireDate = tryParseDateTime(o['HireDate']!.toString());
     }
     if (o['Address'] != null) {
       Address = o['Address'].toString();
@@ -3825,20 +3819,12 @@ class Employee extends TableBase {
       map['Title'] = Title;
     }
     if (BirthDate != null) {
-      map['BirthDate'] = forJson
-          ? BirthDate!.toString()
-          : forQuery
-              ? BirthDate!.millisecondsSinceEpoch
-              : BirthDate;
+      map['BirthDate'] = defaultDateTimeFormat.format(BirthDate!);
     } else if (BirthDate != null || !forView) {
       map['BirthDate'] = null;
     }
     if (HireDate != null) {
-      map['HireDate'] = forJson
-          ? HireDate!.toString()
-          : forQuery
-              ? HireDate!.millisecondsSinceEpoch
-              : HireDate;
+      map['HireDate'] = defaultDateTimeFormat.format(HireDate!);
     } else if (HireDate != null || !forView) {
       map['HireDate'] = null;
     }
@@ -3896,20 +3882,12 @@ class Employee extends TableBase {
       map['Title'] = Title;
     }
     if (BirthDate != null) {
-      map['BirthDate'] = forJson
-          ? BirthDate!.toString()
-          : forQuery
-              ? BirthDate!.millisecondsSinceEpoch
-              : BirthDate;
+      map['BirthDate'] = defaultDateTimeFormat.format(BirthDate!);
     } else if (BirthDate != null || !forView) {
       map['BirthDate'] = null;
     }
     if (HireDate != null) {
-      map['HireDate'] = forJson
-          ? HireDate!.toString()
-          : forQuery
-              ? HireDate!.millisecondsSinceEpoch
-              : HireDate;
+      map['HireDate'] = defaultDateTimeFormat.format(HireDate!);
     } else if (HireDate != null || !forView) {
       map['HireDate'] = null;
     }
@@ -6027,10 +6005,7 @@ class Invoice extends TableBase {
     }
     InvoiceId = int.tryParse(o['InvoiceId'].toString());
     if (o['InvoiceDate'] != null) {
-      InvoiceDate = int.tryParse(o['InvoiceDate'].toString()) != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              int.tryParse(o['InvoiceDate'].toString())!)
-          : DateTime.tryParse(o['InvoiceDate'].toString());
+      InvoiceDate = tryParseDateTime(o['InvoiceDate']!.toString());
     }
     if (o['BillingAddress'] != null) {
       BillingAddress = o['BillingAddress'].toString();
@@ -6119,11 +6094,7 @@ class Invoice extends TableBase {
     final map = <String, dynamic>{};
     map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
-      map['InvoiceDate'] = forJson
-          ? InvoiceDate!.toString()
-          : forQuery
-              ? InvoiceDate!.millisecondsSinceEpoch
-              : InvoiceDate;
+      map['InvoiceDate'] = defaultDateTimeFormat.format(InvoiceDate!);
     } else if (InvoiceDate != null || !forView) {
       map['InvoiceDate'] = null;
     }
@@ -6166,11 +6137,7 @@ class Invoice extends TableBase {
     final map = <String, dynamic>{};
     map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
-      map['InvoiceDate'] = forJson
-          ? InvoiceDate!.toString()
-          : forQuery
-              ? InvoiceDate!.millisecondsSinceEpoch
-              : InvoiceDate;
+      map['InvoiceDate'] = defaultDateTimeFormat.format(InvoiceDate!);
     } else if (InvoiceDate != null || !forView) {
       map['InvoiceDate'] = null;
     }

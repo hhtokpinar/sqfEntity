@@ -6,9 +6,12 @@
 
 part of 'chinook.dart';
 
+//ignore: must_be_immutable
 class AlbumAdd extends StatefulWidget {
-  AlbumAdd(this._album);
-  final dynamic _album;
+  AlbumAdd([this._album]) {
+    _album ??= Album();
+  }
+  dynamic _album;
   @override
   State<StatefulWidget> createState() => AlbumAddState(_album as Album);
 }
@@ -68,19 +71,7 @@ class AlbumAddState extends State {
                   children: <Widget>[
                     buildRowTitle(),
                     buildRowArtistId(onChangeDropdownItemForArtistId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -120,17 +111,14 @@ class AlbumAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
@@ -143,14 +131,17 @@ class AlbumAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(album.saveResult.toString(),
-          title: 'save Album Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class ArtistAdd extends StatefulWidget {
-  ArtistAdd(this._artist);
-  final dynamic _artist;
+  ArtistAdd([this._artist]) {
+    _artist ??= Artist();
+  }
+  dynamic _artist;
   @override
   State<StatefulWidget> createState() => ArtistAddState(_artist as Artist);
 }
@@ -186,22 +177,7 @@ class ArtistAddState extends State {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: <Widget>[
-                    buildRowName(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
-                  ],
+                  children: <Widget>[buildRowName(), saveButton()],
                 ),
               )),
         ),
@@ -216,35 +192,35 @@ class ArtistAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    artist..Name = txtName.text;
+    artist.Name = txtName.text;
     await artist.save();
     if (artist.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(artist.saveResult.toString(),
-          title: 'save Artist Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class CustomerAdd extends StatefulWidget {
-  CustomerAdd(this._customer);
-  final dynamic _customer;
+  CustomerAdd([this._customer]) {
+    _customer ??= Customer();
+  }
+  dynamic _customer;
   @override
   State<StatefulWidget> createState() =>
       CustomerAddState(_customer as Customer);
@@ -341,19 +317,7 @@ class CustomerAddState extends State {
                     buildRowFax(),
                     buildRowEmail(),
                     buildRowSupportRepId(onChangeDropdownItemForSupportRepId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -464,17 +428,14 @@ class CustomerAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
@@ -497,14 +458,17 @@ class CustomerAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(customer.saveResult.toString(),
-          title: 'save Customer Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class EmployeeAdd extends StatefulWidget {
-  EmployeeAdd(this._employee);
-  final dynamic _employee;
+  EmployeeAdd([this._employee]) {
+    _employee ??= Employee();
+  }
+  dynamic _employee;
   @override
   State<StatefulWidget> createState() =>
       EmployeeAddState(_employee as Employee);
@@ -542,17 +506,17 @@ class EmployeeAddState extends State {
     txtTitle.text = employee.Title == null ? '' : employee.Title.toString();
     txtBirthDate.text = employee.BirthDate == null
         ? ''
-        : UITools.convertDate(employee.BirthDate!);
+        : defaultDateTimeFormat.format(employee.BirthDate!);
     txtTimeForBirthDate.text = employee.BirthDate == null
         ? ''
-        : UITools.convertTime(employee.BirthDate!);
+        : defaultTimeFormat.format(employee.BirthDate!);
 
     txtHireDate.text = employee.HireDate == null
         ? ''
-        : UITools.convertDate(employee.HireDate!);
+        : defaultDateTimeFormat.format(employee.HireDate!);
     txtTimeForHireDate.text = employee.HireDate == null
         ? ''
-        : UITools.convertTime(employee.HireDate!);
+        : defaultTimeFormat.format(employee.HireDate!);
 
     txtAddress.text =
         employee.Address == null ? '' : employee.Address.toString();
@@ -620,19 +584,7 @@ class EmployeeAddState extends State {
                     buildRowFax(),
                     buildRowEmail(),
                     buildRowReportsTo(onChangeDropdownItemForReportsTo),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -852,31 +804,28 @@ class EmployeeAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    var _birthDate = DateTime.tryParse(txtBirthDate.text);
-    final _birthDateTime = DateTime.tryParse(txtTimeForBirthDate.text);
+    var _birthDate = tryParseDateTime(txtBirthDate.text);
+    final _birthDateTime = tryParseDateTime(txtTimeForBirthDate.text);
     if (_birthDate != null && _birthDateTime != null) {
       _birthDate = _birthDate.add(Duration(
           hours: _birthDateTime.hour,
           minutes: _birthDateTime.minute,
           seconds: _birthDateTime.second));
     }
-    var _hireDate = DateTime.tryParse(txtHireDate.text);
-    final _hireDateTime = DateTime.tryParse(txtTimeForHireDate.text);
+    var _hireDate = tryParseDateTime(txtHireDate.text);
+    final _hireDateTime = tryParseDateTime(txtTimeForHireDate.text);
     if (_hireDate != null && _hireDateTime != null) {
       _hireDate = _hireDate.add(Duration(
           hours: _hireDateTime.hour,
@@ -904,14 +853,17 @@ class EmployeeAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(employee.saveResult.toString(),
-          title: 'save Employee Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class GenreAdd extends StatefulWidget {
-  GenreAdd(this._genre);
-  final dynamic _genre;
+  GenreAdd([this._genre]) {
+    _genre ??= Genre();
+  }
+  dynamic _genre;
   @override
   State<StatefulWidget> createState() => GenreAddState(_genre as Genre);
 }
@@ -947,22 +899,7 @@ class GenreAddState extends State {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: <Widget>[
-                    buildRowName(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
-                  ],
+                  children: <Widget>[buildRowName(), saveButton()],
                 ),
               )),
         ),
@@ -977,35 +914,35 @@ class GenreAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    genre..Name = txtName.text;
+    genre.Name = txtName.text;
     await genre.save();
     if (genre.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(genre.saveResult.toString(),
-          title: 'save Genre Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class InvoiceAdd extends StatefulWidget {
-  InvoiceAdd(this._invoice);
-  final dynamic _invoice;
+  InvoiceAdd([this._invoice]) {
+    _invoice ??= Invoice();
+  }
+  dynamic _invoice;
   @override
   State<StatefulWidget> createState() => InvoiceAddState(_invoice as Invoice);
 }
@@ -1030,10 +967,10 @@ class InvoiceAddState extends State {
   void initState() {
     txtInvoiceDate.text = invoice.InvoiceDate == null
         ? ''
-        : UITools.convertDate(invoice.InvoiceDate!);
+        : defaultDateTimeFormat.format(invoice.InvoiceDate!);
     txtTimeForInvoiceDate.text = invoice.InvoiceDate == null
         ? ''
-        : UITools.convertTime(invoice.InvoiceDate!);
+        : defaultTimeFormat.format(invoice.InvoiceDate!);
 
     txtBillingAddress.text =
         invoice.BillingAddress == null ? '' : invoice.BillingAddress.toString();
@@ -1096,19 +1033,7 @@ class InvoiceAddState extends State {
                     buildRowBillingPostalCode(),
                     buildRowTotal(),
                     buildRowCustomerId(onChangeDropdownItemForCustomerId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -1246,23 +1171,20 @@ class InvoiceAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    var _invoiceDate = DateTime.tryParse(txtInvoiceDate.text);
-    final _invoiceDateTime = DateTime.tryParse(txtTimeForInvoiceDate.text);
+    var _invoiceDate = tryParseDateTime(txtInvoiceDate.text);
+    final _invoiceDateTime = tryParseDateTime(txtTimeForInvoiceDate.text);
     if (_invoiceDate != null && _invoiceDateTime != null) {
       _invoiceDate = _invoiceDate.add(Duration(
           hours: _invoiceDateTime.hour,
@@ -1284,22 +1206,25 @@ class InvoiceAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(invoice.saveResult.toString(),
-          title: 'save Invoice Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class InvoiceLineAdd extends StatefulWidget {
-  InvoiceLineAdd(this._invoiceline);
-  final dynamic _invoiceline;
+  InvoiceLineAdd([this._invoiceLine]) {
+    _invoiceLine ??= InvoiceLine();
+  }
+  dynamic _invoiceLine;
   @override
   State<StatefulWidget> createState() =>
-      InvoiceLineAddState(_invoiceline as InvoiceLine);
+      InvoiceLineAddState(_invoiceLine as InvoiceLine);
 }
 
 class InvoiceLineAddState extends State {
-  InvoiceLineAddState(this.invoiceline);
-  InvoiceLine invoiceline;
+  InvoiceLineAddState(this.invoiceLine);
+  InvoiceLine invoiceLine;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtUnitPrice = TextEditingController();
   final TextEditingController txtQuantity = TextEditingController();
@@ -1314,9 +1239,9 @@ class InvoiceLineAddState extends State {
   @override
   void initState() {
     txtUnitPrice.text =
-        invoiceline.UnitPrice == null ? '' : invoiceline.UnitPrice.toString();
+        invoiceLine.UnitPrice == null ? '' : invoiceLine.UnitPrice.toString();
     txtQuantity.text =
-        invoiceline.Quantity == null ? '' : invoiceline.Quantity.toString();
+        invoiceLine.Quantity == null ? '' : invoiceLine.Quantity.toString();
 
     super.initState();
   }
@@ -1328,7 +1253,7 @@ class InvoiceLineAddState extends State {
           await Track().select().toDropDownMenuInt('Name');
       setState(() {
         _dropdownMenuItemsForTrackId = dropdownMenuItems;
-        _selectedTrackId = invoiceline.TrackId;
+        _selectedTrackId = invoiceLine.TrackId;
       });
     }
 
@@ -1346,7 +1271,7 @@ class InvoiceLineAddState extends State {
           await Invoice().select().toDropDownMenuInt('BillingAddress');
       setState(() {
         _dropdownMenuItemsForInvoiceId = dropdownMenuItems;
-        _selectedInvoiceId = invoiceline.InvoiceId;
+        _selectedInvoiceId = invoiceLine.InvoiceId;
       });
     }
 
@@ -1361,9 +1286,9 @@ class InvoiceLineAddState extends State {
 
     return Scaffold(
       appBar: AppBar(
-        title: (invoiceline.InvoiceLineId == null)
-            ? Text('Add a new invoiceline')
-            : Text('Edit invoiceline'),
+        title: (invoiceLine.InvoiceLineId == null)
+            ? Text('Add a new invoiceLine')
+            : Text('Edit invoiceLine'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -1380,19 +1305,7 @@ class InvoiceLineAddState extends State {
                     buildRowQuantity(),
                     buildRowTrackId(onChangeDropdownItemForTrackId),
                     buildRowInvoiceId(onChangeDropdownItemForInvoiceId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -1477,53 +1390,53 @@ class InvoiceLineAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    invoiceline
+    invoiceLine
       ..UnitPrice = double.tryParse(txtUnitPrice.text)
       ..Quantity = int.tryParse(txtQuantity.text)
       ..TrackId = _selectedTrackId
       ..InvoiceId = _selectedInvoiceId;
-    await invoiceline.save();
-    if (invoiceline.saveResult!.success) {
+    await invoiceLine.save();
+    if (invoiceLine.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(invoiceline.saveResult.toString(),
-          title: 'save InvoiceLine Failed!', callBack: () {});
+      UITools(context).alertDialog(invoiceLine.saveResult.toString(),
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class MediaTypeAdd extends StatefulWidget {
-  MediaTypeAdd(this._mediatype);
-  final dynamic _mediatype;
+  MediaTypeAdd([this._mediaType]) {
+    _mediaType ??= MediaType();
+  }
+  dynamic _mediaType;
   @override
   State<StatefulWidget> createState() =>
-      MediaTypeAddState(_mediatype as MediaType);
+      MediaTypeAddState(_mediaType as MediaType);
 }
 
 class MediaTypeAddState extends State {
-  MediaTypeAddState(this.mediatype);
-  MediaType mediatype;
+  MediaTypeAddState(this.mediaType);
+  MediaType mediaType;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtName = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = mediatype.Name == null ? '' : mediatype.Name.toString();
+    txtName.text = mediaType.Name == null ? '' : mediaType.Name.toString();
 
     super.initState();
   }
@@ -1532,9 +1445,9 @@ class MediaTypeAddState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: (mediatype.MediaTypeId == null)
-            ? Text('Add a new mediatype')
-            : Text('Edit mediatype'),
+        title: (mediaType.MediaTypeId == null)
+            ? Text('Add a new mediaType')
+            : Text('Edit mediaType'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -1546,22 +1459,7 @@ class MediaTypeAddState extends State {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: <Widget>[
-                    buildRowName(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
-                  ],
+                  children: <Widget>[buildRowName(), saveButton()],
                 ),
               )),
         ),
@@ -1576,35 +1474,35 @@ class MediaTypeAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    mediatype..Name = txtName.text;
-    await mediatype.save();
-    if (mediatype.saveResult!.success) {
+    mediaType.Name = txtName.text;
+    await mediaType.save();
+    if (mediaType.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(mediatype.saveResult.toString(),
-          title: 'save MediaType Failed!', callBack: () {});
+      UITools(context).alertDialog(mediaType.saveResult.toString(),
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class PlaylistAdd extends StatefulWidget {
-  PlaylistAdd(this._playlist);
-  final dynamic _playlist;
+  PlaylistAdd([this._playlist]) {
+    _playlist ??= Playlist();
+  }
+  dynamic _playlist;
   @override
   State<StatefulWidget> createState() =>
       PlaylistAddState(_playlist as Playlist);
@@ -1641,22 +1539,7 @@ class PlaylistAddState extends State {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: <Widget>[
-                    buildRowName(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
-                  ],
+                  children: <Widget>[buildRowName(), saveButton()],
                 ),
               )),
         ),
@@ -1671,35 +1554,35 @@ class PlaylistAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    playlist..Name = txtName.text;
+    playlist.Name = txtName.text;
     await playlist.save();
     if (playlist.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(playlist.saveResult.toString(),
-          title: 'save Playlist Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class TrackAdd extends StatefulWidget {
-  TrackAdd(this._track);
-  final dynamic _track;
+  TrackAdd([this._track]) {
+    _track ??= Track();
+  }
+  dynamic _track;
   @override
   State<StatefulWidget> createState() => TrackAddState(_track as Track);
 }
@@ -1819,19 +1702,7 @@ class TrackAddState extends State {
                     buildRowMediaTypeId(onChangeDropdownItemForMediaTypeId),
                     buildRowGenreId(onChangeDropdownItemForGenreId),
                     buildRowAlbumId(onChangeDropdownItemForAlbumId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -1969,17 +1840,14 @@ class TrackAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
@@ -1998,7 +1866,7 @@ class TrackAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(track.saveResult.toString(),
-          title: 'save Track Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
