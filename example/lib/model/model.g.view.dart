@@ -6,9 +6,12 @@
 
 part of 'model.dart';
 
+//ignore: must_be_immutable
 class ProductAdd extends StatefulWidget {
-  ProductAdd(this._product);
-  final dynamic _product;
+  ProductAdd([this._product]) {
+    _product ??= Product();
+  }
+  dynamic _product;
   @override
   State<StatefulWidget> createState() => ProductAddState(_product as Product);
 }
@@ -43,19 +46,21 @@ class ProductAddState extends State {
     txtRownum.text = product.rownum == null ? '' : product.rownum.toString();
     txtImageUrl.text =
         product.imageUrl == null ? '' : product.imageUrl.toString();
-    txtDatetime.text =
-        product.datetime == null ? '' : UITools.convertDate(product.datetime!);
-    txtTimeForDatetime.text =
-        product.datetime == null ? '' : UITools.convertTime(product.datetime!);
+    txtDatetime.text = product.datetime == null
+        ? ''
+        : defaultDateTimeFormat.format(product.datetime!);
+    txtTimeForDatetime.text = product.datetime == null
+        ? ''
+        : defaultTimeFormat.format(product.datetime!);
 
     txtDate.text =
-        product.date == null ? '' : UITools.convertDate(product.date!);
+        product.date == null ? '' : defaultDateFormat.format(product.date!);
     txtDateCreated.text = product.dateCreated == null
         ? ''
-        : UITools.convertDate(product.dateCreated!);
+        : defaultDateTimeFormat.format(product.dateCreated!);
     txtTimeForDateCreated.text = product.dateCreated == null
         ? ''
-        : UITools.convertTime(product.dateCreated!);
+        : defaultTimeFormat.format(product.dateCreated!);
 
     super.initState();
   }
@@ -106,19 +111,7 @@ class ProductAddState extends State {
                     buildRowDatetime(),
                     buildRowDate(),
                     buildRowDateCreated(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -359,32 +352,29 @@ class ProductAddState extends State {
     ]);
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    var _datetime = DateTime.tryParse(txtDatetime.text);
-    final _datetimeTime = DateTime.tryParse(txtTimeForDatetime.text);
+    var _datetime = tryParseDateTime(txtDatetime.text);
+    final _datetimeTime = tryParseDateTime(txtTimeForDatetime.text);
     if (_datetime != null && _datetimeTime != null) {
       _datetime = _datetime.add(Duration(
           hours: _datetimeTime.hour,
           minutes: _datetimeTime.minute,
           seconds: _datetimeTime.second));
     }
-    final _date = DateTime.tryParse(txtDate.text);
-    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
-    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    final _date = tryParseDateTime(txtDate.text);
+    var _dateCreated = tryParseDateTime(txtDateCreated.text);
+    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,
@@ -407,14 +397,17 @@ class ProductAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(product.saveResult.toString(),
-          title: 'save Product Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class CategoryAdd extends StatefulWidget {
-  CategoryAdd(this._category);
-  final dynamic _category;
+  CategoryAdd([this._category]) {
+    _category ??= Category();
+  }
+  dynamic _category;
   @override
   State<StatefulWidget> createState() =>
       CategoryAddState(_category as Category);
@@ -435,10 +428,10 @@ class CategoryAddState extends State {
 
     txtDateCreated.text = category.dateCreated == null
         ? ''
-        : UITools.convertDate(category.dateCreated!);
+        : defaultDateTimeFormat.format(category.dateCreated!);
     txtTimeForDateCreated.text = category.dateCreated == null
         ? ''
-        : UITools.convertTime(category.dateCreated!);
+        : defaultTimeFormat.format(category.dateCreated!);
 
     super.initState();
   }
@@ -465,19 +458,7 @@ class CategoryAddState extends State {
                     buildRowName(),
                     buildRowIsActive(),
                     buildRowDateCreated(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -571,23 +552,20 @@ class CategoryAddState extends State {
     ]);
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
-    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    var _dateCreated = tryParseDateTime(txtDateCreated.text);
+    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,
@@ -603,21 +581,24 @@ class CategoryAddState extends State {
       Navigator.pop(context, true);
     } else {
       UITools(context).alertDialog(category.saveResult.toString(),
-          title: 'save Category Failed!', callBack: () {});
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }
 
+//ignore: must_be_immutable
 class TodoAdd extends StatefulWidget {
-  TodoAdd(this._todos);
-  final dynamic _todos;
+  TodoAdd([this._todo]) {
+    _todo ??= Todo();
+  }
+  dynamic _todo;
   @override
-  State<StatefulWidget> createState() => TodoAddState(_todos as Todo);
+  State<StatefulWidget> createState() => TodoAddState(_todo as Todo);
 }
 
 class TodoAddState extends State {
-  TodoAddState(this.todos);
-  Todo todos;
+  TodoAddState(this.todo);
+  Todo todo;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtId = TextEditingController();
   final TextEditingController txtUserId = TextEditingController();
@@ -628,15 +609,15 @@ class TodoAddState extends State {
 
   @override
   void initState() {
-    txtUserId.text = todos.userId == null ? '' : todos.userId.toString();
-    txtTitle.text = todos.title == null ? '' : todos.title.toString();
+    txtUserId.text = todo.userId == null ? '' : todo.userId.toString();
+    txtTitle.text = todo.title == null ? '' : todo.title.toString();
 
-    txtDateCreated.text = todos.dateCreated == null
+    txtDateCreated.text = todo.dateCreated == null
         ? ''
-        : UITools.convertDate(todos.dateCreated!);
-    txtTimeForDateCreated.text = todos.dateCreated == null
+        : defaultDateTimeFormat.format(todo.dateCreated!);
+    txtTimeForDateCreated.text = todo.dateCreated == null
         ? ''
-        : UITools.convertTime(todos.dateCreated!);
+        : defaultTimeFormat.format(todo.dateCreated!);
 
     super.initState();
   }
@@ -645,8 +626,7 @@ class TodoAddState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            (todos.id == null) ? Text('Add a new todos') : Text('Edit todos'),
+        title: (todo.id == null) ? Text('Add a new todo') : Text('Edit todo'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -664,19 +644,7 @@ class TodoAddState extends State {
                     buildRowTitle(),
                     buildRowCompleted(),
                     buildRowDateCreated(),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
+                    saveButton()
                   ],
                 ),
               )),
@@ -725,10 +693,10 @@ class TodoAddState extends State {
       children: <Widget>[
         Text('Completed?'),
         Checkbox(
-          value: todos.completed ?? false,
+          value: todo.completed ?? false,
           onChanged: (bool? value) {
             setState(() {
-              todos.completed = value;
+              todo.completed = value;
             });
           },
         ),
@@ -748,16 +716,16 @@ class TodoAddState extends State {
             txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
             setState(() {
               final d = DateTime.tryParse(txtDateCreated.text) ??
-                  todos.dateCreated ??
+                  todo.dateCreated ??
                   DateTime.now();
-              todos.dateCreated = DateTime(sqfSelectedDate.year,
+              todo.dateCreated = DateTime(sqfSelectedDate.year,
                       sqfSelectedDate.month, sqfSelectedDate.day)
                   .add(Duration(
                       hours: d.hour, minutes: d.minute, seconds: d.second));
             });
           },
               currentTime: DateTime.tryParse(txtDateCreated.text) ??
-                  todos.dateCreated ??
+                  todo.dateCreated ??
                   DateTime.now()),
           controller: txtDateCreated,
           decoration: InputDecoration(labelText: 'DateCreated'),
@@ -771,19 +739,19 @@ class TodoAddState extends State {
               txtTimeForDateCreated.text = UITools.convertTime(sqfSelectedDate);
               setState(() {
                 final d = DateTime.tryParse(txtDateCreated.text) ??
-                    todos.dateCreated ??
+                    todo.dateCreated ??
                     DateTime.now();
-                todos.dateCreated = DateTime(d.year, d.month, d.day).add(
+                todo.dateCreated = DateTime(d.year, d.month, d.day).add(
                     Duration(
                         hours: sqfSelectedDate.hour,
                         minutes: sqfSelectedDate.minute,
                         seconds: sqfSelectedDate.second));
-                txtDateCreated.text = UITools.convertDate(todos.dateCreated!);
+                txtDateCreated.text = UITools.convertDate(todo.dateCreated!);
               });
             },
                 currentTime: DateTime.tryParse(
                         '${UITools.convertDate(DateTime.now())} ${txtTimeForDateCreated.text}') ??
-                    todos.dateCreated ??
+                    todo.dateCreated ??
                     DateTime.now()),
             controller: txtTimeForDateCreated,
             decoration: InputDecoration(labelText: 'time'),
@@ -791,23 +759,20 @@ class TodoAddState extends State {
     ]);
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
+  Widget saveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          save();
+        }
+      },
+      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
   void save() async {
-    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
-    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
+    var _dateCreated = tryParseDateTime(txtDateCreated.text);
+    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,
@@ -815,17 +780,17 @@ class TodoAddState extends State {
           seconds: _dateCreatedTime.second));
     }
 
-    todos
+    todo
       ..id = int.tryParse(txtId.text)
       ..userId = int.tryParse(txtUserId.text)
       ..title = txtTitle.text
       ..dateCreated = _dateCreated;
-    await todos.save();
-    if (todos.saveResult!.success) {
+    await todo.save();
+    if (todo.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(todos.saveResult.toString(),
-          title: 'save Todo Failed!', callBack: () {});
+      UITools(context).alertDialog(todo.saveResult.toString(),
+          title: 'saving Failed!', callBack: () {});
     }
   }
 }

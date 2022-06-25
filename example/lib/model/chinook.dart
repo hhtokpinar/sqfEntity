@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart' as intl;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
@@ -11,103 +12,222 @@ import 'view.list.dart';
 part 'chinook.g.dart';
 part 'chinook.g.view.dart';
 
+/// region Dates Formats
+///
+/// Specify a defaultDateFormat (Optional) default (dd-MM-yyyy)
+final defaultDateFormat = intl.DateFormat('dd-MMMM-yyyy');
+
+/// Specify a defaultTimeFormat (Optional) default (hh:mm a)
+final defaultTimeFormat = intl.DateFormat('hh:mm a');
+
+/// Specify a defaultDateTimeFormat (Optional) default (dd-MM-yyyy - hh:mm a)
+final defaultDateTimeFormat =
+    intl.DateFormat('$defaultDateFormat - $defaultTimeFormat');
+
+DateTime toDateTime(TimeOfDay x) {
+  return DateTime(2020, 1, 1, x.hour, x.minute);
+}
+
+TimeOfDay? tryParseTime(String x) {
+  DateTime? d = tryParseTimeToDate(x);
+  return d == null ? null : TimeOfDay.fromDateTime(d);
+}
+
+DateTime? tryParseTimeToDate(String x) {
+  try {
+    return int.tryParse(x) != null
+        ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(x)!)
+        : defaultTimeFormat.parse(x);
+  } catch (e) {
+    return tryParseDateTime(x);
+  }
+}
+
+DateTime? tryParseDate(String x) {
+  try {
+    return defaultDateFormat.parse(x);
+  } catch (e) {
+    return tryParseDateTime(x);
+  }
+}
+
+DateTime? tryParseDateTime(String x) {
+  try {
+    return defaultDateTimeFormat.parse(x);
+  } catch (e) {
+    return DateTime.tryParse(x);
+  }
+}
+
+/// endregion
+
 //  BEGIN chinook.db MODEL
 
 // BEGIN TABLES
 
-const tableAlbum = SqfEntityTable(tableName: 'Album', primaryKeyName: 'AlbumId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Title', DbType.text),
-  SqfEntityFieldRelationship(parentTable: tableArtist, deleteRule: DeleteRule.NO_ACTION, fieldName: 'ArtistId', isPrimaryKeyField: false),
-]);
+const tableAlbum = SqfEntityTable(
+    tableName: 'Album',
+    primaryKeyName: 'AlbumId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Title', DbType.text),
+      SqfEntityFieldRelationship(
+          parentTable: tableArtist,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'ArtistId',
+          isPrimaryKeyField: false),
+    ]);
 
-const tableArtist = SqfEntityTable(tableName: 'Artist', primaryKeyName: 'ArtistId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Name', DbType.text),
-]);
+const tableArtist = SqfEntityTable(
+    tableName: 'Artist',
+    primaryKeyName: 'ArtistId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Name', DbType.text),
+    ]);
 
-const tableCustomer =
-    SqfEntityTable(tableName: 'Customer', primaryKeyName: 'CustomerId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('FirstName', DbType.text),
-  SqfEntityField('LastName', DbType.text),
-  SqfEntityField('Company', DbType.text),
-  SqfEntityField('Address', DbType.text),
-  SqfEntityField('City', DbType.text),
-  SqfEntityField('State', DbType.text),
-  SqfEntityField('Country', DbType.text),
-  SqfEntityField('PostalCode', DbType.text),
-  SqfEntityField('Phone', DbType.text),
-  SqfEntityField('Fax', DbType.text),
-  SqfEntityField('Email', DbType.text),
-  SqfEntityFieldRelationship(parentTable: tableEmployee, deleteRule: DeleteRule.NO_ACTION, fieldName: 'SupportRepId', isPrimaryKeyField: false),
-]);
+const tableCustomer = SqfEntityTable(
+    tableName: 'Customer',
+    primaryKeyName: 'CustomerId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('FirstName', DbType.text),
+      SqfEntityField('LastName', DbType.text),
+      SqfEntityField('Company', DbType.text),
+      SqfEntityField('Address', DbType.text),
+      SqfEntityField('City', DbType.text),
+      SqfEntityField('State', DbType.text),
+      SqfEntityField('Country', DbType.text),
+      SqfEntityField('PostalCode', DbType.text),
+      SqfEntityField('Phone', DbType.text),
+      SqfEntityField('Fax', DbType.text),
+      SqfEntityField('Email', DbType.text),
+      SqfEntityFieldRelationship(
+          parentTable: tableEmployee,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'SupportRepId',
+          isPrimaryKeyField: false),
+    ]);
 
-const tableEmployee =
-    SqfEntityTable(tableName: 'Employee', primaryKeyName: 'EmployeeId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('LastName', DbType.text),
-  SqfEntityField('FirstName', DbType.text),
-  SqfEntityField('Title', DbType.text),
-  SqfEntityField('BirthDate', DbType.datetime),
-  SqfEntityField('HireDate', DbType.datetime),
-  SqfEntityField('Address', DbType.text),
-  SqfEntityField('City', DbType.text),
-  SqfEntityField('State', DbType.text),
-  SqfEntityField('Country', DbType.text),
-  SqfEntityField('PostalCode', DbType.text),
-  SqfEntityField('Phone', DbType.text),
-  SqfEntityField('Fax', DbType.text),
-  SqfEntityField('Email', DbType.text),
-  SqfEntityFieldRelationship(parentTable: null, deleteRule: DeleteRule.NO_ACTION, fieldName: 'ReportsTo', isPrimaryKeyField: false),
-]);
+const tableEmployee = SqfEntityTable(
+    tableName: 'Employee',
+    primaryKeyName: 'EmployeeId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('LastName', DbType.text),
+      SqfEntityField('FirstName', DbType.text),
+      SqfEntityField('Title', DbType.text),
+      SqfEntityField('BirthDate', DbType.datetime),
+      SqfEntityField('HireDate', DbType.datetime),
+      SqfEntityField('Address', DbType.text),
+      SqfEntityField('City', DbType.text),
+      SqfEntityField('State', DbType.text),
+      SqfEntityField('Country', DbType.text),
+      SqfEntityField('PostalCode', DbType.text),
+      SqfEntityField('Phone', DbType.text),
+      SqfEntityField('Fax', DbType.text),
+      SqfEntityField('Email', DbType.text),
+      SqfEntityFieldRelationship(
+          parentTable: null,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'ReportsTo',
+          isPrimaryKeyField: false),
+    ]);
 
-const tableGenre = SqfEntityTable(tableName: 'Genre', primaryKeyName: 'GenreId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Name', DbType.text),
-]);
+const tableGenre = SqfEntityTable(
+    tableName: 'Genre',
+    primaryKeyName: 'GenreId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Name', DbType.text),
+    ]);
 
-const tableInvoice =
-    SqfEntityTable(tableName: 'Invoice', primaryKeyName: 'InvoiceId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('InvoiceDate', DbType.datetime),
-  SqfEntityField('BillingAddress', DbType.text),
-  SqfEntityField('BillingCity', DbType.text),
-  SqfEntityField('BillingState', DbType.text),
-  SqfEntityField('BillingCountry', DbType.text),
-  SqfEntityField('BillingPostalCode', DbType.text),
-  SqfEntityField('Total', DbType.real),
-  SqfEntityFieldRelationship(parentTable: tableCustomer, deleteRule: DeleteRule.NO_ACTION, fieldName: 'CustomerId', isPrimaryKeyField: false),
-]);
+const tableInvoice = SqfEntityTable(
+    tableName: 'Invoice',
+    primaryKeyName: 'InvoiceId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('InvoiceDate', DbType.datetime),
+      SqfEntityField('BillingAddress', DbType.text),
+      SqfEntityField('BillingCity', DbType.text),
+      SqfEntityField('BillingState', DbType.text),
+      SqfEntityField('BillingCountry', DbType.text),
+      SqfEntityField('BillingPostalCode', DbType.text),
+      SqfEntityField('Total', DbType.real),
+      SqfEntityFieldRelationship(
+          parentTable: tableCustomer,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'CustomerId',
+          isPrimaryKeyField: false),
+    ]);
 
-const tableInvoiceLine =
-    SqfEntityTable(tableName: 'InvoiceLine', primaryKeyName: 'InvoiceLineId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('UnitPrice', DbType.real),
-  SqfEntityField('Quantity', DbType.integer),
-  SqfEntityFieldRelationship(parentTable: tableTrack, deleteRule: DeleteRule.NO_ACTION, fieldName: 'TrackId', isPrimaryKeyField: false),
-  SqfEntityFieldRelationship(parentTable: tableInvoice, deleteRule: DeleteRule.NO_ACTION, fieldName: 'InvoiceId', isPrimaryKeyField: false),
-]);
+const tableInvoiceLine = SqfEntityTable(
+    tableName: 'InvoiceLine',
+    primaryKeyName: 'InvoiceLineId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('UnitPrice', DbType.real),
+      SqfEntityField('Quantity', DbType.integer),
+      SqfEntityFieldRelationship(
+          parentTable: tableTrack,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'TrackId',
+          isPrimaryKeyField: false),
+      SqfEntityFieldRelationship(
+          parentTable: tableInvoice,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'InvoiceId',
+          isPrimaryKeyField: false),
+    ]);
 
-const tableMediaType =
-    SqfEntityTable(tableName: 'MediaType', primaryKeyName: 'MediaTypeId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Name', DbType.text),
-]);
+const tableMediaType = SqfEntityTable(
+    tableName: 'MediaType',
+    primaryKeyName: 'MediaTypeId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Name', DbType.text),
+    ]);
 
-const tablePlaylist =
-    SqfEntityTable(tableName: 'Playlist', primaryKeyName: 'PlaylistId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Name', DbType.text),
-]);
+const tablePlaylist = SqfEntityTable(
+    tableName: 'Playlist',
+    primaryKeyName: 'PlaylistId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Name', DbType.text),
+    ]);
 
-const tableTrack = SqfEntityTable(tableName: 'Track', primaryKeyName: 'TrackId', primaryKeyType: PrimaryKeyType.integer_auto_incremental, fields: [
-  SqfEntityField('Name', DbType.text),
-  SqfEntityField('Composer', DbType.text),
-  SqfEntityField('Milliseconds', DbType.integer),
-  SqfEntityField('Bytes', DbType.integer),
-  SqfEntityField('UnitPrice', DbType.real),
-  SqfEntityFieldRelationship(parentTable: tableMediaType, deleteRule: DeleteRule.NO_ACTION, fieldName: 'MediaTypeId', isPrimaryKeyField: false),
-  SqfEntityFieldRelationship(parentTable: tableGenre, deleteRule: DeleteRule.NO_ACTION, fieldName: 'GenreId', isPrimaryKeyField: false),
-  SqfEntityFieldRelationship(parentTable: tableAlbum, deleteRule: DeleteRule.NO_ACTION, fieldName: 'AlbumId', isPrimaryKeyField: false),
-  SqfEntityFieldRelationship(
-      parentTable: tablePlaylist,
-      deleteRule: DeleteRule.NO_ACTION,
-      fieldName: 'mPlaylistTrack',
-      relationType: RelationType.MANY_TO_MANY,
-      manyToManyTableName: 'PlaylistTrack'),
-]);
+const tableTrack = SqfEntityTable(
+    tableName: 'Track',
+    primaryKeyName: 'TrackId',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('Name', DbType.text),
+      SqfEntityField('Composer', DbType.text),
+      SqfEntityField('Milliseconds', DbType.integer),
+      SqfEntityField('Bytes', DbType.integer),
+      SqfEntityField('UnitPrice', DbType.real),
+      SqfEntityFieldRelationship(
+          parentTable: tableMediaType,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'MediaTypeId',
+          isPrimaryKeyField: false),
+      SqfEntityFieldRelationship(
+          parentTable: tableGenre,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'GenreId',
+          isPrimaryKeyField: false),
+      SqfEntityFieldRelationship(
+          parentTable: tableAlbum,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'AlbumId',
+          isPrimaryKeyField: false),
+      SqfEntityFieldRelationship(
+          parentTable: tablePlaylist,
+          deleteRule: DeleteRule.NO_ACTION,
+          fieldName: 'mPlaylistTrack',
+          relationType: RelationType.MANY_TO_MANY,
+          manyToManyTableName: 'PlaylistTrack'),
+    ]);
 
 const VIEW_tracks = SqfEntityTable(
   tableName: 'VTracks',
@@ -117,7 +237,11 @@ const VIEW_tracks = SqfEntityTable(
     SqfEntityField('album', DbType.text),
     SqfEntityField('media', DbType.text),
     SqfEntityField('genres', DbType.text),
-    SqfEntityFieldRelationship(parentTable: tableTrack, deleteRule: DeleteRule.NO_ACTION, fieldName: 'TrackId', isPrimaryKeyField: false),
+    SqfEntityFieldRelationship(
+        parentTable: tableTrack,
+        deleteRule: DeleteRule.NO_ACTION,
+        fieldName: 'TrackId',
+        isPrimaryKeyField: false),
   ],
   sqlStatement: '''SELECT
 	trackid,
@@ -135,29 +259,33 @@ INNER JOIN genre ON genre.GenreId = track.GenreId''',
 
 // BEGIN DATABASE MODEL
 @SqfEntityBuilder(chinookdb)
-const chinookdb =
-    SqfEntityModel(modelName: 'Chinookdb', databaseName: 'chinook_v1.4.0+1.db', bundledDatabasePath: 'assets/chinook.sqlite', databaseTables: [
-  tableAlbum,
-  tableArtist,
-  tableCustomer,
-  tableEmployee,
-  tableGenre,
-  tableInvoice,
-  tableInvoiceLine,
-  tableMediaType,
-  tablePlaylist,
-  tableTrack,
-  VIEW_tracks
-], formTables: [
-  tableAlbum,
-  tableArtist,
-  tableCustomer,
-  tableEmployee,
-  tableGenre,
-  tableInvoice,
-  tableInvoiceLine,
-  tableMediaType,
-  tablePlaylist,
-  tableTrack,
-]);
+const chinookdb = SqfEntityModel(
+    modelName: 'Chinookdb',
+    databaseName: 'chinook_v1.4.0+1.db',
+    bundledDatabasePath: 'assets/chinook.sqlite',
+    databaseTables: [
+      tableAlbum,
+      tableArtist,
+      tableCustomer,
+      tableEmployee,
+      tableGenre,
+      tableInvoice,
+      tableInvoiceLine,
+      tableMediaType,
+      tablePlaylist,
+      tableTrack,
+      VIEW_tracks
+    ],
+    formTables: [
+      tableAlbum,
+      tableArtist,
+      tableCustomer,
+      tableEmployee,
+      tableGenre,
+      tableInvoice,
+      tableInvoiceLine,
+      tableMediaType,
+      tablePlaylist,
+      tableTrack,
+    ]);
 // END chinook.db MODEL

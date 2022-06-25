@@ -10,13 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite_sqlcipher: ^2.0.0
-  synchronized: ^3.0.0
-  path: ^1.8.0
+  sqflite_sqlcipher: ^2.1.1
+  synchronized: ^3.0.0+2
+  path: ^1.8.2
   sqfentity_gen: '>=2.2.0+11 <3.0.0'
-  sqflite_common: ^2.0.1+1
-  sqflite_common_ffi: ^2.0.0+3
-  meta: ^1.7.0
+  sqflite_common: ^2.2.1+1
+  sqflite_common_ffi: ^2.1.1+1
+  meta: ^1.8.0
   
 
 dependency_overrides:
