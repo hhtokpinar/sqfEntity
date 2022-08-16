@@ -10,4 +10,4 @@ dependencies:
   build: ^2.1.0
   source_gen: ^1.1.0
   meta: ^1.7.0
-  analyzer: ^2.3.0
+  analyzer: ^4.2.0
