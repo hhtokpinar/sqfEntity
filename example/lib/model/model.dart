@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart' as intl;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
@@ -10,6 +11,55 @@ import 'view.list.dart';
 
 part 'model.g.dart';
 part 'model.g.view.dart';
+
+/// region Dates Formats
+///
+/// Specify a defaultDateFormat (Optional) default (dd-MM-yyyy)
+final defaultDateFormat = intl.DateFormat('dd-MMMM-yyyy');
+
+/// Specify a defaultTimeFormat (Optional) default (hh:mm a)
+final defaultTimeFormat = intl.DateFormat('hh:mm a');
+
+/// Specify a defaultDateTimeFormat (Optional) default (dd-MM-yyyy - hh:mm a)
+final defaultDateTimeFormat =
+    intl.DateFormat('$defaultDateFormat - $defaultTimeFormat');
+
+DateTime toDateTime(TimeOfDay x) {
+  return DateTime(2020, 1, 1, x.hour, x.minute);
+}
+
+TimeOfDay? tryParseTime(String x) {
+  DateTime? d = tryParseTimeToDate(x);
+  return d == null ? null : TimeOfDay.fromDateTime(d);
+}
+
+DateTime? tryParseTimeToDate(String x) {
+  try {
+    return int.tryParse(x) != null
+        ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(x)!)
+        : defaultTimeFormat.parse(x);
+  } catch (e) {
+    return tryParseDateTime(x);
+  }
+}
+
+DateTime? tryParseDate(String x) {
+  try {
+    return defaultDateFormat.parse(x);
+  } catch (e) {
+    return tryParseDateTime(x);
+  }
+}
+
+DateTime? tryParseDateTime(String x) {
+  try {
+    return defaultDateTimeFormat.parse(x);
+  } catch (e) {
+    return DateTime.tryParse(x);
+  }
+}
+
+/// endregion
 
 // STEP 1: define your tables as shown in the example Classes below.
 
@@ -20,7 +70,8 @@ const tableCategory = SqfEntityTable(
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
     // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
-    modelName: null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
+    modelName:
+        null, // SqfEntity will set it to TableName automatically when the modelName (class name) is null
     // declare fields
     fields: [
       SqfEntityField('name', DbType.text, isNotNull: true),
@@ -49,13 +100,21 @@ const tableProduct = SqfEntityTable(
           parentTable: tableCategory,
           deleteRule: DeleteRule.CASCADE,
           defaultValue: 1,
-          formDropDownTextField: 'name' // displayText of dropdownList for category. 'name' => a text field from the category table
+          formDropDownTextField:
+              'name' // displayText of dropdownList for category. 'name' => a text field from the category table
           ),
-      SqfEntityField('rownum', DbType.integer, sequencedBy: seqIdentity /*Example of linking a column to a sequence */),
+      SqfEntityField('rownum', DbType.integer,
+          sequencedBy:
+              seqIdentity /*Example of linking a column to a sequence */),
       SqfEntityField('imageUrl', DbType.text),
       SqfEntityField('datetime', DbType.datetime,
-          isNotNull: true, defaultValue: 'DateTime.now()', minValue: '2019-01-01', maxValue: 'DateTime.now().add(Duration(days: 30))'),
-      SqfEntityField('date', DbType.date, minValue: '2015-01-01', maxValue: 'DateTime.now().add(Duration(days: 365))')
+          isNotNull: true,
+          defaultValue: 'DateTime.now()',
+          minValue: '2019-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 30))'),
+      SqfEntityField('date', DbType.date,
+          minValue: '2015-01-01',
+          maxValue: 'DateTime.now().add(Duration(days: 365))')
     ]);
 
 // Define the 'Todo' constant as SqfEntityTable.
@@ -65,7 +124,8 @@ const tableTodo = SqfEntityTable(
     useSoftDeleting:
         false, // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
     primaryKeyType: PrimaryKeyType.integer_unique,
-    defaultJsonUrl: 'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
+    defaultJsonUrl:
+        'https://jsonplaceholder.typicode.com/todos', // optional: to synchronize your table with json data from webUrl
 
     // declare fields
     fields: [
@@ -93,7 +153,8 @@ const seqIdentity = SqfEntitySequence(
 const myDbModel = SqfEntityModel(
     modelName: 'MyDbModel',
     databaseName: 'sampleORM_v2.1.2+38.db',
-    password: null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
+    password:
+        null, // You can set a password if you want to use crypted database (For more information: https://github.com/sqlcipher/sqlcipher)
     // put defined tables into the tables list.
     databaseTables: [tableProduct, tableCategory, tableTodo],
     // You can define tables to generate add/edit view forms if you want to use Form Generator property
@@ -108,9 +169,9 @@ const myDbModel = SqfEntityModel(
     // EntityBase uses the default path from sqflite.getDatabasesPath()
     // If you want to set a physically path just set a directory like: '/Volumes/Repo/MyProject/db',
     databasePath: null,
-                
     defaultColumns: [
-      SqfEntityField('dateCreated', DbType.datetime, defaultValue: 'DateTime.now()'),
+      SqfEntityField('dateCreated', DbType.datetime,
+          defaultValue: 'DateTime.now()'),
     ]);
 
 /* STEP 3: That's All.. 
