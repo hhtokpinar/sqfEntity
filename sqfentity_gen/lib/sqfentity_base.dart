@@ -743,9 +743,8 @@ class SqfEntityControllerBuilder {
 }
 
 class SqfEntityObjectBuilder {
-  SqfEntityObjectBuilder(this._table, this._model);
+  SqfEntityObjectBuilder(this._table);
   final SqfEntityTableBase _table;
-  final SqfEntityModelBase _model;
   String get _createProperties => __createProperties();
   String get _createObjectRelations => __createObjectRelations();
   String get _createObjectCollections => __createObjectCollections();

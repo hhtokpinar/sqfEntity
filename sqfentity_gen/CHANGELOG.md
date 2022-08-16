@@ -1,3 +1,8 @@
+## 2.3.0
+- New global default Date/Time Formats
+- Making the viewAdd takes optional object
+- some minor updates
+
 ## 2.2.0+12
 - Added optional parameters into upsertAll method for batchCommit 
 

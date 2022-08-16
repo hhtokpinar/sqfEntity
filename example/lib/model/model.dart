@@ -29,7 +29,7 @@ DateTime toDateTime(TimeOfDay x) {
 }
 
 TimeOfDay? tryParseTime(String x) {
-  DateTime? d = tryParseTimeToDate(x);
+  final DateTime? d = tryParseTimeToDate(x);
   return d == null ? null : TimeOfDay.fromDateTime(d);
 }
 

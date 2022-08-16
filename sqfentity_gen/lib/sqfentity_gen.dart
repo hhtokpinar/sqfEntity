@@ -14,7 +14,6 @@
 /// limitations under the License.
 ///**********************************************************************/
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:intl/intl.dart' as intl;
 import 'package:meta/meta.dart';
 
 //import 'package:source_gen/source_gen.dart'; // throws dart:mirror exception when import here
@@ -773,7 +772,7 @@ class Sequence${seq.modelName} extends SqfEntitySequenceBase {
         table.dbModel = _m.modelName;
         modelString
           // ..printToDebug('0: ${table.tableName}')
-          ..writeln(SqfEntityObjectBuilder(table, _m).toString())
+          ..writeln(SqfEntityObjectBuilder(table).toString())
           // ..printToDebug('1: ${table.tableName}')
           ..writeln(SqfEntityObjectField(table).toString())
           //  ..printToDebug('2: ${table.tableName}')
