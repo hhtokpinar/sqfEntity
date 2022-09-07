@@ -21,29 +21,25 @@ class SqfEntityFormConverter {
   final SqfEntityTableBase table;
   String toFormWidgetsCode() {
     // print('toFormWidgetsCode begin');
-
+    final String tablename = table.tableName!.toLowerCase();
     final String modelName = table.modelName ?? toCamelCase(table.tableName);
-    final String objectName = tocamelCase(modelName);
 
     // print('toFormWidgetsCode begin 2: tableName:$tablename');
     if (table.primaryKeyNames.isEmpty) {
       throw Exception(
-          '    SQFENTITIY: FORM GENERATOR ERROR:  Table [$objectName] has no primary key. Remove this table from formTables list in your DB Model or add a primary key into the table');
+          '    SQFENTITIY: FORM GENERATOR ERROR:  Table [$tablename] has no primary key. Remove this table from formTables list in your DB Model or add a primary key into the table');
     }
     return '''   
-    //ignore: must_be_immutable
 class ${modelName}Add extends StatefulWidget {
-  ${modelName}Add([this._${tocamelCase(modelName)}]){
-    _${tocamelCase(modelName)} ??=  $modelName();
-  }
-  dynamic _${tocamelCase(modelName)};
+  ${modelName}Add(this._$tablename);
+  final dynamic _$tablename;
   @override
-  State<StatefulWidget> createState() => ${modelName}AddState(_${tocamelCase(modelName)} as $modelName);
+  State<StatefulWidget> createState() => ${modelName}AddState(_$tablename as $modelName);
 }
 
 class ${modelName}AddState extends State {
-  ${modelName}AddState(this.${tocamelCase(modelName)});
-  $modelName ${tocamelCase(modelName)};
+  ${modelName}AddState(this.$tablename);
+  $modelName $tablename;
   final _formKey = GlobalKey<FormState>();
   ${toFormDeclarationCodeTable(table).toString()}
 
@@ -59,9 +55,9 @@ class ${modelName}AddState extends State {
 
     return Scaffold(
       appBar: AppBar(
-        title: ($objectName.${table.primaryKeyNames[0]} == null)
-            ? Text('Add a new ${tocamelCase(modelName)}')
-            : Text('Edit ${tocamelCase(modelName)}'),
+        title: ($tablename.${table.primaryKeyNames[0]} == null)
+            ? Text('Add a new $tablename')
+            : Text('Edit $tablename'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -75,7 +71,19 @@ class ${modelName}AddState extends State {
                 child: Column(
                   children: <Widget>[
                     ${toFormBuildRowWidgets(table).toString()}
-                    saveButton()
+                    TextButton(
+                      child: saveButton(),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // If the form is valid, display a Snackbar.
+                          save();
+                           /* Scaffold.of(context).showSnackBar(SnackBar(
+                              duration: Duration(seconds: 2),
+                              content: Text('Processing Data')));
+                           */   
+                        }
+                      },
+                    )
                   ],
                 ),
               )),
@@ -87,28 +95,31 @@ class ${modelName}AddState extends State {
   ${toFormBuildRowCodeTable(table).toString()}
 
   
-  Widget saveButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          save();
-        }
-      },
-      child: Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
+  Container saveButton() {
+    return Container(
+      padding: const EdgeInsets.all(7.0),
+      decoration: BoxDecoration(
+          color: Color.fromRGBO(95, 66, 119, 1.0),
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(5.0)),
+      child: Text(
+        'Save',
+        style: TextStyle(color: Colors.white, fontSize: 20),
+      ),
     );
   }
 
   void save() async {
     ${toFormSaveCodeDateTimeVariables(table).toString()}
-    $objectName
+    $tablename
       ${toFormSaveCode(table).toString()};
-    await $objectName.${table.relationType == RelationType.ONE_TO_ONE ? '_' : ''}save();
-    if ($objectName.saveResult!.success) {
+    await $tablename.${table.relationType == RelationType.ONE_TO_ONE ? '_' : ''}save();
+    if ($tablename.saveResult!.success) {
       Navigator.pop(context, true);
     } else
     {
-      UITools(context).alertDialog($objectName.saveResult.toString(),
-                  title: 'saving Failed!', callBack: () {
+      UITools(context).alertDialog($tablename.saveResult.toString(),
+                  title: 'save ${table.modelName} Failed!', callBack: () {
               });
     }
   }
@@ -189,8 +200,9 @@ class ${modelName}AddState extends State {
     } else if (field is! SqfEntityFieldRelationshipBase) {
       switch (field.dbType) {
         case DbType.time:
-          return '''..${field.fieldName} = (txt$ccName.text.isNotEmpty && txt$ccName.text.length > 1) ?
-           tryParseTime(txt$ccName.text): null''';
+          return '''..${field.fieldName} = txt$ccName.text.isNotEmpty && txt$ccName.text.split(\':\').length> 1 ? TimeOfDay(
+          hour: int.parse(txt$ccName.text.split(\':\')[0]),
+          minute: int.parse(txt$ccName.text.split(\':\')[1])): null''';
         case DbType.date:
         case DbType.datetime:
         case DbType.datetimeUtc:
@@ -286,7 +298,7 @@ class ${modelName}AddState extends State {
   }
 
   String toFormInitStateCodeField(SqfEntityFieldType field) {
-    final String objName = tocamelCase(field.table!.modelName!);
+    final String objName = field.table!.tableName!.toLowerCase();
     final String fName = field.fieldName!;
     final String ccName = toCamelCase(fName);
     switch (field.dbType) {
@@ -298,11 +310,11 @@ class ${modelName}AddState extends State {
       case DbType.bool:
         return '';
       case DbType.date:
-        return 'txt$ccName.text = $objName.$fName == null? \'\': defaultDateFormat.format($objName.$fName!);';
+        return 'txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName!);';
       case DbType.datetime:
       case DbType.datetimeUtc:
-        return '''txt$ccName.text = $objName.$fName == null? \'\': defaultDateTimeFormat.format($objName.$fName!);
-        txtTimeFor$ccName.text = $objName.$fName == null? \'\': defaultTimeFormat.format($objName.$fName!);
+        return '''txt$ccName.text = $objName.$fName == null? \'\': UITools.convertDate($objName.$fName!);
+        txtTimeFor$ccName.text = $objName.$fName == null? \'\': UITools.convertTime($objName.$fName!);
         ''';
       default:
         return 'txt$ccName.text =$objName.$fName == null ? \'\' : $objName.$fName.toString();';
@@ -330,7 +342,7 @@ class ${modelName}AddState extends State {
           await ${field.relationshipName}().select().toDropDownMenuInt('${field.formDropDownTextField}');
       setState(() {
         _dropdownMenuItemsFor$ccName = dropdownMenuItems;
-        _selected$ccName = ${tocamelCase(table.modelName!)}.${field.fieldName};
+        _selected$ccName = ${table.tableName!.toLowerCase()}.${field.fieldName};
       });
     }
     if (_dropdownMenuItemsFor$ccName.isEmpty) {
@@ -347,7 +359,7 @@ class ${modelName}AddState extends State {
     // print('toFormWidgetsCode begin 7.1: tableName:${table.tableName}');
     final ccName = toCamelCase(field.fieldName);
     field.table = field.table ?? table;
-    final tablename = tocamelCase(field.table!.modelName!.toLowerCase());
+    final tablename = field.table!.tableName!.toLowerCase();
     final retVal = StringBuffer()..write('''Widget buildRow$ccName() {''');
 
     if (field is SqfEntityFieldRelationshipBase) {
@@ -440,7 +452,8 @@ class ${modelName}AddState extends State {
         return retVal.toString();
       case DbType.date:
         retVal.writeln('return TextFormField(');
-        retVal.writeln('''onTap: () => UITools.showDateTimePicker(context
+        retVal.writeln(
+            '''onTap: () => UITools.showDateTimePicker(context
           ${_getNullableValueField(field.minValue, 'minTime')}
           ${_getNullableValueField(field.maxValue, 'maxTime')}
           , onConfirm: (sqfSelectedDate) {

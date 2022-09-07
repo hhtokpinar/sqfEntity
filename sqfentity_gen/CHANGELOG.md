@@ -1,3 +1,9 @@
+## 2.3.0+3
+- fixed issue [279](https://github.com/hhtokpinar/sqfEntity/issues/279)
+
+## 2.3.0+1
+- fixed issue [278](https://github.com/hhtokpinar/sqfEntity/issues/278)
+
 ## 2.3.0
 - New global default Date/Time Formats
 - Making the viewAdd takes optional object
