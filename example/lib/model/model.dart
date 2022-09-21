@@ -15,7 +15,7 @@ part 'model.g.view.dart';
 /// region Dates Formats
 ///
 /// Specify a defaultDateFormat (Optional) default (dd-MM-yyyy)
-final defaultDateFormat = intl.DateFormat('dd-MMMM-yyyy');
+final defaultDateFormat = intl.DateFormat('dd-MM-yyyy');
 
 /// Specify a defaultTimeFormat (Optional) default (hh:mm a)
 final defaultTimeFormat = intl.DateFormat('hh:mm a');
