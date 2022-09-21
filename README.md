@@ -1316,4 +1316,3 @@ Enjoy..
     flutter:   result: currentVal2 = 0
     flutter:   final int currentVal3 = await IdentitySequence().reset();
     flutter:   result: currentVal3 = 0
-
