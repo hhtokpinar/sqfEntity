@@ -1,3 +1,11 @@
+## 2.3.0+4
+- fixed issue [281](https://github.com/hhtokpinar/sqfEntity/issues/281)
+  and removed customizing datetime formats.
+  If you want to use DefaultDateTime format. Specify the sqfentity_gen version in pubspec.yaml
+
+  sqfentity_gen: 2.3.0+3
+
+
 ## 2.3.0
 - New global default Date/Time Formats
 - Making the viewAdd takes optional object

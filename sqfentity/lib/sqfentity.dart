@@ -902,9 +902,6 @@ Future<SqfEntityModelBase> convertDatabaseToModelBase(
     ..modelName = toModelName(model.databaseName!.replaceAll('.', ''), '')
     ..databaseTables = tables
     ..password = model.password
-    ..defaultDateFormat = model.defaultDateFormat
-    ..defaultTimeFormat = model.defaultTimeFormat
-    ..defaultDateTimeFormat = model.defaultDateTimeFormat
     ..bundledDatabasePath = bundledDatabasePath
     ..databasePath = databasePath;
 }
