@@ -69,9 +69,6 @@ class SqfEntityModelBuilder extends SqfEntityModelBase {
         getListValue(model, 'formTables') ?? <DartObject>[],
         dbModelName,
       )
-      ..defaultDateFormat = getStringValue(model, 'defaultDateFormat')
-      ..defaultTimeFormat = getStringValue(model, 'defaultTimeFormat')
-      ..defaultDateTimeFormat = getStringValue(model, 'defaultDateTimeFormat')
       ..bundledDatabasePath = getStringValue(model, 'bundledDatabasePath')
       ..databasePath = getStringValue(model, 'databasePath')
       ..ignoreForFile = toListString(getListValue(model, 'ignoreForFile'))

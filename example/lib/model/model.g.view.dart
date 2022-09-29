@@ -374,17 +374,17 @@ class ProductAddState extends State {
   }
 
   void save() async {
-    var _datetime = tryParseDateTime(txtDatetime.text);
-    final _datetimeTime = tryParseDateTime(txtTimeForDatetime.text);
+    var _datetime = DateTime.tryParse(txtDatetime.text);
+    final _datetimeTime = DateTime.tryParse(txtTimeForDatetime.text);
     if (_datetime != null && _datetimeTime != null) {
       _datetime = _datetime.add(Duration(
           hours: _datetimeTime.hour,
           minutes: _datetimeTime.minute,
           seconds: _datetimeTime.second));
     }
-    final _date = tryParseDateTime(txtDate.text);
-    var _dateCreated = tryParseDateTime(txtDateCreated.text);
-    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
+    final _date = DateTime.tryParse(txtDate.text);
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,
@@ -586,8 +586,8 @@ class CategoryAddState extends State {
   }
 
   void save() async {
-    var _dateCreated = tryParseDateTime(txtDateCreated.text);
-    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,
@@ -806,8 +806,8 @@ class TodoAddState extends State {
   }
 
   void save() async {
-    var _dateCreated = tryParseDateTime(txtDateCreated.text);
-    final _dateCreatedTime = tryParseDateTime(txtTimeForDateCreated.text);
+    var _dateCreated = DateTime.tryParse(txtDateCreated.text);
+    final _dateCreatedTime = DateTime.tryParse(txtTimeForDateCreated.text);
     if (_dateCreated != null && _dateCreatedTime != null) {
       _dateCreated = _dateCreated.add(Duration(
           hours: _dateCreatedTime.hour,

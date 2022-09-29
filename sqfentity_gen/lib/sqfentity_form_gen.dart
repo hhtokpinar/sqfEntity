@@ -161,10 +161,10 @@ class ${modelName}AddState extends State {
       } else {
         retVal.write('final _');
       }
-      retVal.writeln('$vName = tryParseDateTime(txt$ccName.text);');
+      retVal.writeln('$vName = DateTime.tryParse(txt$ccName.text);');
       if (field.dbType == DbType.datetime) {
         retVal.writeln(
-            '''final _${vName}Time = tryParseDateTime(txtTimeFor$ccName.text);
+            '''final _${vName}Time = DateTime.tryParse(txtTimeFor$ccName.text);
     if (_$vName != null && _${vName}Time != null) {
       _$vName = _$vName.add(
           Duration(hours: _${vName}Time.hour, minutes: _${vName}Time.minute, seconds: _${vName}Time.second));

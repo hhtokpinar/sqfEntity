@@ -3458,13 +3458,13 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       case DbType.bool:
         return 'if ($fieldName != null) {map[\'$fieldName\'] =  forQuery? ($fieldName ! ? 1 : 0) : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.date:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = defaultDateFormat.format($fieldName!);} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? \'\$$fieldName!.year-\$$fieldName!.month-\$$fieldName!.day\' : forQuery? DateTime($fieldName!.year,$fieldName!.month, $fieldName!.day).millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.datetime:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = defaultDateTimeFormat.format($fieldName!);} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.datetimeUtc:
         return 'if ($fieldName != null) {map[\'$fieldName\'] = forJson ? $fieldName!.toUtc().toString(): forQuery? $fieldName!.millisecondsSinceEpoch : $fieldName;} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       case DbType.time:
-        return 'if ($fieldName != null) {map[\'$fieldName\'] = defaultTimeFormat.format(toDateTime($fieldName!));} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
+        return 'if ($fieldName != null) {map[\'$fieldName\'] = \'\${$fieldName!.hour.toString().padLeft(2, \'0\')}:\${$fieldName!.minute.toString().padLeft(2, \'0\')}:00\';} else if ($fieldName != null || !forView){map[\'$fieldName\'] = null;}';
       default:
         {
           return 'if ($fieldName != null || !forView) { map[\'$fieldName\'] = $fieldName; }';
@@ -3479,9 +3479,8 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
         // return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] == 1 || o[\'$fieldName\'] == true;}';
         return 'if (o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'].toString() == \'1\' || o[\'$fieldName\'].toString() == \'true\';}'; // https://github.com/hhtokpinar/sqfEntity/issues/170#issuecomment-826160862
       case DbType.date:
-        return 'if (o[\'$fieldName\'] != null) {$fieldName = tryParseDate(o[\'$fieldName\']!.toString());}';
       case DbType.datetime:
-        return 'if (o[\'$fieldName\'] != null) {$fieldName = tryParseDateTime(o[\'$fieldName\']!.toString());}';
+        return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString()) != null ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(o[\'$fieldName\'].toString())!) : DateTime.tryParse(o[\'$fieldName\'].toString());}';
       case DbType.datetimeUtc:
         return 'if (o[\'$fieldName\'] != null) {$fieldName = int.tryParse(o[\'$fieldName\'].toString()) != null ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(o[\'$fieldName\'].toString())!, isUtc: true) : DateTime.tryParse(o[\'$fieldName\'].toString());}';
       case DbType.real:
@@ -3494,7 +3493,7 @@ class SqfEntityFieldBase implements SqfEntityFieldType {
       case DbType.blob:
         return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';
       case DbType.time:
-        return 'if(o[\'$fieldName\'] != null) {$fieldName = tryParseTime(o[\'$fieldName\']!.toString());}';
+        return 'if(o[\'$fieldName\'] != null) {$fieldName = TimeOfDay(hour: int.parse(o[\'$fieldName\'].toString().split(\':\')[0]), minute: int.parse(o[\'$fieldName\'].toString().split(\':\')[1]));}';
 
       default:
         //     return 'if(o[\'$fieldName\'] != null) {$fieldName = o[\'$fieldName\'] as ${dartType[dbType!.index].toString()};}';
@@ -3803,9 +3802,6 @@ abstract class SqfEntityModelBase {
   String? bundledDatabasePath;
   String? instanceName;
   String? password;
-  String? defaultDateFormat;
-  String? defaultTimeFormat;
-  String? defaultDateTimeFormat;
   String? databasePath; // Option to set path at runtime.
   int? dbVersion;
   List<SqfEntityTableBase>? databaseTables;

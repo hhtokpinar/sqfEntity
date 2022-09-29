@@ -244,13 +244,22 @@ class Product extends TableBase {
       imageUrl = o['imageUrl'].toString();
     }
     if (o['datetime'] != null) {
-      datetime = tryParseDateTime(o['datetime']!.toString());
+      datetime = int.tryParse(o['datetime'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['datetime'].toString())!)
+          : DateTime.tryParse(o['datetime'].toString());
     }
     if (o['date'] != null) {
-      date = tryParseDate(o['date']!.toString());
+      date = int.tryParse(o['date'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['date'].toString())!)
+          : DateTime.tryParse(o['date'].toString());
     }
     if (o['dateCreated'] != null) {
-      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
     }
     isDeleted = o['isDeleted'] != null
         ? o['isDeleted'] == 1 || o['isDeleted'] == true
@@ -335,17 +344,30 @@ class Product extends TableBase {
       map['imageUrl'] = imageUrl;
     }
     if (datetime != null) {
-      map['datetime'] = defaultDateTimeFormat.format(datetime!);
+      map['datetime'] = forJson
+          ? datetime!.toString()
+          : forQuery
+              ? datetime!.millisecondsSinceEpoch
+              : datetime;
     } else if (datetime != null || !forView) {
       map['datetime'] = null;
     }
     if (date != null) {
-      map['date'] = defaultDateFormat.format(date!);
+      map['date'] = forJson
+          ? '$date!.year-$date!.month-$date!.day'
+          : forQuery
+              ? DateTime(date!.year, date!.month, date!.day)
+                  .millisecondsSinceEpoch
+              : date;
     } else if (date != null || !forView) {
       map['date'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -393,17 +415,30 @@ class Product extends TableBase {
       map['imageUrl'] = imageUrl;
     }
     if (datetime != null) {
-      map['datetime'] = defaultDateTimeFormat.format(datetime!);
+      map['datetime'] = forJson
+          ? datetime!.toString()
+          : forQuery
+              ? datetime!.millisecondsSinceEpoch
+              : datetime;
     } else if (datetime != null || !forView) {
       map['datetime'] = null;
     }
     if (date != null) {
-      map['date'] = defaultDateFormat.format(date!);
+      map['date'] = forJson
+          ? '$date!.year-$date!.month-$date!.day'
+          : forQuery
+              ? DateTime(date!.year, date!.month, date!.day)
+                  .millisecondsSinceEpoch
+              : date;
     } else if (date != null || !forView) {
       map['date'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -1177,7 +1212,7 @@ class ProductFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Product>> items = []..add(DropdownMenuItem(
         value: Product(),
-        child: Text('Select Product'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -1206,7 +1241,7 @@ class ProductFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Product'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -1406,7 +1441,10 @@ class Category extends TableBase {
           o['isActive'].toString() == '1' || o['isActive'].toString() == 'true';
     }
     if (o['dateCreated'] != null) {
-      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
     }
   }
   // FIELDS (Category)
@@ -1459,7 +1497,11 @@ class Category extends TableBase {
       map['isActive'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -1483,7 +1525,11 @@ class Category extends TableBase {
       map['isActive'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -2205,7 +2251,7 @@ class CategoryFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Category>> items = []..add(DropdownMenuItem(
         value: Category(),
-        child: Text('Select Category'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -2234,7 +2280,7 @@ class CategoryFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Category'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -2392,7 +2438,10 @@ class Todo extends TableBase {
           o['completed'].toString() == 'true';
     }
     if (o['dateCreated'] != null) {
-      dateCreated = tryParseDateTime(o['dateCreated']!.toString());
+      dateCreated = int.tryParse(o['dateCreated'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['dateCreated'].toString())!)
+          : DateTime.tryParse(o['dateCreated'].toString());
     }
 
     isSaved = true;
@@ -2431,7 +2480,11 @@ class Todo extends TableBase {
       map['completed'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -2458,7 +2511,11 @@ class Todo extends TableBase {
       map['completed'] = null;
     }
     if (dateCreated != null) {
-      map['dateCreated'] = defaultDateTimeFormat.format(dateCreated!);
+      map['dateCreated'] = forJson
+          ? dateCreated!.toString()
+          : forQuery
+              ? dateCreated!.millisecondsSinceEpoch
+              : dateCreated;
     } else if (dateCreated != null || !forView) {
       map['dateCreated'] = null;
     }
@@ -3119,7 +3176,7 @@ class TodoFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Todo>> items = []..add(DropdownMenuItem(
         value: Todo(),
-        child: Text('Select Todo'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -3148,7 +3205,7 @@ class TodoFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Todo'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(

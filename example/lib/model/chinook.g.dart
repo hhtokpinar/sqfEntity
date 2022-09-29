@@ -1256,7 +1256,7 @@ class AlbumFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Album>> items = []..add(DropdownMenuItem(
         value: Album(),
-        child: Text('Select Album'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -1285,7 +1285,7 @@ class AlbumFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Album'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -2178,7 +2178,7 @@ class ArtistFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Artist>> items = []..add(DropdownMenuItem(
         value: Artist(),
-        child: Text('Select Artist'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -2207,7 +2207,7 @@ class ArtistFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Artist'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -3406,7 +3406,7 @@ class CustomerFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Customer>> items = []..add(DropdownMenuItem(
         value: Customer(),
-        child: Text('Select Customer'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -3435,7 +3435,7 @@ class CustomerFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Customer'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -3689,10 +3689,16 @@ class Employee extends TableBase {
       Title = o['Title'].toString();
     }
     if (o['BirthDate'] != null) {
-      BirthDate = tryParseDateTime(o['BirthDate']!.toString());
+      BirthDate = int.tryParse(o['BirthDate'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['BirthDate'].toString())!)
+          : DateTime.tryParse(o['BirthDate'].toString());
     }
     if (o['HireDate'] != null) {
-      HireDate = tryParseDateTime(o['HireDate']!.toString());
+      HireDate = int.tryParse(o['HireDate'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['HireDate'].toString())!)
+          : DateTime.tryParse(o['HireDate'].toString());
     }
     if (o['Address'] != null) {
       Address = o['Address'].toString();
@@ -3819,12 +3825,20 @@ class Employee extends TableBase {
       map['Title'] = Title;
     }
     if (BirthDate != null) {
-      map['BirthDate'] = defaultDateTimeFormat.format(BirthDate!);
+      map['BirthDate'] = forJson
+          ? BirthDate!.toString()
+          : forQuery
+              ? BirthDate!.millisecondsSinceEpoch
+              : BirthDate;
     } else if (BirthDate != null || !forView) {
       map['BirthDate'] = null;
     }
     if (HireDate != null) {
-      map['HireDate'] = defaultDateTimeFormat.format(HireDate!);
+      map['HireDate'] = forJson
+          ? HireDate!.toString()
+          : forQuery
+              ? HireDate!.millisecondsSinceEpoch
+              : HireDate;
     } else if (HireDate != null || !forView) {
       map['HireDate'] = null;
     }
@@ -3882,12 +3896,20 @@ class Employee extends TableBase {
       map['Title'] = Title;
     }
     if (BirthDate != null) {
-      map['BirthDate'] = defaultDateTimeFormat.format(BirthDate!);
+      map['BirthDate'] = forJson
+          ? BirthDate!.toString()
+          : forQuery
+              ? BirthDate!.millisecondsSinceEpoch
+              : BirthDate;
     } else if (BirthDate != null || !forView) {
       map['BirthDate'] = null;
     }
     if (HireDate != null) {
-      map['HireDate'] = defaultDateTimeFormat.format(HireDate!);
+      map['HireDate'] = forJson
+          ? HireDate!.toString()
+          : forQuery
+              ? HireDate!.millisecondsSinceEpoch
+              : HireDate;
     } else if (HireDate != null || !forView) {
       map['HireDate'] = null;
     }
@@ -4824,7 +4846,7 @@ class EmployeeFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Employee>> items = []..add(DropdownMenuItem(
         value: Employee(),
-        child: Text('Select Employee'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -4853,7 +4875,7 @@ class EmployeeFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Employee'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -5815,7 +5837,7 @@ class GenreFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Genre>> items = []..add(DropdownMenuItem(
         value: Genre(),
-        child: Text('Select Genre'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -5844,7 +5866,7 @@ class GenreFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Genre'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -6005,7 +6027,10 @@ class Invoice extends TableBase {
     }
     InvoiceId = int.tryParse(o['InvoiceId'].toString());
     if (o['InvoiceDate'] != null) {
-      InvoiceDate = tryParseDateTime(o['InvoiceDate']!.toString());
+      InvoiceDate = int.tryParse(o['InvoiceDate'].toString()) != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              int.tryParse(o['InvoiceDate'].toString())!)
+          : DateTime.tryParse(o['InvoiceDate'].toString());
     }
     if (o['BillingAddress'] != null) {
       BillingAddress = o['BillingAddress'].toString();
@@ -6094,7 +6119,11 @@ class Invoice extends TableBase {
     final map = <String, dynamic>{};
     map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
-      map['InvoiceDate'] = defaultDateTimeFormat.format(InvoiceDate!);
+      map['InvoiceDate'] = forJson
+          ? InvoiceDate!.toString()
+          : forQuery
+              ? InvoiceDate!.millisecondsSinceEpoch
+              : InvoiceDate;
     } else if (InvoiceDate != null || !forView) {
       map['InvoiceDate'] = null;
     }
@@ -6137,7 +6166,11 @@ class Invoice extends TableBase {
     final map = <String, dynamic>{};
     map['InvoiceId'] = InvoiceId;
     if (InvoiceDate != null) {
-      map['InvoiceDate'] = defaultDateTimeFormat.format(InvoiceDate!);
+      map['InvoiceDate'] = forJson
+          ? InvoiceDate!.toString()
+          : forQuery
+              ? InvoiceDate!.millisecondsSinceEpoch
+              : InvoiceDate;
     } else if (InvoiceDate != null || !forView) {
       map['InvoiceDate'] = null;
     }
@@ -6968,7 +7001,7 @@ class InvoiceFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Invoice>> items = []..add(DropdownMenuItem(
         value: Invoice(),
-        child: Text('Select Invoice'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -6997,7 +7030,7 @@ class InvoiceFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Invoice'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -8007,7 +8040,7 @@ class InvoiceLineFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<InvoiceLine>> items = []..add(DropdownMenuItem(
         value: InvoiceLine(),
-        child: Text('Select InvoiceLine'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -8036,7 +8069,7 @@ class InvoiceLineFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select InvoiceLine'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -8951,7 +8984,7 @@ class MediaTypeFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<MediaType>> items = []..add(DropdownMenuItem(
         value: MediaType(),
-        child: Text('Select MediaType'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -8980,7 +9013,7 @@ class MediaTypeFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select MediaType'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -9848,7 +9881,7 @@ class PlaylistFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Playlist>> items = []..add(DropdownMenuItem(
         value: Playlist(),
-        child: Text('Select Playlist'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -9877,7 +9910,7 @@ class PlaylistFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Playlist'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -11188,7 +11221,7 @@ class TrackFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<Track>> items = []..add(DropdownMenuItem(
         value: Track(),
-        child: Text('Select Track'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -11217,7 +11250,7 @@ class TrackFilterBuilder extends ConjunctionBase {
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Track'),
+        child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(

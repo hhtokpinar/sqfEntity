@@ -867,16 +867,16 @@ class EmployeeAddState extends State {
   }
 
   void save() async {
-    var _birthDate = tryParseDateTime(txtBirthDate.text);
-    final _birthDateTime = tryParseDateTime(txtTimeForBirthDate.text);
+    var _birthDate = DateTime.tryParse(txtBirthDate.text);
+    final _birthDateTime = DateTime.tryParse(txtTimeForBirthDate.text);
     if (_birthDate != null && _birthDateTime != null) {
       _birthDate = _birthDate.add(Duration(
           hours: _birthDateTime.hour,
           minutes: _birthDateTime.minute,
           seconds: _birthDateTime.second));
     }
-    var _hireDate = tryParseDateTime(txtHireDate.text);
-    final _hireDateTime = tryParseDateTime(txtTimeForHireDate.text);
+    var _hireDate = DateTime.tryParse(txtHireDate.text);
+    final _hireDateTime = DateTime.tryParse(txtTimeForHireDate.text);
     if (_hireDate != null && _hireDateTime != null) {
       _hireDate = _hireDate.add(Duration(
           hours: _hireDateTime.hour,
@@ -1261,8 +1261,8 @@ class InvoiceAddState extends State {
   }
 
   void save() async {
-    var _invoiceDate = tryParseDateTime(txtInvoiceDate.text);
-    final _invoiceDateTime = tryParseDateTime(txtTimeForInvoiceDate.text);
+    var _invoiceDate = DateTime.tryParse(txtInvoiceDate.text);
+    final _invoiceDateTime = DateTime.tryParse(txtTimeForInvoiceDate.text);
     if (_invoiceDate != null && _invoiceDateTime != null) {
       _invoiceDate = _invoiceDate.add(Duration(
           hours: _invoiceDateTime.hour,

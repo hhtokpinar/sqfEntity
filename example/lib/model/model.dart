@@ -129,58 +129,6 @@ const myDbModel = SqfEntityModel(
 
 
 
-// Now you can define const and methods for customized DateTime Format to call it from the files that will be generated
-
-/// region Date Format
-///
-/// Specify a defaultDateFormat (Optional) default (dd-MM-yyyy)
-final defaultDateFormat = intl.DateFormat('dd-MM-yyyy');
-
-/// Specify a defaultTimeFormat (Optional) default (hh:mm a)
-final defaultTimeFormat = intl.DateFormat('hh:mm a');
-
-/// Specify a defaultDateTimeFormat (Optional) default (dd-MM-yyyy - hh:mm a)
-final defaultDateTimeFormat =
-    intl.DateFormat('$defaultDateFormat - $defaultTimeFormat');
-
-DateTime toDateTime(TimeOfDay x) {
-  return DateTime(2020, 1, 1, x.hour, x.minute);
-}
-
-TimeOfDay? tryParseTime(String x) {
-  final DateTime? d = tryParseTimeToDate(x);
-  return d == null ? null : TimeOfDay.fromDateTime(d);
-}
-
-DateTime? tryParseTimeToDate(String x) {
-  try {
-    return int.tryParse(x) != null
-        ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(x)!)
-        : defaultTimeFormat.parse(x);
-  } catch (e) {
-    return tryParseDateTime(x);
-  }
-}
-
-DateTime? tryParseDate(String x) {
-  try {
-    return defaultDateFormat.parse(x);
-  } catch (e) {
-    return tryParseDateTime(x);
-  }
-}
-
-DateTime? tryParseDateTime(String x) {
-  try {
-    return defaultDateTimeFormat.parse(x);
-  } catch (e) {
-    return DateTime.tryParse(x);
-  }
-}
-
-/// endregion
-
-
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below
     flutter pub run build_runner build --delete-conflicting-outputs

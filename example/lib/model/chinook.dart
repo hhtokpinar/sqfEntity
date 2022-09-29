@@ -12,55 +12,6 @@ import 'view.list.dart';
 part 'chinook.g.dart';
 part 'chinook.g.view.dart';
 
-/// region Dates Formats
-///
-/// Specify a defaultDateFormat (Optional) default (dd-MM-yyyy)
-final defaultDateFormat = intl.DateFormat('dd-MMMM-yyyy');
-
-/// Specify a defaultTimeFormat (Optional) default (hh:mm a)
-final defaultTimeFormat = intl.DateFormat('hh:mm a');
-
-/// Specify a defaultDateTimeFormat (Optional) default (dd-MM-yyyy - hh:mm a)
-final defaultDateTimeFormat =
-    intl.DateFormat('$defaultDateFormat - $defaultTimeFormat');
-
-DateTime toDateTime(TimeOfDay x) {
-  return DateTime(2020, 1, 1, x.hour, x.minute);
-}
-
-TimeOfDay? tryParseTime(String x) {
-  final DateTime? d = tryParseTimeToDate(x);
-  return d == null ? null : TimeOfDay.fromDateTime(d);
-}
-
-DateTime? tryParseTimeToDate(String x) {
-  try {
-    return int.tryParse(x) != null
-        ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(x)!)
-        : defaultTimeFormat.parse(x);
-  } catch (e) {
-    return tryParseDateTime(x);
-  }
-}
-
-DateTime? tryParseDate(String x) {
-  try {
-    return defaultDateFormat.parse(x);
-  } catch (e) {
-    return tryParseDateTime(x);
-  }
-}
-
-DateTime? tryParseDateTime(String x) {
-  try {
-    return defaultDateTimeFormat.parse(x);
-  } catch (e) {
-    return DateTime.tryParse(x);
-  }
-}
-
-/// endregion
-
 //  BEGIN chinook.db MODEL
 
 // BEGIN TABLES
