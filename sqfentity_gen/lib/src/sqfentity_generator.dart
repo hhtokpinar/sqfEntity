@@ -33,7 +33,7 @@ class SqfEntityGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
         'SQFENTITY GENERATOR: builder initialized (${builder.instancename})...');
     final dbModel = builder.toModel();
 
-    print('${dbModel.modelName} Model recognized succesfuly');
+    print('${dbModel.modelName} Model recognized successfully');
     final modelStr = MyStringBuffer()
           //..writeln('/*') // write output as commented to see what is wrong
           ..writeln(SqfEntityConverter(dbModel).createModelDatabase())

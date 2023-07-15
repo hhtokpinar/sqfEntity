@@ -156,10 +156,10 @@ class TableProduct extends SqfEntityTableBase {
           defaultValue: DateTime.now(),
           isNotNull: true,
           minValue: DateTime.parse('2019-01-01'),
-          maxValue: DateTime.now().add(Duration(days: 30))),
+          maxValue: DateTime.now().add(const Duration(days: 30))),
       SqfEntityFieldBase('date', DbType.date,
           minValue: DateTime.parse('2015-01-01'),
-          maxValue: DateTime.now().add(Duration(days: 365))),
+          maxValue: DateTime.now().add(const Duration(days: 365))),
       SqfEntityFieldBase('dateCreated', DbType.datetime,
           defaultValue: DateTime.now(), minValue: DateTime.parse('1900-01-01')),
     ];
@@ -393,9 +393,9 @@ class Product extends TableBase {
   /// get Category By CategoryId
   Future<Category?> getCategory(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Category().getById(categoryId,
+    final obj = await Category().getById(categoryId,
         loadParents: loadParents, loadedFields: loadedFields);
-    return _obj;
+    return obj;
   }
   // END RELATIONSHIPS (Product)
 
@@ -679,7 +679,6 @@ class Product extends TableBase {
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1230,7 +1229,6 @@ class ProductFilterBuilder extends ConjunctionBase {
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1351,10 +1349,10 @@ class ProductFilterBuilder extends ConjunctionBase {
 
     final data = await productsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Product>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Product>> items = [DropdownMenuItem(
         value: Product(),
-        child: Text('Select Product'),
-      ));
+        child: const Text('Select Product'),
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -1380,10 +1378,10 @@ class ProductFilterBuilder extends ConjunctionBase {
 
     final data = await productsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = [const DropdownMenuItem(
         value: 0,
         child: Text('Select Product'),
-      ));
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -1405,13 +1403,13 @@ class ProductFilterBuilder extends ConjunctionBase {
   /// <returns>List<String>
   @override
   Map<String, dynamic> toListPrimaryKeySQL([bool buildParams = true]) {
-    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    final Map<String, dynamic> retVal = <String, dynamic>{};
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM product WHERE ${qparams.whereString}';
-    _retVal['args'] = qparams.whereArguments;
-    return _retVal;
+    retVal['sql'] = 'SELECT `id` FROM product WHERE ${qparams.whereString}';
+    retVal['args'] = qparams.whereArguments;
+    return retVal;
   }
 
   /// This method returns Primary Key List<int>.
@@ -1822,7 +1820,6 @@ class Category extends TableBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }
@@ -1973,7 +1970,7 @@ class Category extends TableBase {
   @override
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
-    final msg =
+    const msg =
         'set useSoftDeleting:true in the table definition of [Category] to use this feature';
     throw UnimplementedError(msg);
   }
@@ -2323,7 +2320,6 @@ class CategoryFilterBuilder extends ConjunctionBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }
@@ -2444,10 +2440,10 @@ class CategoryFilterBuilder extends ConjunctionBase {
 
     final data = await categoriesFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Category>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Category>> items = [DropdownMenuItem(
         value: Category(),
-        child: Text('Select Category'),
-      ));
+        child: const Text('Select Category'),
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -2473,10 +2469,10 @@ class CategoryFilterBuilder extends ConjunctionBase {
 
     final data = await categoriesFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = [const DropdownMenuItem(
         value: 0,
         child: Text('Select Category'),
-      ));
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -2498,13 +2494,13 @@ class CategoryFilterBuilder extends ConjunctionBase {
   /// <returns>List<String>
   @override
   Map<String, dynamic> toListPrimaryKeySQL([bool buildParams = true]) {
-    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    final Map<String, dynamic> retVal = <String, dynamic>{};
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM category WHERE ${qparams.whereString}';
-    _retVal['args'] = qparams.whereArguments;
-    return _retVal;
+    retVal['sql'] = 'SELECT `id` FROM category WHERE ${qparams.whereString}';
+    retVal['args'] = qparams.whereArguments;
+    return retVal;
   }
 
   /// This method returns Primary Key List<int>.
@@ -2969,7 +2965,7 @@ class Todo extends TableBase {
   @override
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
-    final msg =
+    const msg =
         'set useSoftDeleting:true in the table definition of [Todo] to use this feature';
     throw UnimplementedError(msg);
   }
@@ -3417,10 +3413,10 @@ class TodoFilterBuilder extends ConjunctionBase {
 
     final data = await todosFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Todo>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<Todo>> items = [DropdownMenuItem(
         value: Todo(),
-        child: Text('Select Todo'),
-      ));
+        child: const Text('Select Todo'),
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -3446,10 +3442,10 @@ class TodoFilterBuilder extends ConjunctionBase {
 
     final data = await todosFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
+    final List<DropdownMenuItem<int>> items = [const DropdownMenuItem(
         value: 0,
         child: Text('Select Todo'),
-      ));
+      )];
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
@@ -3471,13 +3467,13 @@ class TodoFilterBuilder extends ConjunctionBase {
   /// <returns>List<String>
   @override
   Map<String, dynamic> toListPrimaryKeySQL([bool buildParams = true]) {
-    final Map<String, dynamic> _retVal = <String, dynamic>{};
+    final Map<String, dynamic> retVal = <String, dynamic>{};
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM todos WHERE ${qparams.whereString}';
-    _retVal['args'] = qparams.whereArguments;
-    return _retVal;
+    retVal['sql'] = 'SELECT `id` FROM todos WHERE ${qparams.whereString}';
+    retVal['args'] = qparams.whereArguments;
+    return retVal;
   }
 
   /// This method returns Primary Key List<int>.

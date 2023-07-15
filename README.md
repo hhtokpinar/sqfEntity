@@ -298,7 +298,7 @@ That's all. Set clipboard to paste codes
       await Clipboard.setData(ClipboardData(text: modelConstString));
 ```
 
-Model were created succesfuly and set to the Clipboard. 
+Model were created successfully and set to the Clipboard. 
 
 
 Open model.dart file in lib/model folder and paste models after following line

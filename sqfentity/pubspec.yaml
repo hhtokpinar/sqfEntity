@@ -2,10 +2,10 @@ name: sqfentity
 homepage: https://github.com/hhtokpinar/sqfEntity
 description: SqfEntity ORM for Flutter/Dart lets you build and execute SQL commands easily and quickly with the help of fluent methods similar to .Net Entity Framework. 
 
-version: 2.3.0+4
+version: 2.4.0
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
   flutter:

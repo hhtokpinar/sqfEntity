@@ -70,7 +70,7 @@ class ProductDetailState extends State {
             height: MediaQuery.of(context).size.height * 0.5,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('windows-wallpaper.jpg'),
+                image: AssetImage('assets/windows-wallpaper.jpg'),
                 fit: BoxFit.cover,
               ),
             )),

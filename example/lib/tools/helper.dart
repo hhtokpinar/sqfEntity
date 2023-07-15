@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
+    as dtp;
 //import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+//import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' as dtp;
 import 'package:intl/intl.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
@@ -23,9 +25,10 @@ class UITools {
   static const mainIconsColor = Colors.white;
   static const double mainFontSize = 24;
   static const double mainIconSize = 30;
-  static final DateFormat dateFormatter = DateFormat('yyyy-MM-dd', mainDatePickerLocaleType.toString());
-  static const mainDatePickerLocaleType = LocaleType.tr;
-  static const mainDatePickerTheme = DatePickerTheme(
+  static final DateFormat dateFormatter =
+      DateFormat('yyyy-MM-dd', mainDatePickerLocaleType.toString());
+  static const mainDatePickerLocaleType = dtp.LocaleType.tr;
+  static const mainDatePickerTheme = dtp.DatePickerTheme(
       backgroundColor: UITools.mainBgColorLighter,
       itemStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       doneStyle: TextStyle(color: UITools.mainTextColor, fontSize: 16));
@@ -41,7 +44,8 @@ class UITools {
           title: Text(
             title,
             textAlign: TextAlign.left,
-            style: TextStyle(color: mainTextColorAlternative, fontSize: scaleWidth(14)),
+            style: TextStyle(
+                color: mainTextColorAlternative, fontSize: scaleWidth(14)),
           ),
           actions:
               null /* <Widget>[
@@ -88,7 +92,8 @@ class UITools {
             ),
             Text(
               text,
-              style: TextStyle(color: UITools.mainTextColor, fontSize: scaleHeight(14)),
+              style: TextStyle(
+                  color: UITools.mainTextColor, fontSize: scaleHeight(14)),
             )
           ],
         ),
@@ -121,27 +126,41 @@ class UITools {
         child: Container(
             decoration: BoxDecoration(color: mainItemBgColor),
             child: ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               leading: Container(
                 padding: EdgeInsets.only(right: 12.0),
-                decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.white24))),
+                decoration: BoxDecoration(
+                    border: Border(
+                        right: BorderSide(width: 1.0, color: Colors.white24))),
                 child: SizedBox(
                   width: scaleWidth(60),
                   height: scaleHeight(50),
-                  child: Icon(Icons.input, color: mainIconsColor, size: scaleHeight(mainIconSize)),
+                  child: Icon(Icons.input,
+                      color: mainIconsColor, size: scaleHeight(mainIconSize)),
                 ),
               ),
               title: Text(
                 title,
-                style: TextStyle(color: mainTextColor, fontWeight: FontWeight.bold, fontSize: scaleWidth(mainFontSize)),
+                style: TextStyle(
+                    color: mainTextColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: scaleWidth(mainFontSize)),
               ),
-              trailing: Icon(Icons.keyboard_arrow_right, color: mainTextColor, size: scaleHeight(mainIconSize)),
+              trailing: Icon(Icons.keyboard_arrow_right,
+                  color: mainTextColor, size: scaleHeight(mainIconSize)),
               onTap: () => goToModelPage(modelPage, title),
             )),
       );
 
   Future<bool> selectOption(
-      Choice choice, dynamic data, dynamic obj, bool useSoftDeleting, bool hasSubItems, String? formListTitleField, void Function() getData) async {
+      Choice choice,
+      dynamic data,
+      dynamic obj,
+      bool useSoftDeleting,
+      bool hasSubItems,
+      String? formListTitleField,
+      void Function() getData) async {
     BoolResult result;
     bool updated = false;
     switch (choice) {
@@ -154,19 +173,23 @@ class UITools {
           if (result.success) {
             updated = true;
             alertDialog('${data[formListTitleField]} deleted',
-                title: '${(!useSoftDeleting ? '' : data['isDeleted'] == 1 ? 'Hard ' : '')}Delete Item', callBack: () {
+                title:
+                    '${(!useSoftDeleting ? '' : data['isDeleted'] == 1 ? 'Hard ' : '')}Delete Item',
+                callBack: () {
               getData();
             });
           }
         }
         break;
       case Choice.Recover:
-        final confirm = await confirmDialog('Recover \'${data[formListTitleField]}\'?', 'Recover Item');
+        final confirm = await confirmDialog(
+            'Recover \'${data[formListTitleField]}\'?', 'Recover Item');
         if (confirm!) {
           result = await obj.recover() as BoolResult;
           if (result.success) {
             updated = true;
-            alertDialog('${data[formListTitleField]} recovered', title: 'Recover Item', callBack: () {
+            alertDialog('${data[formListTitleField]} recovered',
+                title: 'Recover Item', callBack: () {
               //  Navigator.pop(context, true);
 
               getData();
@@ -261,10 +284,10 @@ class UITools {
           {DateTime? currentTime,
           DateTime? minTime,
           DateTime? maxTime,
-          DateChangedCallback? onChanged,
-          DateChangedCallback? onConfirm,
-          DateCancelledCallback? onCancel}) =>
-      DatePicker.showDatePicker(context,
+          dtp.DateChangedCallback? onChanged,
+          dtp.DateChangedCallback? onConfirm,
+          dtp.DateCancelledCallback? onCancel}) =>
+      dtp.DatePicker.showDatePicker(context,
           showTitleActions: true,
           minTime: minTime,
           maxTime: maxTime,
@@ -334,7 +357,8 @@ class UITools {
     }
   }
 
-  void alertDialog(String message, {String title = CONSTANTS.APP_TITLE, VoidCallback? callBack}) async {
+  void alertDialog(String message,
+      {String title = CONSTANTS.APP_TITLE, VoidCallback? callBack}) async {
     return showDialog(
         context: _context!,
         builder: (BuildContext context) {
@@ -357,7 +381,8 @@ class UITools {
         });
   }
 
-  Future<bool?> confirmDialog(String message, [String title = 'SqfEntity Sample']) async {
+  Future<bool?> confirmDialog(String message,
+      [String title = 'SqfEntity Sample']) async {
     return showDialog<bool>(
       context: _context!,
       barrierDismissible: false, // user must tap button for close dialog!
@@ -390,5 +415,7 @@ class CONSTANTS {
 }
 
 enum Choice { Delete, Update, Recover }
+
 enum OrderBy { NameAsc, NameDesc, PriceAsc, PriceDesc, None }
+
 final NumberFormat priceFormat = NumberFormat('#,##0.#', 'en_US');

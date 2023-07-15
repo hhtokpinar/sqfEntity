@@ -211,7 +211,7 @@ flutter:
   await Clipboard.setData(ClipboardData(text: modelConstString));
 
   /*
-      Model were created succesfuly and set to the Clipboard. 
+      Model were created successfully and set to the Clipboard. 
 
       STEP 1:
       Open model.dart file in lib/model folder and paste (Ctrl+V) models after following line
@@ -224,7 +224,7 @@ flutter:
 
  */
   print('''Your ${bundledDbModel.databaseName} 
-      were created succesfuly and set to the Clipboard. 
+      were created successfully and set to the Clipboard. 
 
       STEP 1:
       Open model.dart file in lib/model folder and paste models after following line

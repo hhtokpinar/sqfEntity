@@ -1,6 +1,5 @@
 analyzer:
   strong-mode:
-    implicit-casts: false
     #implicit-dynamic: false
 
   errors:

@@ -44,7 +44,7 @@ class SqfEntityFormGenerator extends GeneratorForAnnotation<SqfEntityBuilder> {
       modelStr
           .writeln('// ignore_for_file: ${dbModel.ignoreForFile!.join(', ')}');
     }
-    // print('${tables[0].modelName} Model recognized succesfuly');
+    // print('${tables[0].modelName} Model recognized successfully');
     modelStr.writeln('part of \'$path\';');
 
     // print('before for (final table in tables), tables.length=${dbModel.formTables.length}');

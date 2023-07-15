@@ -587,7 +587,6 @@ class Product extends TableBase {
               obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1103,7 +1102,6 @@ class ProductFilterBuilder extends ConjunctionBase {
               obj.plCategory ?? await obj.getCategory(loadParents: loadParents);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1673,7 +1671,6 @@ class Category extends TableBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }
@@ -2142,7 +2139,6 @@ class CategoryFilterBuilder extends ConjunctionBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }

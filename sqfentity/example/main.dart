@@ -158,12 +158,13 @@ Future<void> printListDynamic(SqfEntityProvider model, String pSql) async {
 }
 
 void printList(List<dynamic> list, {bool isMap = false, String? title}) {
-  print('PRINTLIST--------------$title---------------lenght: ${list.length}');
+  debugPrint(
+      'PRINTLIST--------------$title---------------lenght: ${list.length}');
   for (final o in list) {
     if (isMap) {
-      print(o.toMap());
+      debugPrint(o.toMap().toString());
     } else {
-      print(o.toString());
+      debugPrint(o.toString());
     }
   }
 }
@@ -171,13 +172,14 @@ void printList(List<dynamic> list, {bool isMap = false, String? title}) {
 Future<void> printCategories(bool getIsDeleted) async {
   final categoryList =
       await Category().select(getIsDeleted: getIsDeleted).toList();
-  print('LISTING CATEGORIES -> Category().select().toList()');
+  debugPrint('LISTING CATEGORIES -> Category().select().toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${categoryList.length} matches found:');
+  debugPrint('${categoryList.length} matches found:');
   for (int i = 0; i < categoryList.length; i++) {
-    print(categoryList[i].toMap());
+    debugPrint(categoryList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 class BundledDbModel extends SqfEntityModelProvider {}
@@ -211,7 +213,7 @@ flutter:
   await Clipboard.setData(ClipboardData(text: modelConstString));
 
   /*
-      Model were created succesfuly and set to the Clipboard. 
+      Model were created successfully and set to the Clipboard. 
 
       STEP 1:
       Open model.dart file in lib/model folder and paste (Ctrl+V) models after following line
@@ -223,8 +225,8 @@ flutter:
       Your Entity models will be created in lib/model/model.g.dart
 
  */
-  print('''Your ${bundledDbModel.databaseName} 
-      were created succesfuly and set to the Clipboard. 
+  debugPrint('''Your ${bundledDbModel.databaseName} 
+      were created successfully and set to the Clipboard. 
 
       STEP 1:
       Open model.dart file in lib/model folder and paste models after following line
@@ -268,14 +270,15 @@ Future<String> createSqfEntityModelString([bool setClipboard = true]) async {
 
 Future<void> printProducts() async {
   final productList = await Product().select().toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.1: SELECT ALL ROWS WITHOUT FILTER ex: SELECT * FROM PRODUCTS \n -> Product().select().toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples1() async {
@@ -289,17 +292,18 @@ Future<void> samples1() async {
       .orderByDesc('price')
       .orderBy('id')
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.2: ORDER BY FIELDS ex: SELECT * FROM PRODUCTS ORDER BY name, price DESC, id \n-> Product().select().orderBy(\'name\').orderByDesc(\'price\').orderBy(\'id\').toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.3: SELECT SPECIFIC FIELDS -> ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC
-  print(
+  debugPrint(
       'EXAMPLE 1.3: SELECT SPECIFIC FIELDS ex: SELECT name,price FROM PRODUCTS ORDER BY price DESC \n-> Product().select(columnsToSelect: [\'name\',\'price\']).orderByDesc(\'price\').toList()');
 
   productList = await Product()
@@ -308,36 +312,38 @@ Future<void> samples1() async {
       .toList();
 
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------');
+  debugPrint('---------------------------------------------------------------');
 }
 
 Future<void> samples2() async {
 // EXAMPLE 1.4: SELECT * FROM PRODUCTS WHERE isActive=1
   var productList = await Product().select().isActive.equals(true).toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.4: EQUALS ex: SELECT * FROM PRODUCTS WHERE isActive=1 \n->  Product().select().isActive.equals(true).toList()');
 
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.5: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9)
   productList = await Product().select().id.inValues([3, 6, 9]).toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.5: WHERE field IN (VALUES) ex: SELECT * FROM PRODUCTS WHERE ID IN (3,6,9) \n -> Product().select().id.inValues([3,6,9]).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // Brackets in query, Contains, Endswith, Startswith SAMPLES
 // EXAMPLE 1.6: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE '%256%' OR description LIKE '512%')
@@ -354,13 +360,15 @@ Future<void> samples2() async {
       .startsWith('512')
       .endBlock
       .toSingle();
-  print(
+  debugPrint(
       'EXAMPLE 1.6: BRACKETS ex: SELECT TOP 1 * FROM PRODUCTS WHERE price>10000 AND (description LIKE \'%256%\' OR description LIKE \'512%\') \n -> Product().select().price.greaterThan(10000).and.startBlock.description.contains(\'256\').or.description.startsWith(\'512").endBlock.toSingle((product){ // TO DO })');
-  print('Toplam ${(singleProduct != null ? '1' : '0')} sonuç listeleniyor:');
+  debugPrint(
+      'Toplam ${(singleProduct != null ? '1' : '0')} sonuç listeleniyor:');
   if (singleProduct != null) {
-    print(singleProduct.toMap());
+    debugPrint(singleProduct.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.7: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE '%128%' OR description LIKE '%GB')
   productList = await Product()
@@ -379,25 +387,27 @@ Future<void> samples2() async {
       .startsWith('128')
       .endBlock
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.7: BRACKETS 2 ex: SELECT name,price FROM PRODUCTS WHERE price <=10000 AND (description LIKE \'%128%\' OR description LIKE \'%GB\') \n -> Product().select(columnsToSelect:[\'name\',\'price\']).price.lessThanOrEquals(10000).and.startBlock.description.contains(\'128\').or.description.endsWith(\'GB\').endBlock.toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.8: NOT EQUALS
   productList = await Product().select().id.not.equals(11).toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.8: NOT EQUALS ex: SELECT * FROM PRODUCTS WHERE ID <> 11 \n -> Product().select().id.not.equals(11).toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS
   productList = await Product()
@@ -408,14 +418,15 @@ Future<void> samples2() async {
       .price
       .lessThanOrEquals(13000)
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.9: GREATERTHEN OR EQUALS, LESSTHAN OR EQUALS ex: SELECT * FROM PRODUCTS WHERE price>=10000 AND price<=13000 \n -> Product().select().price.greaterThanOrEquals(10000).and.price.lessThanOrEquals(13000).toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.10: BETWEEN KEYWORD
   productList = await Product()
@@ -424,39 +435,42 @@ Future<void> samples2() async {
       .between(8000, 14000)
       .orderBy('price')
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.10: BETWEEN ex: SELECT * FROM PRODUCTS WHERE price BETWEEN 8000 AND 14000 \n -> Product().select().price.between(8000,14000).orderBy(\'price\').toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.11: 'NOT' KEYWORD
   productList = await Product().select().id.not.greaterThan(5).toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.11: \'NOT\' KEYWORD ex: SELECT * FROM PRODUCTS WHERE NOT id>5 \n -> Product().select().id.not.greaterThan(5).toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE
   productList = await Product()
       .select()
       .where('id IN (3,6,9) OR price>?', parameterValue: 8000)
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.12: WRITING CUSTOM FILTER IN WHERE CLAUSE ex: SELECT * FROM PRODUCTS WHERE id IN (3,6,9) OR price>8000 \n -> Product().select().where(\'id IN (3,6,9) OR price>8000\').toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 1.13: Build filter and query from values from the form
   // assume that the values come from the form by defining several variables:
@@ -485,26 +499,28 @@ Future<void> samples2() async {
       .description
       .contains(descriptionContains)
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.13: Product().select().price.between($minPrice, $maxPrice).and.name.contains(\'$nameContains\').and.description.contains(\'$descriptionContains\').toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (var prod in productList) {
-    print(prod.toMap());
+    debugPrint(prod.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 1.14: Select products with deleted items (only softdelete was activated on Model)
   productList = await Product().select(getIsDeleted: true).toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.14: EXAMPLE 1.13: Select products with deleted items\n -> Product().select(getIsDeleted: true).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
 
   for (var prod in productList) {
-    print(prod.toMap());
+    debugPrint(prod.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 1.15: Select products only deleted items (only softdelete was activated on Model)
   productList = await Product()
@@ -512,14 +528,15 @@ Future<void> samples2() async {
       .isDeleted
       .equals(true)
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.15: Select products only deleted items \n -> Product().select(getIsDeleted: true).isDeleted.equals(true).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (var prod in productList) {
-    print(prod.toMap());
+    debugPrint(prod.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 1.16: Select products between datetimes
   productList = await Product()
@@ -528,39 +545,42 @@ Future<void> samples2() async {
       .where(
           'datetime BETWEEN \'${DateTime(2020, 1, 1, 14)}\' AND \'${DateTime(2020, 1, 1, 14).millisecondsSinceEpoch}\'')
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 1.16: Select products between datetimes \n -> Product().select().datetime.between(DateTime(2020,1,1,14), DateTime(2020,1,5,15)).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (var prod in productList) {
-    print(prod.toMap());
+    debugPrint(prod.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples3() async {
 // EXAMPLE 3.1: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC
   var productList =
       await Product().select().orderByDesc('price').top(3).toList();
-  print(
+  debugPrint(
       'EXAMPLE 3.1: LIMITATION ex: SELECT TOP 3 * FROM PRODUCTS ORDER BY price DESC \n -> Product().select().orderByDesc(\'price\').top(3).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 3.2: SAMPLE PAGING -> PRODUCTS in 3. page (5 items per page)
   productList = await Product().select().page(3, 5).toList();
-  print(
+  debugPrint(
       'EXAMPLE 3.2: SAMPLE PAGING ex: PRODUCTS in 3. page (5 items per page) \n -> Product().select().page(3,5).toList()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples4() async {
@@ -570,14 +590,15 @@ Future<void> samples4() async {
       .price
       .greaterThan(3000)
       .toList();
-  print(
+  debugPrint(
       'EXAMPLE 4.1: DISTINCT ex: SELECT DISTINCT name FROM PRODUCTS WHERE price > 3000 \n -> Product().distinct(columnsToSelect:[\'name\').price.greaterThan(3000).toList();');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${productList.length} matches found:');
+  debugPrint('${productList.length} matches found:');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
   // EXAMPLE 4.2: GROUP BY with SCALAR OR AGGREGATE FUNCTIONS ex: SELECT COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice FROM PRODUCTS GROUP BY name
   // /* count(),avg(),max(),min() when empty returns columnname as default, count('aliasname') is returns alias columnname */
@@ -594,24 +615,25 @@ Future<void> samples4() async {
       .groupBy(ProductFields.name
           .toString() /*also you can use this .groupBy('name')*/)
       .toListObject();
-  print(
+  debugPrint(
       'EXAMPLE 4.2: GROUP BY WITH SCALAR OR AGGREGATE FUNCTIONS ex: SELECT name, COUNT(id) AS Count, MIN(price) AS minPrice, MAX(price) AS maxPrice, AVG(price) AS avgPrice,ProductFields.price.sum(\'sumPrice\') FROM PRODUCTS GROUP BY name \n-> Product().select(columnsToSelect: [ProductFields.name.toString(), ProductFields.id.count(\'Count\'), ProductFields.price.min(\'minPrice\'), ProductFields.price.max(\'maxPrice\'), ProductFields.price.avg(\'avgPrice\')).groupBy(ProductFields.name.toString()).toListObject()');
   // PRINT RESULTS TO DEBUG CONSOLE
-  print('${objectList.length} matches found:');
+  debugPrint('${objectList.length} matches found:');
   for (int i = 0; i < objectList.length; i++) {
-    print(objectList[i].toString());
+    debugPrint(objectList[i].toString());
   }
-  print('---------------------------------------------------------------');
+  debugPrint('---------------------------------------------------------------');
 }
 
 Future<void> samples5() async {
 // EXAMPLE 5.1: Update multiple records with query
   var result =
       await Product().select().id.greaterThan(10).update({'isActive': 0});
-  print(
+  debugPrint(
       'EXAMPLE 5.1: Update multiple records with query \n -> Product().select().id.greaterThan(10).update({\'isActive\': 0});');
-  print(result.toString());
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(result.toString());
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // UPDATE imageUrl field by CategoryId
   await Product().select().categoryId.equals(1).update({
@@ -626,10 +648,11 @@ Future<void> samples5() async {
 // EXAMPLE 5.2: Update multiple records with query
   result =
       await Product().select().id.lessThanOrEquals(10).update({'isActive': 1});
-  print(
+  debugPrint(
       'EXAMPLE 5.2: uUpdate multiple records with query \n -> Product().select().id.lessThanOrEquals(10).update({\'isActive\': 1});');
-  print(result.toString());
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(result.toString());
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 5.3: select product by id and update
   final product2 = await Product().getById(15);
@@ -638,12 +661,13 @@ Future<void> samples5() async {
   if (product2 != null) {
     product2.description = '512GB SSD i7 (updated)';
     await product2.save();
-    print(
+    debugPrint(
         'EXAMPLE 5.3: id=15 Product item updated: ${product2.toMap().toString()}');
   } else {
-    print('EXAMPLE 5.3: id=15 => product not found');
+    debugPrint('EXAMPLE 5.3: id=15 => product not found');
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 5.4: update some filtered products with saveAll method -> Product().saveAll(productList){});
   var productList = await Product().select().price.lessThan(1000).toList();
@@ -654,22 +678,22 @@ Future<void> samples5() async {
   }
   final results = await Product.saveAll(productList);
   productList = await Product().select().toList();
-  print(
+  debugPrint(
       'EXAMPLE 5.4: update some filtered products with saveAll method \n -> Product().saveAll(productList){});');
 
-  print(' List<BoolResult> result of saveAll method is following:');
+  debugPrint(' List<BoolResult> result of saveAll method is following:');
 
   for (var result in results) {
-    print(result.toString());
+    debugPrint(result.toString());
   }
-  print('---------------------------------------------------------------');
+  debugPrint('---------------------------------------------------------------');
 
-  print(
+  debugPrint(
       'EXAMPLE 5.4: listing saved products (set price=i) with saveAll method;');
   for (int i = 0; i < productList.length; i++) {
-    print(productList[i].toMap());
+    debugPrint(productList[i].toMap().toString());
   }
-  print('---------------------------------------------------------------');
+  debugPrint('---------------------------------------------------------------');
 }
 
 Future<void> samples6() async {
@@ -678,18 +702,19 @@ Future<void> samples6() async {
   /*
   Product().select().delete().then((result) {
     if (result.success)
-      print('${result.successMessage}');
+      debugPrint('${result.successMessage}');
     else
-      print('${result.errorMessage}');
+      debugPrint('${result.errorMessage}');
   });
 */
 
 // EXAMPLE 6.2: get product with query id and delete
   var result = await Product().select().id.equals(16).delete();
-  print(
+  debugPrint(
       'EXAMPLE 6.2: delete product by query filder \n -> Product().select().id.equals(16).delete();');
-  print(result.toString());
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(result.toString());
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 // EXAMPLE 6.3: Get product by id and then delete
   final product = await Product().getById(17);
@@ -697,31 +722,32 @@ Future<void> samples6() async {
 // delete product object if exist
   if (product != null) {
     result = await product.delete();
-    print(
+    debugPrint(
         'EXAMPLE 6.3: delete product if exist \n -> if (product != null) Product.delete();');
     if (result.success) {
-      print('${result.successMessage}');
+      debugPrint('${result.successMessage}');
     } else {
-      print('${result.errorMessage}');
+      debugPrint('${result.errorMessage}');
     }
-    print(
+    debugPrint(
         '---------------------------------------------------------------\n\n');
   } else {
-    print('id=15 => product not found');
-    print(
+    debugPrint('id=15 => product not found');
+    debugPrint(
         '---------------------------------------------------------------\n\n');
   }
 
 // EXAMPLE 6.4: Delete many products by filter
   result = await Product().select().id.greaterThan(17).delete();
-  print(
+  debugPrint(
       'EXAMPLE 6.4: Delete many products by filter \n -> Product().select().id.greaterThan(17).delete()');
   if (result.success) {
-    print('${result.successMessage}');
+    debugPrint('${result.successMessage}');
   } else {
-    print('${result.errorMessage}');
+    debugPrint('${result.errorMessage}');
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 
 /*/ EXAMPLE 6.5: Get product by id and then recover
   Product().getById(17, (product) {
@@ -729,18 +755,18 @@ Future<void> samples6() async {
 // delete product object if exist
     if (product != null) {
       product.delete().then((result) {
-        print(
+        debugPrint(
             'EXAMPLE 6.5: recover product if exist \n -> if (product != null) Product.recover();');
         if (result.success)
-          print('${result.successMessage}');
+          debugPrint('${result.successMessage}');
         else
-          print('${result.errorMessage}');
-        print(
+          debugPrint('${result.errorMessage}');
+        debugPrint(
             '---------------------------------------------------------------\n\n');
       });
     } else {
-      print('id=15 => product not found');
-      print(
+      debugPrint('id=15 => product not found');
+      debugPrint(
           '---------------------------------------------------------------\n\n');
     }
     return;
@@ -748,14 +774,15 @@ Future<void> samples6() async {
 */
 // EXAMPLE 6.6: Recover many products by filter
   result = await Product().select().id.greaterThan(17).recover();
-  print(
+  debugPrint(
       'EXAMPLE 6.6: Recover many products by filter \n -> Product().select().id.greaterThan(17).recover()');
   if (result.success) {
-    print('${result.successMessage}');
+    debugPrint('${result.successMessage}');
   } else {
-    print('${result.errorMessage}');
+    debugPrint('${result.errorMessage}');
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples7() async {
@@ -763,24 +790,25 @@ Future<void> samples7() async {
   final product = await Product().getById(3);
   if (product != null) {
     final category = await product.getCategory();
-    print(
+    debugPrint(
         'EXAMPLE 7.1: goto Category Object from Product \n-> Product.getCategory(); ');
 
-    print(
+    debugPrint(
         'The category of \'${product.name}\' is: ${category == null ? 'null' : category.toMap()}');
   }
   // EXAMPLE 7.2: list Products of Categories \n-> Product.category((_category) {});
   final categoryList = await Category().select().toList();
   for (var category in categoryList) {
     final productList = await category.getProducts()!.toList();
-    print(
+    debugPrint(
         'EXAMPLE 7.2.${category.id}: Products of \'${category.name}\' listing \n-> category.getProducts((productList) {}); ');
     // PRINT RESULTS TO DEBUG CONSOLE
-    print('${productList.length} matches found:');
+    debugPrint('${productList.length} matches found:');
     for (int i = 0; i < productList.length; i++) {
-      print(productList[i].toMap());
+      debugPrint(productList[i].toMap().toString());
     }
-    print('---------------------------------------------------------------');
+    debugPrint(
+        '---------------------------------------------------------------');
     return;
   }
   return;
@@ -792,81 +820,85 @@ Future<void> samples8() async {
     await Todo().upsertAll(todosList);
 
     todosList = await Todo().select().top(10).toList();
-    print(
+    debugPrint(
         'EXAMPLE 8.1: Fill List from web (JSON data) and upsertAll \n -> Todo.fromWeb((todosList) {}');
-    print('${todosList.length.toString()} matches found\n');
+    debugPrint('${todosList.length.toString()} matches found\n');
     for (var todo in todosList) {
-      print(todo.toMap());
+      debugPrint(todo.toMap().toString());
     }
-    print(
+    debugPrint(
         '---------------------------------------------------------------\n\n');
   }
   todosList = await Todo.fromWebUrl(
       Uri.parse('https://jsonplaceholder.typicode.com/todos'));
   if (todosList != null) {
     final results = await Todo().upsertAll(todosList);
-    print(
+    debugPrint(
         'EXAMPLE 8.2: upsertAll result \n -> final results = await Todo().upsertAll(todosList);');
 
     // print upsert Results
-    for (var res in results.commitResult!) {
-      res = res; // dummy line for analysis_options (unused_local_variable)
-      //print(res.toString()); // uncomment this line for print save results
+    if (results.commitResult != null) {
+      for (var res in results.commitResult!) {
+        res = res; // dummy line for analysis_options (unused_local_variable)
+        //debugPrint(res.toString()); // uncomment this line for print save results
+      }
     }
   }
   todosList = await Todo().select().top(10).toList();
-  print(
+  debugPrint(
       'EXAMPLE 8.2: Fill List from web with Url (JSON data) and upsertAll \n -> Todo.fromWebUrl(\'https://jsonplaceholder.typicode.com/todos\', (todosList) {}');
-  print('${todosList.length.toString()} matches found\n');
+  debugPrint('${todosList.length.toString()} matches found\n');
   for (var todo in todosList) {
-    print(todo.toMap());
+    debugPrint(todo.toMap().toString());
   }
-  print('---------------------------------------------------------------\n\n');
+  debugPrint(
+      '---------------------------------------------------------------\n\n');
 }
 
 Future<void> samples9() async {
   // EX.9.1 Execute custom SQL command on database
-  final sql_91 = 'UPDATE product set isActive=1 where isActive=1';
+  const sql_91 = 'UPDATE product set isActive=1 where isActive=1';
   final result_91 = await MyDbModel().execSQL(sql_91);
-  print(
+  debugPrint(
       'EX.9.1 Execute custom SQL command on database\n -> final sql=\'$sql_91\';\n -> MyDbModel().execSQL(sql)  \n -> print result = ${result_91.toString()}');
 
   // EX.9.2 Execute custom SQL command List on database
-  final sqlList = <String>[]
-    ..add('UPDATE product set isActive=1 where isActive=1')
-    ..add('UPDATE product set isActive=0 where isActive=0');
+  final sqlList = <String>[
+    'UPDATE product set isActive=1 where isActive=1',
+    'UPDATE product set isActive=0 where isActive=0'
+  ];
 
   final result_92 = await MyDbModel().execSQLList(sqlList);
-  print(
+  debugPrint(
       'EX.9.2 Execute custom SQL command List on database\n -> final sqlList=List<String>();\n -> MyDbModel().execSQLList(sqlList);  \n -> print result = ${result_92.toString()}');
 
 // EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>>
-  final sql_93 = 'SELECT name, price FROM product order by price desc LIMIT 5';
+  const sql_93 = 'SELECT name, price FROM product order by price desc LIMIT 5';
   final result_93 = await MyDbModel().execDataTable(sql_93);
-  print(
+  debugPrint(
       'EX.9.3 Execute custom SQL Query and get datatable -> returns List<Map<String,dynamic>> \n -> MyDbModel().execDataTable(\'$sql_93\');\n -> print result:');
   for (var item in result_93) {
-    print(item.toString());
+    debugPrint(item.toString());
   }
 
   /// EX.9.4 Execute custom SQL Query and get first col of first row
-  final sql_94 = 'SELECT name FROM product order by price desc';
+  const sql_94 = 'SELECT name FROM product order by price desc';
   final result_94 = await MyDbModel().execScalar(sql_94);
-  print(
+  debugPrint(
       'EX.9.4 Execute custom SQL Query and get first col of first row -> returns dynamic \n -> MyDbModel().execScalar(\'$sql_94\');\n -> print result:');
-  print(result_94.toString());
+  debugPrint(result_94.toString());
 }
 
 Future<void> samples10() async {
-  print('EXAMPLE 10 SqfEntity Sequence SAMPLES-----------');
+  debugPrint('EXAMPLE 10 SqfEntity Sequence SAMPLES-----------');
 
   final int currentVal = await IdentitySequence().currentVal();
   final int nextVal = await IdentitySequence().nextVal();
   final int nextVal2 = await IdentitySequence().nextVal();
   final int currentVal2 = await IdentitySequence().currentVal();
 
-  print('Sample Code:\n');
-  print('''
+  debugPrint('Sample Code:\n');
+  debugPrint('''
   final currentVal= await IdentitySequence().currentVal();
   result: currentVal = $currentVal
   final nextVal = await IdentitySequence().nextVal();
@@ -884,13 +916,13 @@ Future<void> samples11() async {
   final product = await Product().select().toSingle();
   final jsonString = product!.toJson();
 
-  print(
+  debugPrint(
       'EXAMPLE 11.1 single object to Json\n product jsonString is: $jsonString');
 
   //EXAMPLE 11.2 object list with nested objects to Json
   final jsonStringWithChilds =
       await Category().select().toJsonWithChilds(); // all categories selected
-  print(
+  debugPrint(
       'EXAMPLE 11.2 object list with nested objects to Json\n categories jsonStringWithChilds is: $jsonStringWithChilds');
 }
 
@@ -902,7 +934,7 @@ Future<void> addSomeProducts() async {
   if (product == null) {
     await addProducts();
   } else {
-    print(
+    debugPrint(
         'There is already products in the database.. addProduct will not run');
   }
   return;
@@ -916,7 +948,7 @@ Future<void> addCategories() async {
     await Category(name: 'Notebooks', isActive: true).save(ignoreBatch: false);
     await Category(name: 'Ultrabooks', isActive: true).save();
   } else {
-    print(
+    debugPrint(
         'There is already categories in the database.. addCategories will not run');
   }
 }
@@ -1038,7 +1070,7 @@ Future<bool> addProducts() async {
             price: 14000,
             categoryId: 2)
         .save();
-    print('added 15 new products');
+    debugPrint('added 15 new products');
 
     // add a few dummy products for delete (id:from 16 to 20)
     await Product(name: 'Product 1').save();
@@ -1046,7 +1078,7 @@ Future<bool> addProducts() async {
     await Product(name: 'Product 3').save();
     await Product(name: 'Product 4').save();
     await Product(name: 'Product 5').save();
-    print('added 5 dummy products');
+    debugPrint('added 5 dummy products');
   }
   return true;
 }
@@ -1076,7 +1108,7 @@ void sampleModelConvert() {
     ];
 
   final modelStr = SqfEntityConverter(model).createEntites();
-  print(modelStr);
+  debugPrint(modelStr);
 }
 
 class MyDb extends SqfEntityModelBase {}

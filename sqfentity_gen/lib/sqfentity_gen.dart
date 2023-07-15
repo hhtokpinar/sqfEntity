@@ -21,6 +21,10 @@ import 'package:meta/meta.dart';
 part 'sqfentity_base.dart';
 part 'sqfentity_form_gen.dart';
 
+/// Creates basic forms based on tables and column definitions
+/// String fields create Text Input
+/// Relationships provides to create DropDown List that contains related fields
+/// Also Valid Expressions are created automatically. Date Time Picker, Checkboxes, check non-nullable validators. etc.
 class SqfEntityFormCreator {
   SqfEntityFormCreator(this.tableModel, this.instancename);
   final DartObject tableModel;
@@ -40,6 +44,7 @@ class SqfEntityFormCreator {
   }
 }
 
+/// This class provides to build ORM models by converting dartObject
 class SqfEntityModelBuilder extends SqfEntityModelBase {
   SqfEntityModelBuilder(this.model, this.instancename);
   final DartObject model;

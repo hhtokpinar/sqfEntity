@@ -11,8 +11,6 @@ import 'view.list.dart';
 part 'model.g.dart';
 part 'model.g.view.dart';
 
-
-
 // STEP 1: define your tables as shown in the example Classes below.
 
 // Define the 'tableCategory' constant as SqfEntityTable for the category table
@@ -125,8 +123,6 @@ const myDbModel = SqfEntityModel(
       SqfEntityField('dateCreated', DbType.datetime,
           defaultValue: 'DateTime.now()'),
     ]);
-
-
 
 /* STEP 3: That's All.. 
 --> Go Terminal Window and run command below

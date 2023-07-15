@@ -679,7 +679,6 @@ class Product extends TableBase {
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1230,7 +1229,6 @@ class ProductFilterBuilder extends ConjunctionBase {
                   loadParents: loadParents /*, loadedFields: _loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD
-
     } else {
       obj = null;
     }
@@ -1821,7 +1819,6 @@ class Category extends TableBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }
@@ -2322,7 +2319,6 @@ class CategoryFilterBuilder extends ConjunctionBase {
                       loadParents: false /*, loadedFields:_loadedFields*/);
         }
       } // END RELATIONSHIPS PRELOAD CHILD
-
     } else {
       obj = null;
     }

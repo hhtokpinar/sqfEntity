@@ -381,6 +381,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
       }
     } catch (e) {
       print(e.toString());
+      rethrow;
     }
     return result;
   }
@@ -408,6 +409,7 @@ class SqfEntityProvider extends SqfEntityModelBase {
         result.errorMessage = e.toString();
         print('SQFENTITY ERROR while run execSQLList:');
         print(result.toString());
+        rethrow;
       }
       openedBatch[_dbModel!.databaseName!] = null;
     } else {

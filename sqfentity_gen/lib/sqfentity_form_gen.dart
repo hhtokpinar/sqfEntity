@@ -452,8 +452,7 @@ class ${modelName}AddState extends State {
         return retVal.toString();
       case DbType.date:
         retVal.writeln('return TextFormField(');
-        retVal.writeln(
-            '''onTap: () => UITools.showDateTimePicker(context
+        retVal.writeln('''onTap: () => UITools.showDateTimePicker(context
           ${_getNullableValueField(field.minValue, 'minTime')}
           ${_getNullableValueField(field.maxValue, 'maxTime')}
           , onConfirm: (sqfSelectedDate) {

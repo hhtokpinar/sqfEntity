@@ -1,3 +1,6 @@
+## 2.4.0
+- Add Dart SDK 3.0 support
+
 ## 2.3.0+4
 - fixed issue [281](https://github.com/hhtokpinar/sqfEntity/issues/281)
   and removed customizing datetime formats.
