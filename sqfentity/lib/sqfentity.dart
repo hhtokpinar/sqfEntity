@@ -789,7 +789,7 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
     if (addedIndexes.contains(field.fieldName)) {
       continue;
     }
-    dynamic columns;
+    List<String?> columns = [];
     bool? isUnique = false;
     String? indexName;
     if (field.isIndex ?? false) {
@@ -812,7 +812,7 @@ List<String> checkTableIndexes(SqfEntityTableBase table) {
     }
 
     if (indexName != null) {
-      addedIndexes.addAll((columns as Iterable<String>));
+      addedIndexes.addAll(columns.nonNulls);
       alterTableQuery.add(
           'CREATE ${isUnique ? 'UNIQUE ' : ''}INDEX IF NOT EXISTS $indexName ON ${table.tableName} (${columns.join(',')})');
     }

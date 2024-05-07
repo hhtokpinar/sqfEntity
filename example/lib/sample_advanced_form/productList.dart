@@ -3,7 +3,7 @@ import 'package:sqfentity_gen/sqfentity_gen.dart';
 
 import '../model/model.dart';
 import '../tools/helper.dart';
-import '../tools/slideMenu.dart';
+import '../tools/slidemenu.dart';
 import 'productDetail.dart';
 import 'productFilterWindow.dart';
 import 'searchFilters.dart';
