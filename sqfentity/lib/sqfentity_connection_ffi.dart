@@ -36,7 +36,7 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
       final databaseFactory = databaseFactoryFfi;
       sqfliteFfiInit();
       final path = join(
-          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          await getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
           connection!.databaseName);
       if (File(path).existsSync()) {
         await databaseFactory.deleteDatabase(path);
@@ -60,7 +60,7 @@ class SqfEntityConnectionFfi extends SqfEntityConnectionBase {
       final databaseFactory = databaseFactoryFfi;
       sqfliteFfiInit();
       final path = join(
-          getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
+          await getFinalDatabasePath(await databaseFactory.getDatabasesPath()),
           connection!.databaseName);
       final file = File(path);
 

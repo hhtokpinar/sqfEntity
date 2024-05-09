@@ -18,7 +18,8 @@
 
 import 'dart:async' show Future;
 import 'dart:io';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class SqfEntityConnection {
@@ -42,7 +43,13 @@ abstract class SqfEntityConnectionBase {
   Future<Database> openDb();
   void createDb(Database db, int version);
 
-  String getFinalDatabasePath(String defaultDatabasePath) {
+  Future<String> getFinalDatabasePath(String defaultDatabasePath) async {
+    if (Platform.isLinux || Platform.isWindows) {
+      final Directory supportDir = await getApplicationSupportDirectory();
+      debugPrint(' Database Path : ${supportDir.path}');
+      return supportDir.path;
+    }
+
     if (connection!.databasePath == null) {
       return defaultDatabasePath;
     }
