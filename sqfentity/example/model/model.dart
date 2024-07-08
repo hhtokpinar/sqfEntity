@@ -549,9 +549,9 @@ class Product extends TableBase {
       categoryId,
       rownum,
       imageUrl,
-      datetime != null ? datetime!.millisecondsSinceEpoch : null,
-      date != null ? date!.millisecondsSinceEpoch : null,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
+      datetime?.millisecondsSinceEpoch,
+      date?.millisecondsSinceEpoch,
+      dateCreated?.millisecondsSinceEpoch,
       isDeleted
     ];
   }
@@ -567,9 +567,9 @@ class Product extends TableBase {
       categoryId,
       rownum,
       imageUrl,
-      datetime != null ? datetime!.millisecondsSinceEpoch : null,
-      date != null ? date!.millisecondsSinceEpoch : null,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
+      datetime?.millisecondsSinceEpoch,
+      date?.millisecondsSinceEpoch,
+      dateCreated?.millisecondsSinceEpoch,
       isDeleted
     ];
   }
@@ -778,9 +778,9 @@ class Product extends TableBase {
             categoryId,
             rownum,
             imageUrl,
-            datetime != null ? datetime!.millisecondsSinceEpoch : null,
-            date != null ? date!.millisecondsSinceEpoch : null,
-            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null,
+            datetime?.millisecondsSinceEpoch,
+            date?.millisecondsSinceEpoch,
+            dateCreated?.millisecondsSinceEpoch,
             isDeleted
           ],
           ignoreBatch);
@@ -1699,7 +1699,7 @@ class Category extends TableBase {
     return [
       name,
       isActive,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+      dateCreated?.millisecondsSinceEpoch
     ];
   }
 
@@ -1709,7 +1709,7 @@ class Category extends TableBase {
       id,
       name,
       isActive,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+      dateCreated?.millisecondsSinceEpoch
     ];
   }
 
@@ -1910,7 +1910,7 @@ class Category extends TableBase {
             id,
             name,
             isActive,
-            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+            dateCreated?.millisecondsSinceEpoch
           ],
           ignoreBatch);
       if (result! > 0) {
@@ -2729,7 +2729,7 @@ class Todo extends TableBase {
       userId,
       title,
       completed,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+      dateCreated?.millisecondsSinceEpoch
     ];
   }
 
@@ -2740,7 +2740,7 @@ class Todo extends TableBase {
       userId,
       title,
       completed,
-      dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+      dateCreated?.millisecondsSinceEpoch
     ];
   }
 
@@ -2914,7 +2914,7 @@ class Todo extends TableBase {
             userId,
             title,
             completed,
-            dateCreated != null ? dateCreated!.millisecondsSinceEpoch : null
+            dateCreated?.millisecondsSinceEpoch
           ],
           ignoreBatch);
       if (result! > 0) {

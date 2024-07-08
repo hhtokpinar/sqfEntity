@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sqfentity_example/tools/slidemenu.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
 import '../model/model.dart';
 import '../tools/helper.dart';
-import '../tools/slideMenu.dart';
 import 'productDetail.dart';
 import 'productFilterWindow.dart';
 import 'searchFilters.dart';
