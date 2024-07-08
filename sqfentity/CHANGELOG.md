@@ -1,3 +1,6 @@
+## 2.5.0
+- Add suport for Flutter 3.22 and Dart 3.4
+
 ## 2.4.0
 - Add Dart SDK 3.0 support
 
