@@ -14,7 +14,7 @@ dependencies:
   synchronized: ^3.0.0+2
   path: ^1.8.2
   sqfentity_gen:
-    path: ../sqfentity_gen
+  #  path: ../sqfentity_gen # remove the first comment mark if you want to debug sqfentity_gen package on your local file system
   sqflite_common: ^2.2.1+1
   sqflite_common_ffi: ^2.1.1+1
   meta: ^1.7.0
