@@ -222,10 +222,10 @@ packages:
     dependency: "direct main"
     description:
       name: sqflite_sqlcipher
-      sha256: e1dfb55bf21ee5a18c43f28faa4291272a801da4ab34a6ba9973b6c0e1ed77da
+      sha256: "16033fde6c7d7bd657b71a2bc42332ab02bc8001c3212f502d2e02714e735ec9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "3.1.0+1"
   sqlite3:
     dependency: transitive
     description:
@@ -300,4 +300,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.4.0 <4.0.0"
-  flutter: ">=1.24.0-10"
+  flutter: ">=3.19.0"

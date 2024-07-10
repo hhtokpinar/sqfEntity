@@ -394,10 +394,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: bca87b0165ffd7cdb9cad8edd22d18d2201e886d9a9f19b4fb3452ea7df3a72a
+      sha256: "30c5aa827a6ae95ce2853cdc5fe3971daaac00f6f081c419c013f7f57bff2f5e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.6"
+    version: "2.2.7"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -426,10 +426,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_windows
-      sha256: "8bc9f22eee8690981c22aa7fc602f5c85b497a6fb2ceb35ee5a5e5ed85ad8170"
+      sha256: bd6f00dbd873bfb70d0761682da2b3a2c2fccc2b9e84c495821639601d81afe7
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.3.0"
   pedantic:
     dependency: "direct main"
     description:
@@ -553,14 +553,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.4.0"
+    version: "2.5.0"
   sqfentity_gen:
     dependency: "direct main"
     description:
       path: "../../sqfentity_gen"
       relative: true
     source: path
-    version: "2.4.0"
+    version: "2.5.0"
   sqflite_common:
     dependency: transitive
     description:
@@ -581,10 +581,10 @@ packages:
     dependency: transitive
     description:
       name: sqflite_sqlcipher
-      sha256: e1dfb55bf21ee5a18c43f28faa4291272a801da4ab34a6ba9973b6c0e1ed77da
+      sha256: "16033fde6c7d7bd657b71a2bc42332ab02bc8001c3212f502d2e02714e735ec9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "3.1.0+1"
   sqlite3:
     dependency: transitive
     description:
@@ -729,14 +729,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  win32:
-    dependency: transitive
-    description:
-      name: win32
-      sha256: a79dbe579cb51ecd6d30b17e0cae4e0ea15e2c0e66f69ad4198f22a6789e94f4
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.5.1"
   xdg_directories:
     dependency: transitive
     description:
