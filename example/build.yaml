@@ -1,0 +1,8 @@
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+targets:
+  $default:
+    builders:
+      sqfentity_gen|property_sqfentity:
+        generate_for:
+          - lib/model/*.dart
+          - lib/model/test/*.dart
