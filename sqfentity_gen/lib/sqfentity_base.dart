@@ -2365,7 +2365,7 @@ Future<BoolResult> delete([bool hardDelete=false]) async {
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `${_table.primaryKeyNames.join('`')}` FROM ${_table.tableName} WHERE \${qparams.whereString}';
+    _retVal['sql'] = 'SELECT `${_table.primaryKeyNames.join('`')}` FROM ${_table.tableName} \${(qparams.whereString ?? ``).isNotEmpty ? 'WHERE \${qparams.whereString}': ''}';
     _retVal['args'] = qparams.whereArguments;
     return _retVal;
   }
