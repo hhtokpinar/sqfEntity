@@ -55,16 +55,15 @@ Some files in the project:
 
 
 ## dependencies:
-Note: You do not need **flutter_datetime_picker** if you do not want to use the Form Generator property
+Note: `flutter_datetime_picker` is no longer required as of v2.2.0+8.
 ```yaml
     dependencies:
-      flutter_datetime_picker: ^1.2.8  
-      sqfentity: ^1.2.3
-      sqfentity_gen: ^1.2.3
+      sqfentity: ^2.5.0
+      sqfentity_gen: ^2.5.0
 
 
     dev_dependencies:
-      build_runner: ^1.6.5
+      build_runner: ^2.4.9
       build_verify: ^1.1.0
 ```
 
